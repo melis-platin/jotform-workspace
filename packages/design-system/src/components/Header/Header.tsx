@@ -3,7 +3,7 @@ import jotformLogo from '../../assets/jotform-logo.svg';
 import jotformIcon from '../../assets/jotform-icon.svg';
 import './Header.scss';
 
-interface HeaderProps {
+export interface HeaderProps {
   appName?: string;
   lastEdited?: string;
   activeTab?: 'build' | 'settings' | 'publish';

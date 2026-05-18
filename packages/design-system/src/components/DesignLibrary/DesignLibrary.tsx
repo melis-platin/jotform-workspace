@@ -2,6 +2,7 @@ import { useState } from 'react';
 import logoLight from '../../assets/jf-design-system-logo-light.svg';
 import logoDark from '../../assets/jf-design-system-logo.svg';
 import { ColorsSection } from './sections/ColorsSection';
+import { TokensSection } from './sections/TokensSection';
 import { TypographySection } from './sections/TypographySection';
 import { SpacingSection } from './sections/SpacingSection';
 import { ShadowsSection } from './sections/ShadowsSection';
@@ -46,6 +47,7 @@ import type { TabsPanelState } from './sections/TabsSection';
 import './DesignLibrary.scss';
 
 const FOUNDATIONS = [
+  { id: 'tokens', label: 'Tokens' },
   { id: 'colors', label: 'Colors' },
   { id: 'typography', label: 'Typography' },
   { id: 'spacing', label: 'Spacing' },
@@ -107,6 +109,8 @@ export function DesignLibrary() {
 
   const renderSection = () => {
     switch (activeSection) {
+      case 'tokens':
+        return <TokensSection />;
       case 'colors':
         return <ColorsSection />;
       case 'typography':
