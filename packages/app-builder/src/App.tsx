@@ -35,12 +35,13 @@ function useUrlSearch(): string {
 
 export function App() {
   const search = useUrlSearch()
-  const { urlPreset, urlPage, urlFullscreen } = useMemo(() => {
+  const { urlPreset, urlPage, urlFullscreen, urlOpenAttributionSheet } = useMemo(() => {
     const p = new URLSearchParams(search)
     return {
       urlPreset: p.get('preset'),
       urlPage: p.get('page'),
       urlFullscreen: p.get('fullscreen') === 'phone',
+      urlOpenAttributionSheet: p.get('attributionSheet') === 'ai',
     }
   }, [search])
 
@@ -107,6 +108,7 @@ export function App() {
             onAppTitleChange={setAppTitle}
             initialPageId={urlPage ?? undefined}
             chromeless={urlFullscreen}
+            openAttributionSheet={urlOpenAttributionSheet}
             previewMode={previewMode}
             onPreviewClose={() => setPreviewMode(false)}
           />

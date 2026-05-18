@@ -1071,7 +1071,27 @@ function AddPageDivider({ onClick }: { onClick: () => void }) {
 
 type RightPanelMode = 'preview' | 'designer' | 'properties'
 
-export function BuildPage({ appTitle: appTitleProp = 'App Title', onAppTitleChange, preset, initialPageId, chromeless = false, previewMode = false, onPreviewClose }: { appTitle?: string; onAppTitleChange?: (title: string) => void; preset?: AppPreset; initialPageId?: string; chromeless?: boolean; previewMode?: boolean; onPreviewClose?: () => void }) {
+interface BuildPageProps {
+  appTitle?: string
+  onAppTitleChange?: (title: string) => void
+  preset?: AppPreset
+  initialPageId?: string
+  chromeless?: boolean
+  openAttributionSheet?: boolean
+  previewMode?: boolean
+  onPreviewClose?: () => void
+}
+
+export function BuildPage({
+  appTitle: appTitleProp = 'App Title',
+  onAppTitleChange,
+  preset,
+  initialPageId,
+  chromeless = false,
+  openAttributionSheet = false,
+  previewMode = false,
+  onPreviewClose,
+}: BuildPageProps) {
   const [rightPanel, setRightPanel] = useState<RightPanelMode>('preview')
   const [propertyTab, setPropertyTab] = useState<string>('general')
   const appHeaderImageInputRef = useRef<HTMLInputElement>(null)
@@ -2242,7 +2262,7 @@ export function BuildPage({ appTitle: appTitleProp = 'App Title', onAppTitleChan
               </div>
               {isFirstPage && !isPreviewCartOpen && !isPreviewCheckoutOpen && (
                 <div className="themes-view__attribution-footer">
-                  <AttributionBar />
+                  <AttributionBar openAiSheetOnMount={openAttributionSheet} />
                 </div>
               )}
               </>
@@ -4355,7 +4375,7 @@ export function BuildPage({ appTitle: appTitleProp = 'App Title', onAppTitleChan
                               </div>
                               {isFirstPage && !isPreviewCartOpen && !isPreviewCheckoutOpen && (
                                 <div className="themes-view__attribution-footer">
-                                  <AttributionBar />
+                                  <AttributionBar openAiSheetOnMount={openAttributionSheet} />
                                 </div>
                               )}
                               </>

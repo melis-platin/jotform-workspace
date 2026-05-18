@@ -35,6 +35,7 @@ export interface AttributionBarProps {
   aiHref?: string;
   templatesHref?: string;
   upgradeHref?: string;
+  openAiSheetOnMount?: boolean;
 }
 
 interface PromptSuggestion {
@@ -268,10 +269,15 @@ export const AttributionBar: FC<AttributionBarProps> = ({
   aiHref = 'https://www.jotform.com/ai/app-generator/?utm_source=app-builder&utm_medium=attribution&utm_campaign=ai-prompt',
   templatesHref = 'https://www.jotform.com/app-templates/?utm_source=app-builder&utm_medium=attribution&utm_campaign=templates',
   upgradeHref = 'https://www.jotform.com/pricing/?utm_source=app-builder&utm_medium=attribution&utm_campaign=remove-branding',
+  openAiSheetOnMount = false,
 }) => {
   const [open, setOpen] = useState(false);
   const [removeOpen, setRemoveOpen] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (openAiSheetOnMount) setOpen(true);
+  }, [openAiSheetOnMount]);
 
   return (
     <>
