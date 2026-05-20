@@ -1,4 +1,6 @@
-import type { ReactNode } from 'react';
+import { useState } from 'react';
+import type { PointerEvent as ReactPointerEvent, ReactNode } from 'react';
+import { Checkbox } from '../Checkbox/Checkbox';
 import { EmptyContent } from './EmptyContent';
 import type { EmptyContentState } from './EmptyContent';
 import { TableFooter } from './TableFooter';
@@ -10,6 +12,8 @@ export type TableAlign = 'left' | 'right';
 export type TableHeaderStyle = 'white' | 'grey';
 export type SortDirection = 'asc' | 'desc';
 export type TableLoadingVariant = 'skeleton' | 'scrim' | 'spinner';
+
+const MIN_COLUMN_WIDTH = 64;
 
 export interface TableColumn<T> {
   key: string;
@@ -37,8 +41,11 @@ export interface TableProps<T> {
   loadingVariant?: TableLoadingVariant;
   skeletonRows?: number;
   rowKey?: (row: T, index: number) => string | number;
+  selectable?: boolean;
   selectedRowKeys?: Array<string | number>;
+  onSelectionChange?: (keys: Array<string | number>) => void;
   onRowClick?: (row: T, index: number) => void;
+  resizable?: boolean;
   emptyState?: EmptyContentState;
   emptyContent?: ReactNode;
   pagination?: TablePagination;
@@ -98,8 +105,11 @@ export function Table<T>({
   loadingVariant = 'skeleton',
   skeletonRows = 5,
   rowKey,
+  selectable = false,
   selectedRowKeys,
+  onSelectionChange,
   onRowClick,
+  resizable = false,
   emptyState = 'empty',
   emptyContent,
   pagination,
@@ -108,34 +118,77 @@ export function Table<T>({
   toolbar,
   className,
 }: TableProps<T>) {
+  const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
+  const [resizingKey, setResizingKey] = useState<string | null>(null);
+
   const rootClass = [
     'jf-table',
     `jf-table--${size}`,
     `jf-table--header-${headerStyle}`,
     bordered && 'jf-table--bordered',
     onRowClick && 'jf-table--interactive',
+    resizingKey && 'jf-table--resizing',
     className,
   ]
     .filter(Boolean)
     .join(' ');
 
   const hasWidths = columns.some((column) => column.width != null);
-  const selected = new Set(selectedRowKeys ?? []);
   const interactive = Boolean(onRowClick);
+
+  const getKey = (row: T, index: number): string | number =>
+    rowKey ? rowKey(row, index) : index;
+
+  const selected = new Set(selectedRowKeys ?? []);
+  const allKeys = data.map((row, index) => getKey(row, index));
+  const allSelected = data.length > 0 && allKeys.every((key) => selected.has(key));
+  const someSelected = allKeys.some((key) => selected.has(key));
+
+  const toggleAll = () => onSelectionChange?.(allSelected ? [] : allKeys);
+  const toggleRow = (key: string | number) => {
+    if (!onSelectionChange) return;
+    const next = new Set(selected);
+    if (next.has(key)) next.delete(key);
+    else next.add(key);
+    onSelectionChange([...next]);
+  };
 
   const showSkeleton = loading && loadingVariant === 'skeleton';
   const showSpinner = loading && loadingVariant === 'spinner';
   const showScrim = loading && loadingVariant === 'scrim';
   const showEmpty = !showSkeleton && !showSpinner && data.length === 0;
+  const colSpanCount = columns.length + (selectable ? 1 : 0);
 
   const handleSort = (column: TableColumn<T>) => {
     if (!column.sortable || !onSortChange) return;
     onSortChange(nextSort(sort, column.key));
   };
 
+  const startResize = (event: ReactPointerEvent<HTMLElement>, columnKey: string) => {
+    event.preventDefault();
+    event.stopPropagation();
+    const th = event.currentTarget.closest('th');
+    if (!th) return;
+    const startX = event.clientX;
+    const startWidth = th.getBoundingClientRect().width;
+    setResizingKey(columnKey);
+
+    const onMove = (moveEvent: PointerEvent) => {
+      const width = Math.max(MIN_COLUMN_WIDTH, startWidth + moveEvent.clientX - startX);
+      setColumnWidths((prev) => ({ ...prev, [columnKey]: width }));
+    };
+    const onUp = () => {
+      setResizingKey(null);
+      document.removeEventListener('pointermove', onMove);
+      document.removeEventListener('pointerup', onUp);
+    };
+    document.addEventListener('pointermove', onMove);
+    document.addEventListener('pointerup', onUp);
+  };
+
   const renderStateRow = (content: ReactNode) => (
     <tr className="jf-table__row jf-table__state-row">
-      <td className="jf-table__state-cell" colSpan={columns.length}>
+      <td className="jf-table__state-cell" colSpan={colSpanCount}>
         <div className="jf-table__state-inner">{content}</div>
       </td>
     </tr>
@@ -146,28 +199,40 @@ export function Table<T>({
       {toolbar && <div className="jf-table__toolbar">{toolbar}</div>}
       <div className="jf-table__box">
         <table className="jf-table__table">
-          {hasWidths && (
+          {(hasWidths || resizable) && (
             <colgroup>
-              {columns.map((column) => (
-                <col
-                  key={column.key}
-                  style={
-                    column.width != null
-                      ? {
-                          width:
-                            typeof column.width === 'number'
-                              ? `${column.width}px`
-                              : column.width,
-                        }
-                      : undefined
-                  }
-                />
-              ))}
+              {selectable && <col style={{ width: '48px' }} />}
+              {columns.map((column) => {
+                const resized = columnWidths[column.key];
+                const width =
+                  resized != null
+                    ? `${resized}px`
+                    : column.width != null
+                      ? typeof column.width === 'number'
+                        ? `${column.width}px`
+                        : column.width
+                      : undefined;
+                return (
+                  <col key={column.key} style={width != null ? { width } : undefined} />
+                );
+              })}
             </colgroup>
           )}
           <thead className="jf-table__head">
             <tr className="jf-table__head-row">
-              {columns.map((column) => {
+              {selectable && (
+                <th className="jf-table__th jf-table__select-cell" scope="col">
+                  <Checkbox
+                    label=""
+                    size="sm"
+                    aria-label="Select all rows"
+                    checked={allSelected}
+                    indeterminate={someSelected && !allSelected}
+                    onChange={toggleAll}
+                  />
+                </th>
+              )}
+              {columns.map((column, columnIndex) => {
                 const align = column.align ?? 'left';
                 const isSorted = sort?.key === column.key;
                 const direction = isSorted ? sort!.direction : null;
@@ -185,6 +250,7 @@ export function Table<T>({
                       ? 'descending'
                       : 'none'
                   : undefined;
+                const showResizeHandle = resizable && columnIndex < columns.length - 1;
 
                 return (
                   <th key={column.key} className={thClass} scope="col" aria-sort={ariaSort}>
@@ -202,6 +268,16 @@ export function Table<T>({
                         <span className="jf-table__th-label">{column.header}</span>
                       </span>
                     )}
+                    {showResizeHandle && (
+                      <span
+                        className={`jf-table__resize-handle${
+                          resizingKey === column.key ? ' jf-table__resize-handle--active' : ''
+                        }`}
+                        onPointerDown={(event) => startResize(event, column.key)}
+                      >
+                        <span className="jf-table__resize-indicator" />
+                      </span>
+                    )}
                   </th>
                 );
               })}
@@ -214,6 +290,7 @@ export function Table<T>({
                     key={`skeleton-${rowIndex}`}
                     className="jf-table__row jf-table__row--skeleton"
                   >
+                    {selectable && <td className="jf-table__td jf-table__select-cell" />}
                     {columns.map((column) => (
                       <td
                         key={column.key}
@@ -229,7 +306,7 @@ export function Table<T>({
                 : showEmpty
                   ? renderStateRow(emptyContent ?? <EmptyContent state={emptyState} />)
                   : data.map((row, rowIndex) => {
-                      const key = rowKey ? rowKey(row, rowIndex) : rowIndex;
+                      const key = getKey(row, rowIndex);
                       const isSelected = selected.has(key);
                       const rowClass = [
                         'jf-table__row',
@@ -258,6 +335,20 @@ export function Table<T>({
                               : undefined
                           }
                         >
+                          {selectable && (
+                            <td
+                              className="jf-table__td jf-table__select-cell"
+                              onClick={(event) => event.stopPropagation()}
+                            >
+                              <Checkbox
+                                label=""
+                                size="sm"
+                                aria-label="Select row"
+                                checked={isSelected}
+                                onChange={() => toggleRow(key)}
+                              />
+                            </td>
+                          )}
                           {columns.map((column) => {
                             const align = column.align ?? 'left';
                             const content = column.render

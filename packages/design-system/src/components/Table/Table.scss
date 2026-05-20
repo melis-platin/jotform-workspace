@@ -38,6 +38,7 @@
 
 // ===== Header =====
 .jf-table__th {
+  position: relative;
   height: var(--jf-table-row-h);
   padding: 0;
   text-align: left;
@@ -127,6 +128,49 @@ button.jf-table__th-inner {
   &--active { opacity: 1; }
 }
 
+// ===== Resize handle =====
+.jf-table__resize-handle {
+  position: absolute;
+  top: 0;
+  right: -4px;
+  bottom: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 8px;
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.jf-table__resize-indicator {
+  width: 2px;
+  height: calc(var(--jf-table-row-h) - var(--spacing-lg));
+  background: var(--text-dark);
+  opacity: 0;
+  transition: opacity 120ms ease, background-color 120ms ease, width 120ms ease;
+}
+
+// Appears on column hover to signal the column can be resized
+.jf-table__th:hover .jf-table__resize-indicator {
+  opacity: 0.2;
+}
+
+.jf-table__resize-handle:hover .jf-table__resize-indicator {
+  opacity: 1;
+}
+
+.jf-table__resize-handle--active .jf-table__resize-indicator {
+  width: 4px;
+  opacity: 1;
+  background: var(--accent-default);
+}
+
+.jf-table--resizing {
+  cursor: col-resize;
+  user-select: none;
+}
+
 // ===== Body =====
 .jf-table__td {
   height: var(--jf-table-row-h);
@@ -153,6 +197,22 @@ button.jf-table__th-inner {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+// ===== Selection column =====
+.jf-table__select-cell {
+  width: 48px;
+  text-align: center;
+}
+
+.jf-table__td.jf-table__select-cell {
+  padding: 0;
+}
+
+.jf-table__select-cell .jf-checkbox {
+  display: inline-flex;
+  width: auto;
+  vertical-align: middle;
 }
 
 // ===== Row states =====

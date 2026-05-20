@@ -71,12 +71,14 @@ export const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
             </svg>
           </span>
         </span>
-        <span className="jf-checkbox__label-wrapper">
-          <span className="jf-checkbox__label">{label}</span>
-          {showDescription && (
-            <span className="jf-checkbox__description">{description}</span>
-          )}
-        </span>
+        {(label || showDescription) && (
+          <span className="jf-checkbox__label-wrapper">
+            <span className="jf-checkbox__label">{label}</span>
+            {showDescription && (
+              <span className="jf-checkbox__description">{description}</span>
+            )}
+          </span>
+        )}
         {showIcon && (
           <span className="jf-checkbox__icon">
             <Icon name="info-circle-filled" category="general" size={iconSize} />

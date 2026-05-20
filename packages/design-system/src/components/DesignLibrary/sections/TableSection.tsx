@@ -70,6 +70,9 @@ export interface TablePanelState {
   toolbar: TableToolbarOption;
   toolbarSize: TableToolbarSize;
   toolbarActions: boolean;
+  selectable: boolean;
+  selectedKeys: Array<string | number>;
+  resizable: boolean;
   page: number;
   pageSize: number;
   sort: TableSort | null;
@@ -85,6 +88,9 @@ export const defaultTableState: TablePanelState = {
   toolbar: 'off',
   toolbarSize: 'default',
   toolbarActions: false,
+  selectable: false,
+  selectedKeys: [],
+  resizable: false,
   page: 1,
   pageSize: 5,
   sort: null,
@@ -105,8 +111,28 @@ export function TableSection({
   const loadingVariant = state.loading === 'off' ? undefined : state.loading;
   const tbSize =
     state.toolbar === 'title' && state.toolbarSize === 'small' ? 'sm' : 'md';
+  const selectedCount = state.selectable ? state.selectedKeys.length : 0;
   const toolbarNode =
-    state.toolbar === 'off' ? undefined : (
+    selectedCount > 0 ? (
+      <>
+        <Button variant="ghost" size="md">
+          {selectedCount} selected
+        </Button>
+        <div style={{ display: 'flex', gap: 8, marginLeft: 'auto' }}>
+          <Button
+            variant="ghost"
+            colorScheme="secondary"
+            size="md"
+            onClick={() => onChange({ ...state, selectedKeys: [] })}
+          >
+            Clear
+          </Button>
+          <Button variant="filled" colorScheme="destructive" size="md">
+            Delete
+          </Button>
+        </div>
+      </>
+    ) : state.toolbar === 'off' ? undefined : (
       <>
         {state.toolbar === 'title' ? (
           <TableTitle
@@ -174,6 +200,10 @@ export function TableSection({
             loadingVariant={loadingVariant}
             sort={state.sort}
             onSortChange={(sort) => onChange({ ...state, sort })}
+            selectable={state.selectable}
+            selectedRowKeys={state.selectedKeys}
+            onSelectionChange={(keys) => onChange({ ...state, selectedKeys: keys })}
+            resizable={state.resizable}
             pagination={pagination}
             totalItems={totalItems}
             footerType={state.footer === 'advanced' ? 'advanced' : 'simple'}
@@ -221,12 +251,14 @@ export function TableSection({
             </div>
           </div>
           <div>
-            <h3 className="dl-stories__item-title">Selected rows</h3>
+            <h3 className="dl-stories__item-title">Row selection</h3>
             <div className="dl-stories__item-preview dl-stories__item-preview--flush">
               <Table
                 columns={STORY_COLUMNS}
                 data={STORY_ROWS}
+                selectable
                 selectedRowKeys={[2, 4]}
+                onSelectionChange={() => {}}
                 rowKey={(row) => row.id}
               />
             </div>
@@ -313,6 +345,33 @@ export function TableSection({
                     </div>
                   </>
                 }
+                rowKey={(row) => row.id}
+              />
+            </div>
+          </div>
+          <div>
+            <h3 className="dl-stories__item-title">Data table — composed</h3>
+            <div className="dl-stories__item-preview dl-stories__item-preview--flush">
+              <Table
+                columns={STORY_COLUMNS}
+                data={STORY_ROWS}
+                toolbar={
+                  <>
+                    <TableTitle
+                      size="md"
+                      title="Team members"
+                      subtitle="8 people"
+                      icon="arrows-switch-horizontal"
+                      iconCategory="arrows"
+                    />
+                    <div style={{ display: 'flex', gap: 8, marginLeft: 'auto' }}>
+                      <Button variant="ghost">Export</Button>
+                      <Button variant="filled">Add member</Button>
+                    </div>
+                  </>
+                }
+                pagination={{ page: 1, pageCount: 3, onPageChange: () => {} }}
+                totalItems={18}
                 rowKey={(row) => row.id}
               />
             </div>
@@ -549,6 +608,26 @@ export function TablePanel({
         <button
           className={`dl-playground__toggle ${state.sortable ? 'dl-playground__toggle--on' : ''}`}
           onClick={() => update({ sortable: !state.sortable })}
+        >
+          <span className="dl-playground__toggle-thumb" />
+        </button>
+      </div>
+
+      <div className="dl-playground__field dl-playground__field--row">
+        <label className="dl-playground__label">Row selection</label>
+        <button
+          className={`dl-playground__toggle ${state.selectable ? 'dl-playground__toggle--on' : ''}`}
+          onClick={() => update({ selectable: !state.selectable })}
+        >
+          <span className="dl-playground__toggle-thumb" />
+        </button>
+      </div>
+
+      <div className="dl-playground__field dl-playground__field--row">
+        <label className="dl-playground__label">Resizable columns</label>
+        <button
+          className={`dl-playground__toggle ${state.resizable ? 'dl-playground__toggle--on' : ''}`}
+          onClick={() => update({ resizable: !state.resizable })}
         >
           <span className="dl-playground__toggle-thumb" />
         </button>
