@@ -3204,12 +3204,12 @@ export function BuildPage({
                                           <div className="product-options__choice-text">
                                             <span className="product-options__choice-title">Product Options</span>
                                             <span className="product-options__choice-desc">
-                                              To create variants of this product, first add options, like sizes and colors.
+                                              Create variants like size and color.
                                             </span>
                                           </div>
                                           <DSButton
                                             variant="filled"
-                                            colorScheme="secondary"
+                                            colorScheme="primary"
                                             leftIcon={<Icon name="plus" category="general" size={20} />}
                                             onClick={addOption}
                                             className="product-options__add-btn"
@@ -3261,12 +3261,12 @@ export function BuildPage({
                                           <div className="product-options__choice-text">
                                             <span className="product-options__choice-title">Modifiers</span>
                                             <span className="product-options__choice-desc">
-                                              Offer customization options that don&apos;t require special prices or inventory, like made-to-order embroidery patterns or engraving custom text.
+                                              Custom add-ons without price or stock.
                                             </span>
                                           </div>
                                           <DSButton
                                             variant="filled"
-                                            colorScheme="secondary"
+                                            colorScheme="primary"
                                             leftIcon={<Icon name="plus" category="general" size={20} />}
                                             className="product-options__add-btn"
                                           >
