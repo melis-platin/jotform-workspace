@@ -62,6 +62,7 @@ import type { AppPreset, PresetElement } from '../presets/appPresets'
 import { IconPropertyField } from '../components/IconPropertyField'
 import { ColorInputWithPicker } from '../components/ColorInputWithPicker'
 import { ProductOptionEditor } from '../components/ProductOptionEditor'
+import { ProductFilterPopover } from '../components/ProductFilterPopover'
 import { loadSnapshot, saveSnapshot } from '../presets/storage'
 
 interface CanvasElement {
@@ -1111,7 +1112,11 @@ export function BuildPage({
   const [editingOptionIndex, setEditingOptionIndex] = useState<number | null>(null)
   const [productSettingsTab, setProductSettingsTab] = useState<string>('basic')
   const [productSearch, setProductSearch] = useState('')
-  useEffect(() => { setEditingProductIndex(null); setEditingOptionIndex(null); setProductSettingsTab('basic'); setProductSearch('') }, [selectedElementId, propertyTab])
+  const [filterOpen, setFilterOpen] = useState(false)
+  const [inventoryFilter, setInventoryFilter] = useState('all')
+  const [visibilityFilter, setVisibilityFilter] = useState('all')
+  const productSearchFieldRef = useRef<HTMLDivElement>(null)
+  useEffect(() => { setEditingProductIndex(null); setEditingOptionIndex(null); setProductSettingsTab('basic'); setProductSearch(''); setFilterOpen(false) }, [selectedElementId, propertyTab])
 
   const migratedSocialFollowIds = useRef<Set<string>>(new Set())
   useEffect(() => {
@@ -2986,15 +2991,26 @@ export function BuildPage({
 
                           {/* Slide 1 — Products list */}
                           <div className="product-panel-slide product-list-panel">
-                            <div className="property-panel__field property-panel__field--no-divider">
+                            <div ref={productSearchFieldRef} className="property-panel__field property-panel__field--no-divider">
                               <DSSearchInput
                                 placeholder="Search products"
                                 showFilter
+                                onFilterClick={() => setFilterOpen((v) => !v)}
                                 value={productSearch}
                                 onChange={(e) => setProductSearch(e.target.value)}
                                 onClear={() => setProductSearch('')}
                               />
                             </div>
+                            {filterOpen && (
+                              <ProductFilterPopover
+                                anchorRef={productSearchFieldRef}
+                                inventory={inventoryFilter}
+                                visibility={visibilityFilter}
+                                onInventoryChange={setInventoryFilter}
+                                onVisibilityChange={setVisibilityFilter}
+                                onClose={() => setFilterOpen(false)}
+                              />
+                            )}
                             <div className="product-list-rows">
                               {filtered.map(({ p, i }) => (
                                 <button
