@@ -2989,6 +2989,7 @@ export function BuildPage({
                             <div className="property-panel__field property-panel__field--no-divider">
                               <DSSearchInput
                                 placeholder="Search products"
+                                showFilter
                                 value={productSearch}
                                 onChange={(e) => setProductSearch(e.target.value)}
                                 onClear={() => setProductSearch('')}
