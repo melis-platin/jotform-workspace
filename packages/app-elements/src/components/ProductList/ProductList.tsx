@@ -3,7 +3,7 @@ import { Icon } from '../Icon/Icon';
 import { Button } from '../Button';
 import { useCart } from '../../runtime/CartContext';
 import { useFavorites } from '../../runtime/FavoritesContext';
-import { buildVariantId, variantLabel, type ProductItem, type ProductListLayout, type ProductOptionDimension } from './types';
+import { type ProductItem, type ProductListLayout } from './types';
 import './ProductList.scss';
 
 export type {
@@ -75,43 +75,6 @@ function handleEditBlur(e: React.FocusEvent<HTMLElement>, defaultValue: string, 
 }
 
 // ============================================
-// Variant Selectors — one dropdown per dimension
-// ============================================
-const VariantSelectors: FC<{
-  dimensions: ProductOptionDimension[];
-  selected: Record<string, string>;
-  onChange: (next: Record<string, string>) => void;
-}> = ({ dimensions, selected, onChange }) => (
-  <div className="jf-product-item__variants">
-    {dimensions.map((dim) => (
-      <select
-        key={dim.id}
-        className="jf-product-item__variant-select"
-        value={selected[dim.label] ?? ''}
-        onChange={(e) => onChange({ ...selected, [dim.label]: e.target.value })}
-        aria-label={dim.label}
-      >
-        <option value="" disabled>{`Select ${dim.label}`}</option>
-        {dim.values.map((value) => (
-          <option key={value} value={value}>{value}</option>
-        ))}
-      </select>
-    ))}
-  </div>
-);
-
-/** Resolves the variant selection state shared by both item layouts. */
-function useVariantSelection(product: ProductItem) {
-  const dimensions = product.optionDimensions ?? [];
-  const hasVariants = dimensions.length > 0;
-  const [selected, setSelected] = useState<Record<string, string>>({});
-  const allSelected = dimensions.every((dim) => selected[dim.label]);
-  const variantId = hasVariants && allSelected ? buildVariantId(selected) : undefined;
-  const variantText = hasVariants && allSelected ? variantLabel(selected) : undefined;
-  return { dimensions, hasVariants, selected, setSelected, allSelected, variantId, variantText };
-}
-
-// ============================================
 // Card Item (used in 2/3 column layouts)
 // ============================================
 const ProductCardItem: FC<{ product: ProductItem; buttonLabel: string; currency: string; showImages: boolean; onUpdate?: (updates: Partial<ProductItem>) => void }> = ({
@@ -123,13 +86,10 @@ const ProductCardItem: FC<{ product: ProductItem; buttonLabel: string; currency:
 }) => {
   const cart = useCart();
   const favorites = useFavorites();
-  const { dimensions, hasVariants, selected, setSelected, allSelected, variantId, variantText } = useVariantSelection(product);
-  const inCart = hasVariants
-    ? allSelected && (cart?.has(product.name, variantId) ?? false)
-    : cart?.has(product.name) ?? false;
+  const inCart = cart?.has(product.name) ?? false;
   const liked = favorites?.has(product.name) ?? false;
-  const addDisabled = inCart || (hasVariants && !allSelected);
-  const handleAdd = () => cart?.add({ name: product.name, price: product.price, image: product.image, variantId, variantLabel: variantText });
+  const addDisabled = inCart;
+  const handleAdd = () => cart?.add({ name: product.name, price: product.price, image: product.image });
   const toggleLike = () => favorites?.toggle({ name: product.name, price: product.price, image: product.image });
   return (
   <div className="jf-product-item jf-product-item--card">
@@ -167,7 +127,6 @@ const ProductCardItem: FC<{ product: ProductItem; buttonLabel: string; currency:
           </span>
         </p>
       </div>
-      {hasVariants && <VariantSelectors dimensions={dimensions} selected={selected} onChange={setSelected} />}
       <div className="jf-product-item__action">
         <Button
           variant="Default"
@@ -199,16 +158,13 @@ const ProductBasicItem: FC<{ product: ProductItem; buttonLabel: string; currency
 }) => {
   const cart = useCart();
   const favorites = useFavorites();
-  const { dimensions, hasVariants, selected, setSelected, allSelected, variantId, variantText } = useVariantSelection(product);
-  const inCart = hasVariants
-    ? allSelected && (cart?.has(product.name, variantId) ?? false)
-    : cart?.has(product.name) ?? false;
+  const inCart = cart?.has(product.name) ?? false;
   const liked = favorites?.has(product.name) ?? false;
-  const addDisabled = inCart || (hasVariants && !allSelected);
-  const handleAdd = () => cart?.add({ name: product.name, price: product.price, image: product.image, variantId, variantLabel: variantText });
+  const addDisabled = inCart;
+  const handleAdd = () => cart?.add({ name: product.name, price: product.price, image: product.image });
   const toggleLike = () => favorites?.toggle({ name: product.name, price: product.price, image: product.image });
   return (
-  <div className={`jf-product-item jf-product-item--basic${hasVariants ? ' jf-product-item--has-variants' : ''}`}>
+  <div className="jf-product-item jf-product-item--basic">
     {showImages && (
       <div className="jf-product-item__image-basic">
         {product.image ? <img src={product.image} alt={product.name} className="jf-product-item__img" /> : <ImagePlaceholder size={56} />}
@@ -239,7 +195,6 @@ const ProductBasicItem: FC<{ product: ProductItem; buttonLabel: string; currency
             {product.price}
           </span>
         </p>
-        {hasVariants && <VariantSelectors dimensions={dimensions} selected={selected} onChange={setSelected} />}
       </div>
       <div className="jf-product-item__right">
         <button className={`jf-product-item__like jf-product-item__like--inline${liked ? ' liked' : ''}`} onClick={toggleLike}>
