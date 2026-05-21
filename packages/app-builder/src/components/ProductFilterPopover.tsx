@@ -77,6 +77,7 @@ export const ProductFilterPopover: FC<ProductFilterPopoverProps> = ({
         {INVENTORY_OPTIONS.map((opt) => (
           <RadioButton
             key={opt.value}
+            size="sm"
             name="product-filter-inventory"
             value={opt.value}
             label={opt.label}
@@ -90,6 +91,7 @@ export const ProductFilterPopover: FC<ProductFilterPopoverProps> = ({
         {VISIBILITY_OPTIONS.map((opt) => (
           <RadioButton
             key={opt.value}
+            size="sm"
             name="product-filter-visibility"
             value={opt.value}
             label={opt.label}
