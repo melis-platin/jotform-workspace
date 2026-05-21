@@ -3952,6 +3952,7 @@ body {
 }
 
 .choice-list__row {
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--ds-space-sm);
@@ -3962,11 +3963,16 @@ body {
   }
 }
 
+// Handle sits outside the row, in the left gutter — choice inputs stay
+// flush with the section labels above.
 .choice-list__handle {
+  position: absolute;
+  left: calc(-1 * var(--spacing-xl));
+  top: 0;
+  bottom: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex-shrink: 0;
   color: var(--text-medium);
   cursor: grab;
 
