@@ -129,7 +129,6 @@ export const ProductModifierModal: FC<ProductModifierModalProps> = ({ open, modi
     setChoices((prev) => prev.map((c) => (c.id === id ? { ...c, ...updates } : c)))
   const removeChoice = (id: string) => setChoices((prev) => prev.filter((c) => c.id !== id))
   const addChoice = () => setChoices((prev) => [...prev, emptyChoice()])
-  const removeAllChoices = () => setChoices([])
   const moveChoice = (from: number, to: number) =>
     setChoices((prev) => {
       const next = [...prev]
@@ -213,16 +212,9 @@ export const ProductModifierModal: FC<ProductModifierModalProps> = ({ open, modi
 
         {!isTextbox && (
           <div className="product-modifier-modal__choices">
-            <div className="product-modifier-modal__choices-header">
-              <span className="product-modifier-modal__choices-label">
-                Choices <span className="product-modifier-modal__required-star">*</span>
-              </span>
-              {choices.length > 0 && (
-                <DSLink colorScheme="primary" size="sm" onClick={removeAllChoices}>
-                  Remove all
-                </DSLink>
-              )}
-            </div>
+            <span className="product-modifier-modal__choices-label">
+              Choices <span className="product-modifier-modal__required-star">*</span>
+            </span>
             {choices.map((choice, i) => (
               <div
                 key={choice.id}
@@ -270,6 +262,7 @@ export const ProductModifierModal: FC<ProductModifierModalProps> = ({ open, modi
                   shape="rounded"
                   size="md"
                   iconOnly
+                  disabled={choices.length <= 1}
                   aria-label="Remove choice"
                   leftIcon={<Icon name="trash-filled" category="general" size={16} />}
                   onClick={() => removeChoice(choice.id)}
@@ -279,7 +272,7 @@ export const ProductModifierModal: FC<ProductModifierModalProps> = ({ open, modi
             <div className="product-modifier-modal__choices-add">
               <DSLink
                 colorScheme="primary"
-                size="sm"
+                size="lg"
                 leftIcon={<Icon name="plus" category="general" size={16} />}
                 onClick={addChoice}
               >
