@@ -3140,6 +3140,7 @@ export function BuildPage({
                                             />
                                             <DSDropdownSingle
                                               className="product-edit__currency"
+                                              showLeadingIcon={false}
                                               value={currency}
                                               onChange={(val) => handlePropertyChange(selectedElement.id, 'Currency', val)}
                                               options={[
