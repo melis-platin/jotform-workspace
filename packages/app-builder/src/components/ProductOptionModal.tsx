@@ -38,7 +38,7 @@ export const ProductOptionModal: FC<ProductOptionModalProps> = ({ open, onClose,
     <DSModal
       open={open}
       onClose={onClose}
-      size="lg"
+      size="md"
       title="Add product option"
       description="You'll be able to manage pricing and inventory for this product option later on."
       cancelLabel="Cancel"
