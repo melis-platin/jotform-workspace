@@ -198,7 +198,7 @@ export const ChoiceList: FC<ChoiceListProps> = ({
           <DSButton
             type="button"
             className="choice-list__delete"
-            variant="ghost"
+            variant="transparent"
             colorScheme="secondary"
             shape="rounded"
             size="md"

@@ -3955,13 +3955,8 @@ body {
   display: flex;
   align-items: center;
   gap: var(--ds-space-sm);
-  // Symmetric padding so the divider sits centered between rows; the
-  // first row's top padding doubles as the label-to-control gap.
+  // The first row's top padding doubles as the label-to-control gap.
   padding: var(--ds-space-xs) 0;
-
-  & + & {
-    border-top: 1px solid var(--border-light);
-  }
 }
 
 // Handle sits outside the row, in the left gutter — choice inputs stay
