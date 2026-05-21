@@ -2986,7 +2986,7 @@ export function BuildPage({
 
                           {/* Slide 1 — Products list */}
                           <div className="product-panel-slide product-list-panel">
-                            <div className="property-panel__field">
+                            <div className="property-panel__field property-panel__field--no-divider">
                               <DSSearchInput
                                 placeholder="Search products"
                                 value={productSearch}
