@@ -3958,6 +3958,11 @@ body {
   gap: var(--ds-space-sm);
   padding: var(--ds-space-xs) 0;
 
+  // First row aligns with the label like a normal FormField control.
+  &:first-of-type {
+    padding-top: 0;
+  }
+
   & + & {
     border-top: 1px solid var(--border-light);
   }
@@ -3994,10 +3999,12 @@ body {
 
 .choice-list__price {
   flex: 0 0 72px;
+  min-width: 0;
 }
 
 .choice-list__stock {
   flex: 0 0 150px;
+  min-width: 0;
 }
 
 .choice-list__swatch-wrap {
