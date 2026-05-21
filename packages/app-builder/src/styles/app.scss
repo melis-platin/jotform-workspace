@@ -3741,13 +3741,12 @@ body {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
+  padding: 0 var(--spacing-lg);
 }
 
 .product-list-row {
-  display: grid;
-  grid-template-columns: 16px 1fr;
-  align-items: center;
-  gap: var(--ds-space-xs);
+  display: block;
+  width: 100%;
   padding: 0;
   background: transparent;
   border: none;
@@ -3756,6 +3755,10 @@ body {
   position: relative;
 
   &__handle {
+    position: absolute;
+    top: 50%;
+    right: calc(100% + var(--ds-space-2xs));
+    transform: translateY(-50%);
     color: var(--gray-300);
     cursor: grab;
     opacity: 0;
@@ -3860,7 +3863,7 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: var(--ds-space-md) 0;
+  padding: var(--ds-space-md) var(--spacing-lg);
   margin-top: var(--ds-space-md);
   background: var(--gray-700);
 }
