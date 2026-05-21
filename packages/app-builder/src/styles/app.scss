@@ -3756,9 +3756,13 @@ body {
 
   &__handle {
     position: absolute;
-    top: 50%;
-    right: calc(100% + var(--ds-space-2xs));
-    transform: translateY(-50%);
+    top: 0;
+    bottom: 0;
+    right: 100%;
+    width: var(--spacing-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
     color: var(--gray-300);
     cursor: grab;
     opacity: 0;

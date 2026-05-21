@@ -3002,7 +3002,9 @@ export function BuildPage({
                                   className="product-list-row"
                                   onClick={() => { setEditingOptionIndex(null); setProductSettingsTab('basic'); setEditingProductIndex(i) }}
                                 >
-                                  <Icon name="grid-dots-vertical" category="general" size={16} className="product-list-row__handle" />
+                                  <span className="product-list-row__handle">
+                                    <Icon name="grid-dots-vertical" category="general" size={16} />
+                                  </span>
                                   <div className="product-list-row__card">
                                     <div className="product-list-row__image">
                                       {p.image ? (
