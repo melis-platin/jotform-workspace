@@ -3079,6 +3079,14 @@ export function BuildPage({
                               >
                                 Add Product
                               </DSButton>
+                              <DSButton
+                                variant="filled"
+                                colorScheme="secondary"
+                                leftIcon={<Icon name="arrow-down-to-bracket" category="arrows" size={20} />}
+                                className="product-list-panel__import-btn"
+                              >
+                                Import Products
+                              </DSButton>
                             </div>
                           </div>
 

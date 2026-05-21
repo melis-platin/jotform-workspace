@@ -3867,13 +3867,19 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
+  display: flex;
+  gap: var(--ds-space-sm);
   padding: var(--ds-space-md) var(--spacing-lg);
   margin-top: var(--ds-space-md);
   background: var(--gray-700);
 }
 
 .product-list-panel__add-btn {
-  width: 100%;
+  flex: 1;
+}
+
+.product-list-panel__import-btn {
+  flex-shrink: 0;
 }
 
 // Product search filter dropdown
