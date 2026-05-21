@@ -4073,7 +4073,8 @@ body {
   flex-wrap: wrap;
   align-items: center;
   gap: var(--ds-space-2xs);
-  padding: var(--ds-space-2xs);
+  min-height: 40px;
+  padding: var(--ds-space-2xs) var(--ds-space-sm);
   background: var(--gray-500);
   border-radius: var(--ds-radius-sm);
 }
@@ -4108,13 +4109,13 @@ body {
 .product-option-editor__tag-input {
   flex: 1;
   min-width: 120px;
-  padding: var(--ds-space-2xs);
+  padding: 0;
   background: transparent;
   border: none;
   outline: none;
   color: var(--core-white);
   font-family: var(--ds-font-family);
-  font-size: var(--ds-font-size-md);
+  font-size: var(--ds-font-size-sm);
 
   &::placeholder { color: var(--gray-200); }
 }
