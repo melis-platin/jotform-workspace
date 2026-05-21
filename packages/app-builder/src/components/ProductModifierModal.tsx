@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import {
   Modal as DSModal,
   Input as DSInput,
+  TextArea as DSTextArea,
   NumberInput as DSNumberInput,
   DropdownSingle as DSDropdownSingle,
   FormField as DSFormField,
@@ -139,14 +140,14 @@ export const ProductModifierModal: FC<ProductModifierModalProps> = ({ open, modi
 
   const isTextbox = fieldType === 'textbox'
   const nonEmptyChoices = choices.filter((c) => c.value.trim() !== '')
+  // The buyer-facing field is only mandatory to configure when "required" is on.
+  const requiredFieldFilled = isTextbox ? textBoxTitle.trim() !== '' : nonEmptyChoices.length > 0
+  const characterLimitValid =
+    characterLimit !== undefined && characterLimit >= 1 && characterLimit <= 500
   const canSubmit =
     name.trim() !== '' &&
-    (isTextbox
-      ? textBoxTitle.trim() !== '' &&
-        characterLimit !== undefined &&
-        characterLimit >= 1 &&
-        characterLimit <= 500
-      : nonEmptyChoices.length > 0)
+    (isTextbox ? characterLimitValid : true) &&
+    (!required || requiredFieldFilled)
 
   return (
     <DSModal
@@ -179,7 +180,7 @@ export const ProductModifierModal: FC<ProductModifierModalProps> = ({ open, modi
     >
       <div className="product-modifier-modal">
         <DSFormField
-          title="Modifier name"
+          title={isTextbox ? 'Field name' : 'Modifier name'}
           required
           size="md"
           showDescription={false}
@@ -213,7 +214,8 @@ export const ProductModifierModal: FC<ProductModifierModalProps> = ({ open, modi
         {!isTextbox && (
           <div className="product-modifier-modal__choices">
             <span className="product-modifier-modal__choices-label">
-              Choices <span className="product-modifier-modal__required-star">*</span>
+              Choices
+              {required && <span className="product-modifier-modal__required-star"> *</span>}
             </span>
             {choices.map((choice, i) => (
               <div
@@ -284,11 +286,12 @@ export const ProductModifierModal: FC<ProductModifierModalProps> = ({ open, modi
 
         {isTextbox && (
           <>
-            <DSFormField title="Text box title" required size="md" showDescription={false} showHelpText={false}>
-              <DSInput
+            <DSFormField title="Text box title" required={required} size="md" showDescription={false} showHelpText={false}>
+              <DSTextArea
                 value={textBoxTitle}
                 placeholder={'e.g., "What would you like engraved on your watch?"'}
                 maxLength={100}
+                size="md"
                 onChange={(e) => setTextBoxTitle(e.target.value)}
               />
             </DSFormField>
