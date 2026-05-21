@@ -3997,20 +3997,31 @@ body {
   color: var(--gray-200);
 }
 
-.product-options__row-delete {
+.product-options__row-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-2xs);
+  flex-shrink: 0;
+}
+
+// Icon buttons — circular hover, matching the right panel close button
+.product-options__row-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  flex-shrink: 0;
+  width: var(--spacing-2xl);
+  height: var(--spacing-2xl);
   background: transparent;
   border: none;
-  border-radius: var(--ds-radius-sm);
-  color: var(--gray-200);
+  border-radius: var(--radius-rounded);
+  color: var(--ds-text-medium);
   cursor: pointer;
+  transition: background 150ms ease, color 150ms ease;
 
-  &:hover { background: var(--gray-700); color: var(--core-white); }
+  &:hover {
+    background: color-mix(in srgb, var(--ds-text-dark) 8%, transparent);
+    color: var(--ds-text-dark);
+  }
 }
 
 .product-options__summary {

@@ -3169,15 +3169,24 @@ export function BuildPage({
                                               {dim.values.length} {dim.values.length === 1 ? 'value' : 'values'}
                                             </span>
                                           </div>
-                                          <button
-                                            type="button"
-                                            className="product-options__row-delete"
-                                            aria-label="Remove option"
-                                            onClick={(e) => { e.stopPropagation(); removeOption(i) }}
-                                          >
-                                            <Icon name="trash-filled" category="general" size={16} />
-                                          </button>
-                                          <Icon name="caret-right" category="arrows" size={18} />
+                                          <span className="product-options__row-actions">
+                                            <button
+                                              type="button"
+                                              className="product-options__row-btn"
+                                              aria-label="Remove option"
+                                              onClick={(e) => { e.stopPropagation(); removeOption(i) }}
+                                            >
+                                              <Icon name="trash-filled" category="general" size={16} />
+                                            </button>
+                                            <button
+                                              type="button"
+                                              className="product-options__row-btn"
+                                              aria-label="Edit option"
+                                              onClick={(e) => { e.stopPropagation(); setEditingOptionIndex(i) }}
+                                            >
+                                              <Icon name="pencil-filled" category="editor" size={16} />
+                                            </button>
+                                          </span>
                                         </button>
                                       ))}
                                       {(current.variants?.length ?? 0) > 0 && (
