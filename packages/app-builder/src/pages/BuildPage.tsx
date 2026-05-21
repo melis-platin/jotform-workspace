@@ -3011,9 +3011,14 @@ export function BuildPage({
                                         <Icon name="image-filled" category="media" size={20} />
                                       )}
                                     </div>
-                                    <div className="product-list-row__name">{p.name || 'Untitled'}</div>
-                                    <div className="product-list-row__price">
-                                      {p.price && Number(p.price) > 0 ? `${currency}${p.price}` : 'Free'}
+                                    <div className="product-list-row__info">
+                                      <div className="product-list-row__name">{p.name || 'Untitled'}</div>
+                                      <div className="product-list-row__subtitle">
+                                        {p.price && Number(p.price) > 0 ? `${currency}${p.price}` : 'Free'}
+                                        {p.optionDimensions && p.optionDimensions.length > 0
+                                          ? ` - ${p.optionDimensions.map((d) => d.label || 'Option').join(', ')}`
+                                          : ''}
+                                      </div>
                                     </div>
                                   </div>
                                   <button
