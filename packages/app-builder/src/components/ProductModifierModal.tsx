@@ -1,5 +1,4 @@
-import { useEffect, useRef, useState, type FC } from 'react'
-import { createPortal } from 'react-dom'
+import { useEffect, useState, type FC } from 'react'
 import {
   Modal as DSModal,
   Input as DSInput,
@@ -8,12 +7,9 @@ import {
   DropdownSingle as DSDropdownSingle,
   FormField as DSFormField,
   Checkbox as DSCheckbox,
-  Link as DSLink,
-  Button as DSButton,
-  Icon,
 } from '@jf/design-system'
-import { HsvColorPicker } from '@jf/app-elements'
-import type { ProductModifier, ProductModifierFieldType, ProductModifierChoice } from '@jf/app-elements'
+import type { ProductModifier, ProductModifierFieldType } from '@jf/app-elements'
+import { ChoiceList, emptyChoice, type ChoiceItem } from './ChoiceList'
 
 interface ProductModifierModalProps {
   open: boolean
@@ -29,86 +25,16 @@ const FIELD_TYPE_OPTIONS = [
   { value: 'textbox', label: 'Text box' },
 ]
 
-const HEX_RE = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i
-
-let choiceIdCounter = 0
-const makeChoiceId = () => `mc_${Date.now().toString(36)}_${(choiceIdCounter++).toString(36)}`
-const emptyChoice = (): ProductModifierChoice => ({ id: makeChoiceId(), value: '' })
-const seedChoices = (): ProductModifierChoice[] => [emptyChoice()]
-
-/** Per-choice color swatch that opens an HSV picker in a portal popup. */
-const ChoiceColorSwatch: FC<{ color?: string; onChange: (hex: string) => void }> = ({ color, onChange }) => {
-  const wrapRef = useRef<HTMLDivElement>(null)
-  const popRef = useRef<HTMLDivElement>(null)
-  const [open, setOpen] = useState(false)
-  const [pos, setPos] = useState({ top: 0, left: 0 })
-
-  const openPicker = () => {
-    const r = wrapRef.current?.getBoundingClientRect()
-    if (r) setPos({ top: r.bottom + 8, left: Math.max(8, r.right - 272) })
-    setOpen(true)
-  }
-
-  useEffect(() => {
-    if (!open) return
-    const onDown = (e: MouseEvent) => {
-      const t = e.target as Node
-      if (popRef.current?.contains(t) || wrapRef.current?.contains(t)) return
-      setOpen(false)
-    }
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') setOpen(false)
-    }
-    document.addEventListener('mousedown', onDown)
-    document.addEventListener('keydown', onKey)
-    return () => {
-      document.removeEventListener('mousedown', onDown)
-      document.removeEventListener('keydown', onKey)
-    }
-  }, [open])
-
-  const hasColor = !!color && HEX_RE.test(color)
-
-  return (
-    <div ref={wrapRef} className="product-modifier-modal__swatch-wrap">
-      <button
-        type="button"
-        className={`product-modifier-modal__swatch${hasColor ? '' : ' product-modifier-modal__swatch--empty'}`}
-        style={hasColor ? { background: color } : undefined}
-        onClick={openPicker}
-        aria-label="Pick a color"
-      />
-      {open &&
-        createPortal(
-          <div
-            ref={popRef}
-            className="color-theme-grid__picker-popup"
-            data-theme="dark"
-            style={{ top: pos.top, left: pos.left }}
-          >
-            <HsvColorPicker
-              color={hasColor ? color! : '#000000'}
-              onChange={onChange}
-              tint={0}
-              onTintChange={() => {}}
-              hideTint
-            />
-          </div>,
-          document.body,
-        )}
-    </div>
-  )
-}
+const seedChoices = (): ChoiceItem[] => [emptyChoice()]
 
 /** Builder modal for adding or editing a product modifier. */
 export const ProductModifierModal: FC<ProductModifierModalProps> = ({ open, modifier, onClose, onSubmit }) => {
   const [name, setName] = useState('')
   const [fieldType, setFieldType] = useState('text')
   const [required, setRequired] = useState(false)
-  const [choices, setChoices] = useState<ProductModifierChoice[]>(seedChoices)
+  const [choices, setChoices] = useState<ChoiceItem[]>(seedChoices)
   const [textBoxTitle, setTextBoxTitle] = useState('')
   const [characterLimit, setCharacterLimit] = useState<number | undefined>(500)
-  const dragIndex = useRef<number | null>(null)
 
   // Prefill once when the modal opens — blank for add, existing values for edit.
   useEffect(() => {
@@ -125,18 +51,6 @@ export const ProductModifierModal: FC<ProductModifierModalProps> = ({ open, modi
     setFieldType(next)
     if (next !== 'textbox' && choices.length === 0) setChoices(seedChoices())
   }
-
-  const updateChoice = (id: string, updates: Partial<ProductModifierChoice>) =>
-    setChoices((prev) => prev.map((c) => (c.id === id ? { ...c, ...updates } : c)))
-  const removeChoice = (id: string) => setChoices((prev) => prev.filter((c) => c.id !== id))
-  const addChoice = () => setChoices((prev) => [...prev, emptyChoice()])
-  const moveChoice = (from: number, to: number) =>
-    setChoices((prev) => {
-      const next = [...prev]
-      const [moved] = next.splice(from, 1)
-      next.splice(to, 0, moved)
-      return next
-    })
 
   const isTextbox = fieldType === 'textbox'
   const nonEmptyChoices = choices.filter((c) => c.value.trim() !== '')
@@ -212,76 +126,13 @@ export const ProductModifierModal: FC<ProductModifierModalProps> = ({ open, modi
         />
 
         {!isTextbox && (
-          <div className="product-modifier-modal__choices">
-            <span className="product-modifier-modal__choices-label">
-              Choices
-              {required && <span className="product-modifier-modal__required-star"> *</span>}
-            </span>
-            {choices.map((choice, i) => (
-              <div
-                key={choice.id}
-                className="product-modifier-modal__choice-row"
-                onDragOver={(e) => {
-                  if (dragIndex.current !== null) e.preventDefault()
-                }}
-                onDrop={() => {
-                  if (dragIndex.current !== null && dragIndex.current !== i) moveChoice(dragIndex.current, i)
-                  dragIndex.current = null
-                }}
-              >
-                <span
-                  className="product-modifier-modal__choice-handle"
-                  draggable
-                  onDragStart={(e) => {
-                    dragIndex.current = i
-                    e.dataTransfer.effectAllowed = 'move'
-                  }}
-                  onDragEnd={() => {
-                    dragIndex.current = null
-                  }}
-                  aria-label="Reorder choice"
-                >
-                  <Icon name="grid-dots-vertical" category="general" size={16} />
-                </span>
-                <div className="product-modifier-modal__choice-input">
-                  <DSInput
-                    value={choice.value}
-                    placeholder={fieldType === 'color' ? 'e.g., Yellow or Red' : 'e.g., Stars, Dots or Hearts'}
-                    onChange={(e) => updateChoice(choice.id, { value: e.target.value })}
-                  />
-                </div>
-                {fieldType === 'color' && (
-                  <ChoiceColorSwatch
-                    color={choice.color}
-                    onChange={(hex) => updateChoice(choice.id, { color: hex })}
-                  />
-                )}
-                <DSButton
-                  type="button"
-                  className="product-modifier-modal__choice-delete"
-                  variant="ghost"
-                  colorScheme="secondary"
-                  shape="rounded"
-                  size="md"
-                  iconOnly
-                  disabled={choices.length <= 1}
-                  aria-label="Remove choice"
-                  leftIcon={<Icon name="trash-filled" category="general" size={16} />}
-                  onClick={() => removeChoice(choice.id)}
-                />
-              </div>
-            ))}
-            <div className="product-modifier-modal__choices-add">
-              <DSLink
-                colorScheme="primary"
-                size="lg"
-                leftIcon={<Icon name="plus" category="general" size={16} />}
-                onClick={addChoice}
-              >
-                Another Choice
-              </DSLink>
-            </div>
-          </div>
+          <ChoiceList
+            choices={choices}
+            onChange={setChoices}
+            required={required}
+            placeholder={fieldType === 'color' ? 'e.g., Yellow or Red' : 'e.g., Stars, Dots or Hearts'}
+            showColorSwatch={fieldType === 'color'}
+          />
         )}
 
         {isTextbox && (

@@ -6,6 +6,7 @@ import {
   FormField as DSFormField,
 } from '@jf/design-system'
 import type { ProductOptionDimension } from '@jf/app-elements'
+import { ChoiceList, emptyChoice, makeChoiceId, type ChoiceItem } from './ChoiceList'
 
 interface ProductOptionModalProps {
   open: boolean
@@ -24,17 +25,21 @@ const FIELD_TYPE_OPTIONS = [
 export const ProductOptionModal: FC<ProductOptionModalProps> = ({ open, option, onClose, onSubmit }) => {
   const [name, setName] = useState('')
   const [fieldType, setFieldType] = useState('text')
-  const [choices, setChoices] = useState('')
+  const [choices, setChoices] = useState<ChoiceItem[]>(() => [emptyChoice()])
 
   // Prefill once when the modal opens — blank for add, existing values for edit.
   useEffect(() => {
     if (!open) return
     setName(option?.label ?? '')
     setFieldType(option?.type ?? 'text')
-    setChoices(option ? option.values.join(', ') : '')
+    setChoices(
+      option && option.values.length > 0
+        ? option.values.map((v) => ({ id: makeChoiceId(), value: v }))
+        : [emptyChoice()],
+    )
   }, [open])
 
-  const values = choices.split(',').map((c) => c.trim()).filter(Boolean)
+  const values = choices.map((c) => c.value.trim()).filter(Boolean)
   const canSubmit = name.trim() !== '' && values.length > 0
 
   return (
@@ -72,20 +77,7 @@ export const ProductOptionModal: FC<ProductOptionModalProps> = ({ open, option, 
             />
           </DSFormField>
         </div>
-        <DSFormField
-          title="Choices"
-          required
-          size="md"
-          showDescription={false}
-          showHelpText
-          helpText="Separate each choice with a comma."
-        >
-          <DSInput
-            value={choices}
-            placeholder="e.g., Small, Medium, Large"
-            onChange={(e) => setChoices(e.target.value)}
-          />
-        </DSFormField>
+        <ChoiceList choices={choices} onChange={setChoices} placeholder="e.g., Small, Medium, Large" />
       </div>
     </DSModal>
   )
