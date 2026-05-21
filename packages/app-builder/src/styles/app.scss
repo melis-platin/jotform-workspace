@@ -3540,21 +3540,20 @@ body {
 }
 
 .property-panel__back {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--spacing-2xl);
-  height: var(--spacing-2xl);
-  background: transparent;
+  width: 32px;
+  height: 32px;
+  border-radius: 40px;
   border: none;
-  border-radius: var(--radius-rounded);
-  color: var(--ds-text-medium);
+  background: transparent;
+  color: var(--core-white);
   cursor: pointer;
-  transition: background 150ms ease, color 150ms ease;
+  transition: background 150ms ease;
 
   &:hover {
-    background: color-mix(in srgb, var(--ds-text-dark) 8%, transparent);
-    color: var(--ds-text-dark);
+    background: var(--gray-500);
   }
 }
 
