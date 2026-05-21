@@ -5,9 +5,12 @@ import {
   DropdownSingle as DSDropdownSingle,
   FormField as DSFormField,
 } from '@jf/design-system'
+import type { ProductOptionDimension } from '@jf/app-elements'
 
 interface ProductOptionModalProps {
   open: boolean
+  /** When set, the modal edits this option; otherwise it adds a new one. */
+  option?: ProductOptionDimension | null
   onClose: () => void
   onSubmit: (name: string, fieldType: 'text' | 'color', values: string[]) => void
 }
@@ -18,17 +21,17 @@ const FIELD_TYPE_OPTIONS = [
 ]
 
 /** Builder modal for adding a product option (variant dimension). */
-export const ProductOptionModal: FC<ProductOptionModalProps> = ({ open, onClose, onSubmit }) => {
+export const ProductOptionModal: FC<ProductOptionModalProps> = ({ open, option, onClose, onSubmit }) => {
   const [name, setName] = useState('')
   const [fieldType, setFieldType] = useState('text')
   const [choices, setChoices] = useState('')
 
+  // Prefill once when the modal opens — blank for add, existing values for edit.
   useEffect(() => {
-    if (open) {
-      setName('')
-      setFieldType('text')
-      setChoices('')
-    }
+    if (!open) return
+    setName(option?.label ?? '')
+    setFieldType(option?.type ?? 'text')
+    setChoices(option ? option.values.join(', ') : '')
   }, [open])
 
   const values = choices.split(',').map((c) => c.trim()).filter(Boolean)
@@ -39,10 +42,10 @@ export const ProductOptionModal: FC<ProductOptionModalProps> = ({ open, onClose,
       open={open}
       onClose={onClose}
       size="md"
-      title="Add product option"
+      title={option ? 'Edit product option' : 'Add product option'}
       description="You'll be able to manage pricing and inventory for this product option later on."
       cancelLabel="Cancel"
-      confirmLabel="Add"
+      confirmLabel={option ? 'Save' : 'Add'}
       confirmDisabled={!canSubmit}
       onConfirm={() => {
         if (!canSubmit) return

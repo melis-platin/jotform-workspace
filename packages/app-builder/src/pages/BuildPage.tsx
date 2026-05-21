@@ -61,7 +61,6 @@ import { autoScrollForElements } from '@atlaskit/pragmatic-drag-and-drop-auto-sc
 import type { AppPreset, PresetElement } from '../presets/appPresets'
 import { IconPropertyField } from '../components/IconPropertyField'
 import { ColorInputWithPicker } from '../components/ColorInputWithPicker'
-import { ProductOptionEditor } from '../components/ProductOptionEditor'
 import { ProductFilterPopover } from '../components/ProductFilterPopover'
 import { ProductOptionModal } from '../components/ProductOptionModal'
 import { loadSnapshot, saveSnapshot } from '../presets/storage'
@@ -2976,12 +2975,16 @@ export function BuildPage({
                     const dimensions = current.optionDimensions ?? []
                     const updateDimensions = (dims: typeof dimensions) =>
                       updateProduct({ optionDimensions: dims, variants: generateVariants(dims) })
-                    const handleAddOption = (name: string, fieldType: 'text' | 'color', values: string[]) => {
-                      updateDimensions([...dimensions, { id: makeDimensionId(), label: name, values, type: fieldType }])
+                    const handleOptionSubmit = (name: string, fieldType: 'text' | 'color', values: string[]) => {
+                      if (editingOptionIndex !== null) {
+                        const existing = dimensions[editingOptionIndex]
+                        updateDimensions(dimensions.map((d, i) => (i === editingOptionIndex ? { ...existing, label: name, values, type: fieldType } : d)))
+                      } else {
+                        updateDimensions([...dimensions, { id: makeDimensionId(), label: name, values, type: fieldType }])
+                      }
                     }
                     const removeOption = (i: number) => updateDimensions(dimensions.filter((_, j) => j !== i))
-                    const optionForEdit = editingOptionIndex !== null ? dimensions[editingOptionIndex] : undefined
-                    const slidePos = !editing ? 0 : editingOptionIndex === null ? 1 : 2
+                    const slidePos = editing ? 1 : 0
                     const filtered = productSearch.trim().length > 0
                       ? products.map((p, i) => ({ p, i })).filter(({ p }) => p.name.toLowerCase().includes(productSearch.toLowerCase()))
                       : products.map((p, i) => ({ p, i }))
@@ -3213,7 +3216,7 @@ export function BuildPage({
                                             variant="filled"
                                             colorScheme="primary"
                                             leftIcon={<Icon name="plus" category="general" size={20} />}
-                                            onClick={() => setOptionModalOpen(true)}
+                                            onClick={() => { setEditingOptionIndex(null); setOptionModalOpen(true) }}
                                             className="product-options__add-btn"
                                           >
                                             Add
@@ -3224,7 +3227,7 @@ export function BuildPage({
                                           key={dim.id}
                                           type="button"
                                           className="product-options__row"
-                                          onClick={() => setEditingOptionIndex(i)}
+                                          onClick={() => { setEditingOptionIndex(i); setOptionModalOpen(true) }}
                                         >
                                           <div className="product-options__row-text">
                                             <span className="product-options__row-label">{dim.label || 'Untitled option'}</span>
@@ -3245,7 +3248,7 @@ export function BuildPage({
                                               type="button"
                                               className="product-options__row-btn"
                                               aria-label="Edit option"
-                                              onClick={(e) => { e.stopPropagation(); setEditingOptionIndex(i) }}
+                                              onClick={(e) => { e.stopPropagation(); setEditingOptionIndex(i); setOptionModalOpen(true) }}
                                             >
                                               <Icon name="pencil-filled" category="editor" size={16} />
                                             </button>
@@ -3283,21 +3286,12 @@ export function BuildPage({
                             )}
                           </div>
 
-                          {/* Slide 3 — Product Option */}
-                          <div className="product-panel-slide">
-                            {editing && optionForEdit && (
-                              <ProductOptionEditor
-                                option={optionForEdit}
-                                onChange={(opt) => updateDimensions(dimensions.map((d, i) => (i === editingOptionIndex ? opt : d)))}
-                              />
-                            )}
-                          </div>
-
                         </div>
                         <ProductOptionModal
                           open={optionModalOpen}
-                          onClose={() => setOptionModalOpen(false)}
-                          onSubmit={handleAddOption}
+                          option={editingOptionIndex !== null ? dimensions[editingOptionIndex] : null}
+                          onClose={() => { setOptionModalOpen(false); setEditingOptionIndex(null) }}
+                          onSubmit={handleOptionSubmit}
                         />
                       </div>
                     )
