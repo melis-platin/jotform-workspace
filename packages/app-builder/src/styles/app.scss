@@ -3937,7 +3937,6 @@ body {
 .choice-list {
   display: flex;
   flex-direction: column;
-  gap: var(--ds-space-xs);
 }
 
 .choice-list__label {
@@ -3956,12 +3955,9 @@ body {
   display: flex;
   align-items: center;
   gap: var(--ds-space-sm);
+  // Symmetric padding so the divider sits centered between rows; the
+  // first row's top padding doubles as the label-to-control gap.
   padding: var(--ds-space-xs) 0;
-
-  // First row aligns with the label like a normal FormField control.
-  &:first-of-type {
-    padding-top: 0;
-  }
 
   & + & {
     border-top: 1px solid var(--border-light);
