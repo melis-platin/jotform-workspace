@@ -3758,6 +3758,8 @@ body {
   &__handle {
     color: var(--gray-300);
     cursor: grab;
+    opacity: 0;
+    transition: opacity 150ms ease;
   }
 
   &__card {
@@ -3847,7 +3849,8 @@ body {
     border-color: var(--gray-300);
   }
 
-  &:hover &__actions {
+  &:hover &__actions,
+  &:hover &__handle {
     opacity: 1;
   }
 }
