@@ -3745,7 +3745,7 @@ body {
 
 .product-list-row {
   display: grid;
-  grid-template-columns: 16px 1fr auto;
+  grid-template-columns: 16px 1fr;
   align-items: center;
   gap: var(--ds-space-xs);
   padding: 0;
@@ -3762,7 +3762,7 @@ body {
 
   &__card {
     display: grid;
-    grid-template-columns: 56px 1fr;
+    grid-template-columns: 56px 1fr auto;
     align-items: center;
     gap: var(--ds-space-md);
     padding: var(--ds-space-sm);
@@ -3816,32 +3816,39 @@ body {
     white-space: nowrap;
   }
 
-  &__delete {
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--ds-space-2xs);
+    opacity: 0;
+    transition: opacity 150ms ease;
+  }
+
+  // Icon buttons — same treatment as the option row buttons
+  &__btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
+    width: var(--spacing-2xl);
+    height: var(--spacing-2xl);
     background: transparent;
     border: none;
-    border-radius: var(--ds-radius-sm);
-    color: var(--gray-200);
+    border-radius: var(--radius-rounded);
+    color: var(--core-white);
     cursor: pointer;
-    opacity: 0;
-    transition: opacity 150ms ease, background 150ms ease;
+    transition: background 150ms ease;
+
+    &:hover {
+      background: var(--gray-400);
+    }
   }
 
   &:hover &__card {
     border-color: var(--gray-300);
   }
 
-  &:hover &__delete {
+  &:hover &__actions {
     opacity: 1;
-
-    &:hover {
-      background: var(--gray-500);
-      color: var(--core-white);
-    }
   }
 }
 

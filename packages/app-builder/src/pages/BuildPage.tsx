@@ -3020,18 +3020,33 @@ export function BuildPage({
                                           : ''}
                                       </div>
                                     </div>
+                                    <span className="product-list-row__actions">
+                                      <button
+                                        type="button"
+                                        className="product-list-row__btn"
+                                        aria-label="Delete product"
+                                        onClick={(e) => {
+                                          e.stopPropagation()
+                                          writeProducts(products.filter((_, j) => j !== i))
+                                        }}
+                                      >
+                                        <Icon name="trash-filled" category="general" size={16} />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        className="product-list-row__btn"
+                                        aria-label="Edit product"
+                                        onClick={(e) => {
+                                          e.stopPropagation()
+                                          setEditingOptionIndex(null)
+                                          setProductSettingsTab('basic')
+                                          setEditingProductIndex(i)
+                                        }}
+                                      >
+                                        <Icon name="pencil-filled" category="editor" size={16} />
+                                      </button>
+                                    </span>
                                   </div>
-                                  <button
-                                    type="button"
-                                    className="product-list-row__delete"
-                                    aria-label="Delete product"
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      writeProducts(products.filter((_, j) => j !== i))
-                                    }}
-                                  >
-                                    <Icon name="trash-filled" category="general" size={16} />
-                                  </button>
                                 </button>
                               ))}
                             </div>
