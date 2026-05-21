@@ -172,7 +172,6 @@ export const ProductSubscriptionModal: FC<ProductSubscriptionModalProps> = ({
               </div>
             </div>
           </DSFormField>
-          <div aria-hidden />
         </div>
 
         <div className="product-subscription-modal__row">
@@ -186,7 +185,7 @@ export const ProductSubscriptionModal: FC<ProductSubscriptionModalProps> = ({
               options={EXPIRES_OPTIONS}
             />
           </DSFormField>
-          {expiresChoice === 'custom' ? (
+          {expiresChoice === 'custom' && (
             <DSFormField title="Billing cycles" required size="md" showDescription={false} showHelpText={false}>
               <DSNumberInput
                 value={customCycles}
@@ -196,8 +195,6 @@ export const ProductSubscriptionModal: FC<ProductSubscriptionModalProps> = ({
                 onChange={setCustomCycles}
               />
             </DSFormField>
-          ) : (
-            <div aria-hidden />
           )}
         </div>
         {expiresChoice === 'custom' && (
@@ -228,7 +225,6 @@ export const ProductSubscriptionModal: FC<ProductSubscriptionModalProps> = ({
               />
             </div>
           </DSFormField>
-          <div aria-hidden />
         </div>
       </div>
     </DSModal>
