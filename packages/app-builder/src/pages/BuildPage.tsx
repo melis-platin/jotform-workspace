@@ -3119,6 +3119,17 @@ export function BuildPage({
                                         </DSFormField>
                                       </div>
                                       <div className="property-panel__field">
+                                        <DSFormField title="Description" size="md" showDescription={false} showHelpText={false}>
+                                          <DSTextArea
+                                            size="md"
+                                            rows={4}
+                                            placeholder="Please enter a short description"
+                                            value={current.description ?? ''}
+                                            onChange={(e) => updateField('description', e.target.value)}
+                                          />
+                                        </DSFormField>
+                                      </div>
+                                      <div className="property-panel__field">
                                         <DSFormField title="Price" size="md" showDescription={false} showHelpText={false}>
                                           <div className="product-edit__price">
                                             <DSInput
@@ -3140,17 +3151,6 @@ export function BuildPage({
                                               ]}
                                             />
                                           </div>
-                                        </DSFormField>
-                                      </div>
-                                      <div className="property-panel__field">
-                                        <DSFormField title="Description" size="md" showDescription={false} showHelpText={false}>
-                                          <DSTextArea
-                                            size="md"
-                                            rows={4}
-                                            placeholder="Please enter a short description"
-                                            value={current.description ?? ''}
-                                            onChange={(e) => updateField('description', e.target.value)}
-                                          />
                                         </DSFormField>
                                       </div>
                                       <div className="property-panel__field">
