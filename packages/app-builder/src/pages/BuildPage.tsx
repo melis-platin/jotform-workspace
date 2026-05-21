@@ -3034,7 +3034,6 @@ export function BuildPage({
                               <DSButton
                                 variant="filled"
                                 colorScheme="primary"
-                                size="lg"
                                 leftIcon={<Icon name="plus" category="general" size={20} />}
                                 onClick={() => { setEditingOptionIndex(null); setProductSettingsTab('basic'); setEditingProductIndex(products.length) }}
                                 className="product-list-panel__add-btn"
@@ -3146,7 +3145,6 @@ export function BuildPage({
                                       <DSButton
                                         variant="filled"
                                         colorScheme="primary"
-                                        size="lg"
                                         leftIcon={<Icon name="plus" category="general" size={20} />}
                                         onClick={addOption}
                                         className="product-options__add"
