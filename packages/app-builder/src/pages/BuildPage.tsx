@@ -23,6 +23,7 @@ import {
   makeDimensionId,
   type ProductItem,
   type ProductModifierFieldType,
+  type ProductSubscription,
   type RegisteredComponent,
   type VariantValues,
   type PropertyValues,
@@ -65,6 +66,7 @@ import { ColorInputWithPicker } from '../components/ColorInputWithPicker'
 import { ProductFilterPopover } from '../components/ProductFilterPopover'
 import { ProductOptionModal } from '../components/ProductOptionModal'
 import { ProductModifierModal } from '../components/ProductModifierModal'
+import { ProductSubscriptionModal } from '../components/ProductSubscriptionModal'
 import { loadSnapshot, saveSnapshot } from '../presets/storage'
 
 interface CanvasElement {
@@ -1118,10 +1120,11 @@ export function BuildPage({
   const [optionModalOpen, setOptionModalOpen] = useState(false)
   const [editingModifierIndex, setEditingModifierIndex] = useState<number | null>(null)
   const [modifierModalOpen, setModifierModalOpen] = useState(false)
+  const [subscriptionModalOpen, setSubscriptionModalOpen] = useState(false)
   const [inventoryFilter, setInventoryFilter] = useState('all')
   const [visibilityFilter, setVisibilityFilter] = useState('all')
   const productSearchFieldRef = useRef<HTMLDivElement>(null)
-  useEffect(() => { setEditingProductIndex(null); setEditingOptionIndex(null); setProductSettingsTab('basic'); setProductSearch(''); setFilterOpen(false); setOptionModalOpen(false); setEditingModifierIndex(null); setModifierModalOpen(false) }, [selectedElementId, propertyTab])
+  useEffect(() => { setEditingProductIndex(null); setEditingOptionIndex(null); setProductSettingsTab('basic'); setProductSearch(''); setFilterOpen(false); setOptionModalOpen(false); setEditingModifierIndex(null); setModifierModalOpen(false); setSubscriptionModalOpen(false) }, [selectedElementId, propertyTab])
 
   const migratedSocialFollowIds = useRef<Set<string>>(new Set())
   useEffect(() => {
@@ -2999,6 +3002,9 @@ export function BuildPage({
                       }
                     }
                     const removeModifier = (i: number) => updateModifiers(modifiers.filter((_, j) => j !== i))
+                    const subscription = current.subscription ?? null
+                    const handleSubscriptionSubmit = (sub: ProductSubscription) => updateProduct({ subscription: sub })
+                    const removeSubscription = () => updateProduct({ subscription: undefined })
                     const slidePos = editing ? 1 : 0
                     const filtered = productSearch.trim().length > 0
                       ? products.map((p, i) => ({ p, i })).filter(({ p }) => p.name.toLowerCase().includes(productSearch.toLowerCase()))
@@ -3328,6 +3334,63 @@ export function BuildPage({
                                           </button>
                                         ))}
                                       </div>
+                                      <div className="product-options__section">
+                                        <div className="product-options__choice">
+                                          <div className="product-options__choice-text">
+                                            <span className="product-options__choice-title">Subscription</span>
+                                            <span className="product-options__choice-desc">
+                                              Charge customers on a recurring schedule.
+                                            </span>
+                                          </div>
+                                          {!subscription && (
+                                            <DSButton
+                                              variant="filled"
+                                              colorScheme="primary"
+                                              leftIcon={<Icon name="plus" category="general" size={20} />}
+                                              className="product-options__add-btn"
+                                              onClick={() => setSubscriptionModalOpen(true)}
+                                            >
+                                              Add
+                                            </DSButton>
+                                          )}
+                                        </div>
+                                        {subscription && (
+                                          <button
+                                            type="button"
+                                            className="product-options__row"
+                                            onClick={() => setSubscriptionModalOpen(true)}
+                                          >
+                                            <div className="product-options__row-text">
+                                              <span className="product-options__row-label">{subscription.name || 'Untitled subscription'}</span>
+                                              <span className="product-options__row-meta">
+                                                {`Every ${subscription.repeatEvery} ${subscription.repeatEvery === 1 ? subscription.repeatUnit : `${subscription.repeatUnit}s`}`}
+                                                {' · '}
+                                                {subscription.expiresAfterCycles === 0
+                                                  ? 'Never expires'
+                                                  : `${subscription.expiresAfterCycles} billing cycles`}
+                                              </span>
+                                            </div>
+                                            <span className="product-options__row-actions">
+                                              <button
+                                                type="button"
+                                                className="product-options__row-btn"
+                                                aria-label="Remove subscription"
+                                                onClick={(e) => { e.stopPropagation(); removeSubscription() }}
+                                              >
+                                                <Icon name="trash-filled" category="general" size={16} />
+                                              </button>
+                                              <button
+                                                type="button"
+                                                className="product-options__row-btn"
+                                                aria-label="Edit subscription"
+                                                onClick={(e) => { e.stopPropagation(); setSubscriptionModalOpen(true) }}
+                                              >
+                                                <Icon name="pencil-filled" category="editor" size={16} />
+                                              </button>
+                                            </span>
+                                          </button>
+                                        )}
+                                      </div>
                                     </div>
                                   )}
                                   {productSettingsTab === 'stock' && (
@@ -3352,6 +3415,14 @@ export function BuildPage({
                           modifier={editingModifierIndex !== null ? modifiers[editingModifierIndex] : null}
                           onClose={() => { setModifierModalOpen(false); setEditingModifierIndex(null) }}
                           onSubmit={handleModifierSubmit}
+                        />
+                        <ProductSubscriptionModal
+                          open={subscriptionModalOpen}
+                          subscription={subscription}
+                          price={current.price}
+                          currency={currency}
+                          onClose={() => setSubscriptionModalOpen(false)}
+                          onSubmit={handleSubscriptionSubmit}
                         />
                       </div>
                     )

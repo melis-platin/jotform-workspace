@@ -13,6 +13,8 @@ export type {
   ProductVariant,
   ProductModifier,
   ProductModifierFieldType,
+  ProductSubscription,
+  ProductSubscriptionRepeatUnit,
 } from './types';
 
 export interface ProductListProps {

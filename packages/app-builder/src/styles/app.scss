@@ -3934,6 +3934,87 @@ body {
   gap: var(--ds-space-md);
 }
 
+.product-subscription-modal {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-md);
+}
+
+.product-subscription-modal__row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--ds-space-md);
+  align-items: start;
+}
+
+.product-subscription-modal__divider {
+  border-top: 1px solid var(--border-light);
+}
+
+.product-subscription-modal__repeat {
+  display: flex;
+  gap: var(--ds-space-sm);
+}
+
+.product-subscription-modal__repeat-count {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.product-subscription-modal__repeat-unit {
+  flex: 2 1 0;
+  min-width: 0;
+}
+
+.product-subscription-modal__hint {
+  margin: calc(var(--ds-space-xs) * -1) 0 0;
+  font-family: var(--ds-font-family);
+  font-size: var(--ds-font-size-xs);
+  line-height: var(--line-height-xs);
+  color: var(--text-medium);
+}
+
+.product-subscription-modal__discount {
+  display: flex;
+  gap: var(--ds-space-sm);
+  align-items: stretch;
+}
+
+.product-subscription-modal__discount-input {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.product-subscription-modal__discount-type {
+  flex: 0 0 auto;
+}
+
+.product-subscription-modal__price {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-2xs);
+}
+
+.product-subscription-modal__price-label {
+  font-family: var(--ds-font-family);
+  font-size: var(--ds-font-size-sm);
+  font-weight: var(--ds-font-weight-medium);
+  color: var(--text-darkest);
+}
+
+.product-subscription-modal__price-value {
+  font-family: var(--ds-font-family);
+  font-size: var(--ds-font-size-md);
+  font-weight: var(--ds-font-weight-medium);
+  color: var(--text-darkest);
+}
+
+.product-subscription-modal__price-note {
+  font-family: var(--ds-font-family);
+  font-size: var(--ds-font-size-xs);
+  color: var(--text-medium);
+}
+
 // Product edit form
 .product-edit__price {
   display: grid;

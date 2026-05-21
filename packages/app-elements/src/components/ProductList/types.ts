@@ -33,6 +33,24 @@ export interface ProductModifier {
   required: boolean;
 }
 
+/** Billing interval unit for a subscription plan. */
+export type ProductSubscriptionRepeatUnit = 'day' | 'week' | 'month' | 'year';
+
+/** A recurring-payment plan attached to a product. */
+export interface ProductSubscription {
+  name: string;
+  tagline?: string;
+  /** Interval count between charges, paired with repeatUnit (e.g. every 2 weeks). */
+  repeatEvery: number;
+  repeatUnit: ProductSubscriptionRepeatUnit;
+  /** Total billing cycles before the plan ends; 0 = never expires. */
+  expiresAfterCycles: number;
+  /** Discount applied to the product price. */
+  discount: number;
+  /** Whether the discount is a flat currency amount or a percentage. */
+  discountType: 'amount' | 'percent';
+}
+
 export interface ProductItem {
   /** Optional — lazily assigned when the product is edited (backward compat). */
   id?: string;
@@ -47,6 +65,8 @@ export interface ProductItem {
   variants?: ProductVariant[];
   /** Customization options that don't affect price or inventory. */
   modifiers?: ProductModifier[];
+  /** Recurring-payment plan for this product. */
+  subscription?: ProductSubscription;
 }
 
 /** Max variant dimensions per product (e-commerce convention: Size/Color/Material). */
