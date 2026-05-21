@@ -30,6 +30,7 @@ ComponentRegistry.register({
     { name: 'Button Label', type: 'text', default: 'Add to Cart' },
     { name: 'Show Toolbar', type: 'boolean', default: true },
     { name: 'Show Images', type: 'boolean', default: true },
+    { name: 'Enable Variants', type: 'boolean', default: false },
     { name: 'Selected', type: 'boolean', default: false },
     { name: 'Add New Card', type: 'boolean', default: true },
     { name: 'Skeleton', type: 'boolean', default: false },
@@ -131,6 +132,13 @@ ComponentRegistry.register({
       description:
         'When `true`, applies a 2px `border-info` border around the entire product list.',
     },
+    {
+      name: 'enableVariants',
+      type: 'boolean',
+      default: 'false',
+      description:
+        'When `true`, products may define option dimensions (e.g. Size, Color) via the property panel. Each card then renders a dropdown per dimension, and the buyer must select every option before "Add to Cart" is enabled — each variant is a separate cart line item.',
+    },
   ],
 
   render(variants: VariantValues, props: PropertyValues, _states: StateValues, onPropertyChange?: (name: string, value: string | boolean | number) => void): React.ReactNode {
@@ -148,6 +156,7 @@ ComponentRegistry.register({
         currency={props['Currency'] as string}
         showToolbar={props['Show Toolbar'] as boolean}
         showImages={props['Show Images'] as boolean}
+        enableVariants={props['Enable Variants'] as boolean}
         searchPlaceholder={props['Search Placeholder'] as string}
         buttonLabel={props['Button Label'] as string}
         selected={props['Selected'] as boolean}

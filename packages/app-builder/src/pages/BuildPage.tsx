@@ -18,6 +18,9 @@ import {
   FormSheet,
   compressImageFile,
   compressImageFiles,
+  ensureProductIds,
+  generateVariants,
+  type ProductItem,
   type RegisteredComponent,
   type VariantValues,
   type PropertyValues,
@@ -57,6 +60,7 @@ import { autoScrollForElements } from '@atlaskit/pragmatic-drag-and-drop-auto-sc
 import type { AppPreset, PresetElement } from '../presets/appPresets'
 import { IconPropertyField } from '../components/IconPropertyField'
 import { ColorInputWithPicker } from '../components/ColorInputWithPicker'
+import { ProductVariantEditor } from '../components/ProductVariantEditor'
 import { loadSnapshot, saveSnapshot } from '../presets/storage'
 
 interface CanvasElement {
@@ -1103,8 +1107,9 @@ export function BuildPage({
     setPropertyTab('general')
   }, [])
   const [editingProductIndex, setEditingProductIndex] = useState<number | null>(null)
+  const [editingVariants, setEditingVariants] = useState(false)
   const [productSearch, setProductSearch] = useState('')
-  useEffect(() => { setEditingProductIndex(null); setProductSearch('') }, [selectedElementId, propertyTab])
+  useEffect(() => { setEditingProductIndex(null); setEditingVariants(false); setProductSearch('') }, [selectedElementId, propertyTab])
 
   const migratedSocialFollowIds = useRef<Set<string>>(new Set())
   useEffect(() => {
@@ -2912,7 +2917,7 @@ export function BuildPage({
 
                   // Product List Products tab — list view + inline edit form.
                   if (isProductList && propertyTab === 'products') {
-                    type Product = { name: string; price: string; description?: string; image?: string }
+                    type Product = ProductItem
                     const readProducts = (): Product[] => {
                       try {
                         const parsed = JSON.parse(String(selectedElement.properties['Products'] ?? '[]'))
@@ -2921,7 +2926,7 @@ export function BuildPage({
                         return []
                       }
                     }
-                    const writeProducts = (next: Product[]) => handlePropertyChange(selectedElement.id, 'Products', JSON.stringify(next))
+                    const writeProducts = (next: Product[]) => handlePropertyChange(selectedElement.id, 'Products', JSON.stringify(ensureProductIds(next)))
                     const products = readProducts()
                     const currency = String(selectedElement.properties['Currency'] ?? '$')
 
@@ -2929,15 +2934,25 @@ export function BuildPage({
                       const idx = editingProductIndex
                       const isNew = idx === products.length
                       const current: Product = isNew ? { name: '', price: '0.00' } : (products[idx] ?? { name: '', price: '0.00' })
-                      const updateField = <K extends keyof Product>(field: K, value: Product[K]) => {
+                      const updateProduct = (updates: Partial<Product>) => {
                         const next = [...products]
-                        if (isNew) next.push({ ...current, [field]: value })
-                        else next[idx] = { ...current, [field]: value }
+                        if (isNew) next.push({ ...current, ...updates })
+                        else next[idx] = { ...current, ...updates }
                         writeProducts(next)
                       }
+                      const updateField = <K extends keyof Product>(field: K, value: Product[K]) =>
+                        updateProduct({ [field]: value } as Partial<Product>)
                       const editInputId = `product-image-${selectedElement.id}`
+                      const variantsEnabled = selectedElement.properties['Enable Variants'] === true
+                      const dimCount = current.optionDimensions?.length ?? 0
+                      const varCount = current.variants?.length ?? 0
+                      const variantSummary = dimCount === 0
+                        ? 'Set up variants'
+                        : `${dimCount} ${dimCount === 1 ? 'dimension' : 'dimensions'} · ${varCount} ${varCount === 1 ? 'variant' : 'variants'}`
                       return (
-                        <div className="property-panel__body product-edit">
+                        <div className="property-panel__body product-edit-host">
+                          <div className={`product-edit-slider${editingVariants ? ' product-edit-slider--variants' : ''}`}>
+                            <div className="product-edit-slide product-edit">
                           <div className="property-panel__field">
                             <DSFormField title="Name" required size="md" showDescription={false} showHelpText={false}>
                               <DSInput
@@ -3014,17 +3029,42 @@ export function BuildPage({
                               )}
                             </DSFormField>
                           </div>
+                          {variantsEnabled && (
+                            <div className="property-panel__field">
+                              <DSFormField title="Variants" size="md" showDescription={false} showHelpText={false}>
+                                <button
+                                  type="button"
+                                  className="product-edit__variants-btn"
+                                  onClick={() => setEditingVariants(true)}
+                                >
+                                  <span>{variantSummary}</span>
+                                  <Icon name="caret-right" category="arrows" size={18} />
+                                </button>
+                              </DSFormField>
+                            </div>
+                          )}
                           <div className="product-edit__footer">
                             <DSButton
                               variant="filled"
                               colorScheme="secondary"
                               size="lg"
                               leftIcon={<Icon name="caret-left" category="arrows" size={20} />}
-                              onClick={() => setEditingProductIndex(null)}
+                              onClick={() => { setEditingVariants(false); setEditingProductIndex(null) }}
                               className="product-edit__back-btn"
                             >
                               Go Back
                             </DSButton>
+                          </div>
+                            </div>
+                            <div className="product-edit-slide">
+                              {editingVariants && (
+                                <ProductVariantEditor
+                                  dimensions={current.optionDimensions ?? []}
+                                  onChange={(dims) => updateProduct({ optionDimensions: dims, variants: generateVariants(dims) })}
+                                  onBack={() => setEditingVariants(false)}
+                                />
+                              )}
+                            </div>
                           </div>
                         </div>
                       )

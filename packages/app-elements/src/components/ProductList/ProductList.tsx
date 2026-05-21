@@ -3,16 +3,15 @@ import { Icon } from '../Icon/Icon';
 import { Button } from '../Button';
 import { useCart } from '../../runtime/CartContext';
 import { useFavorites } from '../../runtime/FavoritesContext';
+import { buildVariantId, variantLabel, type ProductItem, type ProductListLayout, type ProductOptionDimension } from './types';
 import './ProductList.scss';
 
-export type ProductListLayout = 'ThreeColumns' | 'TwoColumns' | 'SingleColumn';
-
-export interface ProductItem {
-  name: string;
-  price: string;
-  description?: string;
-  image?: string;
-}
+export type {
+  ProductItem,
+  ProductListLayout,
+  ProductOptionDimension,
+  ProductVariant,
+} from './types';
 
 export interface ProductListProps {
   layout?: ProductListLayout;
@@ -21,6 +20,7 @@ export interface ProductListProps {
   currency?: string;
   showToolbar?: boolean;
   showImages?: boolean;
+  enableVariants?: boolean;
   searchPlaceholder?: string;
   buttonLabel?: string;
   selected?: boolean;
@@ -71,20 +71,62 @@ function handleEditBlur(e: React.FocusEvent<HTMLElement>, defaultValue: string, 
 }
 
 // ============================================
+// Variant Selectors — one dropdown per dimension
+// ============================================
+const VariantSelectors: FC<{
+  dimensions: ProductOptionDimension[];
+  selected: Record<string, string>;
+  onChange: (next: Record<string, string>) => void;
+}> = ({ dimensions, selected, onChange }) => (
+  <div className="jf-product-item__variants">
+    {dimensions.map((dim) => (
+      <select
+        key={dim.id}
+        className="jf-product-item__variant-select"
+        value={selected[dim.label] ?? ''}
+        onChange={(e) => onChange({ ...selected, [dim.label]: e.target.value })}
+        aria-label={dim.label}
+      >
+        <option value="" disabled>{`Select ${dim.label}`}</option>
+        {dim.values.map((value) => (
+          <option key={value} value={value}>{value}</option>
+        ))}
+      </select>
+    ))}
+  </div>
+);
+
+/** Resolves the variant selection state shared by both item layouts. */
+function useVariantSelection(product: ProductItem, enableVariants: boolean) {
+  const dimensions = enableVariants ? (product.optionDimensions ?? []) : [];
+  const hasVariants = dimensions.length > 0;
+  const [selected, setSelected] = useState<Record<string, string>>({});
+  const allSelected = dimensions.every((dim) => selected[dim.label]);
+  const variantId = hasVariants && allSelected ? buildVariantId(selected) : undefined;
+  const variantText = hasVariants && allSelected ? variantLabel(selected) : undefined;
+  return { dimensions, hasVariants, selected, setSelected, allSelected, variantId, variantText };
+}
+
+// ============================================
 // Card Item (used in 2/3 column layouts)
 // ============================================
-const ProductCardItem: FC<{ product: ProductItem; buttonLabel: string; currency: string; showImages: boolean; onUpdate?: (updates: Partial<ProductItem>) => void }> = ({
+const ProductCardItem: FC<{ product: ProductItem; buttonLabel: string; currency: string; showImages: boolean; enableVariants: boolean; onUpdate?: (updates: Partial<ProductItem>) => void }> = ({
   product,
   buttonLabel,
   currency,
   showImages,
+  enableVariants,
   onUpdate,
 }) => {
   const cart = useCart();
   const favorites = useFavorites();
-  const inCart = cart?.has(product.name) ?? false;
+  const { dimensions, hasVariants, selected, setSelected, allSelected, variantId, variantText } = useVariantSelection(product, enableVariants);
+  const inCart = hasVariants
+    ? allSelected && (cart?.has(product.name, variantId) ?? false)
+    : cart?.has(product.name) ?? false;
   const liked = favorites?.has(product.name) ?? false;
-  const handleAdd = () => cart?.add({ name: product.name, price: product.price, image: product.image });
+  const addDisabled = inCart || (hasVariants && !allSelected);
+  const handleAdd = () => cart?.add({ name: product.name, price: product.price, image: product.image, variantId, variantLabel: variantText });
   const toggleLike = () => favorites?.toggle({ name: product.name, price: product.price, image: product.image });
   return (
   <div className="jf-product-item jf-product-item--card">
@@ -122,10 +164,11 @@ const ProductCardItem: FC<{ product: ProductItem; buttonLabel: string; currency:
           </span>
         </p>
       </div>
+      {hasVariants && <VariantSelectors dimensions={dimensions} selected={selected} onChange={setSelected} />}
       <div className="jf-product-item__action">
         <Button
           variant="Default"
-          state={inCart ? 'Disabled' : 'Default'}
+          state={addDisabled ? 'Disabled' : 'Default'}
           corner="Default"
           size="Small"
           label={inCart ? 'Added to Cart' : buttonLabel}
@@ -133,7 +176,7 @@ const ProductCardItem: FC<{ product: ProductItem; buttonLabel: string; currency:
           rightIcon="none"
           fullWidth
           shrinked
-          onClick={inCart ? undefined : handleAdd}
+          onClick={addDisabled ? undefined : handleAdd}
         />
       </div>
     </div>
@@ -144,21 +187,26 @@ const ProductCardItem: FC<{ product: ProductItem; buttonLabel: string; currency:
 // ============================================
 // Basic Item (used in single column layout)
 // ============================================
-const ProductBasicItem: FC<{ product: ProductItem; buttonLabel: string; currency: string; showImages: boolean; onUpdate?: (updates: Partial<ProductItem>) => void }> = ({
+const ProductBasicItem: FC<{ product: ProductItem; buttonLabel: string; currency: string; showImages: boolean; enableVariants: boolean; onUpdate?: (updates: Partial<ProductItem>) => void }> = ({
   product,
   buttonLabel,
   currency,
   showImages,
+  enableVariants,
   onUpdate,
 }) => {
   const cart = useCart();
   const favorites = useFavorites();
-  const inCart = cart?.has(product.name) ?? false;
+  const { dimensions, hasVariants, selected, setSelected, allSelected, variantId, variantText } = useVariantSelection(product, enableVariants);
+  const inCart = hasVariants
+    ? allSelected && (cart?.has(product.name, variantId) ?? false)
+    : cart?.has(product.name) ?? false;
   const liked = favorites?.has(product.name) ?? false;
-  const handleAdd = () => cart?.add({ name: product.name, price: product.price, image: product.image });
+  const addDisabled = inCart || (hasVariants && !allSelected);
+  const handleAdd = () => cart?.add({ name: product.name, price: product.price, image: product.image, variantId, variantLabel: variantText });
   const toggleLike = () => favorites?.toggle({ name: product.name, price: product.price, image: product.image });
   return (
-  <div className="jf-product-item jf-product-item--basic">
+  <div className={`jf-product-item jf-product-item--basic${hasVariants ? ' jf-product-item--has-variants' : ''}`}>
     {showImages && (
       <div className="jf-product-item__image-basic">
         {product.image ? <img src={product.image} alt={product.name} className="jf-product-item__img" /> : <ImagePlaceholder size={56} />}
@@ -189,6 +237,7 @@ const ProductBasicItem: FC<{ product: ProductItem; buttonLabel: string; currency
             {product.price}
           </span>
         </p>
+        {hasVariants && <VariantSelectors dimensions={dimensions} selected={selected} onChange={setSelected} />}
       </div>
       <div className="jf-product-item__right">
         <button className={`jf-product-item__like jf-product-item__like--inline${liked ? ' liked' : ''}`} onClick={toggleLike}>
@@ -196,14 +245,14 @@ const ProductBasicItem: FC<{ product: ProductItem; buttonLabel: string; currency
         </button>
         <Button
           variant="Default"
-          state={inCart ? 'Disabled' : 'Default'}
+          state={addDisabled ? 'Disabled' : 'Default'}
           corner="Default"
           size="Small"
           label={inCart ? 'Added to Cart' : buttonLabel}
           leftIcon="none"
           rightIcon="none"
           shrinked
-          onClick={inCart ? undefined : handleAdd}
+          onClick={addDisabled ? undefined : handleAdd}
         />
       </div>
     </div>
@@ -290,6 +339,7 @@ export const ProductList: FC<ProductListProps> = ({
   currency = '$',
   showToolbar = true,
   showImages = true,
+  enableVariants = false,
   searchPlaceholder = 'Search Products',
   buttonLabel = 'Add to Cart',
   selected = false,
@@ -411,9 +461,9 @@ export const ProductList: FC<ProductListProps> = ({
             onProductsChange?.(products.map((p, idx) => idx === i ? { ...p, ...updates } : p))
           }
           return isSingle ? (
-            <ProductBasicItem key={i} product={product} buttonLabel={buttonLabel} currency={currency} showImages={showImages} onUpdate={handleUpdate} />
+            <ProductBasicItem key={i} product={product} buttonLabel={buttonLabel} currency={currency} showImages={showImages} enableVariants={enableVariants} onUpdate={handleUpdate} />
           ) : (
-            <ProductCardItem key={i} product={product} buttonLabel={buttonLabel} currency={currency} showImages={showImages} onUpdate={handleUpdate} />
+            <ProductCardItem key={i} product={product} buttonLabel={buttonLabel} currency={currency} showImages={showImages} enableVariants={enableVariants} onUpdate={handleUpdate} />
           )
         })}
         {showAddNew && (isSingle ? <AddNewProductBasic onClick={handleAddProduct} /> : <AddNewProductCard onClick={handleAddProduct} />)}

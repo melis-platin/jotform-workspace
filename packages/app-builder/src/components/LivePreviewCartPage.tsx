@@ -38,6 +38,9 @@ function ItemRow({
       </div>
       <div className="live-preview__cart-row-info">
         <p className="live-preview__cart-row-name">{item.name}</p>
+        {'variantLabel' in item && item.variantLabel && (
+          <p className="live-preview__cart-row-variant">{item.variantLabel}</p>
+        )}
         <p className="live-preview__cart-row-price">{currency}{item.price}</p>
         {controls}
       </div>
@@ -139,14 +142,14 @@ export function LivePreviewCartPage({
             <div className="live-preview__cart-list">
               {items.map((item) => (
                 <ItemRow
-                  key={item.name}
+                  key={item.key}
                   item={item}
                   currency={currency}
                   controls={
                     <QuantityStepper
                       value={item.quantity}
-                      onDecrement={() => cart?.decrement(item.name)}
-                      onIncrement={() => cart?.increment(item.name)}
+                      onDecrement={() => cart?.decrement(item.key)}
+                      onIncrement={() => cart?.increment(item.key)}
                     />
                   }
                   trailing={
@@ -154,7 +157,7 @@ export function LivePreviewCartPage({
                       type="button"
                       className="live-preview__cart-trash"
                       aria-label={`Remove ${item.name}`}
-                      onClick={() => cart?.remove(item.name)}
+                      onClick={() => cart?.remove(item.key)}
                     >
                       <AppIcon name="Trash" size={16} />
                     </button>
