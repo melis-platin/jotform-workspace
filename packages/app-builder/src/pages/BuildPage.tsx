@@ -23,6 +23,7 @@ import {
   makeDimensionId,
   type ProductItem,
   type ProductModifier,
+  type ProductOptionChoice,
   type ProductSubscription,
   type RegisteredComponent,
   type VariantValues,
@@ -2982,7 +2983,7 @@ export function BuildPage({
                     const dimensions = current.optionDimensions ?? []
                     const updateDimensions = (dims: typeof dimensions) =>
                       updateProduct({ optionDimensions: dims, variants: generateVariants(dims) })
-                    const handleOptionSubmit = (name: string, fieldType: 'text' | 'color', values: string[]) => {
+                    const handleOptionSubmit = (name: string, fieldType: 'text' | 'color', values: ProductOptionChoice[]) => {
                       if (editingOptionIndex !== null) {
                         const existing = dimensions[editingOptionIndex]
                         updateDimensions(dimensions.map((d, i) => (i === editingOptionIndex ? { ...existing, label: name, values, type: fieldType } : d)))

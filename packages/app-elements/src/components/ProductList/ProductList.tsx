@@ -10,6 +10,7 @@ export type {
   ProductItem,
   ProductListLayout,
   ProductOptionDimension,
+  ProductOptionChoice,
   ProductVariant,
   ProductModifier,
   ProductModifierFieldType,

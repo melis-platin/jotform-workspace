@@ -4,13 +4,23 @@
 
 export type ProductListLayout = 'ThreeColumns' | 'TwoColumns' | 'SingleColumn';
 
+/** One value of a product option — carries its own price and stock status. */
+export interface ProductOptionChoice {
+  /** The choice label, e.g. "Medium". */
+  name: string;
+  /** The choice's own price (currency-prefix-free string). */
+  price?: string;
+  /** Whether the choice is in stock. Defaults to in stock. */
+  inStock?: boolean;
+}
+
 export interface ProductOptionDimension {
   /** Unique id — a stable React-key handle. */
   id: string;
   /** Human label shown to the buyer, e.g. "Size". */
   label: string;
-  /** Possible values, e.g. ["S", "M", "L"]. */
-  values: string[];
+  /** Possible values, each with its own price and stock status. */
+  values: ProductOptionChoice[];
   /** How the option renders for the buyer. */
   type?: 'text' | 'color';
 }
@@ -125,15 +135,17 @@ export function buildVariantId(optionValues: Record<string, string>): string {
  * are produced.
  */
 export function generateVariants(dimensions: ProductOptionDimension[]): ProductVariant[] {
-  const active = dimensions.filter((d) => d.label.trim() !== '' && d.values.length > 0);
+  const active = dimensions
+    .map((d) => ({ label: d.label.trim(), names: d.values.map((c) => c.name.trim()).filter(Boolean) }))
+    .filter((d) => d.label !== '' && d.names.length > 0);
   if (active.length === 0) return [];
 
   let combos: Record<string, string>[] = [{}];
   for (const dimension of active) {
     const next: Record<string, string>[] = [];
     for (const combo of combos) {
-      for (const value of dimension.values) {
-        next.push({ ...combo, [dimension.label]: value });
+      for (const name of dimension.names) {
+        next.push({ ...combo, [dimension.label]: name });
       }
     }
     combos = next;

@@ -5,7 +5,7 @@ import {
   DropdownSingle as DSDropdownSingle,
   FormField as DSFormField,
 } from '@jf/design-system'
-import type { ProductOptionDimension } from '@jf/app-elements'
+import type { ProductOptionDimension, ProductOptionChoice } from '@jf/app-elements'
 import { ChoiceList, emptyChoice, makeChoiceId, type ChoiceItem } from './ChoiceList'
 
 interface ProductOptionModalProps {
@@ -13,7 +13,7 @@ interface ProductOptionModalProps {
   /** When set, the modal edits this option; otherwise it adds a new one. */
   option?: ProductOptionDimension | null
   onClose: () => void
-  onSubmit: (name: string, fieldType: 'text' | 'color', values: string[]) => void
+  onSubmit: (name: string, fieldType: 'text' | 'color', values: ProductOptionChoice[]) => void
 }
 
 const FIELD_TYPE_OPTIONS = [
@@ -34,12 +34,19 @@ export const ProductOptionModal: FC<ProductOptionModalProps> = ({ open, option, 
     setFieldType(option?.type ?? 'text')
     setChoices(
       option && option.values.length > 0
-        ? option.values.map((v) => ({ id: makeChoiceId(), value: v }))
+        ? option.values.map((v) => ({
+            id: makeChoiceId(),
+            value: v.name,
+            price: v.price,
+            inStock: v.inStock,
+          }))
         : [emptyChoice()],
     )
   }, [open])
 
-  const values = choices.map((c) => c.value.trim()).filter(Boolean)
+  const values: ProductOptionChoice[] = choices
+    .filter((c) => c.value.trim() !== '')
+    .map((c) => ({ name: c.value.trim(), price: c.price?.trim() || undefined, inStock: c.inStock }))
   const canSubmit = name.trim() !== '' && values.length > 0
 
   return (
@@ -77,7 +84,12 @@ export const ProductOptionModal: FC<ProductOptionModalProps> = ({ open, option, 
             />
           </DSFormField>
         </div>
-        <ChoiceList choices={choices} onChange={setChoices} placeholder="e.g., Small, Medium, Large" />
+        <ChoiceList
+          choices={choices}
+          onChange={setChoices}
+          placeholder="e.g., Small, Medium, Large"
+          showPriceStock
+        />
       </div>
     </DSModal>
   )

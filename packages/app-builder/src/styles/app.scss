@@ -3980,6 +3980,14 @@ body {
   min-width: 0;
 }
 
+.choice-list__price {
+  flex: 0 0 96px;
+}
+
+.choice-list__stock {
+  flex: 0 0 150px;
+}
+
 .choice-list__swatch-wrap {
   flex-shrink: 0;
 }

@@ -1,6 +1,12 @@
 import { useEffect, useRef, useState, type FC } from 'react'
 import { createPortal } from 'react-dom'
-import { Input as DSInput, Link as DSLink, Button as DSButton, Icon } from '@jf/design-system'
+import {
+  Input as DSInput,
+  Link as DSLink,
+  Button as DSButton,
+  DropdownSingle as DSDropdownSingle,
+  Icon,
+} from '@jf/design-system'
 import { HsvColorPicker } from '@jf/app-elements'
 
 /** One reorderable choice row — shared by the option and modifier modals. */
@@ -9,7 +15,16 @@ export interface ChoiceItem {
   value: string
   /** Hex color — only used when the list shows color swatches. */
   color?: string
+  /** The choice's own price — only used when the list shows price/stock. */
+  price?: string
+  /** Stock status — only used when the list shows price/stock. Defaults to in stock. */
+  inStock?: boolean
 }
+
+const STOCK_OPTIONS = [
+  { value: 'in', label: 'In stock' },
+  { value: 'out', label: 'Out of stock' },
+]
 
 const HEX_RE = /^#([0-9a-f]{3}|[0-9a-f]{6})$/i
 
@@ -89,6 +104,8 @@ interface ChoiceListProps {
   placeholder: string
   /** Show a per-row color swatch picker. */
   showColorSwatch?: boolean
+  /** Show a per-row price input and stock-status dropdown. */
+  showPriceStock?: boolean
 }
 
 /** Reorderable list of choice inputs with add / delete / drag-to-reorder. */
@@ -98,6 +115,7 @@ export const ChoiceList: FC<ChoiceListProps> = ({
   required = true,
   placeholder,
   showColorSwatch = false,
+  showPriceStock = false,
 }) => {
   const dragIndex = useRef<number | null>(null)
 
@@ -156,6 +174,26 @@ export const ChoiceList: FC<ChoiceListProps> = ({
               color={choice.color}
               onChange={(hex) => updateChoice(choice.id, { color: hex })}
             />
+          )}
+          {showPriceStock && (
+            <>
+              <div className="choice-list__price">
+                <DSInput
+                  value={choice.price ?? ''}
+                  placeholder="0.00"
+                  onChange={(e) => updateChoice(choice.id, { price: e.target.value })}
+                />
+              </div>
+              <div className="choice-list__stock">
+                <DSDropdownSingle
+                  value={choice.inStock === false ? 'out' : 'in'}
+                  showLeadingIcon={false}
+                  usePortal
+                  onChange={(v) => updateChoice(choice.id, { inStock: v === 'in' })}
+                  options={STOCK_OPTIONS}
+                />
+              </div>
+            </>
           )}
           <DSButton
             type="button"
