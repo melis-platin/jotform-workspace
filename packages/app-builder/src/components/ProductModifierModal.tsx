@@ -286,7 +286,13 @@ export const ProductModifierModal: FC<ProductModifierModalProps> = ({ open, modi
 
         {isTextbox && (
           <>
-            <DSFormField title="Text box title" required={required} size="md" showDescription={false} showHelpText={false}>
+            <DSFormField
+              title={name.trim() || 'Text box title'}
+              required={required}
+              size="md"
+              showDescription={false}
+              showHelpText={false}
+            >
               <DSTextArea
                 value={textBoxTitle}
                 placeholder={'e.g., "What would you like engraved on your watch?"'}
