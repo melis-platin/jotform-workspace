@@ -22,7 +22,7 @@ import {
   generateVariants,
   makeDimensionId,
   type ProductItem,
-  type ProductModifierFieldType,
+  type ProductModifier,
   type ProductSubscription,
   type RegisteredComponent,
   type VariantValues,
@@ -2993,12 +2993,12 @@ export function BuildPage({
                     const removeOption = (i: number) => updateDimensions(dimensions.filter((_, j) => j !== i))
                     const modifiers = current.modifiers ?? []
                     const updateModifiers = (mods: typeof modifiers) => updateProduct({ modifiers: mods })
-                    const handleModifierSubmit = (name: string, fieldType: ProductModifierFieldType, required: boolean) => {
+                    const handleModifierSubmit = (data: Omit<ProductModifier, 'id'>) => {
                       if (editingModifierIndex !== null) {
                         const existing = modifiers[editingModifierIndex]
-                        updateModifiers(modifiers.map((m, i) => (i === editingModifierIndex ? { ...existing, name, fieldType, required } : m)))
+                        updateModifiers(modifiers.map((m, i) => (i === editingModifierIndex ? { ...existing, ...data } : m)))
                       } else {
-                        updateModifiers([...modifiers, { id: makeDimensionId(), name, fieldType, required }])
+                        updateModifiers([...modifiers, { id: makeDimensionId(), ...data }])
                       }
                     }
                     const removeModifier = (i: number) => updateModifiers(modifiers.filter((_, j) => j !== i))

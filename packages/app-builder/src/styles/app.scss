@@ -3934,6 +3934,108 @@ body {
   gap: var(--ds-space-md);
 }
 
+.product-modifier-modal__choices {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-xs);
+}
+
+.product-modifier-modal__choices-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--ds-space-md);
+}
+
+.product-modifier-modal__choices-label {
+  font-family: var(--ds-font-family);
+  font-size: var(--ds-font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--text-darkest);
+}
+
+.product-modifier-modal__required-star {
+  color: var(--error-default);
+}
+
+.product-modifier-modal__choice-row {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-sm);
+  padding: var(--ds-space-xs) 0;
+
+  & + & {
+    border-top: 1px solid var(--border-light);
+  }
+}
+
+.product-modifier-modal__choice-handle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--text-medium);
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+.product-modifier-modal__choice-input {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.product-modifier-modal__swatch-wrap {
+  flex-shrink: 0;
+}
+
+.product-modifier-modal__swatch {
+  display: block;
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--ds-radius-sm);
+  cursor: pointer;
+}
+
+.product-modifier-modal__swatch--empty {
+  background:
+    linear-gradient(
+      to top right,
+      transparent 0 calc(50% - 1px),
+      var(--error-default) calc(50% - 1px) calc(50% + 1px),
+      transparent calc(50% + 1px) 100%
+    ),
+    var(--background-white);
+}
+
+.product-modifier-modal__choice-delete {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  background: transparent;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-rounded);
+  color: var(--text-medium);
+  cursor: pointer;
+  transition: background 150ms ease, border-color 150ms ease;
+
+  &:hover {
+    background: var(--background-light);
+    border-color: var(--border-dark);
+  }
+}
+
+.product-modifier-modal__choices-add {
+  margin-top: var(--ds-space-2xs);
+}
+
 .product-subscription-modal {
   display: flex;
   flex-direction: column;

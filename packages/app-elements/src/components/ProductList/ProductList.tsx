@@ -13,6 +13,7 @@ export type {
   ProductVariant,
   ProductModifier,
   ProductModifierFieldType,
+  ProductModifierChoice,
   ProductSubscription,
   ProductSubscriptionRepeatUnit,
 } from './types';

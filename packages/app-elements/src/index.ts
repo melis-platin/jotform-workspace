@@ -59,7 +59,7 @@ export { BottomNavigation } from './components/BottomNavigation';
 export { AttributionBar } from './components/AttributionBar';
 export { LoginSignup } from './components/LoginSignup';
 export { ProductList, generateVariants, ensureProductIds, makeDimensionId, variantLabel, MAX_DIMENSIONS, MAX_VALUES_PER_DIMENSION } from './components/ProductList';
-export type { ProductListProps, ProductListLayout, ProductItem, ProductOptionDimension, ProductVariant, ProductModifier, ProductModifierFieldType, ProductSubscription, ProductSubscriptionRepeatUnit } from './components/ProductList';
+export type { ProductListProps, ProductListLayout, ProductItem, ProductOptionDimension, ProductVariant, ProductModifier, ProductModifierFieldType, ProductModifierChoice, ProductSubscription, ProductSubscriptionRepeatUnit } from './components/ProductList';
 export { ImageGallery } from './components/ImageGallery';
 export { Document } from './components/Document';
 export { SignDocument } from './components/SignDocument';

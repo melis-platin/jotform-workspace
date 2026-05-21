@@ -25,12 +25,27 @@ export interface ProductVariant {
 /** Field types a buyer-facing modifier can render as. */
 export type ProductModifierFieldType = 'text' | 'color' | 'textbox';
 
+/** One selectable choice within a text- or color-swatch modifier. */
+export interface ProductModifierChoice {
+  id: string;
+  /** The choice label, e.g. "Yellow". */
+  value: string;
+  /** Hex color — used only by the 'color' field type. */
+  color?: string;
+}
+
 /** A buyer-facing customization that doesn't affect price or inventory. */
 export interface ProductModifier {
   id: string;
   name: string;
   fieldType: ProductModifierFieldType;
   required: boolean;
+  /** Selectable choices — used by the 'text' and 'color' field types. */
+  choices?: ProductModifierChoice[];
+  /** Heading shown above the free-text box — used by the 'textbox' type. */
+  textBoxTitle?: string;
+  /** Max characters allowed in the text box — used by the 'textbox' type. */
+  characterLimit?: number;
 }
 
 /** Billing interval unit for a subscription plan. */
