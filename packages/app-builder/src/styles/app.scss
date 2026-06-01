@@ -3653,6 +3653,8 @@ body {
   width: 24px;
   height: 24px;
   padding: 0;
+  // Tighten the gap to the label text to 4px (container gap is 8px).
+  margin-left: calc(-1 * var(--space-1));
   border: none;
   background: none;
   border-radius: var(--radius-sm, 4px);
@@ -3701,6 +3703,14 @@ body {
 .canvas-page-label--floating .canvas-page-label__icon,
 .canvas-page-label--floating .canvas-page-label__name {
   opacity: 0.6;
+}
+
+// Over the colored header the brand-violet hover would clash — tint with the
+// header's own text color instead and keep the gear that color. (Visibility is
+// still hover-only, inherited from the base gear rule.)
+.canvas-page-label--floating .canvas-page-label__gear:hover {
+  color: inherit;
+  background: color-mix(in srgb, currentColor 20%, transparent);
 }
 
 // ---- Page properties panel bits ----

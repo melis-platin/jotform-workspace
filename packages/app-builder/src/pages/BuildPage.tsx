@@ -2637,13 +2637,23 @@ export function BuildPage({
           onPageSelect={(pageId) => {
             setActivePageId(pageId)
             requestAnimationFrame(() => {
-              const el = document.querySelector(`[data-page-id="${pageId}"]`)
               const scrollContainer = document.querySelector('.build-page__canvas')
-              if (!el || !scrollContainer) return
+              if (!scrollContainer) return
+              // First page: scroll to the very top so the app header + label show.
+              if (pageId === pages[0]?.id) {
+                scrollContainer.scrollTo({ top: 0, behavior: 'smooth' })
+                return
+              }
+              const el = document.querySelector(`[data-page-id="${pageId}"]`)
+              if (!el) return
+              // Top-align the page label (wrapper top) so it's always visible,
+              // regardless of how long the page is — not centered in the viewport.
+              const target = el.closest('.build-page__page-wrapper') ?? el
               const containerRect = scrollContainer.getBoundingClientRect()
-              const elRect = el.getBoundingClientRect()
-              const targetY = scrollContainer.scrollTop + elRect.top - containerRect.top - containerRect.height / 2 + elRect.height / 2
-              scrollContainer.scrollTo({ top: targetY, behavior: 'smooth' })
+              const targetRect = target.getBoundingClientRect()
+              const TOP_OFFSET = 24
+              const targetY = scrollContainer.scrollTop + targetRect.top - containerRect.top - TOP_OFFSET
+              scrollContainer.scrollTo({ top: Math.max(0, targetY), behavior: 'smooth' })
             })
           }}
           onPageReorder={(reordered) => setPages(reordered as AppPage[])}
