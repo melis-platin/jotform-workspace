@@ -25,6 +25,10 @@ const SIGNUP_PROVIDERS = [
   { id: 'microsoft', label: 'Microsoft', icon: 'microsoft-color' },
 ]
 
+// Demo login — type these in the email/username + password fields to sign in.
+const DEMO_USERNAME = 'admin'
+const DEMO_PASSWORD = 'admin'
+
 export function LivePreviewLoginPopover({
   open,
   onClose,
@@ -45,6 +49,7 @@ export function LivePreviewLoginPopover({
   const [showSignupPassword, setShowSignupPassword] = useState(false)
   const [showSignupConfirmPassword, setShowSignupConfirmPassword] = useState(false)
   const [forgotEmail, setForgotEmail] = useState('')
+  const [loginError, setLoginError] = useState(false)
 
   useEffect(() => {
     if (open) setView(initialView)
@@ -68,10 +73,15 @@ export function LivePreviewLoginPopover({
 
   if (!open) return null
 
+  // Demo credentials — sign in with admin / admin.
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
-    onLoggedIn?.()
-    onClose()
+    if (email.trim().toLowerCase() === DEMO_USERNAME && password === DEMO_PASSWORD) {
+      onLoggedIn?.()
+      onClose()
+    } else {
+      setLoginError(true)
+    }
   }
 
   const ariaLabel =
@@ -125,7 +135,7 @@ export function LivePreviewLoginPopover({
                 type="text"
                 className="live-preview__login-popover-input"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                onChange={(e) => { setEmail(e.target.value); setLoginError(false) }}
                 autoFocus
               />
             </div>
@@ -140,7 +150,7 @@ export function LivePreviewLoginPopover({
                   type={showLoginPassword ? 'text' : 'password'}
                   className="live-preview__login-popover-input live-preview__login-popover-input--password"
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e) => { setPassword(e.target.value); setLoginError(false) }}
                 />
                 <button
                   type="button"
@@ -156,6 +166,12 @@ export function LivePreviewLoginPopover({
                 </button>
               </div>
             </div>
+
+            {loginError && (
+              <p className="live-preview__login-popover-error" role="alert">
+                Incorrect username or password.
+              </p>
+            )}
 
             <button
               type="button"

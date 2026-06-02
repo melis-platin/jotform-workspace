@@ -1078,13 +1078,21 @@ function TabMenu({ activeTab, onTabChange }: { activeTab: 'basic' | 'widgets'; o
   )
 }
 
-function AddPageDivider({ onClick }: { onClick: () => void }) {
+function AddPageDivider({
+  onClick,
+  label = 'Add a Page',
+  icon = 'plus-sm',
+}: {
+  onClick: () => void
+  label?: string
+  icon?: string
+}) {
   return (
     <div className="add-page-divider" onClick={(e) => e.stopPropagation()}>
       <div className="add-page-divider__line" />
       <button className="add-page-divider__btn" onClick={onClick}>
-        <Icon name="plus-sm" category="general" size={24} />
-        <span>Add a Page</span>
+        <Icon name={icon} category="general" size={24} />
+        <span>{label}</span>
       </button>
       <div className="add-page-divider__line" />
     </div>
@@ -1245,6 +1253,8 @@ export function BuildPage({
   const [loginPopoverView, setLoginPopoverView] = useState<'login' | 'signup'>('login')
   // Full-screen auth view launched from the landing menu (vs the anchored popover).
   const [previewAuthView, setPreviewAuthView] = useState<'login' | 'signup' | null>(null)
+  // Page to land on after signing in (set when a logged-out user opens a protected page).
+  const pendingAuthRedirectRef = useRef<string | null>(null)
   const [isPreviewLoggedIn, setIsPreviewLoggedIn] = useState(false)
   const [viewingAsRole, setViewingAsRole] = useState<'anyone' | 'admin' | 'user'>('admin')
   const [previewDevice, setPreviewDevice] = useState<'phone' | 'tablet' | 'desktop'>('phone')
@@ -1322,19 +1332,15 @@ export function BuildPage({
   // pages; tapping a page from that list navigates and dismisses More.
   // Landing mode: the first page acts as a public landing screen for logged-out
   // visitors. While the landing screen is showing, the bottom nav is replaced by
-  // a hamburger/top-nav; login-required pages are hidden; once logged in the
-  // landing page itself drops out of the nav.
+  // a hamburger/top-nav; once logged in the landing page itself drops out of the nav.
   const landingPage = pages[0]?.landing ? pages[0] : undefined
   const landingActive = !!landingPage
   const showLandingNav = landingActive && !isPreviewLoggedIn
-  // Hidden pages stay editable in the canvas but drop out of the app's nav.
+  // Hidden pages (Show Page on Navigation toggle) stay editable in the canvas but
+  // drop out of the app's nav. The landing page is also hidden once logged in.
   const navPages = pages.filter((p) => {
     if (p.hidden) return false
-    if (landingActive) {
-      // login-required pages hidden on the landing — but never hide the landing page itself
-      if (!isPreviewLoggedIn && p.requireLogin && p.id !== landingPage!.id) return false
-      if (isPreviewLoggedIn && p.id === landingPage!.id) return false // rule: landing hidden once logged in
-    }
+    if (landingActive && isPreviewLoggedIn && p.id === landingPage!.id) return false
     return true
   })
   const hasNavOverflow = navPages.length >= 5
@@ -1348,17 +1354,30 @@ export function BuildPage({
     const idx = visibleNavPages.findIndex((p) => p.id === activePageId)
     return idx === -1 ? 0 : idx
   })()
+  // Navigating to a login-required page while signed out opens login first, then
+  // redirects to the requested page after a successful sign-in.
+  const navigateToPage = useCallback((pageId: string) => {
+    const page = pagesRef.current.find((p) => p.id === pageId)
+    if (page?.requireLogin && !isPreviewLoggedIn) {
+      pendingAuthRedirectRef.current = pageId
+      setIsMorePageOpen(false)
+      setPreviewAuthView('login')
+      return
+    }
+    setActivePageId(pageId)
+  }, [isPreviewLoggedIn])
+
   const handleBottomNavClick = (index: number) => {
     if (hasNavOverflow && index === visibleNavPages.length) {
       setIsMorePageOpen(true)
       return
     }
     setIsMorePageOpen(false)
-    setActivePageId(visibleNavPages[index].id)
+    navigateToPage(visibleNavPages[index].id)
   }
   const handleMorePageSelect = (pageId: string) => {
-    setActivePageId(pageId)
     setIsMorePageOpen(false)
+    navigateToPage(pageId)
   }
 
   // Top-header compact (app icon + title) shown the moment scrolling starts.
@@ -1725,7 +1744,12 @@ export function BuildPage({
     setIsLoginPopoverOpen(false)
     setIsMorePageOpen(false)
     const arr = pagesRef.current
-    if (arr[0]?.landing) {
+    const redirect = pendingAuthRedirectRef.current
+    pendingAuthRedirectRef.current = null
+    if (redirect) {
+      // Land on the protected page the user was trying to reach.
+      setActivePageId(redirect)
+    } else if (arr[0]?.landing) {
       const home = arr.find((p) => p.id !== arr[0].id)
       if (home) setActivePageId(home.id)
     }
@@ -2193,10 +2217,14 @@ export function BuildPage({
       )}
       <div className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}`}>
         {(() => {
-          const compactPersistent = previewDevice === 'desktop'
-          const compactDomReady = compactTitleInDom || compactPersistent
+          const isFirstPage = activePageId === pages[0]?.id
+          // Always brand the top header on the landing, and on the first page when
+          // the app header is closed — otherwise keep the scroll-driven behavior.
+          const brandingAlways = showLandingNav || (isFirstPage && !appHeaderState.show)
+          const compactPersistent = previewDevice === 'desktop' || brandingAlways
+          const compactDomReady = !isMorePageOpen && (compactTitleInDom || compactPersistent)
           const compactExiting = !compactPersistent && compactTitleInDom && !showCompactTitle
-          const titleCollapsed = compactPersistent && !showCompactTitle
+          const titleCollapsed = compactPersistent && !showCompactTitle && !brandingAlways
           if (compactDomReady) {
             const compactClass = [
               'live-preview__top-header-compact',
@@ -2233,12 +2261,12 @@ export function BuildPage({
           )
         })()}
         <nav className="live-preview__top-header-nav">
-          {pages.map((p) => (
+          {navPages.map((p) => (
             <button
               key={p.id}
               type="button"
               className={`live-preview__top-header-nav-link${p.id === activePageId ? ' live-preview__top-header-nav-link--active' : ''}`}
-              onClick={() => setActivePageId(p.id)}
+              onClick={() => navigateToPage(p.id)}
             >
               {p.name}
             </button>
@@ -2356,7 +2384,7 @@ export function BuildPage({
                 />
                 </div>
               )}
-              <div className={`themes-view__canvas${isFirstPage ? ' themes-view__canvas--first' : ''}`}>
+              <div className={`themes-view__canvas${isFirstPage && appHeaderState.show ? ' themes-view__canvas--first' : ''}`}>
                 <div className="themes-view__app">
                   {activePage.elements.map((element) => {
                     const comp = ComponentRegistry.get(element.componentId)
@@ -2414,7 +2442,7 @@ export function BuildPage({
         variant="page"
         open={previewAuthView !== null}
         initialView={previewAuthView ?? 'login'}
-        onClose={() => { setPreviewAuthView(null); setIsMorePageOpen(false) }}
+        onClose={() => { setPreviewAuthView(null); setIsMorePageOpen(false); pendingAuthRedirectRef.current = null }}
         onLoggedIn={handlePreviewLogin}
       />
       <LivePreviewOrderBar
@@ -2610,10 +2638,16 @@ export function BuildPage({
                     </DropEdgeContext.Provider>
                   }
                 />}
+                {!appHeaderState.show && (
+                  <AddPageDivider
+                    label="Add App Header"
+                    onClick={() => setAppHeaderState((s) => ({ ...s, show: true }))}
+                  />
+                )}
               </div>
 
               {pages.map((page, pageIndex) => (
-                <div key={page.id} className={`build-page__page-wrapper${pageIndex === 0 ? ' build-page__page-wrapper--first' : ''}`}>
+                <div key={page.id} className={`build-page__page-wrapper${pageIndex === 0 && appHeaderState.show ? ' build-page__page-wrapper--first' : ''}`}>
                   <CanvasPageLabel
                     page={page}
                     active={activePageId === page.id}
@@ -4705,7 +4739,10 @@ export function BuildPage({
                       <div className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}`}>
                         {(() => {
                           const isFirstPage = activePageId === pages[0]?.id
-                          const showCompact = isFirstPage && appHeaderState.show && isPreviewContentScrolled
+                          // Show the app icon + title in the top header: always on the
+                          // landing, and on the first page whenever the app header is
+                          // closed or the user has scrolled. (Hidden while the menu is open.)
+                          const showCompact = !isMorePageOpen && (showLandingNav || (isFirstPage && (!appHeaderState.show || isPreviewContentScrolled)))
                           if (showCompact) {
                             return (
                               <div className="live-preview__top-header-compact">
@@ -4833,7 +4870,7 @@ export function BuildPage({
                                 />
                                 </div>
                               )}
-                              <div className={`themes-view__canvas${isFirstPage ? ' themes-view__canvas--first' : ''}`}>
+                              <div className={`themes-view__canvas${isFirstPage && appHeaderState.show ? ' themes-view__canvas--first' : ''}`}>
                                 <div className="themes-view__app">
                                   {activePage.elements.map((element) => {
                                     const comp = ComponentRegistry.get(element.componentId)
@@ -4891,7 +4928,7 @@ export function BuildPage({
                         variant="page"
                         open={previewAuthView !== null}
                         initialView={previewAuthView ?? 'login'}
-                        onClose={() => { setPreviewAuthView(null); setIsMorePageOpen(false) }}
+                        onClose={() => { setPreviewAuthView(null); setIsMorePageOpen(false); pendingAuthRedirectRef.current = null }}
                         onLoggedIn={handlePreviewLogin}
                       />
                       <LivePreviewOrderBar

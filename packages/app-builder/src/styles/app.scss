@@ -1963,6 +1963,13 @@ body {
   }
 }
 
+.live-preview__login-popover-error {
+  margin: 0;
+  font-family: var(--font-family);
+  font-size: var(--font-size-paragraph-sm);
+  color: var(--fg-error);
+}
+
 // Full-screen auth page (login/sign-up opened from the landing menu, not a popover).
 .live-preview__auth-page {
   position: absolute;
