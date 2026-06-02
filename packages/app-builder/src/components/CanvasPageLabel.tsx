@@ -103,7 +103,11 @@ export function CanvasPageLabel({ page, active, floating, overlayColor, onRename
         type="button"
         className="canvas-page-label__gear"
         aria-label="Page settings"
-        onClick={onOpenSettings}
+        onClick={(e) => {
+          // Stop the click from bubbling to the canvas (which would reset the panel).
+          e.stopPropagation()
+          onOpenSettings()
+        }}
       >
         <Icon name="gear-filled" category="general" size={16} />
       </button>
