@@ -7750,6 +7750,24 @@ body.builder--phone-only {
   display: none;
 }
 
+// Desktop nav alignment (driven by the Navigation Menu panel). Auto margins on
+// the nav consume the header's free space to pull it left / center / right.
+// Reset the desktop default (.app-preview-screen__desktop pushes the right block
+// with margin-left:auto) so the nav's own margins fully control the free space.
+.live-preview__top-header[data-nav-align] .live-preview__top-header-right {
+  margin-left: 0;
+}
+.live-preview__top-header[data-nav-align='left'] .live-preview__top-header-nav {
+  margin-right: auto;
+}
+.live-preview__top-header[data-nav-align='center'] .live-preview__top-header-nav {
+  margin-left: auto;
+  margin-right: auto;
+}
+.live-preview__top-header[data-nav-align='right'] .live-preview__top-header-nav {
+  margin-left: auto;
+}
+
 .live-preview__top-header-auth {
   display: none;
   align-items: center;
@@ -7762,6 +7780,9 @@ body.builder--phone-only {
 }
 
 .live-preview__top-header-nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
   background: transparent;
   border: none;
   padding: 0;

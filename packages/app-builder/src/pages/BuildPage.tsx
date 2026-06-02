@@ -2231,7 +2231,7 @@ export function BuildPage({
           }}
         />
       )}
-      <div className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}`}>
+      <div className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}`} data-nav-align={desktopNavAlignment}>
         {(() => {
           const isFirstPage = activePageId === pages[0]?.id
           // Always brand the top header on the landing, and on the first page when
@@ -2276,18 +2276,23 @@ export function BuildPage({
             <span className="live-preview__top-header-btn" aria-hidden="true" />
           )
         })()}
-        <nav className="live-preview__top-header-nav">
-          {navPages.map((p) => (
-            <button
-              key={p.id}
-              type="button"
-              className={`live-preview__top-header-nav-link${p.id === activePageId ? ' live-preview__top-header-nav-link--active' : ''}`}
-              onClick={() => navigateToPage(p.id)}
-            >
-              {p.name}
-            </button>
-          ))}
-        </nav>
+        {desktopNavEnabled && (
+          <nav className="live-preview__top-header-nav">
+            {navPages.map((p) => (
+              <button
+                key={p.id}
+                type="button"
+                className={`live-preview__top-header-nav-link${p.id === activePageId ? ' live-preview__top-header-nav-link--active' : ''}`}
+                onClick={() => navigateToPage(p.id)}
+              >
+                {desktopNavDisplayStyle === 'iconText' && (
+                  <AppIcon name={getPageIconName(p, 0)} size={18} />
+                )}
+                <span>{p.name}</span>
+              </button>
+            ))}
+          </nav>
+        )}
         <div className="live-preview__top-header-right">
           {pages.some((p) => p.elements.some((el) => el.componentId === 'product-list')) && (
             <LivePreviewCartButton onClick={() => setIsPreviewCartOpen(true)} />
@@ -4775,7 +4780,7 @@ export function BuildPage({
                           }}
                         />
                       )}
-                      <div className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}`}>
+                      <div className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}`} data-nav-align={desktopNavAlignment}>
                         {(() => {
                           const isFirstPage = activePageId === pages[0]?.id
                           // Show the app icon + title in the top header: always on the
