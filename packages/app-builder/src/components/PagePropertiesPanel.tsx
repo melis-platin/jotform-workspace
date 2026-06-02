@@ -16,25 +16,30 @@ export interface PagePropertiesPage {
   hidden?: boolean
   requireLogin?: boolean
   showIcon?: boolean
+  landing?: boolean
 }
 
 interface PagePropertiesPanelProps {
   page: PagePropertiesPage
+  isFirstPage: boolean
   onRename: (name: string) => void
   onChangeIcon: (icon: string) => void
   onToggleHidden: (hidden: boolean) => void
   onToggleRequireLogin: (require: boolean) => void
   onToggleShowIcon: (show: boolean) => void
+  onToggleLanding: (landing: boolean) => void
   onClose: () => void
 }
 
 export function PagePropertiesPanel({
   page,
+  isFirstPage,
   onRename,
   onChangeIcon,
   onToggleHidden,
   onToggleRequireLogin,
   onToggleShowIcon,
+  onToggleLanding,
   onClose,
 }: PagePropertiesPanelProps) {
   const [tab, setTab] = useState('general')
@@ -74,6 +79,24 @@ export function PagePropertiesPanel({
               />
             </DSFormField>
           </div>
+
+          {isFirstPage && (
+            <div className="property-panel__field property-panel__field--inline">
+              <DSFormField
+                title="Use as Landing Page"
+                description="Show a public landing screen to logged-out visitors; login-required pages stay hidden until sign-in."
+                size="md"
+                showDescription
+                showHelpText={false}
+              >
+                <DSToggle
+                  size="md"
+                  checked={Boolean(page.landing)}
+                  onChange={(e) => onToggleLanding(e.target.checked)}
+                />
+              </DSFormField>
+            </div>
+          )}
 
           <div className="property-panel__field property-panel__field--inline">
             <DSFormField

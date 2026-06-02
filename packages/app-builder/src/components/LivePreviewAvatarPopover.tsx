@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react'
 interface LivePreviewAvatarPopoverProps {
   open: boolean
   onClose: () => void
+  onLogout?: () => void
   userName?: string
 }
 
@@ -15,6 +16,7 @@ const ITEMS = [
 export function LivePreviewAvatarPopover({
   open,
   onClose,
+  onLogout,
   userName = 'Okan Düngel',
 }: LivePreviewAvatarPopoverProps) {
   const ref = useRef<HTMLDivElement>(null)
@@ -48,7 +50,10 @@ export function LivePreviewAvatarPopover({
             <button
               type="button"
               className="live-preview__avatar-popover-item"
-              onClick={onClose}
+              onClick={() => {
+                if (item.id === 'logout' && onLogout) onLogout()
+                else onClose()
+              }}
             >
               {item.label}
             </button>

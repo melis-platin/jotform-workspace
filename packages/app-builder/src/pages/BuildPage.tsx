@@ -39,7 +39,6 @@ import { PhoneStatusBar } from '../components/PhoneStatusBar'
 import { PageNavigationBar, getPageIconName } from '../components/PageNavigationBar'
 import { CanvasPageLabel } from '../components/CanvasPageLabel'
 import { PagePropertiesPanel } from '../components/PagePropertiesPanel'
-import { LivePreviewMenuDrawer } from '../components/LivePreviewMenuDrawer'
 import { LivePreviewMorePagesView } from '../components/LivePreviewMorePagesView'
 import { LivePreviewCartButton } from '../components/LivePreviewCartButton'
 import { LivePreviewCartPage } from '../components/LivePreviewCartPage'
@@ -92,6 +91,8 @@ interface AppPage {
   requireLogin?: boolean
   /** Whether the page's icon is shown (in the nav / page label). Defaults to true. */
   showIcon?: boolean
+  /** First page only: act as a public landing screen for logged-out visitors. */
+  landing?: boolean
   elements: CanvasElement[]
 }
 
@@ -1235,7 +1236,6 @@ export function BuildPage({
   const setAppTitle = (title: string) => onAppTitleChange?.(title)
   const [appSubtitle, setAppSubtitle] = useState(initial.appSubtitle)
   const [appHeaderState, setAppHeaderState] = useState<AppHeaderState>(initial.appHeader)
-  const [isPreviewMenuOpen, setIsPreviewMenuOpen] = useState(false)
   const [isMorePageOpen, setIsMorePageOpen] = useState(false)
   const [isPreviewCartOpen, setIsPreviewCartOpen] = useState(false)
   const [isPreviewDetailOpen, setIsPreviewDetailOpen] = useState(false)
@@ -1243,6 +1243,8 @@ export function BuildPage({
   const [isAvatarPopoverOpen, setIsAvatarPopoverOpen] = useState(false)
   const [isLoginPopoverOpen, setIsLoginPopoverOpen] = useState(false)
   const [loginPopoverView, setLoginPopoverView] = useState<'login' | 'signup'>('login')
+  // Full-screen auth view launched from the landing menu (vs the anchored popover).
+  const [previewAuthView, setPreviewAuthView] = useState<'login' | 'signup' | null>(null)
   const [isPreviewLoggedIn, setIsPreviewLoggedIn] = useState(false)
   const [viewingAsRole, setViewingAsRole] = useState<'anyone' | 'admin' | 'user'>('admin')
   const [previewDevice, setPreviewDevice] = useState<'phone' | 'tablet' | 'desktop'>('phone')
@@ -1318,8 +1320,23 @@ export function BuildPage({
   // Bottom-nav overflow: when 5+ pages exist, show the first 4 and replace the
   // 5th slot with a "More" tab. Tapping More opens a full-screen list of all
   // pages; tapping a page from that list navigates and dismisses More.
+  // Landing mode: the first page acts as a public landing screen for logged-out
+  // visitors. While the landing screen is showing, the bottom nav is replaced by
+  // a hamburger/top-nav; login-required pages are hidden; once logged in the
+  // landing page itself drops out of the nav.
+  const landingPage = pages[0]?.landing ? pages[0] : undefined
+  const landingActive = !!landingPage
+  const showLandingNav = landingActive && !isPreviewLoggedIn
   // Hidden pages stay editable in the canvas but drop out of the app's nav.
-  const navPages = pages.filter((p) => !p.hidden)
+  const navPages = pages.filter((p) => {
+    if (p.hidden) return false
+    if (landingActive) {
+      // login-required pages hidden on the landing — but never hide the landing page itself
+      if (!isPreviewLoggedIn && p.requireLogin && p.id !== landingPage!.id) return false
+      if (isPreviewLoggedIn && p.id === landingPage!.id) return false // rule: landing hidden once logged in
+    }
+    return true
+  })
   const hasNavOverflow = navPages.length >= 5
   const visibleNavPages = hasNavOverflow ? navPages.slice(0, 4) : navPages
   const isActiveInOverflow = hasNavOverflow && navPages.slice(4).some((p) => p.id === activePageId)
@@ -1700,6 +1717,37 @@ export function BuildPage({
     setPagePropertiesId(pageId)
     setRightPanel('page')
   }, [])
+
+  // Landing-mode auth transitions: login lands on the first non-landing page
+  // ("home"); logout returns to the landing page.
+  const handlePreviewLogin = useCallback(() => {
+    setIsPreviewLoggedIn(true)
+    setIsLoginPopoverOpen(false)
+    setIsMorePageOpen(false)
+    const arr = pagesRef.current
+    if (arr[0]?.landing) {
+      const home = arr.find((p) => p.id !== arr[0].id)
+      if (home) setActivePageId(home.id)
+    }
+  }, [])
+
+  const handlePreviewLogout = useCallback(() => {
+    setIsPreviewLoggedIn(false)
+    setIsAvatarPopoverOpen(false)
+    setIsMorePageOpen(false)
+    const arr = pagesRef.current
+    if (arr[0]?.landing) setActivePageId(arr[0].id)
+  }, [])
+
+  // Safety net: if the landing page is the active page while logged in (e.g. the
+  // landing toggle was flipped on while signed in), it's now hidden from nav, so
+  // move to the first visible page to avoid a content/nav-highlight mismatch.
+  useEffect(() => {
+    if (!(landingActive && isPreviewLoggedIn)) return
+    if (activePageId !== landingPage?.id) return
+    const home = pagesRef.current.find((p) => p.id !== pagesRef.current[0].id && !p.hidden)
+    if (home) setActivePageId(home.id)
+  }, [landingActive, isPreviewLoggedIn, activePageId, landingPage?.id])
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -2218,8 +2266,26 @@ export function BuildPage({
               <LivePreviewAvatarPopover
                 open={isAvatarPopoverOpen}
                 onClose={() => setIsAvatarPopoverOpen(false)}
+                onLogout={handlePreviewLogout}
               />
             </>
+          ) : showLandingNav ? (
+            previewDevice === 'desktop' ? (
+              <div className="live-preview__top-header-auth">
+                <AppButton variant="Outlined" size="Small" leftIcon="none" rightIcon="none" label="Login" onClick={() => { setLoginPopoverView('login'); setIsLoginPopoverOpen(true) }} />
+                <AppButton variant="Default" size="Small" leftIcon="none" rightIcon="none" label="Sign up" onClick={() => { setLoginPopoverView('signup'); setIsLoginPopoverOpen(true) }} />
+              </div>
+            ) : (
+              <button
+                type="button"
+                className="live-preview__top-header-menu-btn"
+                aria-label={isMorePageOpen ? 'Close menu' : 'Menu'}
+                aria-expanded={isMorePageOpen}
+                onClick={() => setIsMorePageOpen((v) => !v)}
+              >
+                <AppIcon name={isMorePageOpen ? 'X' : 'Menu'} size={20} />
+              </button>
+            )
           ) : (
             <>
               <button
@@ -2242,7 +2308,7 @@ export function BuildPage({
         <LivePreviewLoginPopover
           open={isLoginPopoverOpen}
           onClose={() => setIsLoginPopoverOpen(false)}
-          onLoggedIn={() => setIsPreviewLoggedIn(true)}
+          onLoggedIn={handlePreviewLogin}
           initialView={loginPopoverView}
         />
       )}
@@ -2250,11 +2316,12 @@ export function BuildPage({
         <div className="live-preview__content app-scope">
           {isMorePageOpen ? (
             <LivePreviewMorePagesView
-              pages={pages}
+              pages={navPages}
               onPageSelect={handleMorePageSelect}
               isLoggedIn={isPreviewLoggedIn}
-              onLoginClick={() => { setLoginPopoverView('login'); setIsLoginPopoverOpen(true) }}
-              onSignUpClick={() => { setLoginPopoverView('signup'); setIsLoginPopoverOpen(true) }}
+              large={showLandingNav}
+              onLoginClick={() => setPreviewAuthView('login')}
+              onSignUpClick={() => setPreviewAuthView('signup')}
             />
           ) : (() => {
             const activePage = pages.find((p) => p.id === activePageId) || pages[0]
@@ -2320,7 +2387,7 @@ export function BuildPage({
           })()}
         </div>
       </div>
-      {pages.length > 1 && !isPreviewCartOpen && !isPreviewCheckoutOpen && !isPreviewDetailOpen && (
+      {pages.length > 1 && !isPreviewCartOpen && !isPreviewCheckoutOpen && !isPreviewDetailOpen && !showLandingNav && (
         <div className="live-preview__bottom-nav app-scope">
           <BottomNavigation
             items={bottomNavItems}
@@ -2331,15 +2398,6 @@ export function BuildPage({
       )}
       <img src={phoneHomeIndicator} alt="" className="live-preview__home-indicator" />
       <FormSheet />
-      <LivePreviewMenuDrawer
-        open={isPreviewMenuOpen}
-        onClose={() => setIsPreviewMenuOpen(false)}
-        pages={pages}
-        activePageId={activePageId}
-        onPageSelect={setActivePageId}
-        appTitle={appTitle}
-        appHeader={appHeaderState}
-      />
       <LivePreviewCartPage
         open={isPreviewCartOpen}
         onClose={() => setIsPreviewCartOpen(false)}
@@ -2351,6 +2409,13 @@ export function BuildPage({
         open={isPreviewCheckoutOpen}
         onClose={() => setIsPreviewCheckoutOpen(false)}
         avatarUrl={previewUserAvatar}
+      />
+      <LivePreviewLoginPopover
+        variant="page"
+        open={previewAuthView !== null}
+        initialView={previewAuthView ?? 'login'}
+        onClose={() => { setPreviewAuthView(null); setIsMorePageOpen(false) }}
+        onLoggedIn={handlePreviewLogin}
       />
       <LivePreviewOrderBar
         hidden={isPreviewCartOpen || isPreviewCheckoutOpen || isPreviewDetailOpen}
@@ -2692,11 +2757,13 @@ export function BuildPage({
                 return (
                   <PagePropertiesPanel
                     page={pp}
+                    isFirstPage={pp.id === pages[0]?.id}
                     onRename={(name) => updatePage(pp.id, { name })}
                     onChangeIcon={(icon) => updatePage(pp.id, { icon })}
                     onToggleHidden={(hidden) => updatePage(pp.id, { hidden })}
                     onToggleRequireLogin={(requireLogin) => updatePage(pp.id, { requireLogin })}
                     onToggleShowIcon={(showIcon) => updatePage(pp.id, { showIcon })}
+                    onToggleLanding={(landing) => updatePage(pp.id, { landing })}
                     onClose={() => { setRightPanel('preview'); setPagePropertiesId(null) }}
                   />
                 )
@@ -4690,8 +4757,19 @@ export function BuildPage({
                               <LivePreviewAvatarPopover
                                 open={isAvatarPopoverOpen}
                                 onClose={() => setIsAvatarPopoverOpen(false)}
+                                onLogout={handlePreviewLogout}
                               />
                             </>
+                          ) : showLandingNav ? (
+                            <button
+                              type="button"
+                              className="live-preview__top-header-menu-btn"
+                              aria-label={isMorePageOpen ? 'Close menu' : 'Menu'}
+                              aria-expanded={isMorePageOpen}
+                              onClick={() => setIsMorePageOpen((v) => !v)}
+                            >
+                              <AppIcon name={isMorePageOpen ? 'X' : 'Menu'} size={20} />
+                            </button>
                           ) : (
                             <button
                               type="button"
@@ -4708,18 +4786,19 @@ export function BuildPage({
                         <LivePreviewLoginPopover
                           open={isLoginPopoverOpen}
                           onClose={() => setIsLoginPopoverOpen(false)}
-                          onLoggedIn={() => setIsPreviewLoggedIn(true)}
+                          onLoggedIn={handlePreviewLogin}
                         />
                       )}
                       <div ref={setPreviewContentScalerEl} className="live-preview__content-scaler app-scope">
                         <div className="live-preview__content app-scope">
                           {isMorePageOpen ? (
                             <LivePreviewMorePagesView
-                              pages={pages}
+                              pages={navPages}
                               onPageSelect={handleMorePageSelect}
                               isLoggedIn={isPreviewLoggedIn}
-                              onLoginClick={() => { setLoginPopoverView('login'); setIsLoginPopoverOpen(true) }}
-                              onSignUpClick={() => { setLoginPopoverView('signup'); setIsLoginPopoverOpen(true) }}
+                              large={showLandingNav}
+                              onLoginClick={() => setPreviewAuthView('login')}
+                              onSignUpClick={() => setPreviewAuthView('signup')}
                             />
                           ) : (() => {
                             const activePage = pages.find((p) => p.id === activePageId) || pages[0]
@@ -4785,7 +4864,7 @@ export function BuildPage({
                           })()}
                         </div>
                       </div>
-                      {pages.length > 1 && !isPreviewCartOpen && !isPreviewCheckoutOpen && !isPreviewDetailOpen && (
+                      {pages.length > 1 && !isPreviewCartOpen && !isPreviewCheckoutOpen && !isPreviewDetailOpen && !showLandingNav && (
                         <div className="live-preview__bottom-nav app-scope">
                           <BottomNavigation
                             items={bottomNavItems}
@@ -4796,15 +4875,6 @@ export function BuildPage({
                       )}
                       <img src={phoneHomeIndicator} alt="" className="live-preview__home-indicator" />
                       <FormSheet />
-                      <LivePreviewMenuDrawer
-                        open={isPreviewMenuOpen}
-                        onClose={() => setIsPreviewMenuOpen(false)}
-                        pages={pages}
-                        activePageId={activePageId}
-                        onPageSelect={setActivePageId}
-                        appTitle={appTitle}
-                        appHeader={appHeaderState}
-                      />
                       <LivePreviewCartPage
                         open={isPreviewCartOpen}
                         onClose={() => setIsPreviewCartOpen(false)}
@@ -4816,6 +4886,13 @@ export function BuildPage({
                         open={isPreviewCheckoutOpen}
                         onClose={() => setIsPreviewCheckoutOpen(false)}
                         avatarUrl={previewUserAvatar}
+                      />
+                      <LivePreviewLoginPopover
+                        variant="page"
+                        open={previewAuthView !== null}
+                        initialView={previewAuthView ?? 'login'}
+                        onClose={() => { setPreviewAuthView(null); setIsMorePageOpen(false) }}
+                        onLoggedIn={handlePreviewLogin}
                       />
                       <LivePreviewOrderBar
                         hidden={isPreviewCartOpen || isPreviewCheckoutOpen || isPreviewDetailOpen}

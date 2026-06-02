@@ -1811,6 +1811,23 @@ body {
   line-height: 0;
 }
 
+.live-preview__top-header-menu-btn {
+  display: inline-flex;
+  align-items: center;
+  // Right-align the glyph inside the 32px tap target so its right edge meets the
+  // header's 16px inset — optically matching the page title's 16px left inset
+  // (a centered icon would sit ~6px further in and read as extra right padding).
+  justify-content: flex-end;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--fg-primary);
+  cursor: pointer;
+  line-height: 0;
+}
+
 .live-preview__avatar-popover {
   position: absolute;
   top: calc(100% + 10px);
@@ -1944,6 +1961,52 @@ body {
     display: block;
     height: var(--space-4);
   }
+}
+
+// Full-screen auth page (login/sign-up opened from the landing menu, not a popover).
+.live-preview__auth-page {
+  position: absolute;
+  top: 54px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 7;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-surface);
+}
+
+.live-preview__auth-page-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 48px;
+  padding: 0 var(--space-3);
+}
+
+.live-preview__auth-page-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--fg-primary);
+  cursor: pointer;
+}
+
+// Vertically center the form in the available space (page mode only).
+.live-preview__auth-page .live-preview__login-popover-inner {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.live-preview__auth-page-heading {
+  margin-bottom: var(--space-5);
 }
 
 .live-preview__login-popover-providers {
@@ -3463,7 +3526,10 @@ body {
 .live-preview__more-pages {
   width: 100%;
   min-height: 100%;
-  padding: var(--space-4) var(--space-3);
+  display: flex;
+  flex-direction: column;
+  // Side padding matches the top-header title (--space-4) so items left-align with it.
+  padding: var(--space-2) var(--space-4) var(--space-4);
   background: var(--bg-surface);
 }
 
@@ -3473,7 +3539,6 @@ body {
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
 }
 
 .live-preview__more-pages-item {
@@ -3481,21 +3546,21 @@ body {
   align-items: center;
   gap: var(--space-3);
   width: 100%;
-  padding: var(--space-3) var(--space-4);
+  // No horizontal padding — content aligns with the page title's left edge.
+  padding: var(--space-4) 0;
   border: 0;
   background: transparent;
-  border-radius: var(--radius-md);
   text-align: left;
   font-family: var(--font-family);
   font-size: var(--font-size-paragraph-md);
   font-weight: var(--font-weight-medium, 500);
   color: var(--fg-primary);
   cursor: pointer;
-  transition: background-color 0.15s ease, color 0.15s ease;
+  // Hover is pointless on touch; use a tap-press dim instead.
+  transition: opacity 0.15s ease;
 
-  &:hover {
-    background: var(--bg-surface-brand);
-    color: var(--fg-brand);
+  &:active {
+    opacity: 0.5;
   }
 }
 
@@ -3504,12 +3569,18 @@ body {
   min-width: 0;
 }
 
+// Landing hamburger menu uses larger item type (bottom-nav "More" stays default).
+.live-preview__more-pages--lg .live-preview__more-pages-item {
+  font-size: var(--font-size-heading-xs);
+}
+
 .live-preview__more-pages-auth {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  margin-top: var(--space-4);
-  padding: 0 var(--space-1);
+  // Pin the auth buttons to the bottom of the menu.
+  margin-top: auto;
+  padding-top: var(--space-4);
 }
 
 .live-preview__menu-item {
@@ -3678,16 +3749,23 @@ body {
 // lifts it above the wrapper's top edge (= the card top) with an 8px gap.
 .canvas-page-label--floating {
   position: absolute;
-  bottom: calc(100% + var(--space-2));
+  // Box bottom sits flush with the card top (no dead zone between them); the
+  // bottom padding keeps an 8px visual gap above the card while bridging the
+  // hover area so the pointer can travel from the card up to the label.
+  bottom: 100%;
   left: 0;
   right: 0;
   z-index: 2;
   padding-top: 0;
-  padding-bottom: 0;
+  padding-bottom: var(--space-2);
   pointer-events: none;
+  // Hidden by default — revealed only while hovering the first page.
+  opacity: 0;
+  transition: opacity 0.15s ease;
 }
 
-.canvas-page-label--floating > * {
+.build-page__page-wrapper--first:hover .canvas-page-label--floating {
+  opacity: 1;
   pointer-events: auto;
 }
 

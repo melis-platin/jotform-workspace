@@ -11,6 +11,8 @@ interface LivePreviewMorePagesViewProps {
   pages: MorePage[]
   onPageSelect: (pageId: string) => void
   isLoggedIn?: boolean
+  /** Larger item type — used by the landing hamburger menu (not the bottom-nav "More"). */
+  large?: boolean
   onLoginClick?: () => void
   onSignUpClick?: () => void
 }
@@ -19,11 +21,12 @@ export function LivePreviewMorePagesView({
   pages,
   onPageSelect,
   isLoggedIn = false,
+  large = false,
   onLoginClick,
   onSignUpClick,
 }: LivePreviewMorePagesViewProps) {
   return (
-    <div className="live-preview__more-pages">
+    <div className={`live-preview__more-pages${large ? ' live-preview__more-pages--lg' : ''}`}>
       <ul className="live-preview__more-pages-list" role="list">
         {pages.map((page, index) => {
           const iconName = getPageIconName(page, index)

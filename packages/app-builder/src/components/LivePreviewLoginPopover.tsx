@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Icon, Checkbox } from '@jf/design-system'
+import { Heading } from '@jf/app-elements'
 
 type View = 'login' | 'signup' | 'email-signup' | 'forgot-password'
 
@@ -8,6 +9,8 @@ interface LivePreviewLoginPopoverProps {
   onClose: () => void
   onLoggedIn?: () => void
   initialView?: View
+  /** 'popover' anchors to the header login icon; 'page' fills the screen (used from the landing menu). */
+  variant?: 'popover' | 'page'
 }
 
 const PROVIDERS = [
@@ -27,6 +30,7 @@ export function LivePreviewLoginPopover({
   onClose,
   onLoggedIn,
   initialView = 'login',
+  variant = 'popover',
 }: LivePreviewLoginPopoverProps) {
   const ref = useRef<HTMLDivElement>(null)
   const [view, setView] = useState<View>(initialView)
@@ -47,7 +51,7 @@ export function LivePreviewLoginPopover({
   }, [open, initialView])
 
   useEffect(() => {
-    if (!open) return
+    if (!open || variant === 'page') return
     const handleClickOutside = (e: MouseEvent) => {
       if (ref.current && !ref.current.contains(e.target as Node)) {
         onClose()
@@ -60,7 +64,7 @@ export function LivePreviewLoginPopover({
       window.clearTimeout(id)
       document.removeEventListener('mousedown', handleClickOutside)
     }
-  }, [open, onClose])
+  }, [open, onClose, variant])
 
   if (!open) return null
 
@@ -70,22 +74,26 @@ export function LivePreviewLoginPopover({
     onClose()
   }
 
-  return (
-    <div
-      ref={ref}
-      className={`live-preview__login-popover app-scope live-preview__login-popover--anchor-${initialView === 'signup' ? 'signup' : 'login'}`}
-      role="dialog"
-      aria-label={
-        view === 'login'
-          ? 'Log in'
-          : view === 'signup'
-          ? 'Sign up'
-          : view === 'email-signup'
-          ? 'Sign up with Email'
-          : 'Forgot password'
-      }
-    >
-      <div className="live-preview__login-popover-inner">
+  const ariaLabel =
+    view === 'login'
+      ? 'Log in'
+      : view === 'signup'
+      ? 'Sign up'
+      : view === 'email-signup'
+      ? 'Sign up with Email'
+      : 'Forgot password'
+
+  const body = (
+    <div className="live-preview__login-popover-inner">
+      {variant === 'page' && (view === 'login' || view === 'signup') && (
+        <div className="live-preview__auth-page-heading">
+          <Heading
+            size="Medium"
+            heading={view === 'login' ? 'Log in' : 'Create an account'}
+            subheading={view === 'login' ? 'Sign in to continue.' : 'Sign up to get started.'}
+          />
+        </div>
+      )}
       {view === 'login' && (
         <>
           <div className="live-preview__login-popover-providers">
@@ -413,7 +421,35 @@ export function LivePreviewLoginPopover({
           </button>
         </>
       )}
-      </div>
+    </div>
+  )
+
+  if (variant === 'page') {
+    return (
+      <aside className="live-preview__auth-page app-scope" role="dialog" aria-label={ariaLabel}>
+        <header className="live-preview__auth-page-header">
+          <button
+            type="button"
+            className="live-preview__auth-page-close"
+            aria-label="Close"
+            onClick={onClose}
+          >
+            <Icon name="xmark" category="general" size={20} />
+          </button>
+        </header>
+        {body}
+      </aside>
+    )
+  }
+
+  return (
+    <div
+      ref={ref}
+      className={`live-preview__login-popover app-scope live-preview__login-popover--anchor-${initialView === 'signup' ? 'signup' : 'login'}`}
+      role="dialog"
+      aria-label={ariaLabel}
+    >
+      {body}
     </div>
   )
 }
