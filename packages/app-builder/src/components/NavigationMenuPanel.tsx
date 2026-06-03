@@ -220,6 +220,8 @@ interface NavigationMenuPanelProps {
   desktopEnabled: boolean
   desktopDisplayStyle: DesktopDisplayStyle
   desktopAlignment: NavAlignment
+  /** Top-variant only: whether the desktop top nav bar stays pinned on scroll. */
+  desktopSticky: boolean
   onChangeDesktopVariant: (variant: DesktopNavVariant) => void
   onToggleEnabled: (enabled: boolean) => void
   onChangeDisplayStyle: (style: NavDisplayStyle) => void
@@ -227,6 +229,7 @@ interface NavigationMenuPanelProps {
   onToggleDesktopEnabled: (enabled: boolean) => void
   onChangeDesktopDisplayStyle: (style: DesktopDisplayStyle) => void
   onChangeDesktopAlignment: (align: NavAlignment) => void
+  onToggleDesktopSticky: (sticky: boolean) => void
   /** Receives the full pages array reordered (hidden pages keep their positions). */
   onReorder: (pages: NavMenuPage[]) => void
   onChangeIcon: (pageId: string, icon: string) => void
@@ -329,6 +332,7 @@ export function NavigationMenuPanel({
   desktopEnabled,
   desktopDisplayStyle,
   desktopAlignment,
+  desktopSticky,
   onChangeDesktopVariant,
   onToggleEnabled,
   onChangeDisplayStyle,
@@ -336,6 +340,7 @@ export function NavigationMenuPanel({
   onToggleDesktopEnabled,
   onChangeDesktopDisplayStyle,
   onChangeDesktopAlignment,
+  onToggleDesktopSticky,
   onReorder,
   onChangeIcon,
   onRemoveFromNav,
@@ -584,6 +589,18 @@ export function NavigationMenuPanel({
                         { value: 'center', label: 'Center' },
                         { value: 'right', label: 'Right' },
                       ]}
+                    />
+                  </DSFormField>
+                </div>
+              )}
+
+              {desktopVariant === 'top' && (
+                <div className="property-panel__field property-panel__field--inline">
+                  <DSFormField title="Sticky Navigation" size="md" showDescription={false} showHelpText={false}>
+                    <DSToggle
+                      size="md"
+                      checked={desktopSticky}
+                      onChange={(e) => onToggleDesktopSticky(e.target.checked)}
                     />
                   </DSFormField>
                 </div>

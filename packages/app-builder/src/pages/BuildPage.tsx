@@ -1134,6 +1134,7 @@ export function BuildPage({
   const [desktopNavEnabled, setDesktopNavEnabled] = useState(true)
   const [desktopNavDisplayStyle, setDesktopNavDisplayStyle] = useState<'iconText' | 'text'>('text')
   const [desktopNavAlignment, setDesktopNavAlignment] = useState<'left' | 'center' | 'right'>('right')
+  const [desktopNavSticky, setDesktopNavSticky] = useState(true)
   const [propertyTab, setPropertyTab] = useState<string>('general')
   const appHeaderImageInputRef = useRef<HTMLInputElement>(null)
   const appHeaderBgImageInputRef = useRef<HTMLInputElement>(null)
@@ -1323,19 +1324,53 @@ export function BuildPage({
   // starts scrolling.
   const [previewContentScalerEl, setPreviewContentScalerEl] = useState<HTMLDivElement | null>(null)
   const [isPreviewContentScrolled, setIsPreviewContentScrolled] = useState(false)
+  // Non-sticky desktop top nav: the bar scrolls away with the content on
+  // scroll-down (transform tied to scroll, no animation) and slides back in on
+  // scroll-up (CSS transition). Driven imperatively to avoid per-frame renders.
+  const previewTopHeaderRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     if (!previewContentScalerEl) {
       setIsPreviewContentScrolled(false)
       return
     }
+    const autoHide =
+      previewDevice === 'desktop' && desktopNavVariant === 'top' && !desktopNavSticky
+    // Clear any leftover transform when auto-hide isn't active (e.g. sticky on).
+    const resetHeader = previewTopHeaderRef.current
+    if (resetHeader && !autoHide) {
+      resetHeader.style.transition = ''
+      resetHeader.style.transform = ''
+    }
+    const HEADER_H = 64
+    let lastScrollTop = previewContentScalerEl.scrollTop
+    let offset = 0
     const onScroll = () => {
-      setIsPreviewContentScrolled(previewContentScalerEl.scrollTop > 0)
+      const st = previewContentScalerEl.scrollTop
+      setIsPreviewContentScrolled(st > 0)
+      if (!autoHide) return
+      const header = previewTopHeaderRef.current
+      if (!header) return
+      const delta = st - lastScrollTop
+      lastScrollTop = st
+      if (st <= 0) {
+        offset = 0
+        header.style.transition = ''
+      } else if (delta > 0) {
+        // scrolling down — move up in lockstep with the content (no animation)
+        offset = Math.max(-HEADER_H, offset - delta)
+        header.style.transition = 'none'
+      } else if (delta < 0) {
+        // scrolling up — slide the whole bar back in (CSS transition)
+        offset = 0
+        header.style.transition = ''
+      }
+      header.style.transform = offset < 0 ? `translateY(${offset}px)` : ''
     }
     onScroll()
     previewContentScalerEl.addEventListener('scroll', onScroll, { passive: true })
     return () => previewContentScalerEl.removeEventListener('scroll', onScroll)
-  }, [previewContentScalerEl])
+  }, [previewContentScalerEl, previewDevice, desktopNavVariant, desktopNavSticky])
 
   // Bottom-nav overflow: when 5+ pages exist, show the first 4 and replace the
   // 5th slot with a "More" tab. Tapping More opens a full-screen list of all
@@ -2232,7 +2267,7 @@ export function BuildPage({
           }}
         />
       )}
-      <div className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}`} data-nav-align={desktopNavAlignment}>
+      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}`} data-nav-align={desktopNavAlignment}>
         {(() => {
           const isFirstPage = activePageId === pages[0]?.id
           // Always brand the top header on the landing, and on the first page when
@@ -2911,6 +2946,7 @@ export function BuildPage({
                 desktopEnabled={desktopNavEnabled}
                 desktopDisplayStyle={desktopNavDisplayStyle}
                 desktopAlignment={desktopNavAlignment}
+                desktopSticky={desktopNavSticky}
                 onChangeDesktopVariant={setDesktopNavVariant}
                 onToggleEnabled={setBottomNavEnabled}
                 onChangeDisplayStyle={setBottomNavDisplayStyle}
@@ -2918,6 +2954,7 @@ export function BuildPage({
                 onToggleDesktopEnabled={setDesktopNavEnabled}
                 onChangeDesktopDisplayStyle={setDesktopNavDisplayStyle}
                 onChangeDesktopAlignment={setDesktopNavAlignment}
+                onToggleDesktopSticky={setDesktopNavSticky}
                 onReorder={(reordered) => setPages(reordered as AppPage[])}
                 onChangeIcon={(pageId, icon) => updatePage(pageId, { icon })}
                 onRemoveFromNav={(pageId) => updatePage(pageId, { hidden: true })}
