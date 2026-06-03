@@ -1132,8 +1132,8 @@ export function BuildPage({
   // Desktop navigation — independent from the mobile settings above.
   const [desktopNavVariant, setDesktopNavVariant] = useState<'top' | 'left'>('top')
   const [desktopNavEnabled, setDesktopNavEnabled] = useState(true)
-  const [desktopNavDisplayStyle, setDesktopNavDisplayStyle] = useState<'iconText' | 'text'>('iconText')
-  const [desktopNavAlignment, setDesktopNavAlignment] = useState<'left' | 'center' | 'right'>('left')
+  const [desktopNavDisplayStyle, setDesktopNavDisplayStyle] = useState<'iconText' | 'text'>('text')
+  const [desktopNavAlignment, setDesktopNavAlignment] = useState<'left' | 'center' | 'right'>('right')
   const [propertyTab, setPropertyTab] = useState<string>('general')
   const appHeaderImageInputRef = useRef<HTMLInputElement>(null)
   const appHeaderBgImageInputRef = useRef<HTMLInputElement>(null)
@@ -2900,6 +2900,8 @@ export function BuildPage({
             {rightPanel === 'navigation' ? (
               <NavigationMenuPanel
                 pages={pages}
+                appName={appTitle}
+                appIcon={appHeaderState.icon}
                 enabled={bottomNavEnabled}
                 displayStyle={bottomNavDisplayStyle}
                 topNavEnabled={topNavEnabled}

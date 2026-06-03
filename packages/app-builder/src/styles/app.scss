@@ -5349,123 +5349,6 @@ body {
 
 // ============================================
 // Navigation Menu panel
-// ============================================
-// Phone mockup slices (shell → bezel → screen), mirroring the live preview. The
-// app's resolved theme tokens are copied onto `.nav-menu-preview` at runtime so
-// the frame + content reflect the live accent + light/dark surfaces, not the dark
-// chrome. Radii match the live preview (shell 60 / bezel 56 / screen 44); only the
-// relevant edge is rounded — the opposite edge is flush, as if the phone continues.
-.nav-menu-preview {
-  background: var(--bg-fill-brand-hover);
-  box-shadow:
-    0px 4px 22px 0px rgba(0, 0, 0, 0.24),
-    0px 1.46px 8.03px 0px rgba(0, 0, 0, 0.17),
-    0px 0.709px 3.899px 0px rgba(0, 0, 0, 0.13),
-    0px 0.347px 1.911px 0px rgba(0, 0, 0, 0.11),
-    0px 0.137px 0.756px 0px rgba(0, 0, 0, 0.07),
-    inset 0px 0px 1px 1px rgba(0, 0, 0, 0.2),
-    inset 0px 0px 5px 1px rgba(0, 0, 0, 0.5);
-}
-
-.nav-menu-preview__bezel {
-  position: relative;
-  background: var(--gray-900);
-  border: 1px solid #000;
-  box-shadow: 0px 0px 2px 2px rgba(255, 255, 255, 0.24);
-
-  // White inner glow on the bezel rim. The screen sits above it (z-index) so the
-  // glow only shows on the visible (non-cut) edges.
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: inherit;
-    pointer-events: none;
-    box-shadow:
-      inset 0px 0px 2px 1px rgba(255, 255, 255, 0.25),
-      inset 0px 0px 6px 0px rgba(255, 255, 255, 0.5);
-  }
-}
-
-.nav-menu-preview__screen {
-  position: relative;
-  z-index: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 96px;
-  overflow: hidden;
-  background: var(--bg-surface);
-}
-
-// Bottom slice: rounded bottom, content pinned to the bottom edge.
-.nav-menu-preview--bottom {
-  padding: 0 4px 4px;
-  border-radius: 0 0 60px 60px;
-}
-.nav-menu-preview--bottom .nav-menu-preview__bezel {
-  padding: 0 12px 12px;
-  border-radius: 0 0 56px 56px;
-}
-.nav-menu-preview--bottom .nav-menu-preview__screen {
-  justify-content: flex-end;
-  border-radius: 0 0 44px 44px;
-}
-
-// Top slice: rounded top, content pinned to the top edge.
-.nav-menu-preview--top {
-  padding: 4px 4px 0;
-  border-radius: 60px 60px 0 0;
-}
-.nav-menu-preview--top .nav-menu-preview__bezel {
-  padding: 12px 12px 0;
-  border-radius: 56px 56px 0 0;
-}
-.nav-menu-preview--top .nav-menu-preview__screen {
-  justify-content: flex-start;
-  border-radius: 44px 44px 0 0;
-}
-
-// Blend the bottom nav into the screen surface — its own border-top is the
-// separator. Specificity beats the dark-mode rule the chrome would leak in.
-.nav-menu-preview__screen.app-scope .bottom-nav {
-  background: transparent;
-}
-
-.nav-menu-preview__home-indicator {
-  width: 120px;
-  height: 4px;
-  margin: var(--spacing-xs) auto var(--spacing-sm);
-  border-radius: var(--radius-rounded);
-  background: var(--fg-primary);
-  opacity: 0.22;
-}
-
-// Top-nav slice content: status bar (scaled to width) + a hamburger app bar.
-.nav-menu-preview__status-bar {
-  width: 100%;
-  height: auto;
-  display: block;
-}
-.nav-menu-preview__top-bar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding: var(--space-2) var(--space-3) var(--space-3);
-  color: var(--fg-primary);
-}
-
-.nav-menu-preview__top-title {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-family: var(--font-family-heading);
-  font-size: var(--font-size-heading-sm);
-  line-height: var(--line-height-heading-sm);
-  font-weight: var(--font-weight-bold);
-  color: var(--fg-primary);
-}
-
 // Desktop top-nav mockup: a laptop window with the nav bar rendered per the
 // chosen display style + alignment. Themed via the copied tokens (brand tint).
 .nav-menu-desktop {
@@ -5574,6 +5457,75 @@ body {
   min-width: 0;
 }
 
+// Mobile preview: reuses the desktop card/screen/content chrome and hosts the
+// real BottomNavigation. Blend it into the screen surface — its own border-top
+// is the separator — and let the rounded screen clip its bottom corners.
+.nav-menu-mobile .bottom-nav {
+  background: transparent;
+}
+
+// Keep the preview a fixed height so switching display style (Icon & Text ↔
+// Icon Only) doesn't resize it and shift the panel below. The content area
+// flex-grows to absorb the bottom nav shrinking in Icon Only.
+.nav-menu-mobile .nav-menu-desktop__screen {
+  display: flex;
+  flex-direction: column;
+  height: 145px;
+}
+
+.nav-menu-mobile .nav-menu-desktop__content {
+  flex: 1;
+}
+
+// Mobile top-nav mockup: app branding (icon + name) on the left, hamburger menu
+// on the right.
+.nav-menu-mobile__top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--spacing-sm) var(--spacing-md);
+  color: var(--fg-primary);
+}
+
+.nav-menu-mobile__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  min-width: 0;
+}
+
+// Branded app-icon square, matching the live preview's compact header icon.
+.nav-menu-mobile__app-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: var(--bg-fill-brand);
+  color: var(--fg-inverse);
+}
+
+.nav-menu-mobile__top-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-paragraph-lg);
+  font-weight: 600;
+  color: var(--fg-primary);
+}
+
+.nav-menu-mobile__top-menu {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  color: var(--fg-primary);
+}
+
 // Sortable list of nav items: drag handle + icon/label card + remove button.
 .nav-menu-list {
   display: flex;
@@ -5588,15 +5540,22 @@ body {
   gap: var(--spacing-xs);
 }
 
+// Drag handle lives inside the card on the left. It collapses to zero width when
+// idle (no reserved gutter) and expands on hover/focus, sliding the row content
+// to the right. Colour matches the remove (X) button.
 .nav-menu-item__drag {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  width: var(--spacing-lg);
-  color: var(--ds-text-medium);
+  align-self: stretch;
+  width: 0;
+  overflow: hidden;
+  color: var(--secondary-text-light);
   cursor: grab;
   touch-action: none;
+  opacity: 0;
+  transition: width 0.12s ease, margin 0.12s ease, opacity 0.12s ease;
 
   &:active {
     cursor: grabbing;
@@ -5609,10 +5568,9 @@ body {
   flex: 1;
   display: flex;
   align-items: center;
-  justify-content: space-between;
   min-width: 0;
   height: 40px;
-  padding-left: var(--spacing-sm);
+  padding-left: var(--spacing-xs);
   padding-right: 6px;
   background: var(--gray-500);
   border: 1px solid var(--gray-700);
@@ -5664,25 +5622,13 @@ body {
   font-weight: var(--font-weight-book);
 }
 
-.nav-menu-item__trailing {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
-}
-
-.nav-menu-item__divider {
-  display: inline-block;
-  width: 1px;
-  height: 23px;
-  background: var(--gray-700);
-}
-
-// Trailing remove (X) — matches the FieldMapper add button's scale/treatment.
+// Trailing remove (X) — hidden until the card is hovered (or the button is
+// focused), matching the drag handle's reveal behaviour.
 .nav-menu-item__remove {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   width: 32px;
   height: 32px;
   padding: 0;
@@ -5691,12 +5637,27 @@ body {
   background: transparent;
   color: var(--secondary-text-light);
   cursor: pointer;
-  transition: background 0.12s ease, color 0.12s ease;
+  opacity: 0;
+  transition: background 0.12s ease, color 0.12s ease, opacity 0.12s ease;
 
   &:hover {
     background: var(--gray-700);
     color: var(--core-white);
   }
+}
+
+// Reveal the drag handle + remove button on card hover / keyboard focus.
+.nav-menu-item__card:hover .nav-menu-item__drag,
+.nav-menu-item__drag:focus-visible,
+.nav-menu-item__card:hover .nav-menu-item__remove,
+.nav-menu-item__remove:focus-visible {
+  opacity: 1;
+}
+
+// Expand the handle (and push the row content right by 16px) on hover / focus.
+.nav-menu-item__card:hover .nav-menu-item__drag,
+.nav-menu-item__drag:focus-visible {
+  width: 16px;
 }
 
 // "Select Page" trigger — appears below the list when pages have been removed

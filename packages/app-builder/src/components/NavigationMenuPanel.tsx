@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useLayoutEffect, type ReactNode, type RefObject } from 'react'
+import { useState, useRef, useEffect, useLayoutEffect, type RefObject } from 'react'
 import { createPortal } from 'react-dom'
 import {
   Icon,
@@ -7,7 +7,7 @@ import {
   Tabs as DSTabs,
   Segmented as DSSegmented,
 } from '@jf/design-system'
-import { BottomNavigation } from '@jf/app-elements'
+import { BottomNavigation, AppIcon } from '@jf/app-elements'
 import {
   DndContext,
   closestCenter,
@@ -25,7 +25,6 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { LucideIcon, IconPickerPopover } from './IconPicker'
 import { DEFAULT_PAGE_ICON } from './PageNavigationBar'
-import { PhoneStatusBar } from './PhoneStatusBar'
 
 export type NavDisplayStyle = 'iconText' | 'icon'
 export type DesktopDisplayStyle = 'iconText' | 'text'
@@ -37,8 +36,8 @@ export type DesktopNavVariant = 'top' | 'left'
 // copy the app's resolved theme tokens from <html> onto the mockup root — the
 // same accent + light/dark surfaces the real live preview shows.
 const PREVIEW_THEME_TOKENS = [
-  '--bg-surface', '--bg-surface-hover', '--bg-page', '--bg-fill-brand-hover',
-  '--border', '--fg-primary', '--fg-secondary', '--fg-tertiary',
+  '--bg-surface', '--bg-surface-hover', '--bg-page', '--bg-fill-brand', '--bg-fill-brand-hover',
+  '--border', '--fg-primary', '--fg-secondary', '--fg-tertiary', '--fg-inverse',
   '--fg-brand', '--fg-brand-hover', '--font-family', '--font-family-heading', '--gray-900',
   // Primitives the semantics derive from — backstop if a semantic resolves to a var().
   '--neutral-0', '--neutral-50', '--neutral-100', '--neutral-200', '--neutral-300',
@@ -63,15 +62,32 @@ function useCopiedThemeTokens<T extends HTMLElement>(ref: RefObject<T | null>) {
   }, [ref])
 }
 
-// Phone mockup slice (shell → bezel → screen) mirroring the live preview. `variant`
-// rounds the matching corners and pins content to the top or bottom edge.
-function PhonePreview({ variant, children }: { variant: 'top' | 'bottom'; children: ReactNode }) {
+// Mobile top-nav mockup: the same flat card chrome as the other previews, with
+// the app branding (icon + name) on the left and a hamburger menu on the right,
+// a divider, then the placeholder content. Shares the fixed-height card so it
+// stays consistent with the bottom-nav preview.
+function MobileTopPreview({ appName, appIcon }: { appName: string; appIcon: string }) {
   const ref = useRef<HTMLDivElement>(null)
   useCopiedThemeTokens(ref)
   return (
-    <div className={`nav-menu-preview nav-menu-preview--${variant}`} ref={ref}>
-      <div className="nav-menu-preview__bezel">
-        <div className="nav-menu-preview__screen app-scope">{children}</div>
+    <div className="nav-menu-desktop nav-menu-mobile" ref={ref}>
+      <div className="nav-menu-desktop__screen app-scope">
+        <div className="nav-menu-mobile__top-bar">
+          <span className="nav-menu-mobile__brand">
+            <span className="nav-menu-mobile__app-icon">
+              <AppIcon name={appIcon} size={24} />
+            </span>
+            <span className="nav-menu-mobile__top-title">{appName}</span>
+          </span>
+          <span className="nav-menu-mobile__top-menu">
+            <AppIcon name="Menu" size={20} />
+          </span>
+        </div>
+        <div className="nav-menu-desktop__divider" />
+        <div className="nav-menu-desktop__content">
+          <span className="nav-menu-desktop__placeholder" />
+          <span className="nav-menu-desktop__base" />
+        </div>
       </div>
     </div>
   )
@@ -143,6 +159,46 @@ function DesktopPreview({
   )
 }
 
+// Mobile nav mockup: reuses the same flat card chrome as DesktopPreview
+// (peach card → white screen → placeholder content) and pins the real themed
+// BottomNavigation under it, so the selected/default item styles come straight
+// from the app theme. Its own border-top serves as the separator.
+function MobilePreview({
+  pages,
+  displayStyle,
+}: {
+  pages: NavMenuPage[]
+  displayStyle: NavDisplayStyle
+}) {
+  const ref = useRef<HTMLDivElement>(null)
+  useCopiedThemeTokens(ref)
+  const navPages = pages.filter((p) => !p.hidden)
+  // Mirror the live bottom nav: first 4 items, plus a "More" item at 5+.
+  const previewItems =
+    navPages.length >= 5
+      ? [
+          ...navPages.slice(0, 4).map((p) => ({ icon: p.icon || DEFAULT_PAGE_ICON, label: p.name })),
+          { icon: 'Ellipsis', label: 'More' },
+        ]
+      : navPages.map((p) => ({ icon: p.icon || DEFAULT_PAGE_ICON, label: p.name }))
+
+  return (
+    <div className="nav-menu-desktop nav-menu-mobile" ref={ref}>
+      <div className="nav-menu-desktop__screen app-scope">
+        <div className="nav-menu-desktop__content">
+          <span className="nav-menu-desktop__placeholder" />
+          <span className="nav-menu-desktop__base" />
+        </div>
+        <BottomNavigation
+          items={previewItems}
+          activeIndex={0}
+          showLabels={displayStyle !== 'icon'}
+        />
+      </div>
+    </div>
+  )
+}
+
 export interface NavMenuPage {
   id: string
   name: string
@@ -154,6 +210,9 @@ export interface NavMenuPage {
 interface NavigationMenuPanelProps {
   /** Full ordered page list — the panel lists the non-hidden ones as nav items. */
   pages: NavMenuPage[]
+  /** App branding shown in the top-nav preview. */
+  appName: string
+  appIcon: string
   enabled: boolean
   displayStyle: NavDisplayStyle
   topNavEnabled: boolean
@@ -205,10 +264,10 @@ function NavMenuItem({
 
   return (
     <div ref={setNodeRef} style={style} className="nav-menu-item">
-      <span className="nav-menu-item__drag" {...attributes} {...listeners}>
-        <Icon name="grid-dots-vertical" category="general" size={18} />
-      </span>
       <div className="nav-menu-item__card">
+        <span className="nav-menu-item__drag" {...attributes} {...listeners}>
+          <Icon name="grid-dots-vertical" category="general" size={18} />
+        </span>
         <div className="nav-menu-item__chip-slot" ref={chipRef}>
           <button
             type="button"
@@ -226,17 +285,14 @@ function NavMenuItem({
           </button>
           <span className="nav-menu-item__label">{page.name}</span>
         </div>
-        <div className="nav-menu-item__trailing">
-          <span className="nav-menu-item__divider" aria-hidden />
-          <button
-            type="button"
-            className="nav-menu-item__remove"
-            onClick={onRemove}
-            aria-label={`Remove ${page.name} from navigation`}
-          >
-            <Icon name="xmark" size={16} />
-          </button>
-        </div>
+        <button
+          type="button"
+          className="nav-menu-item__remove"
+          onClick={onRemove}
+          aria-label={`Remove ${page.name} from navigation`}
+        >
+          <Icon name="xmark" size={16} />
+        </button>
       </div>
       {iconPickerOpen && (
         <IconPickerPopover
@@ -256,6 +312,8 @@ function NavMenuItem({
 
 export function NavigationMenuPanel({
   pages,
+  appName,
+  appIcon,
   enabled,
   displayStyle,
   topNavEnabled,
@@ -300,15 +358,6 @@ export function NavigationMenuPanel({
     document.addEventListener('mousedown', handle)
     return () => document.removeEventListener('mousedown', handle)
   }, [addOpen])
-
-  // Preview mirrors the live bottom nav: first 4 items, plus a "More" item at 5+.
-  const previewItems =
-    navPages.length >= 5
-      ? [
-          ...navPages.slice(0, 4).map((p) => ({ icon: p.icon || DEFAULT_PAGE_ICON, label: p.name })),
-          { icon: 'Ellipsis', label: 'More' },
-        ]
-      : navPages.map((p) => ({ icon: p.icon || DEFAULT_PAGE_ICON, label: p.name }))
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
@@ -363,6 +412,12 @@ export function NavigationMenuPanel({
 
           {enabled && (
             <>
+              {navPages.length > 0 && (
+                <div className="property-panel__field">
+                  <MobilePreview pages={pages} displayStyle={displayStyle} />
+                </div>
+              )}
+
               <div className="property-panel__field">
                 <DSFormField title="Display Style" size="md" showDescription={false} showHelpText={false}>
                   <DSSegmented
@@ -378,61 +433,50 @@ export function NavigationMenuPanel({
                 </DSFormField>
               </div>
 
-              {previewItems.length > 0 && (
-                <div className="property-panel__field">
-                  <PhonePreview variant="bottom">
-                    <BottomNavigation
-                      items={previewItems}
-                      activeIndex={0}
-                      showLabels={displayStyle !== 'icon'}
-                    />
-                    <span className="nav-menu-preview__home-indicator" />
-                  </PhonePreview>
-                </div>
-              )}
-
               <div className="property-panel__field">
-                <DndContext
-                  id="nav-menu-dnd"
-                  sensors={sensors}
-                  collisionDetection={closestCenter}
-                  onDragEnd={handleDragEnd}
-                >
-                  <SortableContext
-                    items={navPages.map((p) => p.id)}
-                    strategy={verticalListSortingStrategy}
+                <DSFormField title="Menu Items" size="md" showDescription={false} showHelpText={false}>
+                  <DndContext
+                    id="nav-menu-dnd"
+                    sensors={sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={handleDragEnd}
                   >
-                    <div className="nav-menu-list">
-                      {navPages.map((page) => (
-                        <NavMenuItem
-                          key={page.id}
-                          page={page}
-                          onChangeIcon={(icon) => onChangeIcon(page.id, icon)}
-                          onRemove={() => onRemoveFromNav(page.id)}
-                        />
-                      ))}
-                    </div>
-                  </SortableContext>
-                </DndContext>
+                    <SortableContext
+                      items={navPages.map((p) => p.id)}
+                      strategy={verticalListSortingStrategy}
+                    >
+                      <div className="nav-menu-list">
+                        {navPages.map((page) => (
+                          <NavMenuItem
+                            key={page.id}
+                            page={page}
+                            onChangeIcon={(icon) => onChangeIcon(page.id, icon)}
+                            onRemove={() => onRemoveFromNav(page.id)}
+                          />
+                        ))}
+                      </div>
+                    </SortableContext>
+                  </DndContext>
 
-                {hiddenPages.length > 0 && (
-                  <button
-                    type="button"
-                    ref={addTriggerRef}
-                    className="nav-menu-add"
-                    onClick={() => {
-                      if (!addOpen && addTriggerRef.current) {
-                        setAddAnchor(addTriggerRef.current.getBoundingClientRect())
-                      }
-                      setAddOpen((v) => !v)
-                    }}
-                  >
-                    <span className="nav-menu-add__icon">
-                      <Icon name="plus-circle" category="general" size={16} />
-                    </span>
-                    <span>Select Page</span>
-                  </button>
-                )}
+                  {hiddenPages.length > 0 && (
+                    <button
+                      type="button"
+                      ref={addTriggerRef}
+                      className="nav-menu-add"
+                      onClick={() => {
+                        if (!addOpen && addTriggerRef.current) {
+                          setAddAnchor(addTriggerRef.current.getBoundingClientRect())
+                        }
+                        setAddOpen((v) => !v)
+                      }}
+                    >
+                      <span className="nav-menu-add__icon">
+                        <Icon name="plus-circle" category="general" size={16} />
+                      </span>
+                      <span>Select Page</span>
+                    </button>
+                  )}
+                </DSFormField>
               </div>
             </>
           )}
@@ -454,16 +498,7 @@ export function NavigationMenuPanel({
 
           {topNavEnabled && (
             <div className="property-panel__field">
-              <PhonePreview variant="top">
-                <PhoneStatusBar
-                  className="nav-menu-preview__status-bar"
-                  style={{ color: 'var(--fg-primary, #000)' }}
-                />
-                <div className="nav-menu-preview__top-bar">
-                  <LucideIcon name="Menu" size={22} />
-                  <span className="nav-menu-preview__top-title">{navPages[0]?.name ?? 'Home'}</span>
-                </div>
-              </PhonePreview>
+              <MobileTopPreview appName={appName} appIcon={appIcon} />
             </div>
           )}
         </div>
@@ -471,21 +506,6 @@ export function NavigationMenuPanel({
 
       {tab === 'desktop' && (
         <div className="property-panel__body">
-          <div className="property-panel__field">
-            <DSFormField title="Layout" size="md" showDescription={false} showHelpText={false}>
-              <DSSegmented
-                accent="apps"
-                variant="text"
-                value={desktopVariant}
-                onChange={(value) => onChangeDesktopVariant(value as DesktopNavVariant)}
-                items={[
-                  { value: 'top', label: 'Top' },
-                  { value: 'left', label: 'Left' },
-                ]}
-              />
-            </DSFormField>
-          </div>
-
           <div className="property-panel__field property-panel__field--inline">
             <DSFormField
               title={desktopVariant === 'left' ? 'Enable Side Navigation' : 'Enable Top Navigation'}
@@ -510,6 +530,21 @@ export function NavigationMenuPanel({
                     variant={desktopVariant}
                     displayStyle={desktopDisplayStyle}
                     alignment={desktopAlignment}
+                  />
+                </DSFormField>
+              </div>
+
+              <div className="property-panel__field">
+                <DSFormField title="Layout" size="md" showDescription={false} showHelpText={false}>
+                  <DSSegmented
+                    accent="apps"
+                    variant="text"
+                    value={desktopVariant}
+                    onChange={(value) => onChangeDesktopVariant(value as DesktopNavVariant)}
+                    items={[
+                      { value: 'top', label: 'Top' },
+                      { value: 'left', label: 'Left' },
+                    ]}
                   />
                 </DSFormField>
               </div>
