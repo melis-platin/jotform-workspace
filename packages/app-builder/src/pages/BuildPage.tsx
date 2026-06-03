@@ -4787,9 +4787,9 @@ export function BuildPage({
                         value={viewingAsRole}
                         onChange={(v) => setViewingAsRole(v as 'anyone' | 'admin' | 'user')}
                         options={[
-                          { value: 'anyone', label: 'Anyone', leading: <span className="live-preview__role-dot" style={{ background: 'var(--green-200)' }} /> },
                           { value: 'admin', label: 'Admin', leading: <span className="live-preview__role-dot" style={{ background: 'var(--purple-200)' }} /> },
                           { value: 'user', label: 'User', leading: <span className="live-preview__role-dot" style={{ background: 'var(--blue-200)' }} /> },
+                          { value: 'anyone', label: 'Public', leading: <span className="live-preview__role-dot" style={{ background: 'var(--green-200)' }} /> },
                         ]}
                       />
                     </div>

@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Icon, DropdownSingle as DSDropdownSingle } from '@jf/design-system'
+import { Icon } from '@jf/design-system'
 import { QrPlaceholder } from './QrPlaceholder'
 import { TabletStatusBar } from './TabletStatusBar'
 
@@ -16,9 +16,9 @@ interface AppPreviewScreenProps {
 }
 
 const ROLE_OPTIONS = [
-  { value: 'anyone', label: 'Anyone', dot: 'var(--green-200)' },
-  { value: 'admin', label: 'Admin', dot: 'var(--purple-200)' },
-  { value: 'user', label: 'User', dot: 'var(--blue-200)' },
+  { value: 'admin', label: 'Admin' },
+  { value: 'user', label: 'User' },
+  { value: 'anyone', label: 'Public' },
 ]
 
 const DEVICE_TABS: { id: PreviewDevice; label: string; icon: string }[] = [
@@ -31,17 +31,21 @@ export function AppPreviewScreen({ device, onDeviceChange, onBack, appScreen, ro
   return (
     <div className="app-preview-screen" role="dialog" aria-label="App preview">
       <header className="app-preview-screen__bar">
-        <div className="app-preview-screen__role-dropdown">
-          <DSDropdownSingle
-            size="md"
-            value={role}
-            onChange={(v) => onRoleChange?.(v as PreviewRole)}
-            options={ROLE_OPTIONS.map((o) => ({
-              value: o.value,
-              label: o.label,
-              leading: <span className="app-preview-screen__role-dot" style={{ background: o.dot }} />,
-            }))}
-          />
+        <div className="app-preview-screen__role-segment" role="group" aria-label="Preview as role">
+          {ROLE_OPTIONS.map((o) => {
+            const isActive = o.value === role
+            return (
+              <button
+                key={o.value}
+                type="button"
+                aria-pressed={isActive}
+                className={`app-preview-screen__role-option${isActive ? ' app-preview-screen__role-option--active' : ''}`}
+                onClick={() => onRoleChange?.(o.value as PreviewRole)}
+              >
+                {o.label}
+              </button>
+            )
+          })}
         </div>
         <div className="app-preview-screen__tabs" role="tablist">
           {DEVICE_TABS.map((tab) => {

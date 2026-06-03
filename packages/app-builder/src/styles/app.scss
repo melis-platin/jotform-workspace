@@ -7593,33 +7593,72 @@ body.builder--phone-only {
   color: var(--secondary-text-lightest);
 }
 
-.app-preview-screen__role-dropdown {
-  min-width: 140px;
+.app-preview-screen__role-segment {
+  display: inline-flex;
+  align-items: stretch; // full-height segments so the active fill is flush top/bottom
+  overflow: visible; // let the active segment's solid white outline render past the track ring
+  background: color-mix(in srgb, var(--fg-inverse) 16%, transparent);
+  border-radius: 8px;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--fg-inverse) 45%, transparent);
+}
 
-  .jf-dropdown {
-    background: color-mix(in srgb, var(--fg-inverse) 16%, transparent);
-    border-color: color-mix(in srgb, var(--fg-inverse) 45%, transparent);
-    border-radius: 4px;
-    color: var(--fg-inverse);
+.app-preview-screen__role-option {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--ds-space-xs) var(--ds-space-md);
+  background: transparent;
+  border: none;
+  color: var(--fg-inverse);
+  font-family: var(--ds-font-family);
+  font-size: var(--ds-font-size-sm);
+  font-weight: var(--ds-font-weight-medium);
+  line-height: var(--ds-line-height-sm);
+  white-space: nowrap;
+  cursor: pointer;
+  opacity: 0.9;
+  transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
 
-    &:hover {
-      background: color-mix(in srgb, var(--fg-inverse) 24%, transparent);
-      border-color: color-mix(in srgb, var(--fg-inverse) 60%, transparent);
-    }
+  // round the outer ends so the active fill + its white outline match the pill corners
+  &:first-child {
+    border-top-left-radius: 8px;
+    border-bottom-left-radius: 8px;
   }
 
-  .jf-dropdown__value,
-  .jf-dropdown__trailing {
-    color: var(--fg-inverse);
+  &:last-child {
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
+  }
+
+  // thin divider between adjacent segments (hidden next to the active fill)
+  & + & {
+    border-left: 1px solid color-mix(in srgb, var(--fg-inverse) 30%, transparent);
+  }
+
+  &:hover {
+    opacity: 1;
+    background: color-mix(in srgb, var(--fg-inverse) 14%, transparent);
+  }
+
+  &--active {
+    opacity: 1;
+    color: #AD4EDE;
+    background: var(--fg-inverse);
+    border-left-color: transparent;
+    position: relative;
+    z-index: 1; // paint the white outline above the track ring and neighbours
+    // solid 100% white border around the selected segment — overrides the
+    // translucent track ring on its outer (left/top/bottom) edges
+    box-shadow: 0 0 0 1px var(--fg-inverse);
+
+    &:hover {
+      background: var(--fg-inverse);
+    }
   }
 }
 
-.app-preview-screen__role-dot {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  flex-shrink: 0;
+// hide the divider on the segment immediately following the active (filled) one
+.app-preview-screen__role-option--active + .app-preview-screen__role-option {
+  border-left-color: transparent;
 }
 
 .app-preview-screen__canvas {
@@ -7982,14 +8021,16 @@ body.builder--phone-only {
   position: relative;
   display: flex;
   align-items: center;
+  // avatar (24) + gap (8) = nav icon (20) + gap (12) = 32, so the avatar's left
+  // lines up with the menu-item icons AND the name lines up with their labels.
   gap: var(--space-2);
-  padding: var(--space-2);
+  padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-md);
 }
 
 .live-preview__side-nav-avatar {
-  width: 32px;
-  height: 32px;
+  width: 24px;
+  height: 24px;
   flex-shrink: 0;
   border-radius: var(--radius-rounded);
   object-fit: cover;
