@@ -23,7 +23,6 @@ const FONT_OPTIONS = [
   'Bricolage Grotesque',
   'DM Sans',
   'Figtree',
-  'Frances',
   'Fredoka',
   'Geist',
   'Google Sans',
