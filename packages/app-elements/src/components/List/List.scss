@@ -49,6 +49,23 @@
       flex-direction: column;
       gap: var(--space-2);
     }
+
+    // Responsive collapse, keyed to the `app-content` container (page width)
+    // like the type scale and card flow — never the browser viewport. cardSize
+    // still sets the desktop column count; it steps down on a narrower page
+    // (tablet → 2-up, phone → single column).
+    @container app-content (max-width: 719px) {
+      &--small {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @container app-content (max-width: 559px) {
+      &--small,
+      &--medium {
+        grid-template-columns: 1fr;
+      }
+    }
   }
 
   &--selected {

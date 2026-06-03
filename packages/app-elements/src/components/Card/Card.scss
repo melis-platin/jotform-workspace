@@ -38,11 +38,11 @@
   }
 
   &--shrinked {
-    max-width: 300px;
-
-    @media (max-width: 768px) {
-      max-width: 100%;
-    }
+    // Width is owned by the canvas layout: the section flows shrinked tiles via
+    // --card-min against the `app-content` container, so the card simply fills
+    // its column (two-up on a wide page, full-width when the row collapses on a
+    // narrow one). No self-imposed max-width — that would fight the column.
+    width: 100%;
   }
 
   &--hover,

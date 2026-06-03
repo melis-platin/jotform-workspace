@@ -540,6 +540,20 @@ function isComponentShrinkable(componentId: string): boolean {
   return !!comp?.properties.some((p) => p.name === 'Shrinked')
 }
 
+// Elements that auto-flow into a responsive grid on a wide page WITHOUT the
+// explicit Shrinked flag: a run of consecutive tiles reads as a 2-up grid on
+// desktop and collapses to a single column on a narrow page. A lone tile (or one
+// separated by a full-width element) grows back to full width via flex-grow, so
+// no run detection is needed — flex-wrap groups them. Driven purely by the
+// `app-content` container width, like the type scale.
+//
+// Scoped to the *vertical* card layout only (icon/image on top — tile-like).
+// Horizontal cards are wide, list-style rows and stay full-width; other element
+// types use the explicit Shrinked flag.
+function isAutoFlowElement(el: CanvasElement): boolean {
+  return el.componentId === 'card' && el.variants?.['Layout'] === 'Vertical'
+}
+
 function isElementShrinked(el: CanvasElement): boolean {
   return el.properties['Shrinked'] === true
 }
@@ -619,6 +633,7 @@ const SortableElement = memo(function SortableElement({
 }) {
   const comp = ComponentRegistry.get(element.componentId)
   const isShrinked = element.properties['Shrinked'] === true
+  const isFlow = isAutoFlowElement(element)
   const sectionRef = useRef<HTMLElement>(null)
   const handleRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
@@ -795,7 +810,7 @@ const SortableElement = memo(function SortableElement({
   return (
     <section
       ref={sectionRef}
-      className={`themes-view__section build-page__canvas-element ${isSelected ? 'build-page__canvas-element--selected' : ''} ${isShrinked ? 'build-page__canvas-element--shrinked' : ''}`}
+      className={`themes-view__section build-page__canvas-element ${isSelected ? 'build-page__canvas-element--selected' : ''} ${isShrinked ? 'themes-view__section--shrinked build-page__canvas-element--shrinked' : ''} ${isFlow ? 'themes-view__section--flow' : ''}`}
       data-element-id={element.id}
       data-component-id={element.componentId}
       style={hideDuringDrag ? { display: 'none' } : undefined}
@@ -2539,13 +2554,15 @@ export function BuildPage({
                     const previewProps = {
                       ...element.properties,
                       'Add New Card': false,
-                      // Strip Shrinked in mobile preview so elements stretch full-width.
-                      // Button keeps its shrinked state — a full-width button is worse than a compact one.
-                      Shrinked: element.componentId === 'button' ? element.properties['Shrinked'] : false,
                     }
-                    const isButtonShrinked = element.componentId === 'button' && element.properties['Shrinked'] === true
+                    // Shrinked elements carry --shrinked; columns are resolved by
+                    // the @container app-content rule (full-width on a narrow page,
+                    // flowing two-up once it is wide enough). No device-specific
+                    // stripping needed — the container query handles every shell.
+                    const isShrinked = element.properties['Shrinked'] === true
+                    const isFlow = isAutoFlowElement(element)
                     return (
-                      <section key={element.id} className={`themes-view__section${isButtonShrinked ? ' themes-view__section--shrinked' : ''}`}>
+                      <section key={element.id} className={`themes-view__section${isShrinked ? ' themes-view__section--shrinked' : ''}${isFlow ? ' themes-view__section--flow' : ''}`}>
                         {comp.render(element.variants, previewProps, element.states)}
                       </section>
                     )
@@ -5055,13 +5072,15 @@ export function BuildPage({
                                     const previewProps = {
                                       ...element.properties,
                                       'Add New Card': false,
-                                      // Strip Shrinked in mobile preview so elements stretch full-width.
-                                      // Button keeps its shrinked state — a full-width button is worse than a compact one.
-                                      Shrinked: element.componentId === 'button' ? element.properties['Shrinked'] : false,
                                     }
-                                    const isButtonShrinked = element.componentId === 'button' && element.properties['Shrinked'] === true
+                                    // Shrinked elements carry --shrinked; columns are resolved by
+                                    // the @container app-content rule (full-width on a narrow page,
+                                    // flowing two-up once it is wide enough). No device-specific
+                                    // stripping needed — the container query handles every shell.
+                                    const isShrinked = element.properties['Shrinked'] === true
+                                    const isFlow = isAutoFlowElement(element)
                                     return (
-                                      <section key={element.id} className={`themes-view__section${isButtonShrinked ? ' themes-view__section--shrinked' : ''}`}>
+                                      <section key={element.id} className={`themes-view__section${isShrinked ? ' themes-view__section--shrinked' : ''}${isFlow ? ' themes-view__section--flow' : ''}`}>
                                         {comp.render(element.variants, previewProps, element.states)}
                                       </section>
                                     )

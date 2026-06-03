@@ -1090,8 +1090,9 @@ body {
   }
 
   .themes-view__app {
-    flex-direction: row;
-    flex-wrap: wrap;
+    // Row/wrap + shrinked column flow come from the shared @container
+    // app-content rule (app-elements); the editor canvas is wide enough to
+    // trigger it. Keep the editor's own spacing + positioning chrome here.
     gap: var(--space-4);
     padding: var(--space-6);
     position: relative;
@@ -2556,11 +2557,17 @@ body {
   }
 
   .themes-view__app {
+    // Phone: a single stacked column. The shared @container app-content rule
+    // (app-elements) flips this to a wrapping row and flows --shrinked tiles by
+    // --card-min once the page card is wide enough (tablet/desktop). Only the
+    // spacing chrome lives here; flow is owned by the shared rule.
     padding: var(--space-4, 16px);
     gap: var(--space-4, 16px);
-    flex-direction: row;
-    flex-wrap: wrap;
     flex-shrink: 0;
+
+    @container app-content (min-width: 560px) {
+      padding: var(--space-6);
+    }
   }
 
   // Sticky-footer slot for the attribution banner: margin-top:auto pushes
@@ -2569,17 +2576,6 @@ body {
   .themes-view__attribution-footer {
     margin-top: auto;
     padding: 0 var(--space-4, 16px) var(--space-4, 16px);
-  }
-
-  .themes-view__section {
-    flex: 1 1 100%;
-    max-width: 100%;
-    min-width: 0;
-  }
-
-  .themes-view__section--shrinked {
-    flex: 1 1 calc(50% - var(--space-4) / 2);
-    max-width: calc(50% - var(--space-4) / 2);
   }
 
   // Header actions slot — rely on .jf-app-header's existing var(--space-4)
@@ -3989,18 +3985,10 @@ body {
   --ds-border-width-selected: 4px;
 
   &--shrinked {
-    flex: 1 1 calc(50% - var(--space-4) / 2);
-    max-width: calc(50% - var(--space-4) / 2);
-    min-width: 0;
+    // Width/flow is owned by the shared .themes-view__section--shrinked rule
+    // (app-elements, @container app-content) — this element also carries that
+    // class. Keep only the editor-canvas-specific top alignment here.
     align-self: flex-start;
-
-    // Mobile: stretch to full width, except buttons which stay compact
-    @media (max-width: 768px) {
-      &:not([data-component-id="button"]) {
-        flex: 1 1 100%;
-        max-width: 100%;
-      }
-    }
   }
 }
 
@@ -7814,23 +7802,12 @@ body.builder--phone-only {
     }
   }
 
+  // Layout (row/wrap + shrinked column flow) now lives in app-elements under
+  // @container app-content, so it applies to the editor canvas and production
+  // too — not just this desktop-shell viewport breakpoint. Keep only the
+  // desktop-shell-specific positioning context here.
   .themes-view__app {
-    flex-direction: row;
-    flex-wrap: wrap;
-    gap: var(--space-4);
-    padding: var(--space-6);
     position: relative;
-  }
-
-  .themes-view__section {
-    flex: 1 1 100%;
-    max-width: 100%;
-    min-width: 0;
-  }
-
-  .themes-view__section--shrinked {
-    flex: 1 1 calc(50% - var(--space-4) / 2);
-    max-width: calc(50% - var(--space-4) / 2);
   }
 
   // Desktop attribution: banner sits *below* the centered canvas card

@@ -162,7 +162,25 @@
     grid-template-columns: 1fr;
   }
 
-  // Mobile: grid views collapse to single column
+  // Responsive collapse, keyed to the `app-content` container (page width) like
+  // the type scale and card flow — never the browser viewport. The toolbar still
+  // sets the intended desktop column count; it just steps down gracefully on a
+  // narrower page (tablet → 2-up, phone → single column) instead of cramping.
+  @container app-content (max-width: 719px) {
+    &--3col {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @container app-content (max-width: 559px) {
+    &--3col,
+    &--2col {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  // Shrinked (compact, width-capped) product lists are always single column —
+  // the page may be wide but the list box is narrow.
   .jf-product-list--shrinked & {
     &--3col,
     &--2col {

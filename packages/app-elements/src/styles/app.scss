@@ -133,6 +133,16 @@
   --radius-xl: 16px;
   --radius-xxl: 24px;
   --radius-rounded: 9999px;
+
+  // ---- Responsive layout ----
+  // Tiles/cards flow against the `app-content` container (the page card) — the
+  // same container the fluid type scale measures against — so columns respond to
+  // page width in every shell (editor canvas, phone/tablet/desktop preview) and
+  // in production, never the browser viewport. --card-min is the comfortable
+  // minimum tile width before a row wraps; at 260px a 760px desktop page fits
+  // two per row (four cards → 2×2), collapsing to a single column on phones.
+  --card-min: 260px;
+  --grid-gap: var(--space-4);
 }
 
 // Radius Modes
@@ -2881,6 +2891,54 @@ body {
     padding-top: 24px;
     border-top: 1px solid var(--color-border);
     gap: 16px;
+  }
+}
+
+// ── Responsive element flow ──────────────────────────────────────────────────
+// Once the page card (`app-content` container) is wide enough, the stacked
+// element column becomes a wrapping row. Sections marked --shrinked flow by
+// --card-min (two-up on a tablet/desktop page, more only if the page gets much
+// wider), collapsing back to a single full-width column on narrow pages. Keyed
+// off the SAME container the type scale uses — so it is correct in the editor
+// canvas, every preview shell, and production, never the browser viewport. This
+// replaces the previous viewport @media (min-width: 769px) layout switch.
+// This is the single source of truth for element FLOW (row/wrap + shrinked
+// column sizing). Per-shell padding/gap stays in the .live-preview__content /
+// .build-page__canvas scopes; this block intentionally sets no padding so it
+// never fights those. Specificity is low on purpose — nothing should override
+// the flow, only the spacing chrome around it.
+@container app-content (min-width: 560px) {
+  .themes-view__app {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--grid-gap);
+  }
+
+  .themes-view__section {
+    flex: 1 1 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  // --shrinked: explicit per-element pairing. Lives at the 560px threshold so a
+  // deliberate side-by-side drag shows up two-up as soon as the page can hold
+  // two columns — including the builder canvas (~680px).
+  .themes-view__section--shrinked {
+    flex: 1 1 var(--card-min);
+    max-width: 100%;
+  }
+}
+
+// --flow: AUTO vertical-card grid (no flag). Gated higher — only above 720px
+// (true desktop width) — so the builder canvas (~680px) and tablet keep cards
+// stacked, and they flow two-up only on the desktop preview / real desktop. A
+// lone card (or one separated by a full-width element, which acts as a row
+// break) grows back to full width via flex-grow, so no run detection is needed.
+@container app-content (min-width: 720px) {
+  .themes-view__section--flow {
+    flex: 1 1 var(--card-min);
+    max-width: 100%;
   }
 }
 
