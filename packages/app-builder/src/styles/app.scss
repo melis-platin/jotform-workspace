@@ -1046,6 +1046,13 @@ body {
   position: relative;
   flex: 1;
   overflow-y: auto;
+  // Vertical editing surface — never scroll horizontally. Without this, a
+  // `visible` overflow-x next to an `auto` overflow-y computes back to `auto`
+  // (CSS overflow rule), so any sub-pixel/flex-rounding overshoot spawns a
+  // stray horizontal scrollbar. Matches the live-preview scaler, which is
+  // already `overflow-x: hidden`. Drag handles sit at the page card's left
+  // edge (inside the canvas) so they are not clipped.
+  overflow-x: hidden;
   background: var(--bg-page, #f3f3fe);
   scrollbar-width: none;
 
@@ -1055,6 +1062,9 @@ body {
 
   @media (max-width: 768px) {
     overflow-y: visible;
+    // Keep both axes visible here so overflow-y stays `visible` (an x:hidden +
+    // y:visible pair would force y back to `auto` via the same rule).
+    overflow-x: visible;
     padding-bottom: max(var(--bottom-sheet-height, 0px), calc(var(--mobile-bottom-bar-height, 0px) + var(--space-2)));
     transition: padding-bottom 0.25s ease;
   }
@@ -5368,6 +5378,18 @@ body {
   &--right { justify-content: flex-end; }
 }
 
+// Compact variant preview: the nav reads as a floating, contained rounded bar
+// (inset margin + radius + shadow), and drops the full-bleed divider line.
+.nav-menu-desktop--compact .nav-menu-desktop__nav {
+  margin: var(--spacing-sm);
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+}
+
+.nav-menu-desktop--compact .nav-menu-desktop__divider {
+  display: none;
+}
+
 .nav-menu-desktop__nav-item {
   display: inline-flex;
   align-items: center;
@@ -7705,6 +7727,56 @@ body.builder--phone-only {
     // Reveal-on-scroll-up animates; scroll-down hiding is driven imperatively
     // (transform tied to scroll, inline transition cleared) so it tracks content.
     transition: transform 0.25s ease, border-bottom-color 0.15s ease, box-shadow 0.15s ease;
+  }
+
+  // Compact variant: a floating, app-page-width (760px) bar that lines up with
+  // the page card below it (logo left · links centre · CTAs right — centre is
+  // forced via data-nav-align in BuildPage). Rounded-rect to match the card;
+  // floats 24px from the top with a soft shadow. Background + dark-mode inherit
+  // from the base .live-preview__top-header rules.
+  .live-preview__top-header--compact {
+    top: var(--space-4);
+    left: 0;
+    right: 0;
+    width: auto;
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+    // Keep the 64px bar height — its vertical breathing was right — and only match
+    // the horizontal padding to it. The tallest content (Small buttons, 40px)
+    // centred in the 64px bar leaves ~12px above/below, so use --space-3 (12px)
+    // left/right for an even inset all round.
+    padding: 0 var(--space-3);
+    border: none;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
+  }
+
+  // Clear exactly the floating bar's footprint (top 16 + height 64 = 80px) so the
+  // app header (home page) meets the bar FLUSH — no gap — exactly as the full-bleed
+  // bar meets the header. (top-header and content-scaler are siblings in the screen.)
+  .live-preview__top-header--compact ~ .live-preview__content-scaler {
+    padding-top: calc(var(--space-4) + 64px);
+  }
+
+  // Pages without an app header keep a gap below the bar (like the full-bleed
+  // variant). The --first card (tucked under a shown app header) is untouched.
+  .live-preview__top-header--compact ~ .live-preview__content-scaler .themes-view__canvas:not(.themes-view__canvas--first) {
+    margin-top: var(--space-10);
+  }
+
+  // Home page (app header shown): the header's brand bg should run to the page
+  // top — behind the floating bar. Drop the scaler's top padding here so the
+  // header starts at y=0…
+  .live-preview__top-header--compact ~ .live-preview__content-scaler:has(.themes-view__canvas--first) {
+    padding-top: 0;
+  }
+
+  // …then re-pad the header itself by the bar footprint (top 16 + height 64) on
+  // top of its own padding, so its vertically-centred content sits in the visible
+  // area BELOW the bar (centred between the bar and the first page), not behind it.
+  .live-preview__top-header--compact ~ .live-preview__content-scaler .live-preview__app-header-slot .jf-app-header {
+    padding-top: calc(var(--space-12) + var(--space-4) + 64px);
   }
 
   .live-preview__content-scaler {

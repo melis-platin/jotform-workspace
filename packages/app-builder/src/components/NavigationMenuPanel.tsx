@@ -29,7 +29,9 @@ import { DEFAULT_PAGE_ICON } from './PageNavigationBar'
 export type NavDisplayStyle = 'iconText' | 'icon'
 export type DesktopDisplayStyle = 'iconText' | 'text'
 export type NavAlignment = 'left' | 'center' | 'right'
-export type DesktopNavVariant = 'top' | 'left'
+// 'top' = full-browser-width bar; 'compact' = app-page-width (760px) floating
+// bar with centre-aligned menu; 'left' = sidebar.
+export type DesktopNavVariant = 'top' | 'compact' | 'left'
 
 // A slice of the live-preview phone mockup, reused inside the (dark) panel. The
 // panel's `data-theme="dark"` would bleed chrome tokens into the app-scope, so we
@@ -136,9 +138,9 @@ function DesktopPreview({
   return (
     <div className={`nav-menu-desktop nav-menu-desktop--${variant}`} ref={ref}>
       <div className="nav-menu-desktop__screen app-scope">
-        {variant === 'top' ? (
+        {variant !== 'left' ? (
           <>
-            <div className={`nav-menu-desktop__nav nav-menu-desktop__nav--${alignment}`}>{navItems}</div>
+            <div className={`nav-menu-desktop__nav nav-menu-desktop__nav--${variant === 'compact' ? 'center' : alignment}`}>{navItems}</div>
             <div className="nav-menu-desktop__divider" />
             <div className="nav-menu-desktop__content">
               <span className="nav-menu-desktop__placeholder" />
@@ -554,7 +556,8 @@ export function NavigationMenuPanel({
                     value={desktopVariant}
                     onChange={(value) => onChangeDesktopVariant(value as DesktopNavVariant)}
                     items={[
-                      { value: 'top', label: 'Top' },
+                      { value: 'top', label: 'Fullwidth' },
+                      { value: 'compact', label: 'Compact' },
                       { value: 'left', label: 'Left' },
                     ]}
                   />
@@ -594,7 +597,7 @@ export function NavigationMenuPanel({
                 </div>
               )}
 
-              {desktopVariant === 'top' && (
+              {desktopVariant !== 'left' && (
                 <div className="property-panel__field property-panel__field--inline">
                   <DSFormField title="Sticky Navigation" size="md" showDescription={false} showHelpText={false}>
                     <DSToggle

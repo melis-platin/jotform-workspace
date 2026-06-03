@@ -1145,7 +1145,7 @@ export function BuildPage({
   const [bottomNavDisplayStyle, setBottomNavDisplayStyle] = useState<'iconText' | 'icon'>('iconText')
   const [topNavEnabled, setTopNavEnabled] = useState(false)
   // Desktop navigation — independent from the mobile settings above.
-  const [desktopNavVariant, setDesktopNavVariant] = useState<'top' | 'left'>('top')
+  const [desktopNavVariant, setDesktopNavVariant] = useState<'top' | 'compact' | 'left'>('top')
   const [desktopNavEnabled, setDesktopNavEnabled] = useState(true)
   const [desktopNavDisplayStyle, setDesktopNavDisplayStyle] = useState<'iconText' | 'text'>('text')
   const [desktopNavAlignment, setDesktopNavAlignment] = useState<'left' | 'center' | 'right'>('right')
@@ -1350,7 +1350,9 @@ export function BuildPage({
       return
     }
     const autoHide =
-      previewDevice === 'desktop' && desktopNavVariant === 'top' && !desktopNavSticky
+      previewDevice === 'desktop' &&
+      (desktopNavVariant === 'top' || desktopNavVariant === 'compact') &&
+      !desktopNavSticky
     // Clear any leftover transform when auto-hide isn't active (e.g. sticky on).
     const resetHeader = previewTopHeaderRef.current
     if (resetHeader && !autoHide) {
@@ -1386,6 +1388,17 @@ export function BuildPage({
     previewContentScalerEl.addEventListener('scroll', onScroll, { passive: true })
     return () => previewContentScalerEl.removeEventListener('scroll', onScroll)
   }, [previewContentScalerEl, previewDevice, desktopNavVariant, desktopNavSticky])
+
+  // The hamburger / "More" menu reuses the page's scroll container, which also
+  // carries a small scale-compensation overflow — so a page scrolled before
+  // opening the menu would leave the menu scrolled too. Reset to the top when it
+  // opens (layout effect = before paint, no flash) so it always starts at its
+  // own header.
+  useLayoutEffect(() => {
+    if (isMorePageOpen && previewContentScalerEl) {
+      previewContentScalerEl.scrollTop = 0
+    }
+  }, [isMorePageOpen, previewContentScalerEl])
 
   // Bottom-nav overflow: when 5+ pages exist, show the first 4 and replace the
   // 5th slot with a "More" tab. Tapping More opens a full-screen list of all
@@ -2282,7 +2295,7 @@ export function BuildPage({
           }}
         />
       )}
-      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}`} data-nav-align={desktopNavAlignment}>
+      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${desktopNavVariant === 'compact' ? ' live-preview__top-header--compact' : ''}`} data-nav-align={desktopNavVariant === 'compact' ? 'center' : desktopNavAlignment}>
         {(() => {
           const isFirstPage = activePageId === pages[0]?.id
           // Always brand the top header on the landing, and on the first page when
@@ -2329,7 +2342,7 @@ export function BuildPage({
             <span className="live-preview__top-header-btn" aria-hidden="true" />
           )
         })()}
-        {desktopNavEnabled && desktopNavVariant === 'top' && (
+        {desktopNavEnabled && (desktopNavVariant === 'top' || desktopNavVariant === 'compact') && (
           <nav className="live-preview__top-header-nav">
             {navPages.map((p) => (
               <button
@@ -2519,7 +2532,7 @@ export function BuildPage({
             return activePage ? (
               <>
               {isFirstPage && appHeaderState.show && (
-                <div>
+                <div className="live-preview__app-header-slot">
                 <AppHeader
                   layout={appHeaderState.layout as 'Center' | 'Left' | 'Right'}
                   icon={appHeaderState.icon}
