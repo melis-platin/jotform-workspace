@@ -5358,6 +5358,11 @@ body {
 }
 
 .nav-menu-desktop__screen {
+  display: flex;
+  flex-direction: column;
+  // Fixed to the taller Left-layout height so switching to Top doesn't shrink
+  // the preview and shift the panel below. (Mobile overrides this height.)
+  height: 148px;
   border-radius: 10px;
   overflow: hidden;
   background: var(--bg-surface);
@@ -5401,6 +5406,7 @@ body {
 }
 
 .nav-menu-desktop__content {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -5426,6 +5432,7 @@ body {
 
 // Left (sidebar) variant: a vertical nav column beside the content.
 .nav-menu-desktop__body {
+  flex: 1;
   display: flex;
   min-height: 132px;
 }

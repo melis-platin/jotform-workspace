@@ -373,7 +373,7 @@ export function NavigationMenuPanel({
   return (
     <div className="build-page__properties" data-theme="dark">
       <div className="property-panel__header">
-        <span className="property-panel__title">Navigation Menu Properties</span>
+        <span className="property-panel__title">Navigation Properties</span>
         <div className="property-panel__header-actions">
           <button className="property-panel__close" onClick={onClose} aria-label="Close">
             <Icon name="xmark" size={20} />
@@ -397,7 +397,7 @@ export function NavigationMenuPanel({
         <div className="property-panel__body">
           <div className="property-panel__field property-panel__field--inline">
             <DSFormField
-              title="Enable Bottom Navigation"
+              title="Bottom Navigation"
               size="md"
               showDescription={false}
               showHelpText={false}
@@ -483,7 +483,7 @@ export function NavigationMenuPanel({
 
           <div className="property-panel__field property-panel__field--inline">
             <DSFormField
-              title="Enable Top Navigation"
+              title="Top Navigation"
               size="md"
               showDescription={false}
               showHelpText={false}
@@ -508,7 +508,7 @@ export function NavigationMenuPanel({
         <div className="property-panel__body">
           <div className="property-panel__field property-panel__field--inline">
             <DSFormField
-              title={desktopVariant === 'left' ? 'Enable Side Navigation' : 'Enable Top Navigation'}
+              title={desktopVariant === 'left' ? 'Side Navigation' : 'Desktop Navigation'}
               size="md"
               showDescription={false}
               showHelpText={false}
@@ -524,14 +524,12 @@ export function NavigationMenuPanel({
           {desktopEnabled && (
             <>
               <div className="property-panel__field">
-                <DSFormField title="Desktop Preview" size="md" showDescription={false} showHelpText={false}>
-                  <DesktopPreview
-                    pages={pages}
-                    variant={desktopVariant}
-                    displayStyle={desktopDisplayStyle}
-                    alignment={desktopAlignment}
-                  />
-                </DSFormField>
+                <DesktopPreview
+                  pages={pages}
+                  variant={desktopVariant}
+                  displayStyle={desktopDisplayStyle}
+                  alignment={desktopAlignment}
+                />
               </div>
 
               <div className="property-panel__field">
@@ -566,7 +564,7 @@ export function NavigationMenuPanel({
 
               {desktopVariant === 'top' && (
                 <div className="property-panel__field">
-                  <DSFormField title="Navigation Alignment" size="md" showDescription={false} showHelpText={false}>
+                  <DSFormField title="Alignment" size="md" showDescription={false} showHelpText={false}>
                     <DSSegmented
                       accent="apps"
                       variant="text"
