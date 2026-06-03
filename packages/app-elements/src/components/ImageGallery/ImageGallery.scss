@@ -6,7 +6,8 @@
   background: var(--bg-fill);
   width: 100%;
   max-width: 100%;
-  padding: var(--space-1);
+  // No outer padding — images sit flush to the gallery edge; the --space-3 gap
+  // still separates the cells from each other.
   display: grid;
   gap: var(--space-3);
   aspect-ratio: 1 / 1;
