@@ -243,17 +243,21 @@ function NavMenuItem({
   page,
   onChangeIcon,
   onRemove,
+  canRemove,
 }: {
   page: NavMenuPage
   onChangeIcon: (icon: string) => void
   onRemove: () => void
+  /** False when removing would drop the nav below its 2-item minimum. */
+  canRemove: boolean
 }) {
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: page.id,
   })
   const [iconPickerOpen, setIconPickerOpen] = useState(false)
   const [iconPickerPos, setIconPickerPos] = useState({ top: 0, left: 0 })
-  const chipRef = useRef<HTMLDivElement>(null)
+  const [iconPickerWidth, setIconPickerWidth] = useState<number | undefined>(undefined)
+  const cardRef = useRef<HTMLDivElement>(null)
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -264,19 +268,20 @@ function NavMenuItem({
 
   return (
     <div ref={setNodeRef} style={style} className="nav-menu-item">
-      <div className="nav-menu-item__card">
+      <div className="nav-menu-item__card" ref={cardRef}>
         <span className="nav-menu-item__drag" {...attributes} {...listeners}>
           <Icon name="grid-dots-vertical" category="general" size={18} />
         </span>
-        <div className="nav-menu-item__chip-slot" ref={chipRef}>
+        <div className="nav-menu-item__chip-slot">
           <button
             type="button"
             className="nav-menu-item__icon"
             aria-label="Change icon"
             onClick={() => {
-              if (chipRef.current) {
-                const rect = chipRef.current.getBoundingClientRect()
+              if (cardRef.current) {
+                const rect = cardRef.current.getBoundingClientRect()
                 setIconPickerPos({ top: rect.bottom + 4, left: rect.left })
+                setIconPickerWidth(rect.width)
               }
               setIconPickerOpen(true)
             }}
@@ -289,7 +294,9 @@ function NavMenuItem({
           type="button"
           className="nav-menu-item__remove"
           onClick={onRemove}
+          disabled={!canRemove}
           aria-label={`Remove ${page.name} from navigation`}
+          title={canRemove ? undefined : 'Navigation needs at least 2 items'}
         >
           <Icon name="xmark" size={16} />
         </button>
@@ -298,6 +305,7 @@ function NavMenuItem({
         <IconPickerPopover
           value={iconName}
           anchorPos={iconPickerPos}
+          width={iconPickerWidth}
           placement="bottom-left"
           onSelect={(icon) => {
             onChangeIcon(icon)
@@ -452,6 +460,7 @@ export function NavigationMenuPanel({
                             page={page}
                             onChangeIcon={(icon) => onChangeIcon(page.id, icon)}
                             onRemove={() => onRemoveFromNav(page.id)}
+                            canRemove={navPages.length > 2}
                           />
                         ))}
                       </div>

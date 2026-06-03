@@ -5651,6 +5651,18 @@ body {
     background: var(--gray-700);
     color: var(--core-white);
   }
+
+  // At the 2-item minimum the button is disabled: still revealed on hover so the
+  // rule is visible, but muted and non-interactive (tooltip explains why).
+  &:disabled {
+    color: var(--gray-300);
+    cursor: not-allowed;
+
+    &:hover {
+      background: transparent;
+      color: var(--gray-300);
+    }
+  }
 }
 
 // Reveal the drag handle + remove button on card hover / keyboard focus.
@@ -5677,6 +5689,8 @@ body {
   gap: var(--spacing-2xs);
   width: 100%;
   height: 40px;
+  // match the inter-item gap of the list above so it isn't flush to the last item
+  margin-top: var(--spacing-sm);
   padding-left: var(--spacing-sm);
   padding-right: 6px;
   border: 1px dashed var(--gray-400);
