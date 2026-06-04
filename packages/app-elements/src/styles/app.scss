@@ -93,16 +93,29 @@
   --font-size-label-xs: 10px;
 
   // ---- Line Heights ----
+  // Responsive: each line-height that pairs with a FLUID font-size token is
+  // derived from that token via calc(font-size * ratio), so the leading scales
+  // WITH the font instead of staying fixed. ratio = the original design
+  // line-height / design font-size (the fixed-px fallback), so the look is
+  // preserved at the design anchor AND when container queries are unsupported
+  // (calc(fallbackPx * ratio) == the original px), then tracks the font across
+  // the whole fluid range — keeping a constant, healthy ratio. Without this,
+  // fixed px leading drifts: big headings cramped to ~1.0 (line-height == font,
+  // clipping) on wide cards, body too airy on narrow ones.
   // Heading
-  --line-height-heading-xxl: 48px;
-  --line-height-heading-xl: 44px;
-  --line-height-heading-lg: 40px;
-  --line-height-heading-md: 36px;
-  --line-height-heading-sm: 32px;
-  --line-height-heading-xs: 28px;
+  --line-height-heading-xxl: calc(var(--font-size-heading-xxl) * 1.2);    // design 40/48
+  --line-height-heading-xl: calc(var(--font-size-heading-xl) * 1.2222);   // design 36/44
+  --line-height-heading-lg: calc(var(--font-size-heading-lg) * 1.25);     // design 32/40
+  --line-height-heading-md: calc(var(--font-size-heading-md) * 1.2857);   // design 28/36
+  --line-height-heading-sm: calc(var(--font-size-heading-sm) * 1.3333);   // design 24/32
+  --line-height-heading-xs: calc(var(--font-size-heading-xs) * 1.4);      // design 20/28
   // Paragraph
-  --line-height-paragraph-lg: 28px;
-  --line-height-paragraph-md: 24px;
+  --line-height-paragraph-lg: calc(var(--font-size-paragraph-lg) * 1.5556); // design 18/28
+  --line-height-paragraph-md: calc(var(--font-size-paragraph-md) * 1.5);    // design 16/24
+  // paragraph-sm stays fixed: its only fluid pairing (--font-size-paragraph-sm-fluid,
+  // a tiny 14→16 opt-in) shares this token with the FIXED paragraph-sm font and
+  // with line-clamp max-height/height truncation across ~10 consumers — making it
+  // fluid would mis-scale those for a negligible leading gain. Deliberately skipped.
   --line-height-paragraph-sm: 20px;
   --line-height-paragraph-xs: 20px;
   // Label
@@ -520,6 +533,41 @@ body {
   font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+}
+
+// ── Balanced text wrapping ───────────────────────────────────────────────────
+// Single source of truth: heading / paragraph / app-header / card / list text
+// balances its line lengths so a multi-line title or description never drops a
+// lone orphan word on the last line (text-wrap: balance). Unsupported browsers
+// fall back to normal wrapping. Inline-editable instances reset to normal on
+// :focus so the caret doesn't jitter from re-balancing on every keystroke —
+// manual line breaks (white-space: pre-wrap) are preserved either way.
+.jf-heading__title,
+.jf-heading__subtitle,
+.jf-app-header__title,
+.jf-app-header__subtitle,
+.jf-paragraph__editor,
+.jf-card__title,
+.jf-card__description,
+.jf-list__title,
+.jf-list__subtitle,
+.jf-list-item__title,
+.jf-list-item__desc {
+  text-wrap: balance;
+}
+
+.jf-heading__title:focus,
+.jf-heading__subtitle:focus,
+.jf-app-header__title:focus,
+.jf-app-header__subtitle:focus,
+.jf-paragraph__editor:focus,
+.jf-card__title:focus,
+.jf-card__description:focus,
+.jf-list__title:focus,
+.jf-list__subtitle:focus,
+.jf-list-item__title:focus,
+.jf-list-item__desc:focus {
+  text-wrap: normal;
 }
 
 // ============================================
@@ -2863,6 +2911,15 @@ body {
   display: flex;
   flex-direction: column;
   gap: var(--space-12);
+}
+
+// Mobile preview device: the card goes full-bleed (100%) with a --space-4 (16px)
+// inset, so publish the same to the app header columns — its title/description/
+// button then align with the page elements. (This is a small device frame inside
+// a wide editor viewport, so the AppHeader @media(max-width:768px) never fires.)
+.themes-view__device--mobile {
+  --app-header-max: 100%;
+  --app-header-inset: var(--space-4);
 }
 
 .themes-view__device--mobile .themes-view__app {

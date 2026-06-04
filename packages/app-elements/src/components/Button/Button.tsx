@@ -25,6 +25,10 @@ export interface ButtonProps {
   selected?: boolean;
   shrinked?: boolean;
   fullWidth?: boolean;
+  /** 'Auto' = fit content with generous 56px side padding · 'Full' = 100% width. */
+  width?: 'Auto' | 'Full';
+  /** Where the button sits inside its full-width slot when width is 'Auto'. */
+  align?: 'Left' | 'Center' | 'Right';
   onClick?: () => void;
 }
 
@@ -46,6 +50,8 @@ export const Button: React.FC<ButtonProps> = ({
   selected = false,
   shrinked = false,
   fullWidth = false,
+  width,
+  align = 'Center',
   onClick,
 }) => {
   const isDisabled = state === 'Disabled' || variant === 'Disabled';
@@ -87,7 +93,9 @@ export const Button: React.FC<ButtonProps> = ({
     isDisabled && 'jf-btn--disabled',
     selected && 'jf-btn--selected',
     shrinked && 'jf-btn--shrinked',
-    fullWidth && 'jf-btn--full-width',
+    (fullWidth || width === 'Full') && 'jf-btn--full-width',
+    width === 'Auto' && 'jf-btn--width-auto',
+    width === 'Auto' && `jf-btn--align-${align.toLowerCase()}`,
   ]
     .filter(Boolean)
     .join(' ');

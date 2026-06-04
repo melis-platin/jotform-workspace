@@ -8,9 +8,17 @@ export type AppHeaderImageStyle = 'Image' | 'Icon' | 'None';
 
 export type AppHeaderSize = 'Large' | 'Medium' | 'Small';
 
+export type AppHeaderContentAlign = 'Center' | 'Bottom';
+
 export interface AppHeaderProps {
   layout?: AppHeaderLayout;
+  /** Vertical content alignment: 'Center' (default) or 'Bottom' — pins the
+   *  content to the bottom edge (e.g. so a background image shows above it). */
+  contentAlign?: AppHeaderContentAlign;
   size?: AppHeaderSize;
+  /** Banner min-height: a px number (content can still grow past it) or 'auto'
+   *  to fit content. When unset, falls back to the CSS default (272px). */
+  minHeight?: number | 'auto';
   icon?: string;
   imageStyle?: AppHeaderImageStyle;
   imageUrl?: string | null;
@@ -32,7 +40,9 @@ export interface AppHeaderProps {
 
 export const AppHeader: React.FC<AppHeaderProps> = ({
   layout = 'Center',
+  contentAlign = 'Center',
   size = 'Large',
+  minHeight,
   icon = 'Leaf',
   imageStyle = 'Icon',
   imageUrl,
@@ -51,9 +61,31 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 }) => {
   const animClass = skeletonAnimation === 'shimmer' ? 'animate-shimmer' : 'animate-pulse';
 
+  // Readability scrim over a background image. With bottom-aligned content the
+  // scrim is a gradient that's dark behind the text (bottom) and fades to fully
+  // transparent upward, so the photo stays crisp up top and stands out. Centered
+  // content keeps a gentle overall scrim (text can sit anywhere). Both pair with
+  // the text-shadow under .jf-app-header--has-bg.
+  const bgScrim =
+    contentAlign === 'Bottom'
+      ? 'linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.4) 40%, rgba(0,0,0,0) 72%)'
+      : 'linear-gradient(180deg, rgba(0,0,0,0.4) 0%, rgba(0,0,0,0.55) 100%)';
+
+  // Merge the optional background image with the optional min-height override.
+  // The height is published as a CSS var the SCSS reads:
+  // `min-height: var(--app-header-min-height, 272px)`.
+  const headerStyle = {
+    ...(backgroundImageUrl
+      ? { background: `${bgScrim}, url(${backgroundImageUrl}) center/cover no-repeat` }
+      : {}),
+    ...(minHeight != null
+      ? { '--app-header-min-height': minHeight === 'auto' ? 'auto' : `${minHeight}px` }
+      : {}),
+  } as React.CSSProperties;
+
   if (skeleton) {
     return (
-      <div className={`jf-app-header jf-app-header--${layout.toLowerCase()} jf-app-header--skeleton`}>
+      <div className={`jf-app-header jf-app-header--${layout.toLowerCase()} jf-app-header--skeleton`} style={headerStyle}>
         <div className="jf-app-header__inner">
           <div className={`jf-app-header__icon-skeleton ${animClass}`} />
           <div className="jf-app-header__text">
@@ -72,14 +104,12 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
     iconSelected && 'jf-app-header__icon--selected',
   ].filter(Boolean).join(' ');
 
-  const rootStyle: React.CSSProperties | undefined = backgroundImageUrl
-    ? { background: `linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4)), url(${backgroundImageUrl}) center/cover no-repeat` }
-    : undefined;
-
   const rootClass = [
     'jf-app-header',
     `jf-app-header--${layout.toLowerCase()}`,
     `jf-app-header--size-${size.toLowerCase()}`,
+    contentAlign === 'Bottom' && 'jf-app-header--valign-bottom',
+    backgroundImageUrl && 'jf-app-header--has-bg',
     onClick && 'jf-app-header--interactive',
     selected && 'jf-app-header--selected',
   ].filter(Boolean).join(' ');
@@ -87,11 +117,17 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
   return (
     <div
       className={rootClass}
-      style={rootStyle}
+      style={headerStyle}
       onClick={onClick}
       role={onClick ? 'button' : undefined}
       tabIndex={onClick ? 0 : undefined}
-      onKeyDown={onClick ? (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(e as unknown as React.MouseEvent); } } : undefined}
+      onKeyDown={onClick ? (e) => {
+        // Only the header chrome itself activates on Enter/Space (keyboard select).
+        // Never hijack keys bubbling up from a descendant — e.g. the inline-edited
+        // title/subtitle (where Enter must insert a line break) or action buttons.
+        if (e.target !== e.currentTarget) return;
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(e as unknown as React.MouseEvent); }
+      } : undefined}
     >
       <div className="jf-app-header__inner">
         {imageStyle !== 'None' && (

@@ -1,0 +1,15 @@
+// Clear (×) button shown inside the icon picker trigger when an icon is set and
+// the field is clearable. A span (not a button) so it nests validly inside the
+// trigger button; stopPropagation keeps the click from opening the picker.
+.icon-field__clear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0.55;
+  transition: opacity 120ms ease;
+
+  &:hover {
+    opacity: 1;
+  }
+}

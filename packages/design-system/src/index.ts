@@ -15,6 +15,8 @@ export {
 } from './components/Dropdown';
 export { Toggle } from './components/Toggle';
 export type { ToggleProps, ToggleSize } from './components/Toggle';
+export { Slider } from './components/Slider';
+export type { SliderProps, SliderSize } from './components/Slider';
 export { Input } from './components/Input';
 export type { InputProps } from './components/Input';
 export { TextArea } from './components/TextArea';

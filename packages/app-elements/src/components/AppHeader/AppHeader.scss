@@ -17,8 +17,15 @@
   // element / page card) rather than the browser viewport.
   container-type: inline-size;
   // icon(80) + gap(16) + title(~36) + gap(4) + subtitle(~24) + padding(48+64)
-  min-height: 272px;
-  padding: var(--space-12) var(--space-4);
+  // Customizable banner height (builder Height property). min-height (not height)
+  // so content never clips — a tall title/description grows the header past the
+  // floor. 'auto' (fit content) and px presets/custom are published via the var.
+  min-height: var(--app-header-min-height, 272px);
+  // No horizontal padding here: the __inner / __actions columns own the full
+  // horizontal inset (var(--app-header-inset)) so their content box matches the
+  // page card's .themes-view__app exactly. A gutter on the full-bleed header
+  // would double-inset the title/button vs the page elements below.
+  padding: var(--space-12) 0;
   background: var(--bg-fill-brand);
   font-family: var(--font-family);
 
@@ -35,9 +42,35 @@
   }
 
   @media (max-width: 768px) {
-    &:has(.jf-app-header__actions .jf-btn) {
-      padding-bottom: var(--space-4);
-    }
+    // Real narrow viewport (production on a phone / builder resized below 768px):
+    // the page card goes full-bleed with a --space-4 (16px) inset, so publish the
+    // same measure to the header columns. The live-preview phone/tablet shells are
+    // small containers inside a WIDE editor viewport, so this @media never fires
+    // there — they publish their own --app-header-* values via the shell scope.
+    --app-header-max: 100%;
+    --app-header-inset: var(--space-4);
+  }
+}
+
+// Vertical content alignment. The default centers the content (justify-content on
+// the root). Bottom pins it to the bottom edge — e.g. so a background image shows
+// above it — and the bottom gap then matches the horizontal content inset
+// (--app-header-inset, the left/right padding) instead of the larger centered
+// --space-12.
+.jf-app-header--valign-bottom {
+  justify-content: flex-end;
+  padding-bottom: var(--app-header-inset, var(--space-8));
+
+  // The bottom gap is normally carried by the actions slot's populated
+  // min-height + margin-top (see .jf-app-header__actions :not(:empty) below) —
+  // ~72px sitting under the text that holds it up. When the actions slot is
+  // EMPTY (e.g. the only button was deleted) that reserve vanishes and the
+  // title/description drop flush against the inset, reading as "stuck to the
+  // bottom". When there is nothing in the actions slot, restore a comfortable
+  // bottom gap so the layout stays stable with or without a button. (A button —
+  // or social/image/spacer — keeps the snug inset gap it had before.)
+  &:has(.jf-app-header__actions:empty) {
+    padding-bottom: var(--space-12);
   }
 }
 
@@ -46,11 +79,17 @@
   flex-direction: column;
   gap: var(--space-4);
   width: 100%;
-  // Match the page content area: same max-width as the page card (760px) and the
-  // same horizontal inset as .themes-view__app (--space-6), so the title/desc
-  // wrap at the same measure as the page elements below — never the full bleed.
-  max-width: 760px;
-  padding: 0 var(--space-6);
+  // Mirror the page card's content box exactly: max-width tracks the card
+  // (--app-header-max, published per shell to equal .themes-view__canvas) and the
+  // horizontal inset tracks the card's .themes-view__app padding
+  // (--app-header-inset). Centered within the full-bleed header, so the
+  // title/description share the same left edge AND wrap measure as the page
+  // elements below — in every shell (builder canvas 644, live-preview desktop
+  // 760, phone/tablet 100%) and production (fallback 680 / --space-8).
+  max-width: var(--app-header-max, 680px);
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 var(--app-header-inset, var(--space-8));
 
   .jf-app-header--center & {
     align-items: center;
@@ -139,7 +178,7 @@
 .jf-app-header__text {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: var(--space-2);
   color: var(--fg-inverse);
   // Wrap within the inner's max-width (page content measure) instead of running
   // off the edges on a long title/description.
@@ -170,6 +209,9 @@
   letter-spacing: -0.588px;
   color: inherit;
   margin: 0;
+  // Honor manual line breaks (Enter in the inline editor) while still wrapping
+  // long text normally.
+  white-space: pre-wrap;
 }
 
 .jf-app-header__subtitle {
@@ -180,14 +222,35 @@
   font-weight: var(--font-weight-regular);
   line-height: var(--line-height-paragraph-lg);
   color: inherit;
-  opacity: 0.5;
+  opacity: 0.7;
   margin: 0;
+  // Honor manual line breaks from the inline editor (see title).
+  white-space: pre-wrap;
 
   &--empty {
     height: 0;
     overflow: hidden;
     margin: 0;
     opacity: 0;
+  }
+}
+
+// ============================================
+// Background image present — text readability
+// The brand background is replaced by a photo (a darkening gradient scrim is
+// applied inline in AppHeader.tsx). Add a soft text-shadow so the title and
+// description keep a legibility halo over any part of a varied image, and lift
+// the description's translucency — the 0.7 tuned for the flat brand bg reads too
+// faint over a photo.
+// ============================================
+.jf-app-header--has-bg {
+  .jf-app-header__title,
+  .jf-app-header__subtitle {
+    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+  }
+
+  .jf-app-header__subtitle {
+    opacity: 0.9;
   }
 }
 
@@ -234,6 +297,10 @@
   --bg-fill-brand-disabled: color-mix(in srgb, var(--_jf-ahdr-inverse) 55%, transparent);
   --fg-brand: var(--_jf-ahdr-inverse);
   --bg-surface-brand-hover: color-mix(in srgb, var(--_jf-ahdr-inverse) 20%, transparent);
+  // Spacer fills with --bg-surface-brand on hover / select / drag (and the Image
+  // placeholder uses it too) — that brand tint is invisible on the brand header
+  // bg, so remap it to a translucent inverse tint, same idea as the button swaps.
+  --bg-surface-brand: color-mix(in srgb, var(--_jf-ahdr-inverse) 18%, transparent);
 
   // Secondary variant → translucent inverse tint so it reads on brand bg
   --bg-fill-secondary: color-mix(in srgb, var(--_jf-ahdr-inverse) 18%, transparent);
@@ -250,30 +317,22 @@
   --border-hover: color-mix(in srgb, var(--_jf-ahdr-inverse) 55%, transparent);
   --fg-disabled: color-mix(in srgb, var(--_jf-ahdr-inverse) 45%, transparent);
 
-  // Match .themes-view__canvas + .themes-view__app dimensions exactly so items
-  // line up with page elements horizontally.
+  // Mirror the page card's content box exactly — same --app-header-max and
+  // --app-header-inset as __inner — so the buttons line up with the title /
+  // description and the page elements below, in every shell. (Published per
+  // shell; fallback 680 / --space-8 for production.)
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   align-items: stretch;
   gap: var(--space-4);
   width: 100%;
-  max-width: 644px;
+  max-width: var(--app-header-max, 680px);
   margin-left: auto;
   margin-right: auto;
-  padding: 0 var(--space-6);
+  padding: 0 var(--app-header-inset, var(--space-8));
   box-sizing: border-box;
   position: relative;
-
-  @media (max-width: 768px) {
-    // Escape .jf-app-header's var(--space-4) outer padding so actions span the
-    // same horizontal area as page canvas at mobile.
-    max-width: none;
-    margin-left: calc(-1 * var(--space-4));
-    margin-right: calc(-1 * var(--space-4));
-    padding: 0 var(--space-4);
-    gap: var(--space-3);
-  }
 
   // Only take visible space when populated or while a drag is active (builder hint)
   &:not(:empty),
@@ -312,4 +371,25 @@
   &.jf-social--horizontal {
     flex-wrap: nowrap;
   }
+}
+
+// Image upload / empty state inside the header. By default .jf-image-builder is a
+// white --bg-fill card with a --border dashed edge; on the brand-colored header
+// that reads as a foreign white box whose border (now inverse-swapped above) is
+// invisible against the white fill. Re-skin it to the header's translucent-
+// inverse treatment so the placeholder sits on the brand bg — the dashed --border
+// and the drop-icon's --fg-brand are already swapped to inverse, so only the box
+// tint and the icon/hint (--fg-tertiary, not part of the swap) need flipping.
+.jf-app-header__actions .jf-image-builder {
+  background: color-mix(in srgb, var(--_jf-ahdr-inverse) 12%, transparent);
+
+  // Drag-over keeps a touch more presence.
+  &.jf-image-builder--active {
+    background: color-mix(in srgb, var(--_jf-ahdr-inverse) 20%, transparent);
+  }
+}
+
+.jf-app-header__actions .jf-image-builder__icon,
+.jf-app-header__actions .jf-image-builder__hint {
+  color: color-mix(in srgb, var(--_jf-ahdr-inverse) 65%, transparent);
 }

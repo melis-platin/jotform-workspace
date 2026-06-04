@@ -32,7 +32,7 @@ import {
   type StateValues,
   HsvColorPicker,
 } from '@jf/app-elements'
-import { Icon, Button as DSButton, Tabs as DSTabs, Segmented, Input as DSInput, Toggle as DSToggle, NumberInput as DSNumberInput, FormField as DSFormField, TextArea as DSTextArea, DropdownSingle as DSDropdownSingle, FieldMapper as DSFieldMapper, FieldComposer as DSFieldComposer, type FieldToken, Link as DSLink, Modal as DSModal, SearchInput as DSSearchInput, ColorInput as DSColorInput } from '@jf/design-system'
+import { Icon, Button as DSButton, Tabs as DSTabs, Segmented, Input as DSInput, Toggle as DSToggle, Slider as DSSlider, NumberInput as DSNumberInput, FormField as DSFormField, TextArea as DSTextArea, DropdownSingle as DSDropdownSingle, FieldMapper as DSFieldMapper, FieldComposer as DSFieldComposer, type FieldToken, Link as DSLink, Modal as DSModal, SearchInput as DSSearchInput, ColorInput as DSColorInput } from '@jf/design-system'
 import phoneHomeIndicator from '@jf/design-system/src/assets/phone-home-indicator.svg'
 import previewUserAvatar from '../assets/preview-user-avatar.jpg'
 import { PhoneStatusBar } from '../components/PhoneStatusBar'
@@ -215,7 +215,9 @@ function buildInitialStateFromPreset(preset: AppPreset | undefined): {
       appSubtitle: stored.appSubtitle,
       appHeader: {
         layout: storedHeader.layout ?? APP_HEADER_DEFAULTS.layout,
+        contentAlign: storedHeader.contentAlign ?? APP_HEADER_DEFAULTS.contentAlign,
         size: storedHeader.size ?? APP_HEADER_DEFAULTS.size,
+        minHeight: storedHeader.minHeight ?? APP_HEADER_DEFAULTS.minHeight,
         icon: storedHeader.icon ?? APP_HEADER_DEFAULTS.icon,
         skeleton: storedHeader.skeleton ?? APP_HEADER_DEFAULTS.skeleton,
         show: typeof storedHeader.show === 'boolean' ? storedHeader.show : APP_HEADER_DEFAULTS.show,
@@ -256,11 +258,20 @@ function nextElementId(pages: AppPage[], headerActions: CanvasElement[] = []): s
 const APP_HEADER_ID = 'app-header'
 type AppHeaderImageStyle = 'Image' | 'Icon' | 'None'
 type AppHeaderSize = 'Large' | 'Medium' | 'Small'
+type AppHeaderContentAlign = 'Center' | 'Bottom'
 interface AppHeaderState {
   layout: string
+  // Vertical content alignment: 'Center' (default) or 'Bottom' (pins the content
+  // to the bottom edge). Optional so older snapshots fall back to 'Center'.
+  contentAlign?: AppHeaderContentAlign
   // Title/description size (Large/Medium/Small). Optional so older snapshots
   // (without it) fall back to the component default (Large).
   size?: AppHeaderSize
+  // Banner height: a px number (drives min-height; content never clips — a tall
+  // title/description grows past it) or 'auto' to fit the header to its content.
+  // Optional so older snapshots fall back to the default (272px). Edited via the
+  // Auto-height toggle + slider in the properties panel.
+  minHeight?: number | 'auto'
   icon: string
   skeleton: boolean
   show: boolean
@@ -278,6 +289,7 @@ interface AppHeaderState {
 }
 const APP_HEADER_DEFAULTS: AppHeaderState = {
   layout: 'Center',
+  contentAlign: 'Center',
   size: 'Large',
   icon: 'Leaf',
   skeleton: false,
@@ -288,9 +300,20 @@ const APP_HEADER_DEFAULTS: AppHeaderState = {
   textColor: '#FFFFFF',
   backgroundImageUrl: null,
   backgroundImageName: null,
+  minHeight: 272,
 }
 
-const HEADER_ACTION_ALLOWED = ['button', 'social-follow']
+// Banner-height slider bounds (px). It drives min-height, so content can still
+// grow past the chosen value — a low value just means a more compact banner.
+const APP_HEADER_HEIGHT_MIN = 160
+const APP_HEADER_HEIGHT_MAX = 600
+const APP_HEADER_HEIGHT_DEFAULT = 272
+
+// Elements droppable into the app header. Button / Social Follow are the
+// interactive actions; Image (e.g. a hero graphic/badge) and Spacer (vertical
+// breathing room) stack full-width as their own rows — they aren't shrinkable,
+// so the drop logic only offers top/bottom edges for them.
+const HEADER_ACTION_ALLOWED = ['button', 'social-follow', 'image', 'spacer']
 const HEADER_ACTIONS_MAX = 3
 // In header context only Button can be shrinked (Social Follow stays full-width)
 const isHeaderShrinkable = (componentId: string): boolean => componentId === 'button'
@@ -1640,7 +1663,10 @@ export function BuildPage({
       }
 
       const handleBlur = () => {
-        const newText = el.textContent || ''
+        // innerText (not textContent) preserves the line breaks the user adds with
+        // Enter (contentEditable inserts <div>/<br>, which textContent would flatten
+        // into a single line). Strip only trailing blank lines.
+        const newText = el.innerText.replace(/\n+$/, '')
         el.classList.remove('build-page__inline-placeholder')
         if (newText) {
           setter(newText)
@@ -2547,7 +2573,9 @@ export function BuildPage({
                 <div className="live-preview__app-header-slot">
                 <AppHeader
                   layout={appHeaderState.layout as 'Center' | 'Left' | 'Right'}
+                  contentAlign={appHeaderState.contentAlign}
                   size={appHeaderState.size}
+                  minHeight={appHeaderState.minHeight ?? APP_HEADER_HEIGHT_DEFAULT}
                   icon={appHeaderState.icon}
                   imageStyle={appHeaderState.imageStyle}
                   imageUrl={appHeaderState.imageUrl}
@@ -2773,7 +2801,9 @@ export function BuildPage({
               <div ref={appHeaderRef}>
                 {appHeaderState.show && <AppHeader
                   layout={appHeaderState.layout as 'Center' | 'Left' | 'Right'}
+                  contentAlign={appHeaderState.contentAlign}
                   size={appHeaderState.size}
+                  minHeight={appHeaderState.minHeight ?? APP_HEADER_HEIGHT_DEFAULT}
                   icon={appHeaderState.icon}
                   imageStyle={appHeaderState.imageStyle}
                   imageUrl={appHeaderState.imageUrl}
@@ -3091,12 +3121,19 @@ export function BuildPage({
                                 { value: 'action', label: 'Action' },
                                 { value: 'condition', label: 'Condition' },
                               ]
-                            : (selectedComponent.id === 'button' || selectedComponent.id === 'image')
+                            : selectedComponent.id === 'button'
                               ? [
                                   { value: 'general', label: 'General' },
+                                  { value: 'style', label: 'Style' },
                                   { value: 'action', label: 'Action' },
                                   { value: 'condition', label: 'Condition' },
                                 ]
+                              : selectedComponent.id === 'image'
+                                ? [
+                                    { value: 'general', label: 'General' },
+                                    { value: 'action', label: 'Action' },
+                                    { value: 'condition', label: 'Condition' },
+                                  ]
                               : selectedComponent.id === 'product-list'
                                 ? [
                                     { value: 'general', label: 'Appearance' },
@@ -3172,6 +3209,55 @@ export function BuildPage({
                                 { value: 'Large', label: 'Large' },
                                 { value: 'Medium', label: 'Medium' },
                                 { value: 'Small', label: 'Small' },
+                              ]}
+                            />
+                          </DSFormField>
+                        </div>
+                        <div className="property-panel__field property-panel__field--inline">
+                          <DSFormField
+                            title="Auto Height"
+                            description="Fit the header to its content."
+                            size="md"
+                            showDescription
+                            showHelpText={false}
+                          >
+                            <DSToggle
+                              size="md"
+                              checked={appHeaderState.minHeight === 'auto'}
+                              onChange={(e) => setAppHeaderState((s) => ({
+                                ...s,
+                                minHeight: e.target.checked ? 'auto' : APP_HEADER_HEIGHT_DEFAULT,
+                              }))}
+                            />
+                          </DSFormField>
+                        </div>
+                        {appHeaderState.minHeight !== 'auto' && (
+                          <div className="property-panel__field">
+                            <DSFormField title="Height" size="md" showDescription={false} showHelpText={false}>
+                              <DSSlider
+                                size="md"
+                                min={APP_HEADER_HEIGHT_MIN}
+                                max={APP_HEADER_HEIGHT_MAX}
+                                step={4}
+                                value={typeof appHeaderState.minHeight === 'number' ? appHeaderState.minHeight : APP_HEADER_HEIGHT_DEFAULT}
+                                onChange={(v) => setAppHeaderState((s) => ({ ...s, minHeight: v }))}
+                                showValue
+                                formatValue={(v) => `${v}px`}
+                                aria-label="App header height"
+                              />
+                            </DSFormField>
+                          </div>
+                        )}
+                        <div className="property-panel__field">
+                          <DSFormField title="Content Alignment" size="md" showDescription={false} showHelpText={false}>
+                            <Segmented
+                              accent="apps"
+                              variant="text"
+                              value={appHeaderState.contentAlign ?? 'Center'}
+                              onChange={(value) => setAppHeaderState((s) => ({ ...s, contentAlign: value as AppHeaderContentAlign }))}
+                              items={[
+                                { value: 'Center', label: 'Center' },
+                                { value: 'Bottom', label: 'Bottom' },
                               ]}
                             />
                           </DSFormField>
@@ -4567,15 +4653,23 @@ export function BuildPage({
                         ? (propertyTab === 'layout' || propertyTab === 'action')
                         : isList
                           ? (propertyTab === 'general' || propertyTab === 'layout')
-                          : isSocialFollow
-                            ? false
-                            : propertyTab === 'general'
+                          : isButton
+                            ? (propertyTab === 'general' || propertyTab === 'style')
+                            : isSocialFollow
+                              ? false
+                              : propertyTab === 'general'
 
                   const cardTabVariants = propertyTab === 'layout' ? CARD_LAYOUT_VARIANTS : []
                   const cardTabProps = propertyTab === 'layout' ? CARD_LAYOUT_PROPS : []
 
                   const LIST_ACTION_VARIANTS = ['Action', 'Icon Filled', 'Card Action', 'Card Icon Filled']
                   const LIST_LAYOUT_VARIANTS = ['Layout', 'Image Style', 'Size', 'Card Image Style', 'Card Layout', 'Card Size']
+                  // Button: the visual variants (Variant / Size / Width / Filled) live in the
+                  // Style tab. General keeps the content (Label / Icon) with Shrinked at the
+                  // bottom. Type, Corner, Left/Right Icon and the Action/Form props are hidden.
+                  const BUTTON_STYLE_VARIANTS = ['Variant', 'Size', 'Width', 'Alignment', 'Filled']
+                  const BUTTON_STYLE_PROPS: string[] = []
+                  const BUTTON_GENERAL_PROPS = ['Label', 'Left Icon', 'Right Icon', 'Icon', 'Shrinked']
 
                   const visibleVariants = !showVariants
                     ? []
@@ -4586,6 +4680,11 @@ export function BuildPage({
                             if (propertyTab === 'layout') return LIST_LAYOUT_VARIANTS.includes(group)
                             // General: exclude both action and layout variants.
                             return !LIST_ACTION_VARIANTS.includes(group) && !LIST_LAYOUT_VARIANTS.includes(group)
+                          }
+                          if (isButton) {
+                            // Only the Style tab shows variants (Variant / Size / Filled);
+                            // Type and Corner are removed entirely (not in the list).
+                            return propertyTab === 'style' && BUTTON_STYLE_VARIANTS.includes(group)
                           }
                           return true
                         })
@@ -4621,6 +4720,14 @@ export function BuildPage({
                       if (isProductList) {
                         // Products & Currency live in the Products tab; default render shows the rest on General.
                         if (propertyTab === 'general') return prop.name !== 'Products' && prop.name !== 'Currency'
+                        return false
+                      }
+                      if (isButton) {
+                        // Style tab → Full Width. General → Label / Icon / Shrinked (kept in
+                        // register order, so Shrinked sits at the bottom). Left/Right Icon and
+                        // the Action/Form props are hidden; Style variants are in visibleVariants.
+                        if (propertyTab === 'style') return BUTTON_STYLE_PROPS.includes(prop.name)
+                        if (propertyTab === 'general') return BUTTON_GENERAL_PROPS.includes(prop.name)
                         return false
                       }
                       return propertyTab === 'general'
@@ -4822,7 +4929,7 @@ export function BuildPage({
                             <Segmented
                               accent="apps"
                               variant="text"
-                              value={String(selectedElement.variants[group] ?? '')}
+                              value={String(selectedElement.variants[group] ?? config.default ?? '')}
                               onChange={(val) => handleVariantChange(selectedElement.id, group, val)}
                               items={config.options.map((opt) => ({ value: opt, label: opt }))}
                             />
@@ -4852,6 +4959,7 @@ export function BuildPage({
                               />
                             ) : prop.type === 'icon' ? (
                               <IconPropertyField
+                                clearable={prop.default === 'none'}
                                 value={String(selectedElement.properties[prop.name] || '')}
                                 onChange={(val) =>
                                   handlePropertyChange(selectedElement.id, prop.name, val)
@@ -5093,7 +5201,9 @@ export function BuildPage({
                                 <div>
                                 <AppHeader
                                   layout={appHeaderState.layout as 'Center' | 'Left' | 'Right'}
+                                  contentAlign={appHeaderState.contentAlign}
                                   size={appHeaderState.size}
+                                  minHeight={appHeaderState.minHeight ?? APP_HEADER_HEIGHT_DEFAULT}
                                   icon={appHeaderState.icon}
                                   imageStyle={appHeaderState.imageStyle}
                                   imageUrl={appHeaderState.imageUrl}

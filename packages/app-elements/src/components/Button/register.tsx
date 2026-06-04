@@ -83,6 +83,18 @@ ComponentRegistry.register({
       default: 'Default',
       showWhen: { Type: 'Standard' },
     },
+    Width: {
+      options: ['Auto', 'Full'],
+      default: 'Full',
+      showWhen: { Type: 'Standard' },
+    },
+    Alignment: {
+      options: ['Left', 'Center', 'Right'],
+      default: 'Center',
+      // Only meaningful when the button is content-width (Width: Auto) — it sets
+      // where the button sits inside its full-width slot. Full fills the slot.
+      showWhen: { Type: 'Standard', Width: 'Auto' },
+    },
     Filled: {
       options: ['Yes', 'No'],
       default: 'Yes',
@@ -96,7 +108,6 @@ ComponentRegistry.register({
     { name: 'Right Icon', type: 'icon', default: 'none', showWhen: { Type: 'Standard' } },
     { name: 'Icon', type: 'icon', default: 'Plus', showWhen: { Type: 'Icon Only' } },
     { name: 'Shrinked', type: 'boolean', default: false, showWhen: { Type: 'Standard' } },
-    { name: 'Full Width', type: 'boolean', default: false, showWhen: { Type: 'Standard' } },
     { name: 'Action', type: 'select', options: ['None', 'Open Form'], default: 'None' },
     { name: 'Form Title', type: 'text', default: 'Add new item', showWhen: { Action: 'Open Form' } },
     { name: 'Form Description', type: 'text', default: '', showWhen: { Action: 'Open Form' } },
@@ -281,7 +292,8 @@ ComponentRegistry.register({
         iconOnlyIcon={props['Icon'] as string}
         iconOnlyFilled={variants['Filled'] === 'Yes'}
         shrinked={props['Shrinked'] as boolean}
-        fullWidth={props['Full Width'] as boolean}
+        width={variants['Width'] as 'Auto' | 'Full'}
+        align={variants['Alignment'] as 'Left' | 'Center' | 'Right'}
         action={props['Action'] as string}
         formTitle={props['Form Title'] as string}
         formDescription={props['Form Description'] as string}

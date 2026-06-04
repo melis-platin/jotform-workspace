@@ -1,0 +1,214 @@
+// ============================================
+// Slider (Range) Component
+// Source: DS — mirrors Toggle / Input tokens
+// ============================================
+
+.jf-slider {
+  // Filled-portion fraction; overridden inline from value/min/max.
+  --_pct: 0%;
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+  -webkit-tap-highlight-color: transparent;
+
+  // ---- Native range, reset then re-style ----
+  &__input {
+    -webkit-appearance: none;
+    appearance: none;
+    flex: 1;
+    min-width: 0;
+    margin: 0;
+    background: transparent;
+    cursor: pointer;
+    outline: none;
+  }
+
+  // ===== WebKit / Blink =====
+  &__input::-webkit-slider-runnable-track {
+    height: var(--_track-h, 6px);
+    border-radius: var(--radius-sm);
+    // No native progress pseudo on WebKit → paint fill with a gradient.
+    background: linear-gradient(
+      to right,
+      var(--accent-default) 0 var(--_pct),
+      var(--navy-200) var(--_pct) 100%
+    );
+    transition: background 0.15s ease;
+  }
+
+  &__input::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: var(--_thumb, 16px);
+    height: var(--_thumb, 16px);
+    border-radius: var(--radius-sm);
+    background: var(--background-white);
+    box-shadow: var(--shadow-xs);
+    // Vertically center the thumb on the track.
+    margin-top: calc((var(--_track-h, 6px) - var(--_thumb, 16px)) / 2);
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.15s ease;
+  }
+
+  // ===== Firefox =====
+  &__input::-moz-range-track {
+    height: var(--_track-h, 6px);
+    border-radius: var(--radius-sm);
+    background: var(--navy-200);
+    transition: background 0.15s ease;
+  }
+
+  &__input::-moz-range-progress {
+    height: var(--_track-h, 6px);
+    border-radius: var(--radius-sm);
+    background: var(--accent-default);
+    transition: background 0.15s ease;
+  }
+
+  &__input::-moz-range-thumb {
+    width: var(--_thumb, 16px);
+    height: var(--_thumb, 16px);
+    border: none;
+    border-radius: var(--radius-sm);
+    background: var(--background-white);
+    box-shadow: var(--shadow-xs);
+    transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 0.15s ease;
+  }
+
+  // ===== Hover / active → accent-dark fill (matches Toggle checked-hover) =====
+  &:hover .jf-slider__input:not(:disabled)::-webkit-slider-runnable-track {
+    background: linear-gradient(
+      to right,
+      var(--accent-dark) 0 var(--_pct),
+      var(--navy-300) var(--_pct) 100%
+    );
+  }
+  &:hover .jf-slider__input:not(:disabled)::-moz-range-progress {
+    background: var(--accent-dark);
+  }
+  &:hover .jf-slider__input:not(:disabled)::-moz-range-track {
+    background: var(--navy-300);
+  }
+  .jf-slider__input:active::-webkit-slider-thumb {
+    transform: scale(1.08);
+  }
+  .jf-slider__input:active::-moz-range-thumb {
+    transform: scale(1.08);
+  }
+
+  // ===== Focus-visible ring (3px spread, matches Input/Button) =====
+  &__input:focus-visible::-webkit-slider-thumb {
+    box-shadow: var(--shadow-xs),
+      0 0 0 3px color-mix(in srgb, var(--blue-200) 50%, transparent);
+  }
+  &__input:focus-visible::-moz-range-thumb {
+    box-shadow: var(--shadow-xs),
+      0 0 0 3px color-mix(in srgb, var(--blue-200) 50%, transparent);
+  }
+
+  // ===== Value readout =====
+  &__value {
+    flex-shrink: 0;
+    min-width: 4ch;
+    text-align: right;
+    font-family: var(--font-family-circular);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-sm);
+    color: var(--text-darkest);
+    font-variant-numeric: tabular-nums;
+  }
+
+  // ===== Sizes (track thickness + thumb + hit area mirror Input heights) =====
+  &--sm {
+    .jf-slider__input { --_track-h: 4px; --_thumb: 12px; height: 32px; }
+    .jf-slider__value { font-size: var(--font-size-xs); line-height: var(--line-height-xs); min-width: 3ch; }
+  }
+  &--md {
+    .jf-slider__input { --_track-h: 6px; --_thumb: 16px; height: 40px; }
+  }
+  &--lg {
+    .jf-slider__input { --_track-h: 6px; --_thumb: 20px; height: 48px; }
+    .jf-slider__value { font-size: var(--font-size-md); line-height: var(--line-height-md); }
+  }
+
+  // ===== Error =====
+  &--error {
+    .jf-slider__input::-webkit-slider-runnable-track {
+      background: linear-gradient(
+        to right,
+        var(--error-default) 0 var(--_pct),
+        var(--navy-200) var(--_pct) 100%
+      );
+    }
+    .jf-slider__input::-moz-range-progress { background: var(--error-default); }
+    .jf-slider__input:focus-visible::-webkit-slider-thumb {
+      box-shadow: var(--shadow-xs),
+        0 0 0 3px color-mix(in srgb, var(--red-200) 50%, transparent);
+    }
+    .jf-slider__input:focus-visible::-moz-range-thumb {
+      box-shadow: var(--shadow-xs),
+        0 0 0 3px color-mix(in srgb, var(--red-200) 50%, transparent);
+    }
+  }
+
+  // ===== Disabled (opacity 0.4 + no pointer events, matches Input/Button) =====
+  &--disabled {
+    opacity: 0.4;
+    pointer-events: none;
+    .jf-slider__input { cursor: not-allowed; }
+  }
+}
+
+// ============================================
+// Dark theme — swaps navy track → gray-400,
+// thumb & accent unchanged (proven by DSToggle in the panel)
+// ============================================
+[data-theme='dark'] .jf-slider {
+  .jf-slider__input::-webkit-slider-runnable-track {
+    background: linear-gradient(
+      to right,
+      var(--accent-default) 0 var(--_pct),
+      var(--gray-400) var(--_pct) 100%
+    );
+  }
+  .jf-slider__input::-moz-range-track { background: var(--gray-400); }
+
+  &:hover .jf-slider__input:not(:disabled)::-webkit-slider-runnable-track {
+    background: linear-gradient(
+      to right,
+      var(--accent-dark) 0 var(--_pct),
+      var(--gray-300) var(--_pct) 100%
+    );
+  }
+  &:hover .jf-slider__input:not(:disabled)::-moz-range-track { background: var(--gray-300); }
+
+  .jf-slider__input:focus-visible::-webkit-slider-thumb {
+    box-shadow: var(--shadow-xs),
+      0 0 0 3px color-mix(in srgb, var(--accent-default) 30%, transparent);
+  }
+  .jf-slider__input:focus-visible::-moz-range-thumb {
+    box-shadow: var(--shadow-xs),
+      0 0 0 3px color-mix(in srgb, var(--accent-default) 30%, transparent);
+  }
+
+  &--error {
+    .jf-slider__input::-webkit-slider-runnable-track {
+      background: linear-gradient(
+        to right,
+        var(--error-default) 0 var(--_pct),
+        var(--gray-400) var(--_pct) 100%
+      );
+    }
+    .jf-slider__input:focus-visible::-webkit-slider-thumb,
+    .jf-slider__input:focus-visible::-moz-range-thumb {
+      box-shadow: var(--shadow-xs),
+        0 0 0 3px color-mix(in srgb, var(--error-default) 30%, transparent);
+    }
+  }
+
+  .jf-slider__value { color: var(--secondary-text-white); }
+}

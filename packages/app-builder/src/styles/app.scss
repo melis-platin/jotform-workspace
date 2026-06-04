@@ -1089,6 +1089,13 @@ body {
   .themes-view__device {
     width: 100%;
     max-width: 100%;
+    // Edit canvas: the page card is 644px with a --space-6 (24px) inset. Publish
+    // the same to the app header columns (the AppHeader lives in
+    // .themes-view__device, a sibling above the card) so the title / description
+    // / button align with the page elements. Real narrow viewport (<=768px) is
+    // handled by the AppHeader @media, which overrides these on the element.
+    --app-header-max: 644px;
+    --app-header-inset: var(--space-6);
 
     > div {
       width: 100%;
@@ -1576,6 +1583,9 @@ body {
     width: 100%;
     min-height: 100%;
     transform: none;
+    // Tablet: the card is wide enough (>=560px) that .themes-view__app switches to
+    // a --space-6 (24px) inset; match it on the header columns (max stays 100%).
+    --app-header-inset: var(--space-6);
   }
 
   // iPad's home indicator is the same physical width as iPhone's (~134pt).
@@ -2516,6 +2526,12 @@ body {
   transform: scale(0.9);
   transform-origin: top left;
   user-select: none;
+  // Phone shell (default): card is full-bleed (100%) with a --space-4 (16px)
+  // inset, so publish the same to the app header columns. The AppHeader is a
+  // sibling of the card (.live-preview__app-header-slot) so it inherits these.
+  // Tablet / desktop shells override --app-header-* on this same element below.
+  --app-header-max: 100%;
+  --app-header-inset: var(--space-4);
 
   [contenteditable] {
     pointer-events: none;
@@ -2523,11 +2539,10 @@ body {
 
 
   .jf-app-header {
+    // Symmetric vertical padding: top + bottom both var(--space-12) (48px). Bottom
+    // comes from the base `padding: var(--space-12) 0`; we no longer shrink it to
+    // --space-4 when a button is present (that asymmetric 48/16 looked off).
     padding-top: var(--space-12);
-
-    &:has(.jf-app-header__actions .jf-btn) {
-      padding-bottom: var(--space-4);
-    }
   }
 
   .themes-view__canvas {
@@ -2536,6 +2551,14 @@ body {
     box-shadow: none;
     border-radius: 0;
     margin: 0;
+
+    // Tuck the first card up under the app header (same -16px as desktop). Without
+    // it, the header's bottom inset shows as an image strip between the content and
+    // the card — most visible with bottom-aligned content — whereas desktop hides
+    // that region under the tucked card. (--first is only set when a header shows.)
+    &--first {
+      margin-top: -16px;
+    }
   }
 
   .themes-view__app {
@@ -2560,21 +2583,25 @@ body {
     padding: 0 var(--space-4, 16px) var(--space-4, 16px);
   }
 
-  // Header actions slot — constrain to the page content area (760px card width,
-  // --space-6 inset → 712px) and centre it, so the buttons line up with the
-  // title/description and the page elements below instead of running full-bleed.
-  .jf-app-header__actions {
-    max-width: 760px;
-    margin-left: auto;
-    margin-right: auto;
-    padding: 0 var(--space-6);
-    gap: var(--space-4);
-  }
+  // (Header __inner / __actions geometry is now driven by --app-header-max /
+  // --app-header-inset, published on .live-preview__content above and overridden
+  // per shell — see AppHeader.scss. No bespoke __actions override needed here.)
 
   .live-preview__header-action--shrinked {
     flex: 1 1 calc(50% - var(--space-4) / 2);
     max-width: calc(50% - var(--space-4) / 2);
   }
+}
+
+// Builder-only empty/upload placeholders (image + document with no content yet)
+// are editing affordances — never show them in the live preview (the published-
+// app simulation). Collapse the whole element wrapper so it leaves no gap, not
+// just the placeholder box. The editing canvas (.build-page__canvas) is outside
+// .live-preview__content, so these still appear while editing. A Form's "Browse
+// Files" area is real content, so it is intentionally NOT matched here.
+.live-preview__content
+  :is(.themes-view__section, .live-preview__header-action):has(.jf-image-builder, .jf-doc-builder) {
+  display: none;
 }
 
 // Phone + tablet preview: sticky-footer for the attribution banner.
@@ -4041,6 +4068,10 @@ body {
 .build-page__canvas-element-content {
   display: flex;
   flex-direction: column;
+  // Keep the element slot full-width even when its child is content-width (e.g. a
+  // Width:Auto button centred via align-self) — without this the slot/selection
+  // shrinks to the button, unlike the header action slot which sets width:100%.
+  width: 100%;
 }
 
 .build-page__canvas-element--selected .build-page__canvas-element-content {
@@ -4132,6 +4163,25 @@ body {
   }
 }
 
+// Spacer inside the app header slot: the canvas hover/selected fill rules above
+// are scoped to .build-page__canvas-element, which the header uses a different
+// wrapper for (.build-page__header-action) — so mirror them here. The fill token
+// --bg-surface-brand is remapped to a translucent inverse tint inside
+// .jf-app-header__actions (AppHeader.scss), so the spacer's state stays visible
+// against the brand-colored header background instead of vanishing into it.
+.build-page__header-action:not(.build-page__header-action--selected):hover .jf-spacer {
+  background: var(--bg-surface-brand);
+}
+
+.build-page__header-action--selected .jf-spacer {
+  background: var(--bg-surface-brand);
+  cursor: ns-resize;
+
+  .jf-spacer__handle {
+    display: flex;
+  }
+}
+
 // Hide component-level selected outlines — builder applies its own
 .build-page__canvas-element [class*="--selected"] {
   outline: none;
@@ -4143,8 +4193,29 @@ body {
   outline-offset: 4px;
 }
 
+// Standard buttons select on the full-width slot, not the button itself, so the
+// selection wrapper is consistent regardless of Width (Auto = content-width, Full
+// = stretched) and the button's own corner radius. A fixed --radius-md slot (like
+// the header action selection) — never the button's pill/rounded radius — keeps
+// Auto and Full identical. Icon-only buttons (.jf-btn-icon) are excluded: they
+// keep the tight `> *` outline.
+.build-page__canvas-element--selected
+  > .build-page__canvas-element-content:has(> .jf-btn) {
+  outline: 2px solid var(--border-info);
+  outline-offset: 4px;
+  border-radius: var(--radius-md);
+}
+.build-page__canvas-element--selected
+  > .build-page__canvas-element-content
+  > .jf-btn {
+  outline: none;
+}
+
 // Hide selected outline during drag & drop
-.build-page__canvas--dragging .build-page__canvas-element--selected > .build-page__canvas-element-content > * {
+.build-page__canvas--dragging .build-page__canvas-element--selected > .build-page__canvas-element-content > *,
+.build-page__canvas--dragging
+  .build-page__canvas-element--selected
+  > .build-page__canvas-element-content:has(> .jf-btn) {
   outline: none;
 }
 
@@ -7783,6 +7854,13 @@ body.builder--phone-only {
     width: 100%;
     min-height: auto;
     transform: none;
+    // Desktop preview: card is 760px with a --space-6 (24px) inset. Publish the
+    // same to the app header columns so they align with the page elements in all
+    // desktop nav variants (top / compact / contained / side-nav) — both header
+    // and card auto-center within the same (possibly side-nav-offset) area, so no
+    // per-variant math is needed.
+    --app-header-max: 760px;
+    --app-header-inset: var(--space-6);
   }
 
   // Desktop preview: page name hidden — nav links replace the title.
