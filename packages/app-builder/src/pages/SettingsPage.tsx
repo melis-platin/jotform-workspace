@@ -22,7 +22,7 @@ import { QuickPreview } from '../components/QuickPreview'
 import { SideNav, type SideNavItem } from '../components/SideNav'
 import { SplashScreenMockup, type SplashAnimation, type SplashStyle } from '../components/SplashScreenMockup'
 import { useCssVar } from '../hooks/useCssVar'
-import { loadStoredAppHeaderIcon } from '../presets/storage'
+import { IconPropertyField } from '../components/IconPropertyField'
 
 const NAV_ITEMS: SideNavItem[] = [
   {
@@ -189,6 +189,8 @@ interface AppNameIconPanelProps {
   setAppName: (value: string) => void
   variant: AppIconVariant
   setVariant: (value: AppIconVariant) => void
+  iconGlyph: string
+  setIconGlyph: (value: string) => void
   imageUrl: string | null
   imageName: string | null
   setImage: (url: string | null, name: string | null) => void
@@ -206,6 +208,8 @@ function AppNameIconPanel({
   setAppName,
   variant,
   setVariant,
+  iconGlyph,
+  setIconGlyph,
   imageUrl,
   imageName,
   setImage,
@@ -246,6 +250,15 @@ function AppNameIconPanel({
       </div>
       {variant === 'Icon' && (
         <>
+          <div className="settings-panel__row">
+            <FormField
+              title="Icon"
+              description="The glyph shown inside your app icon."
+              showHelpText={false}
+            >
+              <IconPropertyField value={iconGlyph} onChange={setIconGlyph} />
+            </FormField>
+          </div>
           <div className="settings-panel__row">
             <FormField
               title="Icon Color"
@@ -450,28 +463,35 @@ function SplashScreenPanel({
 
 const TABS_WITH_PREVIEW = new Set(['app-name-icon', 'splash-screen'])
 
-interface SettingsPageProps {
-  presetId: string
-  appTitle: string
+interface AppIconState {
+  variant: AppIconVariant
+  icon: string
+  imageUrl: string | null
+  imageName: string | null
 }
 
-export function SettingsPage({ presetId, appTitle }: SettingsPageProps) {
+interface SettingsPageProps {
+  appTitle: string
+  onAppTitleChange?: (name: string) => void
+  appIcon: AppIconState
+  onAppIconChange: (next: AppIconState) => void
+}
+
+export function SettingsPage({ appTitle, onAppTitleChange, appIcon, onAppIconChange }: SettingsPageProps) {
   const [activeId, setActiveId] = useState('app-settings')
 
-  // Read the AppHeader's currently selected icon from the preset snapshot.
-  // The icon shown in the App Icon and Splash mockups always mirrors what's
-  // configured for the AppHeader on the canvas.
-  const appHeaderIcon = loadStoredAppHeaderIcon(presetId) ?? 'Leaf'
-
-  // App name is sourced from the live appTitle (managed at App level).
-  const [appName, setAppName] = useState(appTitle)
+  // App name is the live app identity (managed at App level) — edits here flow
+  // straight up to appTitle, the same value the chrome inline-edit writes.
+  const appName = appTitle
+  const setAppName = (value: string) => onAppTitleChange?.(value)
   const [iconStyle, setIconStyle] = useState<IconStyle>('flat')
-  const [iconVariant, setIconVariant] = useState<AppIconVariant>('Icon')
-  const [appImage, setAppImage] = useState<{ url: string | null; name: string | null }>({
-    url: null,
-    name: null,
-  })
-  const setImage = (url: string | null, name: string | null) => setAppImage({ url, name })
+  // Variant + image are the shared app icon (lifted to App, consumed by the nav
+  // logo). Settings is the single editor; the App Header hero no longer feeds it.
+  const iconVariant = appIcon.variant
+  const setIconVariant = (value: AppIconVariant) => onAppIconChange({ ...appIcon, variant: value })
+  const appImage = { url: appIcon.imageUrl, name: appIcon.imageName }
+  const setImage = (url: string | null, name: string | null) =>
+    onAppIconChange({ ...appIcon, imageUrl: url, imageName: name })
 
   const [splashBgStyle, setSplashBgStyle] = useState<SplashStyle>('flat')
   const [splashAnimation, setSplashAnimation] = useState<SplashAnimation>('none')
@@ -523,6 +543,8 @@ export function SettingsPage({ presetId, appTitle }: SettingsPageProps) {
               setAppName={setAppName}
               variant={iconVariant}
               setVariant={setIconVariant}
+              iconGlyph={appIcon.icon}
+              setIconGlyph={(value) => onAppIconChange({ ...appIcon, icon: value })}
               imageUrl={appImage.url}
               imageName={appImage.name}
               setImage={setImage}
@@ -558,7 +580,7 @@ export function SettingsPage({ presetId, appTitle }: SettingsPageProps) {
                   <HomeScreenMockup
                     variant={iconVariant}
                     imageUrl={appImage.url}
-                    iconName={appHeaderIcon}
+                    iconName={appIcon.icon}
                     iconColor={inverseColor}
                     iconBg={brandColor}
                     iconStyle={previewIconStyle}
@@ -572,7 +594,7 @@ export function SettingsPage({ presetId, appTitle }: SettingsPageProps) {
                     fontColor={splashState.fontColor}
                     variant={iconVariant}
                     imageUrl={appImage.url}
-                    iconName={appHeaderIcon}
+                    iconName={appIcon.icon}
                     iconColor={brandColor}
                     iconBg={inverseColor}
                     appName={appName}

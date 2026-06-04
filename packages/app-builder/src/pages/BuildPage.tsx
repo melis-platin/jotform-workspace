@@ -215,6 +215,7 @@ function buildInitialStateFromPreset(preset: AppPreset | undefined): {
       appSubtitle: stored.appSubtitle,
       appHeader: {
         layout: storedHeader.layout ?? APP_HEADER_DEFAULTS.layout,
+        size: storedHeader.size ?? APP_HEADER_DEFAULTS.size,
         icon: storedHeader.icon ?? APP_HEADER_DEFAULTS.icon,
         skeleton: storedHeader.skeleton ?? APP_HEADER_DEFAULTS.skeleton,
         show: typeof storedHeader.show === 'boolean' ? storedHeader.show : APP_HEADER_DEFAULTS.show,
@@ -254,8 +255,12 @@ function nextElementId(pages: AppPage[], headerActions: CanvasElement[] = []): s
 
 const APP_HEADER_ID = 'app-header'
 type AppHeaderImageStyle = 'Image' | 'Icon' | 'None'
+type AppHeaderSize = 'Large' | 'Medium' | 'Small'
 interface AppHeaderState {
   layout: string
+  // Title/description size (Large/Medium/Small). Optional so older snapshots
+  // (without it) fall back to the component default (Large).
+  size?: AppHeaderSize
   icon: string
   skeleton: boolean
   show: boolean
@@ -273,6 +278,7 @@ interface AppHeaderState {
 }
 const APP_HEADER_DEFAULTS: AppHeaderState = {
   layout: 'Center',
+  size: 'Large',
   icon: 'Leaf',
   skeleton: false,
   show: true,
@@ -1120,6 +1126,8 @@ type RightPanelMode = 'preview' | 'designer' | 'properties' | 'page' | 'navigati
 interface BuildPageProps {
   appTitle?: string
   onAppTitleChange?: (title: string) => void
+  // App icon (nav logo) — managed in Settings, independent of the App Header hero.
+  appIcon?: { variant: 'Icon' | 'Image'; icon: string; imageUrl: string | null }
   preset?: AppPreset
   initialPageId?: string
   chromeless?: boolean
@@ -1131,6 +1139,7 @@ interface BuildPageProps {
 export function BuildPage({
   appTitle: appTitleProp = 'App Title',
   onAppTitleChange,
+  appIcon = { variant: 'Icon', icon: 'Leaf', imageUrl: null },
   preset,
   initialPageId,
   chromeless = false,
@@ -1269,8 +1278,10 @@ export function BuildPage({
   }, [])
 
   const appTitle = appTitleProp
-  const setAppTitle = (title: string) => onAppTitleChange?.(title)
-  const [appSubtitle, setAppSubtitle] = useState(initial.appSubtitle)
+  // App name/description are the app identity, edited from the builder chrome /
+  // Settings — NOT from the app header (now an independent hero banner). They
+  // only seed the header's default title/subtitle when its own are unset.
+  const appSubtitle = initial.appSubtitle
   const [appHeaderState, setAppHeaderState] = useState<AppHeaderState>(initial.appHeader)
   const [isMorePageOpen, setIsMorePageOpen] = useState(false)
   const [isPreviewCartOpen, setIsPreviewCartOpen] = useState(false)
@@ -1466,16 +1477,6 @@ export function BuildPage({
   const previewIsFirstPage = activePageId === pages[0]?.id
   const isDesktopFullPreview = previewMode && previewDevice === 'desktop'
   const showCompactTitle = appHeaderState.show && isPreviewContentScrolled && (previewIsFirstPage || isDesktopFullPreview)
-  const [compactTitleInDom, setCompactTitleInDom] = useState(false)
-  useEffect(() => {
-    if (showCompactTitle) {
-      setCompactTitleInDom(true)
-      return
-    }
-    if (!compactTitleInDom) return
-    const t = setTimeout(() => setCompactTitleInDom(false), 250)
-    return () => clearTimeout(t)
-  }, [showCompactTitle, compactTitleInDom])
 
   useEffect(() => {
     return ComponentRegistry.subscribe(() => {
@@ -1589,9 +1590,13 @@ export function BuildPage({
     const titleEl = container.querySelector('.jf-app-header__title') as HTMLElement | null
     const subtitleEl = container.querySelector('.jf-app-header__subtitle') as HTMLElement | null
 
+    // The app-header title/subtitle are the HERO BANNER's own text and write to
+    // appHeaderState — NOT the app name. The app name (appTitle/appSubtitle) is
+    // edited from the builder chrome / Settings only. They default to the app
+    // name when unset so a fresh header isn't empty.
     const fields = [
-      { el: titleEl, defaultValue: 'App Title', setter: setAppTitle },
-      { el: subtitleEl, defaultValue: '', setter: setAppSubtitle },
+      { el: titleEl, defaultValue: appTitle, setter: (v: string) => setAppHeaderState((s) => ({ ...s, title: v })) },
+      { el: subtitleEl, defaultValue: appSubtitle, setter: (v: string) => setAppHeaderState((s) => ({ ...s, subtitle: v })) },
     ]
 
     const cleanups: (() => void)[] = []
@@ -1667,7 +1672,7 @@ export function BuildPage({
     }
 
     return () => cleanups.forEach((fn) => fn())
-  }, [appTitle, appSubtitle])
+  }, [appTitle, appSubtitle, appHeaderState.title, appHeaderState.subtitle])
 
   const [activeTab, setActiveTab] = useState<'basic' | 'widgets'>('basic')
   const [widgetSearch, setWidgetSearch] = useState('')
@@ -2307,26 +2312,17 @@ export function BuildPage({
           // the app header is closed — otherwise keep the scroll-driven behavior.
           const brandingAlways = showLandingNav || (isFirstPage && !appHeaderState.show)
           const compactPersistent = previewDevice === 'desktop' || brandingAlways
-          const compactDomReady = !isMorePageOpen && (compactTitleInDom || compactPersistent)
-          const compactExiting = !compactPersistent && compactTitleInDom && !showCompactTitle
-          // Desktop top nav shows the full app name by default (it only ever collapsed
-          // to icon-only on desktop, so there's nothing to collapse elsewhere).
-          const titleCollapsed = false
+          const compactDomReady = !isMorePageOpen && (showCompactTitle || compactPersistent)
           if (compactDomReady) {
-            const compactClass = [
-              'live-preview__top-header-compact',
-              compactExiting && 'live-preview__top-header-compact--exiting',
-              compactPersistent && 'live-preview__top-header-compact--persistent',
-              titleCollapsed && 'live-preview__top-header-compact--icon-only',
-            ].filter(Boolean).join(' ')
             return (
-              <div className={compactClass}>
-                {appHeaderState.imageStyle !== 'None' && (
-                  <div className={`live-preview__top-header-compact-icon${appHeaderState.imageStyle === 'Image' && appHeaderState.imageUrl ? ' live-preview__top-header-compact-icon--image' : ''}`}>
-                    {appHeaderState.imageStyle === 'Image' && appHeaderState.imageUrl ? (
-                      <img src={appHeaderState.imageUrl} alt="" />
+              <div className="live-preview__top-header-compact">
+                {/* Nav logo is the app identity — always shown, independent of the hero's
+                  imageStyle. Falls back to the icon glyph when the hero icon is removed. */ (
+                  <div className={`live-preview__top-header-compact-icon${appIcon.variant === 'Image' && appIcon.imageUrl ? ' live-preview__top-header-compact-icon--image' : ''}`}>
+                    {appIcon.variant === 'Image' && appIcon.imageUrl ? (
+                      <img src={appIcon.imageUrl} alt="" />
                     ) : (
-                      <AppIcon name={appHeaderState.icon} size={24} />
+                      <AppIcon name={appIcon.icon} size={24} />
                     )}
                   </div>
                 )}
@@ -2336,8 +2332,18 @@ export function BuildPage({
           }
           const activePage = pages.find((p) => p.id === activePageId)
           return isMorePageOpen ? (
-            <div className="live-preview__top-header-page">
-              <span className="live-preview__top-header-page-name">Menu</span>
+            <div className="live-preview__top-header-compact">
+              {/* Nav logo is the app identity — always shown, independent of the hero's
+                  imageStyle. Falls back to the icon glyph when the hero icon is removed. */ (
+                <div className={`live-preview__top-header-compact-icon${appIcon.variant === 'Image' && appIcon.imageUrl ? ' live-preview__top-header-compact-icon--image' : ''}`}>
+                  {appIcon.variant === 'Image' && appIcon.imageUrl ? (
+                    <img src={appIcon.imageUrl} alt="" />
+                  ) : (
+                    <AppIcon name={appIcon.icon} size={24} />
+                  )}
+                </div>
+              )}
+              <span className="live-preview__top-header-compact-title">{appTitle}</span>
             </div>
           ) : activePage ? (
             <div className="live-preview__top-header-page">
@@ -2441,12 +2447,13 @@ export function BuildPage({
       {desktopNavEnabled && desktopNavVariant === 'left' && previewDevice === 'desktop' && (
         <aside className="live-preview__side-nav app-scope">
           <div className="live-preview__side-nav-brand">
-            {appHeaderState.imageStyle !== 'None' && (
-              <span className={`live-preview__side-nav-logo${appHeaderState.imageStyle === 'Image' && appHeaderState.imageUrl ? ' live-preview__side-nav-logo--image' : ''}`}>
-                {appHeaderState.imageStyle === 'Image' && appHeaderState.imageUrl ? (
-                  <img src={appHeaderState.imageUrl} alt="" />
+            {/* Nav logo is the app identity — always shown, independent of the hero's
+                  imageStyle. Falls back to the icon glyph when the hero icon is removed. */ (
+              <span className={`live-preview__side-nav-logo${appIcon.variant === 'Image' && appIcon.imageUrl ? ' live-preview__side-nav-logo--image' : ''}`}>
+                {appIcon.variant === 'Image' && appIcon.imageUrl ? (
+                  <img src={appIcon.imageUrl} alt="" />
                 ) : (
-                  <AppIcon name={appHeaderState.icon} size={24} />
+                  <AppIcon name={appIcon.icon} size={24} />
                 )}
               </span>
             )}
@@ -2540,14 +2547,15 @@ export function BuildPage({
                 <div className="live-preview__app-header-slot">
                 <AppHeader
                   layout={appHeaderState.layout as 'Center' | 'Left' | 'Right'}
+                  size={appHeaderState.size}
                   icon={appHeaderState.icon}
                   imageStyle={appHeaderState.imageStyle}
                   imageUrl={appHeaderState.imageUrl}
                   textColor={appHeaderState.textColor}
                   backgroundImageUrl={appHeaderState.backgroundImageUrl}
                   skeleton={appHeaderState.skeleton}
-                  title={appTitle}
-                  subtitle={appSubtitle}
+                  title={appHeaderState.title ?? appTitle}
+                  subtitle={appHeaderState.subtitle ?? appSubtitle}
                   actions={headerActions.map((el) => {
                     const comp = ComponentRegistry.get(el.componentId)
                     if (!comp) return null
@@ -2765,6 +2773,7 @@ export function BuildPage({
               <div ref={appHeaderRef}>
                 {appHeaderState.show && <AppHeader
                   layout={appHeaderState.layout as 'Center' | 'Left' | 'Right'}
+                  size={appHeaderState.size}
                   icon={appHeaderState.icon}
                   imageStyle={appHeaderState.imageStyle}
                   imageUrl={appHeaderState.imageUrl}
@@ -2773,8 +2782,8 @@ export function BuildPage({
                   skeleton={appHeaderState.skeleton}
                   title={appHeaderState.title ?? appTitle}
                   subtitle={appHeaderState.subtitle ?? appSubtitle}
-                  iconSelected={selectedElementId === APP_HEADER_ID}
-                  onIconClick={(e) => {
+                  selected={selectedElementId === APP_HEADER_ID}
+                  onClick={(e) => {
                     e.stopPropagation()
                     setSelectedElementId(APP_HEADER_ID)
                     setRightPanel('properties')
@@ -3132,23 +3141,38 @@ export function BuildPage({
                           </DSFormField>
                         </div>
                         <div className="property-panel__field">
-                          <DSFormField title="App Title" size="md" showDescription={false} showHelpText={false}>
+                          <DSFormField title="Title" size="md" showDescription={false} showHelpText={false}>
                             <DSInput
-                              value={appTitle}
-                              onChange={(e) => setAppTitle(e.target.value)}
+                              value={appHeaderState.title ?? appTitle}
+                              onChange={(e) => setAppHeaderState((s) => ({ ...s, title: e.target.value }))}
                             />
                           </DSFormField>
                         </div>
                         <div className="property-panel__field">
-                          <DSFormField title="App Description" size="md" showDescription={false} showHelpText={false}>
+                          <DSFormField title="Description" size="md" showDescription={false} showHelpText={false}>
                             <DSTextArea
                               size="md"
                               maxLength={240}
                               showCount
                               showDrag={false}
                               placeholder="Add description"
-                              value={appSubtitle}
-                              onChange={(e) => setAppSubtitle(e.target.value)}
+                              value={appHeaderState.subtitle ?? appSubtitle}
+                              onChange={(e) => setAppHeaderState((s) => ({ ...s, subtitle: e.target.value }))}
+                            />
+                          </DSFormField>
+                        </div>
+                        <div className="property-panel__field">
+                          <DSFormField title="Size" size="md" showDescription={false} showHelpText={false}>
+                            <Segmented
+                              accent="apps"
+                              variant="text"
+                              value={appHeaderState.size ?? 'Large'}
+                              onChange={(value) => setAppHeaderState((s) => ({ ...s, size: value as AppHeaderSize }))}
+                              items={[
+                                { value: 'Large', label: 'Large' },
+                                { value: 'Medium', label: 'Medium' },
+                                { value: 'Small', label: 'Small' },
+                              ]}
                             />
                           </DSFormField>
                         </div>
@@ -4957,12 +4981,13 @@ export function BuildPage({
                           if (showCompact) {
                             return (
                               <div className="live-preview__top-header-compact">
-                                {appHeaderState.imageStyle !== 'None' && (
-                                  <div className={`live-preview__top-header-compact-icon${appHeaderState.imageStyle === 'Image' && appHeaderState.imageUrl ? ' live-preview__top-header-compact-icon--image' : ''}`}>
-                                    {appHeaderState.imageStyle === 'Image' && appHeaderState.imageUrl ? (
-                                      <img src={appHeaderState.imageUrl} alt="" />
+                                {/* Nav logo is the app identity — always shown, independent of the hero's
+                  imageStyle. Falls back to the icon glyph when the hero icon is removed. */ (
+                                  <div className={`live-preview__top-header-compact-icon${appIcon.variant === 'Image' && appIcon.imageUrl ? ' live-preview__top-header-compact-icon--image' : ''}`}>
+                                    {appIcon.variant === 'Image' && appIcon.imageUrl ? (
+                                      <img src={appIcon.imageUrl} alt="" />
                                     ) : (
-                                      <AppIcon name={appHeaderState.icon} size={24} />
+                                      <AppIcon name={appIcon.icon} size={24} />
                                     )}
                                   </div>
                                 )}
@@ -4972,8 +4997,18 @@ export function BuildPage({
                           }
                           const activePage = pages.find((p) => p.id === activePageId)
                           return isMorePageOpen ? (
-                            <div className="live-preview__top-header-page">
-                              <span className="live-preview__top-header-page-name">Menu</span>
+                            <div className="live-preview__top-header-compact">
+                              {/* Nav logo is the app identity — always shown, independent of the hero's
+                  imageStyle. Falls back to the icon glyph when the hero icon is removed. */ (
+                                <div className={`live-preview__top-header-compact-icon${appIcon.variant === 'Image' && appIcon.imageUrl ? ' live-preview__top-header-compact-icon--image' : ''}`}>
+                                  {appIcon.variant === 'Image' && appIcon.imageUrl ? (
+                                    <img src={appIcon.imageUrl} alt="" />
+                                  ) : (
+                                    <AppIcon name={appIcon.icon} size={24} />
+                                  )}
+                                </div>
+                              )}
+                              <span className="live-preview__top-header-compact-title">{appTitle}</span>
                             </div>
                           ) : activePage ? (
                             <div className="live-preview__top-header-page">
@@ -5058,14 +5093,15 @@ export function BuildPage({
                                 <div>
                                 <AppHeader
                                   layout={appHeaderState.layout as 'Center' | 'Left' | 'Right'}
+                                  size={appHeaderState.size}
                                   icon={appHeaderState.icon}
                                   imageStyle={appHeaderState.imageStyle}
                                   imageUrl={appHeaderState.imageUrl}
                                   textColor={appHeaderState.textColor}
                                   backgroundImageUrl={appHeaderState.backgroundImageUrl}
                                   skeleton={appHeaderState.skeleton}
-                                  title={appTitle}
-                                  subtitle={appSubtitle}
+                                  title={appHeaderState.title ?? appTitle}
+                                  subtitle={appHeaderState.subtitle ?? appSubtitle}
                                   actions={headerActions.map((el) => {
                                     const comp = ComponentRegistry.get(el.componentId)
                                     if (!comp) return null

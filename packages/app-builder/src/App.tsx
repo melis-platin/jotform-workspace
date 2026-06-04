@@ -5,9 +5,28 @@ import { BuildPage } from './pages/BuildPage.tsx'
 import { SettingsPage } from './pages/SettingsPage.tsx'
 import { PublishPage } from './pages/PublishPage.tsx'
 import { APP_PRESETS, EMPTY_PRESET_ID, getPresetById } from './presets/appPresets.ts'
-import { loadStoredAppTitle } from './presets/storage.ts'
+import { loadStoredAppTitle, loadStoredAppHeaderIcon } from './presets/storage.ts'
 
 type Page = 'build' | 'settings' | 'publish'
+
+// The app icon (home-screen / navigation logo) is app identity — managed in
+// Settings → "App Name & Icon", independent of the App Header hero. Lifted here
+// so both SettingsPage (edits it) and BuildPage (nav logo) share one source.
+export interface AppIconState {
+  variant: 'Icon' | 'Image'
+  icon: string
+  imageUrl: string | null
+  imageName: string | null
+}
+// Glyph defaults to the preset's app-header icon (or stored override) so the nav
+// logo looks right out of the box; the user then sets it explicitly in Settings.
+function iconForPreset(id: string): string {
+  if (id === EMPTY_PRESET_ID) return getPresetById(id).appHeader?.icon ?? 'Leaf'
+  return loadStoredAppHeaderIcon(id) ?? getPresetById(id).appHeader?.icon ?? 'Leaf'
+}
+function defaultAppIcon(id: string): AppIconState {
+  return { variant: 'Icon', icon: iconForPreset(id), imageUrl: null, imageName: null }
+}
 
 // Subscribe to URL changes — covers history navigation (popstate), fragment
 // updates (hashchange), and tab refocus after a `window.open`/`open` from
@@ -53,6 +72,7 @@ export function App() {
   const titleForPreset = (id: string) =>
     id === EMPTY_PRESET_ID ? getPresetById(id).appTitle : (loadStoredAppTitle(id) ?? getPresetById(id).appTitle)
   const [appTitle, setAppTitle] = useState(() => titleForPreset(urlPreset ?? EMPTY_PRESET_ID))
+  const [appIcon, setAppIcon] = useState<AppIconState>(() => defaultAppIcon(urlPreset ?? EMPTY_PRESET_ID))
 
   // Sync activePresetId/appTitle whenever the URL preset changes (capture flow
   // opens different presets in the same tab without a full reload).
@@ -60,6 +80,7 @@ export function App() {
     if (!urlPreset) return
     setActivePresetId((prev) => (prev === urlPreset ? prev : urlPreset))
     setAppTitle(titleForPreset(urlPreset))
+    setAppIcon(defaultAppIcon(urlPreset))
     // titleForPreset is stable enough here; intentionally omitted from deps.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [urlPreset])
@@ -74,6 +95,7 @@ export function App() {
   const handlePresetChange = (id: string) => {
     setActivePresetId(id)
     setAppTitle(titleForPreset(id))
+    setAppIcon(defaultAppIcon(id))
   }
 
   return (
@@ -85,6 +107,7 @@ export function App() {
         previewMode={previewMode}
         onPreviewToggle={() => setPreviewMode((prev) => !prev)}
         appName={appTitle}
+        onAppNameChange={setAppTitle}
         presets={APP_PRESETS.map((p) => {
           if (p.id === activePresetId) {
             return { id: p.id, name: appTitle === p.appTitle ? p.name : appTitle }
@@ -106,6 +129,7 @@ export function App() {
             preset={preset}
             appTitle={appTitle}
             onAppTitleChange={setAppTitle}
+            appIcon={appIcon}
             initialPageId={urlPage ?? undefined}
             chromeless={urlFullscreen}
             openAttributionSheet={urlOpenAttributionSheet}
@@ -113,7 +137,7 @@ export function App() {
             onPreviewClose={() => setPreviewMode(false)}
           />
         )}
-        {activePage === 'settings' && <SettingsPage presetId={activePresetId} appTitle={appTitle} />}
+        {activePage === 'settings' && <SettingsPage appTitle={appTitle} onAppTitleChange={setAppTitle} appIcon={appIcon} onAppIconChange={setAppIcon} />}
         {activePage === 'publish' && <PublishPage />}
       </div>
     </div>

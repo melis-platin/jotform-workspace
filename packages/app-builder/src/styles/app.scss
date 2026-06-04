@@ -245,6 +245,23 @@ body {
   color: var(--text-darkest);
 }
 
+// Inline-editable app name (the single source for the app title).
+.topbar__app-title-text {
+  cursor: text;
+  outline: none;
+  border-radius: var(--ds-radius-sm, 4px);
+  padding: 0 2px;
+  margin: 0 -2px;
+
+  &:hover {
+    background: var(--ds-bg-hover, rgba(0, 0, 0, 0.04));
+  }
+
+  &:focus {
+    background: var(--ds-bg-hover, rgba(0, 0, 0, 0.04));
+  }
+}
+
 .topbar__preset-dropdown {
   display: inline-flex;
 }
@@ -1674,51 +1691,6 @@ body {
   flex: 1;
   min-width: 0;
   padding-right: 12px;
-  animation: live-preview-top-header-compact-in 0.25s cubic-bezier(0.4, 0, 0.2, 1) both;
-
-  &--exiting {
-    animation: live-preview-top-header-compact-out 0.25s cubic-bezier(0.4, 0, 0.2, 1) both;
-  }
-
-  // Desktop "persistent" compact stays mounted — disable mount/unmount animations.
-  &--persistent {
-    animation: none;
-  }
-}
-
-.live-preview__top-header-compact-title {
-  transition:
-    opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-    max-width 0.25s cubic-bezier(0.4, 0, 0.2, 1),
-    margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.live-preview__top-header-compact--icon-only .live-preview__top-header-compact-title {
-  opacity: 0;
-  max-width: 0;
-  margin-left: -8px; // collapse the gap
-}
-
-@keyframes live-preview-top-header-compact-in {
-  from {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes live-preview-top-header-compact-out {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-8px);
-  }
 }
 
 .live-preview__top-header-page {
@@ -2588,15 +2560,14 @@ body {
     padding: 0 var(--space-4, 16px) var(--space-4, 16px);
   }
 
-  // Header actions slot — rely on .jf-app-header's existing var(--space-4)
-  // outer padding to provide the 16px inset, matching page .themes-view__app
-  // padding exactly. Zero padding on actions avoids the align-items: center
-  // interaction that breaks negative-margin escapes.
+  // Header actions slot — constrain to the page content area (760px card width,
+  // --space-6 inset → 712px) and centre it, so the buttons line up with the
+  // title/description and the page elements below instead of running full-bleed.
   .jf-app-header__actions {
-    max-width: none;
-    margin-left: 0;
-    margin-right: 0;
-    padding: 0;
+    max-width: 760px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 var(--space-6);
     gap: var(--space-4);
   }
 
@@ -5918,6 +5889,13 @@ body {
   min-width: 0;
   padding: var(--spacing-3xl) var(--spacing-4xl);
   overflow-y: auto;
+  // Long settings content still scrolls, but hide the scrollbar (matches the
+  // live-preview scaler).
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .settings-page__preview {

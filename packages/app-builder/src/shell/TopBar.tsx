@@ -13,6 +13,7 @@ interface TopBarProps {
   activePage: Page
   onPageChange: (page: Page) => void
   appName?: string
+  onAppNameChange?: (name: string) => void
   previewMode: boolean
   onPreviewToggle: () => void
   presets: PresetOption[]
@@ -30,6 +31,7 @@ export function TopBar({
   activePage,
   onPageChange,
   appName = 'App',
+  onAppNameChange,
   previewMode,
   onPreviewToggle,
   presets,
@@ -71,7 +73,20 @@ export function TopBar({
 
         <div className="topbar__middle">
           <div className="topbar__app-title">
-            <span>{appName}</span>
+            <span
+              className="topbar__app-title-text"
+              contentEditable={onAppNameChange ? true : undefined}
+              suppressContentEditableWarning
+              spellCheck={false}
+              onBlur={onAppNameChange ? (e) => {
+                const next = (e.currentTarget.textContent || '').trim()
+                if (next && next !== appName) onAppNameChange(next)
+                else e.currentTarget.textContent = appName
+              } : undefined}
+              onKeyDown={onAppNameChange ? (e) => {
+                if (e.key === 'Enter') { e.preventDefault(); (e.currentTarget as HTMLElement).blur() }
+              } : undefined}
+            >{appName}</span>
             <div className="topbar__preset-dropdown" ref={rootRef}>
               <button
                 ref={triggerRef}
