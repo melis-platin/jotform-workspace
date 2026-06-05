@@ -12,7 +12,8 @@ const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL
 const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN
 const redis = url && token ? new Redis({ url, token }) : null
 
-const SLUG_RE = /^[a-z0-9]{6,40}$/
+// Keyed by preset id (e.g. "landing-club") — lowercase, digits, hyphens.
+const SLUG_RE = /^[a-z0-9-]{3,60}$/
 const TTL_SECONDS = 60 * 60 * 24 * 30 // 30 days
 const MAX_BYTES = 800_000 // ~0.8 MB per app doc
 

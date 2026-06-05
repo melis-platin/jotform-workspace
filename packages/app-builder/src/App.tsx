@@ -5,7 +5,8 @@ import { BuildPage } from './pages/BuildPage.tsx'
 import { SettingsPage } from './pages/SettingsPage.tsx'
 import { PublishPage } from './pages/PublishPage.tsx'
 import { APP_PRESETS, EMPTY_PRESET_ID, getPresetById } from './presets/appPresets.ts'
-import { loadStoredAppTitle, loadStoredAppHeaderIcon } from './presets/storage.ts'
+import { loadStoredAppTitle, loadStoredAppHeaderIcon, saveSnapshot, type PresetSnapshot } from './presets/storage.ts'
+import { loadRemoteApp, applyRemoteTheme } from './presets/remoteStore.ts'
 
 type Page = 'build' | 'settings' | 'publish'
 
@@ -92,7 +93,16 @@ export function App() {
     }
   }, [urlFullscreen])
 
-  const handlePresetChange = (id: string) => {
+  const handlePresetChange = async (id: string) => {
+    // Pull the shared remote state for this preset and seed the cache before mounting,
+    // so the picker shows whatever anyone last saved (not just local edits).
+    if (id !== EMPTY_PRESET_ID) {
+      const doc = await loadRemoteApp(id)
+      if (doc) {
+        saveSnapshot(id, doc.snapshot as PresetSnapshot)
+        applyRemoteTheme(doc)
+      }
+    }
     setActivePresetId(id)
     setAppTitle(titleForPreset(id))
     setAppIcon(defaultAppIcon(id))

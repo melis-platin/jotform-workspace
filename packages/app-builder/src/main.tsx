@@ -11,7 +11,7 @@ import '@jf/app-elements/styles'
 
 import { APP_PRESETS } from './presets/appPresets.ts'
 import { initStorage, clearSnapshot, saveSnapshot, type PresetSnapshot } from './presets/storage.ts'
-import { getAppSlug, loadRemoteApp, applyRemoteTheme } from './presets/remoteStore.ts'
+import { loadRemoteApp, applyRemoteTheme } from './presets/remoteStore.ts'
 
 const presetIds = APP_PRESETS.map((p) => p.id)
 
@@ -20,30 +20,23 @@ const presetIds = APP_PRESETS.map((p) => p.id)
 // just that preset; otherwise it clears every preset. Opt-in — no effect otherwise.
 const params = new URLSearchParams(window.location.search)
 const forceFresh = params.get('fresh') === '1'
-const freshPresetId = params.get('preset')
-
-// `?app=<slug>` restores an account-less, server-saved app (Vercel KV via /api/app).
-const appSlug = getAppSlug()
+const bootPresetId = params.get('preset')
 
 async function boot() {
   await initStorage(presetIds)
 
   if (forceFresh) {
-    if (freshPresetId) clearSnapshot(freshPresetId)
+    if (bootPresetId) clearSnapshot(bootPresetId)
     else presetIds.forEach((id) => clearSnapshot(id))
   }
 
-  // Restore a remote saved app (after any fresh-clear, so the saved copy wins).
-  if (appSlug) {
-    const doc = await loadRemoteApp(appSlug)
+  // Load the shared remote state for the initial preset (after any fresh-clear, so the
+  // shared copy wins). Picker switches load their preset via App.handlePresetChange.
+  if (bootPresetId && bootPresetId !== 'empty' && !forceFresh) {
+    const doc = await loadRemoteApp(bootPresetId)
     if (doc) {
-      saveSnapshot(doc.presetId, doc.snapshot as PresetSnapshot) // seed cache for the preset-load path
+      saveSnapshot(bootPresetId, doc.snapshot as PresetSnapshot) // seed cache for the preset-load path
       applyRemoteTheme(doc)
-      if (params.get('preset') !== doc.presetId) {
-        const u = new URL(window.location.href)
-        u.searchParams.set('preset', doc.presetId)
-        window.history.replaceState(null, '', u.toString())
-      }
     }
   }
 
