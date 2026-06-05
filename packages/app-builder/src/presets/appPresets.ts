@@ -6328,7 +6328,6 @@ export const APP_PRESETS: AppPreset[] = [
     name: 'Landing — SaaS',
     appTitle: 'Tally',
     appSubtitle: 'Budgeting that finally sticks',
-    headerActions: [],
     pages: [
       {
         id: 'page-1',
@@ -6337,67 +6336,9 @@ export const APP_PRESETS: AppPreset[] = [
         landing: true,
         elements: [
           {
-            componentId: 'heading',
-            variants: {
-              Size: 'Large',
-              Alignment: 'Center'
-            },
-            properties: {
-              Heading: 'Budgeting that finally sticks.',
-              Subheading: 'Tally watches your spending, builds your budget, and nudges you before you overspend.'
-            }
-          },
-          {
-            componentId: 'image',
-            variants: {
-              'Has Image': 'Yes',
-              Alignment: 'Center',
-              Size: 'Large'
-            },
-            properties: {
-              'Image URL': 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=900&h=500&fit=crop',
-              'Alt Text': "Tally's budget dashboard open on a laptop"
-            }
-          },
-          {
-            componentId: 'paragraph',
-            variants: {
-              Size: 'Medium',
-              Alignment: 'Center'
-            },
-            properties: {
-              Text: 'Connect your accounts in two minutes. Tally does the categorizing, the math, and the reminders — you just spend smarter.'
-            }
-          },
-          {
-            componentId: 'button',
-            variants: {
-              Type: 'Standard',
-              Variant: 'Default',
-              Corner: 'Rounded'
-            },
-            properties: {
-              Label: 'Start free',
-              'Left Icon': 'none',
-              'Right Icon': 'ArrowRight',
-              'Full Width': true
-            }
-          },
-          {
             componentId: 'spacer',
             properties: {
-              Height: 32
-            }
-          },
-          {
-            componentId: 'heading',
-            variants: {
-              Size: 'Small',
-              Alignment: 'Center'
-            },
-            properties: {
-              Heading: 'FEATURES',
-              Subheading: ''
+              Height: 4
             }
           },
           {
@@ -6408,16 +6349,17 @@ export const APP_PRESETS: AppPreset[] = [
             },
             properties: {
               Heading: 'Everything your money needs',
-              Subheading: 'Six tools that quietly do the boring parts for you.'
+              Subheading: 'Six tools that quietly do the boring parts for you.',
+              'Add Emphasis': true,
+              'Emphasis Text': 'FEATURES',
+              'Emphasis Style': 'Badge'
             }
           },
           {
             componentId: 'card',
             variants: {
               'Image Style': 'Icon',
-              Layout: 'Vertical',
-              Action: 'None',
-              'Icon Filled': 'No'
+              Layout: 'Vertical'
             },
             properties: {
               Title: 'Auto-categorize',
@@ -6430,9 +6372,7 @@ export const APP_PRESETS: AppPreset[] = [
             componentId: 'card',
             variants: {
               'Image Style': 'Icon',
-              Layout: 'Vertical',
-              Action: 'None',
-              'Icon Filled': 'No'
+              Layout: 'Vertical'
             },
             properties: {
               Title: 'Smart budgets',
@@ -6445,9 +6385,7 @@ export const APP_PRESETS: AppPreset[] = [
             componentId: 'card',
             variants: {
               'Image Style': 'Icon',
-              Layout: 'Vertical',
-              Action: 'None',
-              'Icon Filled': 'No'
+              Layout: 'Vertical'
             },
             properties: {
               Title: 'Bill reminders',
@@ -6460,9 +6398,7 @@ export const APP_PRESETS: AppPreset[] = [
             componentId: 'card',
             variants: {
               'Image Style': 'Icon',
-              Layout: 'Vertical',
-              Action: 'None',
-              'Icon Filled': 'No'
+              Layout: 'Vertical'
             },
             properties: {
               Title: 'Savings goals',
@@ -6475,9 +6411,7 @@ export const APP_PRESETS: AppPreset[] = [
             componentId: 'card',
             variants: {
               'Image Style': 'Icon',
-              Layout: 'Vertical',
-              Action: 'None',
-              'Icon Filled': 'No'
+              Layout: 'Vertical'
             },
             properties: {
               Title: 'Spending insights',
@@ -6490,9 +6424,7 @@ export const APP_PRESETS: AppPreset[] = [
             componentId: 'card',
             variants: {
               'Image Style': 'Icon',
-              Layout: 'Vertical',
-              Action: 'None',
-              'Icon Filled': 'No'
+              Layout: 'Vertical'
             },
             properties: {
               Title: 'Bank-level security',
@@ -6504,18 +6436,7 @@ export const APP_PRESETS: AppPreset[] = [
           {
             componentId: 'spacer',
             properties: {
-              Height: 32
-            }
-          },
-          {
-            componentId: 'heading',
-            variants: {
-              Size: 'Small',
-              Alignment: 'Center'
-            },
-            properties: {
-              Heading: 'HOW IT WORKS',
-              Subheading: ''
+              Height: 24
             }
           },
           {
@@ -6526,84 +6447,60 @@ export const APP_PRESETS: AppPreset[] = [
             },
             properties: {
               Heading: 'Set up in two minutes',
-              Subheading: 'No spreadsheets, no manual entry — just connect and go.'
+              Subheading: 'No spreadsheets, no manual entry — just connect and go.',
+              'Add Emphasis': true,
+              'Emphasis Text': 'HOW IT WORKS',
+              'Emphasis Style': 'Badge'
             }
           },
           {
             componentId: 'card',
             variants: {
-              'Image Style': 'Icon',
-              Layout: 'Vertical',
-              Action: 'None',
-              'Icon Filled': 'No'
+              'Image Style': 'Icon'
             },
             properties: {
               Title: '1 · Connect',
               Description: 'Securely link your bank in a couple of taps.',
-              Icon: 'Link2',
-              Shrinked: true
+              Icon: 'Link2'
             }
           },
           {
             componentId: 'card',
             variants: {
-              'Image Style': 'Icon',
-              Layout: 'Vertical',
-              Action: 'None',
-              'Icon Filled': 'No'
+              'Image Style': 'Icon'
             },
             properties: {
               Title: '2 · Auto-sort',
               Description: 'Tally categorizes every transaction for you.',
-              Icon: 'Wand2',
-              Shrinked: true
+              Icon: 'Wand2'
             }
           },
           {
             componentId: 'card',
             variants: {
-              'Image Style': 'Icon',
-              Layout: 'Vertical',
-              Action: 'None',
-              'Icon Filled': 'No'
+              'Image Style': 'Icon'
             },
             properties: {
               Title: '3 · Set budgets',
               Description: 'Pick limits per category; we track them live.',
-              Icon: 'SlidersHorizontal',
-              Shrinked: true
+              Icon: 'SlidersHorizontal'
             }
           },
           {
             componentId: 'card',
             variants: {
-              'Image Style': 'Icon',
-              Layout: 'Vertical',
-              Action: 'None',
-              'Icon Filled': 'No'
+              'Image Style': 'Icon'
             },
             properties: {
               Title: '4 · Stay ahead',
               Description: 'Get a nudge before you overspend, every time.',
-              Icon: 'BellRing',
-              Shrinked: true
+              Icon: 'BellRing'
             }
           },
           {
             componentId: 'spacer',
             properties: {
-              Height: 32
-            }
-          },
-          {
-            componentId: 'heading',
-            variants: {
-              Size: 'Small',
-              Alignment: 'Center'
-            },
-            properties: {
-              Heading: 'REVIEWS',
-              Subheading: ''
+              Height: 24
             }
           },
           {
@@ -6613,8 +6510,10 @@ export const APP_PRESETS: AppPreset[] = [
               Alignment: 'Center'
             },
             properties: {
-              Heading: 'Loved by people who hate budgeting',
-              Subheading: 'What members say after their first month.'
+              Heading: 'Customer Stories',
+              'Add Emphasis': true,
+              'Emphasis Text': 'TESTIMONIALS',
+              'Emphasis Style': 'Badge'
             }
           },
           {
@@ -6632,62 +6531,51 @@ export const APP_PRESETS: AppPreset[] = [
           {
             componentId: 'heading',
             variants: {
-              Size: 'Small',
-              Alignment: 'Center'
-            },
-            properties: {
-              Heading: 'PRICING',
-              Subheading: ''
-            }
-          },
-          {
-            componentId: 'heading',
-            variants: {
               Size: 'Large',
               Alignment: 'Center'
             },
             properties: {
               Heading: 'Simple, honest pricing',
-              Subheading: 'Start free. Upgrade only when it pays for itself.'
+              Subheading: 'Start free. Upgrade only when it pays for itself.',
+              'Add Emphasis': true,
+              'Emphasis Text': 'PRICING',
+              'Emphasis Style': 'Badge'
             }
           },
           {
             componentId: 'card',
             variants: {
-              'Image Style': 'None',
-              Layout: 'Vertical',
-              Action: 'Button'
+              'Image Style': 'None'
             },
             properties: {
               Title: 'Free · $0',
               Description: 'Track spending, one budget, and manual sync. Everything you need to start.',
-              'Button Label': 'Get started'
+              'Button Label': 'Get started',
+              'Card Action': 'Navigate to Page'
             }
           },
           {
             componentId: 'card',
             variants: {
-              'Image Style': 'None',
-              Layout: 'Vertical',
-              Action: 'Button'
+              'Image Style': 'None'
             },
             properties: {
               Title: 'Plus · $8/mo',
               Description: 'Unlimited budgets, automatic sync, bill reminders, and savings goals.',
-              'Button Label': 'Start free trial'
+              'Button Label': 'Start free trial',
+              'Card Action': 'Navigate to Page'
             }
           },
           {
             componentId: 'card',
             variants: {
-              'Image Style': 'None',
-              Layout: 'Vertical',
-              Action: 'Button'
+              'Image Style': 'None'
             },
             properties: {
               Title: 'Family · $14/mo',
               Description: 'Everything in Plus for up to 5 people, with shared budgets and kid accounts.',
-              'Button Label': 'Start free trial'
+              'Button Label': 'Start free trial',
+              'Card Action': 'Open Form'
             }
           },
           {
@@ -6699,35 +6587,29 @@ export const APP_PRESETS: AppPreset[] = [
           {
             componentId: 'heading',
             variants: {
-              Size: 'Small',
-              Alignment: 'Center'
-            },
-            properties: {
-              Heading: 'FAQ',
-              Subheading: ''
-            }
-          },
-          {
-            componentId: 'heading',
-            variants: {
               Size: 'Large',
               Alignment: 'Center'
             },
             properties: {
               Heading: 'Questions, answered',
-              Subheading: 'Still curious? Reach us any time at hello@tally.app.'
+              Subheading: 'Still curious? Reach us any time at hello@tally.app.',
+              'Add Emphasis': true,
+              'Emphasis Text': 'FAQ',
+              'Emphasis Style': 'Badge'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 8
             }
           },
           {
             componentId: 'list',
             variants: {
-              Layout: 'Basic',
-              'Image Style': 'None',
-              Size: 'Regular',
-              Action: 'None'
+              'Image Style': 'None'
             },
             properties: {
-              'Show Header': false,
               Items: JSON.stringify([
                 {
                   title: 'Is my financial data secure?',
@@ -6755,7 +6637,7 @@ export const APP_PRESETS: AppPreset[] = [
           {
             componentId: 'spacer',
             properties: {
-              Height: 32
+              Height: 24
             }
           },
           {
@@ -6765,59 +6647,21 @@ export const APP_PRESETS: AppPreset[] = [
               Alignment: 'Center'
             },
             properties: {
-              Heading: 'Your best money month starts today.',
-              Subheading: 'Join 80,000 people who finally feel on top of their money — free to start, no card needed.'
+              Heading: 'Take control of your AI customer experiences',
+              'Add Emphasis': true,
+              'Emphasis Text': 'GET STARTED',
+              'Emphasis Style': 'Badge'
             }
           },
           {
             componentId: 'button',
             variants: {
-              Type: 'Standard',
-              Variant: 'Default',
-              Corner: 'Rounded'
+              Corner: 'Rounded',
+              Width: 'Auto'
             },
             properties: {
-              Label: 'Start free',
-              'Left Icon': 'none',
-              'Right Icon': 'ArrowRight',
+              Label: 'Get Started',
               'Full Width': true
-            }
-          },
-          {
-            componentId: 'spacer',
-            properties: {
-              Height: 32
-            }
-          },
-          {
-            componentId: 'heading',
-            variants: {
-              Size: 'Small',
-              Alignment: 'Center'
-            },
-            properties: {
-              Heading: 'Tally',
-              Subheading: ''
-            }
-          },
-          {
-            componentId: 'paragraph',
-            variants: {
-              Size: 'Small',
-              Alignment: 'Center'
-            },
-            properties: {
-              Text: 'Features · Pricing · Security · Help Center · Privacy · Terms'
-            }
-          },
-          {
-            componentId: 'paragraph',
-            variants: {
-              Size: 'Small',
-              Alignment: 'Center'
-            },
-            properties: {
-              Text: '© 2026 Tally, Inc. · Made in Portland, OR.'
             }
           },
           {
@@ -6833,16 +6677,31 @@ export const APP_PRESETS: AppPreset[] = [
               Alignment: 'Center'
             },
             properties: {
-              Heading: 'Follow along',
-              Subheading: ''
+              Heading: 'Follow Us'
             }
           },
           {
             componentId: 'social-follow',
             variants: {
               Layout: 'Wrap',
-              Variant: 'Secondary',
-              Filled: 'No'
+              Variant: 'Secondary'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 16
+            }
+          },
+          {
+            componentId: 'paragraph',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Text: '© 2026 Tally, Inc. · Made in Portland, OR.',
+              Shrinked: false
             }
           }
         ]
@@ -6855,10 +6714,6 @@ export const APP_PRESETS: AppPreset[] = [
         elements: [
           {
             componentId: 'heading',
-            variants: {
-              Size: 'Medium',
-              Alignment: 'Left'
-            },
             properties: {
               Heading: 'This month',
               Subheading: "You're $240 under budget — nice."
@@ -6868,9 +6723,7 @@ export const APP_PRESETS: AppPreset[] = [
             componentId: 'card',
             variants: {
               'Image Style': 'Icon',
-              Layout: 'Vertical',
-              Action: 'None',
-              'Icon Filled': 'No'
+              Layout: 'Vertical'
             },
             properties: {
               Title: 'Spent',
@@ -6883,9 +6736,7 @@ export const APP_PRESETS: AppPreset[] = [
             componentId: 'card',
             variants: {
               'Image Style': 'Icon',
-              Layout: 'Vertical',
-              Action: 'None',
-              'Icon Filled': 'No'
+              Layout: 'Vertical'
             },
             properties: {
               Title: 'Left to spend',
@@ -6898,9 +6749,7 @@ export const APP_PRESETS: AppPreset[] = [
             componentId: 'card',
             variants: {
               'Image Style': 'Icon',
-              Layout: 'Vertical',
-              Action: 'None',
-              'Icon Filled': 'No'
+              Layout: 'Vertical'
             },
             properties: {
               Title: 'Saved',
@@ -6913,9 +6762,7 @@ export const APP_PRESETS: AppPreset[] = [
             componentId: 'card',
             variants: {
               'Image Style': 'Icon',
-              Layout: 'Vertical',
-              Action: 'None',
-              'Icon Filled': 'No'
+              Layout: 'Vertical'
             },
             properties: {
               Title: 'Top category',
@@ -6932,25 +6779,17 @@ export const APP_PRESETS: AppPreset[] = [
           },
           {
             componentId: 'heading',
-            variants: {
-              Size: 'Medium',
-              Alignment: 'Left'
-            },
             properties: {
-              Heading: 'Recent activity',
-              Subheading: ''
+              Heading: 'Recent activity'
             }
           },
           {
             componentId: 'list',
             variants: {
-              Layout: 'Basic',
               'Image Style': 'None',
-              Size: 'Compact',
-              Action: 'None'
+              Size: 'Compact'
             },
             properties: {
-              'Show Header': false,
               Items: JSON.stringify([
                 {
                   title: 'Whole Foods',
@@ -6981,10 +6820,6 @@ export const APP_PRESETS: AppPreset[] = [
         elements: [
           {
             componentId: 'heading',
-            variants: {
-              Size: 'Medium',
-              Alignment: 'Left'
-            },
             properties: {
               Heading: 'Your plan',
               Subheading: 'Plus · renews May 1'
@@ -6994,9 +6829,7 @@ export const APP_PRESETS: AppPreset[] = [
             componentId: 'card',
             variants: {
               'Image Style': 'Icon',
-              Layout: 'Vertical',
-              Action: 'None',
-              'Icon Filled': 'No'
+              Layout: 'Vertical'
             },
             properties: {
               Title: 'Subscription',
@@ -7009,9 +6842,7 @@ export const APP_PRESETS: AppPreset[] = [
             componentId: 'card',
             variants: {
               'Image Style': 'Icon',
-              Layout: 'Vertical',
-              Action: 'None',
-              'Icon Filled': 'No'
+              Layout: 'Vertical'
             },
             properties: {
               Title: 'Payment method',
@@ -7024,9 +6855,7 @@ export const APP_PRESETS: AppPreset[] = [
             componentId: 'card',
             variants: {
               'Image Style': 'Icon',
-              Layout: 'Vertical',
-              Action: 'None',
-              'Icon Filled': 'No'
+              Layout: 'Vertical'
             },
             properties: {
               Title: 'Connected banks',
@@ -7039,9 +6868,7 @@ export const APP_PRESETS: AppPreset[] = [
             componentId: 'card',
             variants: {
               'Image Style': 'Icon',
-              Layout: 'Vertical',
-              Action: 'None',
-              'Icon Filled': 'No'
+              Layout: 'Vertical'
             },
             properties: {
               Title: 'Notifications',
@@ -7059,20 +6886,34 @@ export const APP_PRESETS: AppPreset[] = [
           {
             componentId: 'button',
             variants: {
-              Type: 'Standard',
               Variant: 'Outlined',
               Corner: 'Rounded'
             },
             properties: {
               Label: 'Sign out',
-              'Left Icon': 'none',
-              'Right Icon': 'none',
               'Full Width': true
             }
           }
         ]
       }
-    ]
+    ],
+    headerActions: [],
+    appHeader: {
+      layout: 'Center',
+      contentAlign: 'Center',
+      size: 'Large',
+      minHeight: 312,
+      icon: 'Leaf',
+      imageStyle: 'None',
+      textColor: '#FFFFFF',
+      textColorMode: 'auto',
+      bgSource: 'image',
+      backgroundMode: 'solid',
+      backgroundImageUrl: 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1200&h=640&fit=crop',
+      title: 'Budgeting that finally sticks.',
+      subtitle: 'Tally watches your spending, builds your budget, and nudges you before you overspend.',
+      show: true
+    }
   },
   {
     id: 'landing-b2b',
