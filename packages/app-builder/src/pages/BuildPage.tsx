@@ -72,6 +72,7 @@ import { ProductOptionModal } from '../components/ProductOptionModal'
 import { ProductModifierModal } from '../components/ProductModifierModal'
 import { ProductSubscriptionModal } from '../components/ProductSubscriptionModal'
 import { loadSnapshot, saveSnapshot } from '../presets/storage'
+import { syncAppToRemote } from '../presets/remoteStore'
 
 interface CanvasElement {
   id: string
@@ -1513,9 +1514,9 @@ export function BuildPage({
     if (!preset) return
     // Empty App is a sandbox — never persist its state.
     if (preset.id === 'empty') return
-    saveSnapshot(preset.id, {
-      appTitle, appSubtitle, pages, headerActions, appHeader: appHeaderState,
-    })
+    const snap = { appTitle, appSubtitle, pages, headerActions, appHeader: appHeaderState }
+    saveSnapshot(preset.id, snap) // local (IndexedDB) — instant
+    syncAppToRemote(preset.id, snap) // remote (Vercel KV via /api) — debounced; no-op without a backend
   }, [preset, appTitle, appSubtitle, pages, headerActions, appHeaderState])
   const appHeaderRef = useRef<HTMLDivElement>(null)
   const designBtnRef = useRef<HTMLButtonElement>(null)
