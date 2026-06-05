@@ -3,12 +3,17 @@ import './Heading.scss';
 
 export type HeadingSize = 'Large' | 'Medium' | 'Small';
 export type HeadingAlignment = 'Left' | 'Center' | 'Right';
+export type HeadingEmphasisStyle = 'Plain Text' | 'Badge';
 
 export interface HeadingProps {
   size?: HeadingSize;
   alignment?: HeadingAlignment;
   heading?: string;
   subheading?: string;
+  /** Optional eyebrow label rendered above the heading. */
+  emphasis?: boolean;
+  emphasisText?: string;
+  emphasisStyle?: HeadingEmphasisStyle;
   selected?: boolean;
   shrinked?: boolean;
   skeleton?: boolean;
@@ -20,11 +25,22 @@ export const Heading: React.FC<HeadingProps> = ({
   alignment = 'Left',
   heading = 'Heading',
   subheading = '',
+  emphasis = false,
+  emphasisText = '',
+  emphasisStyle = 'Badge',
   selected = false,
   shrinked = false,
   skeleton = false,
   skeletonAnimation = 'pulse',
 }) => {
+  const showEyebrow = emphasis && !!emphasisText.trim();
+  const eyebrow = showEyebrow ? (
+    <span
+      className={`jf-heading__eyebrow jf-heading__eyebrow--${emphasisStyle === 'Badge' ? 'badge' : 'plain'}`}
+    >
+      {emphasisText}
+    </span>
+  ) : null;
   const animClass = skeletonAnimation === 'shimmer' ? 'animate-shimmer' : 'animate-pulse';
 
   if (skeleton) {
@@ -53,6 +69,7 @@ export const Heading: React.FC<HeadingProps> = ({
 
   return (
     <div className={rootClasses}>
+      {eyebrow}
       <Tag className={`jf-heading__title jf-heading__title--${size.toLowerCase()}`}>
         {heading}
       </Tag>

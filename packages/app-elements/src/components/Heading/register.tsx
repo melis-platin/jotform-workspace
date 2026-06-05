@@ -1,6 +1,6 @@
 import { ComponentRegistry } from '../../types/registry';
 import { Heading } from './Heading';
-import type { HeadingSize, HeadingAlignment } from './Heading';
+import type { HeadingSize, HeadingAlignment, HeadingEmphasisStyle } from './Heading';
 import type { VariantValues, PropertyValues, StateValues } from '../../types/component';
 import headingScss from './Heading.scss?raw';
 
@@ -24,6 +24,27 @@ ComponentRegistry.register({
   properties: [
     { name: 'Heading', type: 'text', default: 'Heading' },
     { name: 'Subheading', type: 'text', default: '' },
+    {
+      name: 'Add Emphasis',
+      type: 'boolean',
+      default: false,
+      description: 'Highlight content with a label or tag',
+    },
+    {
+      name: 'Emphasis Text',
+      type: 'text',
+      default: '',
+      placeholder: 'Type a text to highlight',
+      maxLength: 25,
+      showWhen: { 'Add Emphasis': true },
+    },
+    {
+      name: 'Emphasis Style',
+      type: 'select',
+      options: ['Plain Text', 'Badge'],
+      default: 'Badge',
+      showWhen: { 'Add Emphasis': true },
+    },
     { name: 'Selected', type: 'boolean', default: false },
     { name: 'Shrinked', type: 'boolean', default: false },
     { name: 'Skeleton', type: 'boolean', default: false },
@@ -101,6 +122,27 @@ ComponentRegistry.register({
         'Secondary text below the heading. Rendered with `Label/Large/Regular` typography (16px, regular weight, `neutral-500` color). Pass an empty string to hide it.',
     },
     {
+      name: 'emphasis',
+      type: 'boolean',
+      default: 'false',
+      description:
+        'When `true`, renders an eyebrow label above the heading (driven by `emphasisText`). Highlights a section with a short label or tag.',
+    },
+    {
+      name: 'emphasisText',
+      type: 'string',
+      default: '""',
+      description:
+        'The eyebrow label text (max 25 chars). Rendered uppercase in brand color above the title. Only shown when `emphasis` is `true` and the text is non-empty.',
+    },
+    {
+      name: 'emphasisStyle',
+      type: '"Plain Text" | "Badge"',
+      default: '"Badge"',
+      description:
+        '**Plain Text** renders the eyebrow as plain uppercase brand-colored text. **Badge** wraps it in a soft brand pill (`bg-surface-brand`).',
+    },
+    {
       name: 'selected',
       type: 'boolean',
       default: 'false',
@@ -123,6 +165,9 @@ ComponentRegistry.register({
         alignment={variants['Alignment'] as HeadingAlignment}
         heading={props['Heading'] as string}
         subheading={props['Subheading'] as string}
+        emphasis={props['Add Emphasis'] as boolean}
+        emphasisText={props['Emphasis Text'] as string}
+        emphasisStyle={props['Emphasis Style'] as HeadingEmphasisStyle}
         selected={props['Selected'] as boolean}
         shrinked={props['Shrinked'] as boolean}
         skeleton={props['Skeleton'] as boolean}

@@ -13,6 +13,12 @@ export interface ComponentProperty {
   min?: number;
   max?: number;
   step?: number;
+  /** Helper text shown under the field title in the properties panel. */
+  description?: string;
+  /** Placeholder for text inputs. */
+  placeholder?: string;
+  /** Character limit for text inputs; when set, the panel shows a `n/max` counter. */
+  maxLength?: number;
 }
 
 export interface ComponentState {

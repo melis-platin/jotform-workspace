@@ -3632,6 +3632,12 @@ body {
   font-size: var(--font-size-heading-xs);
 }
 
+// Divider between landing-menu page items — app-elements --border token (matches
+// the rest of the live-preview chrome separators). Not after the last item.
+.live-preview__more-pages--lg .live-preview__more-pages-list li:not(:last-child) {
+  border-bottom: 1px solid var(--border);
+}
+
 .live-preview__more-pages-auth {
   display: flex;
   flex-direction: column;
@@ -5338,6 +5344,13 @@ body {
       color: var(--text-darkest);
     }
   }
+}
+
+.property-panel__char-count {
+  font-size: var(--ds-font-size-xs);
+  color: var(--ds-text-tertiary);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
 }
 
 .property-panel__field {

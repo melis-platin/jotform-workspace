@@ -41,6 +41,27 @@
 }
 
 // =========================================
+// Eyebrow (emphasis label, above the title)
+// =========================================
+.jf-heading__eyebrow {
+  font-family: var(--font-family);
+  font-size: var(--font-size-label-md);
+  line-height: var(--line-height-label-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--fg-brand);
+  max-width: 100%;
+
+  // Badge: soft brand pill (matches the card icon-chip surface)
+  &--badge {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--space-1) var(--space-3);
+    border-radius: var(--radius-rounded);
+    background: var(--bg-surface-brand);
+  }
+}
+
+// =========================================
 // Title
 // =========================================
 .jf-heading__title {

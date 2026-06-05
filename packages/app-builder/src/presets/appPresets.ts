@@ -10,6 +10,10 @@ export interface PresetPage {
   id: string
   name: string
   icon?: string
+  /** First page only: act as a public landing screen for logged-out visitors. */
+  landing?: boolean
+  /** Visitors must sign in to view this page (inner pages behind the landing). */
+  requireLogin?: boolean
   elements: PresetElement[]
 }
 
@@ -2527,6 +2531,4536 @@ export const APP_PRESETS: AppPreset[] = [
       },
     ],
     headerActions: [],
+  },
+  {
+    id: 'landing-hero',
+    name: 'Landing — Hero',
+    appTitle: 'Ironwell Studio',
+    appSubtitle: 'Boutique strength & cycling in the heart of the city',
+    headerActions: [],
+    pages: [
+      {
+        id: 'page-1',
+        name: 'Landing — Hero',
+        icon: 'House',
+        landing: true,
+        elements: [
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Your first class is on us.',
+              Subheading: 'Strength, cycling, and recovery — coached, never crowded.'
+            }
+          },
+          {
+            componentId: 'image',
+            variants: {
+              'Has Image': 'Yes',
+              Alignment: 'Center',
+              Size: 'Large'
+            },
+            properties: {
+              'Image URL': 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=900&h=500&fit=crop',
+              'Alt Text': 'Athletes mid-workout in the Ironwell strength studio'
+            }
+          },
+          {
+            componentId: 'paragraph',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Center'
+            },
+            properties: {
+              Text: "45-minute coached sessions, capped at 16 spots. No contracts, no judgment — just show up and we'll handle the rest."
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Type: 'Standard',
+              Variant: 'Default',
+              Corner: 'Rounded'
+            },
+            properties: {
+              Label: 'Book Your Free Class',
+              'Left Icon': 'none',
+              'Right Icon': 'ArrowRight',
+              'Full Width': true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '16 cap',
+              Description: 'riders per session, so coaches know your name',
+              Icon: 'Users',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '45 min',
+              Description: 'in by the hour, stronger by the next',
+              Icon: 'Timer',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '4.9 stars',
+              Description: 'averaged across 1,200+ member reviews',
+              Icon: 'Star',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '2k+ members',
+              Description: 'training with us across two studios',
+              Icon: 'HeartPulse',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'WHY IRONWELL',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'A gym that actually pays attention.',
+              Subheading: 'Six things we got right so the work feels good.'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Small by Design',
+              Description: 'Capped at 16 riders so coaches actually know your name.',
+              Icon: 'Users',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '45 in. 45 out.',
+              Description: 'Every session is exactly 45 minutes — in by 6, out by 7.',
+              Icon: 'Timer',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Coached Every Rep',
+              Description: 'Certified coaches adjust form and weight in real time.',
+              Icon: 'Dumbbell',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'No Contracts',
+              Description: 'Pay per class or pause your membership anytime.',
+              Icon: 'CalendarCheck',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Recovery Built In',
+              Description: 'Sauna, foam rolling, and mobility before you head out.',
+              Icon: 'Waves',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Track Every Win',
+              Description: 'Heart rate, watts, and PRs synced to your member app.',
+              Icon: 'Activity',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'HOW IT WORKS',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'From the couch to coached.',
+              Subheading: 'No app maze, no sales calls — just book and show up.'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '1 · Book a free class',
+              Description: 'Pick any session this week and grab your free first spot.',
+              Icon: 'CalendarPlus',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '2 · Show up',
+              Description: "Arrive 10 minutes early; we'll fit your bike and set your weights.",
+              Icon: 'DoorOpen',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '3 · Get coached',
+              Description: 'A certified coach dials in your form and weight, rep by rep.',
+              Icon: 'Dumbbell',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '4 · Get stronger',
+              Description: 'Follow the plan, beat your last number, and watch it stick.',
+              Icon: 'TrendingUp',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Pick your kind of hard.',
+              Subheading: 'Four signature formats, each one coached and capped.'
+            }
+          },
+          {
+            componentId: 'list',
+            variants: {
+              Layout: 'Card',
+              'Card Image Style': 'Square',
+              'Card Layout': 'Vertical',
+              'Card Size': 'Medium',
+              'Card Action': 'None'
+            },
+            properties: {
+              'Show Header': false,
+              'Button Label': 'View Class',
+              Items: JSON.stringify([
+                {
+                  title: 'Power Ride',
+                  description: '45-min rhythm cycling on watt-tracked bikes.',
+                  image: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=400&h=400&fit=crop'
+                },
+                {
+                  title: 'Heavy Lift',
+                  description: 'Barbell strength blocks with coached progressions.',
+                  image: 'https://images.unsplash.com/photo-1551632811-561732d1e306?w=400&h=400&fit=crop'
+                },
+                {
+                  title: 'Hill Climb',
+                  description: 'Endurance intervals that build your engine.',
+                  image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop'
+                },
+                {
+                  title: 'Mobility & Recovery',
+                  description: 'Slow-flow stretch and foam-roll reset days.',
+                  image: 'https://images.unsplash.com/photo-1530563885674-66db50a1af19?w=400&h=400&fit=crop'
+                }
+              ])
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'MEET THE COACHES',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Square',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Coaches who count reps, not heads.',
+              Description: 'Every Ironwell coach is certified, full-time, and on the floor with you — cueing form, nudging weight, and remembering where you left off last week.',
+              'Image URL': 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=700&h=380&fit=crop'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Square',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'A room that roots for you.',
+              Description: 'Sixteen people, one playlist, zero mirrors-only ego. Most members say the community is the reason they kept coming back.',
+              'Image URL': 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=700&h=380&fit=crop'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'REVIEWS',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Loved by people who hated the gym.',
+              Subheading: '4.9 stars from 1,200+ members and counting.'
+            }
+          },
+          {
+            componentId: 'testimonial',
+            properties: {
+              'Show Avatars': true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'MEMBERSHIP',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'One membership. No fine print.',
+              Subheading: 'Unlimited classes at both studios for $129/mo — cancel anytime.'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Unlimited classes',
+              Description: 'Every format, both studios, no per-class fees',
+              Icon: 'Infinity',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'No contract',
+              Description: 'Pause or cancel in two taps, no penalty',
+              Icon: 'BadgeCheck',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Recovery access',
+              Description: 'Sauna and mobility room included, always',
+              Icon: 'Waves',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Bring a friend',
+              Description: 'Two guest passes every single month',
+              Icon: 'UserPlus',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'One class. Zero pressure.',
+              Subheading: 'See the room, meet a coach, and decide for yourself.'
+            }
+          },
+          {
+            componentId: 'paragraph',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Center'
+            },
+            properties: {
+              Text: 'Your first session is completely free — no card, no commitment. Pick a time, walk in, and feel the difference a 16-person room makes.'
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Type: 'Standard',
+              Variant: 'Default',
+              Corner: 'Rounded'
+            },
+            properties: {
+              Label: 'Book Your Free Class',
+              'Left Icon': 'none',
+              'Right Icon': 'ArrowRight',
+              'Full Width': true
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Type: 'Standard',
+              Variant: 'Outlined',
+              Corner: 'Rounded'
+            },
+            properties: {
+              Label: 'See the Class Schedule',
+              'Left Icon': 'none',
+              'Right Icon': 'none',
+              'Full Width': true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 24
+            }
+          }
+        ]
+      },
+      {
+        id: 'page-2',
+        name: 'Classes',
+        icon: 'CalendarDays',
+        requireLogin: true,
+        elements: [
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Left'
+            },
+            properties: {
+              Heading: "This Week's Classes",
+              Subheading: 'Tap a session to reserve your spot.'
+            }
+          },
+          {
+            componentId: 'paragraph',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Left'
+            },
+            properties: {
+              Text: 'Spots are capped at 16, so popular sessions fill fast. Reserve early, and free up your place if plans change — no fees, no penalty.'
+            }
+          },
+          {
+            componentId: 'list',
+            variants: {
+              Layout: 'Card',
+              'Card Image Style': 'Square',
+              'Card Layout': 'Vertical',
+              'Card Size': 'Medium',
+              'Card Action': 'Button'
+            },
+            properties: {
+              'Show Header': false,
+              'Button Label': 'Reserve',
+              Items: JSON.stringify([
+                {
+                  title: 'Power Ride · 6:00 AM',
+                  description: 'Mon · Coach Mara · 16 spots',
+                  image: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=400&h=400&fit=crop'
+                },
+                {
+                  title: 'Heavy Lift · 12:15 PM',
+                  description: 'Tue · Coach Devon · 12 spots',
+                  image: 'https://images.unsplash.com/photo-1551632811-561732d1e306?w=400&h=400&fit=crop'
+                },
+                {
+                  title: 'Hill Climb · 5:30 PM',
+                  description: 'Wed · Coach Mara · 16 spots',
+                  image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&h=400&fit=crop'
+                },
+                {
+                  title: 'Mobility & Recovery · 7:00 PM',
+                  description: 'Thu · Coach Priya · 20 spots',
+                  image: 'https://images.unsplash.com/photo-1530563885674-66db50a1af19?w=400&h=400&fit=crop'
+                }
+              ])
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'EVERY MEMBERSHIP INCLUDES',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'More than just a class slot.',
+              Subheading: 'The perks that come with every reservation.'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Free spot hold',
+              Description: 'Cancel up to 4 hrs out with no penalty',
+              Icon: 'CalendarCheck',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Towel & shoe rental',
+              Description: 'Cycling shoes and fresh towels on the house',
+              Icon: 'ShoppingBag',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Live stats',
+              Description: 'Watts and heart rate pushed to your app',
+              Icon: 'Activity',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Recovery room',
+              Description: 'Sauna and mobility space after every class',
+              Icon: 'Waves',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 24
+            }
+          }
+        ]
+      },
+      {
+        id: 'page-3',
+        name: 'Account',
+        icon: 'User',
+        requireLogin: true,
+        elements: [
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Left'
+            },
+            properties: {
+              Heading: 'Your Membership',
+              Subheading: 'Founders 8-Pack · 5 classes remaining'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Horizontal',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Next Class',
+              Description: 'Power Ride · Mon 6:00 AM with Coach Mara',
+              Icon: 'CalendarCheck'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Horizontal',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Classes This Month',
+              Description: '11 attended · longest streak: 6 days',
+              Icon: 'Flame'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Left'
+            },
+            properties: {
+              Heading: 'YOUR STATS',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Left'
+            },
+            properties: {
+              Heading: 'How this season is going.',
+              Subheading: 'Your numbers since you joined Ironwell.'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '47 classes',
+              Description: 'completed since you joined in March',
+              Icon: 'Dumbbell',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '+38 watts',
+              Description: 'average power gain on Power Ride',
+              Icon: 'TrendingUp',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '6-day streak',
+              Description: 'your longest run so far — keep it alive',
+              Icon: 'Flame',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '3 PRs',
+              Description: 'personal records set in the last month',
+              Icon: 'Trophy',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Running low on classes.',
+              Subheading: 'Top up your pack or switch to unlimited.'
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Type: 'Standard',
+              Variant: 'Default',
+              Corner: 'Rounded'
+            },
+            properties: {
+              Label: 'Upgrade to Unlimited',
+              'Left Icon': 'none',
+              'Right Icon': 'ArrowRight',
+              'Full Width': true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 24
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'landing-storefront',
+    name: 'Landing — Storefront',
+    appTitle: 'Fernwell & Co.',
+    appSubtitle: 'Indoor plants, raised right',
+    headerActions: [],
+    pages: [
+      {
+        id: 'page-1',
+        name: 'Home',
+        icon: 'House',
+        landing: true,
+        elements: [
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'The Spring Repotting Sale is On',
+              Subheading: '20% off every potted plant through June 21 — plus a free terracotta pot with orders over $60.'
+            }
+          },
+          {
+            componentId: 'image',
+            variants: {
+              'Has Image': 'Yes',
+              Alignment: 'Center',
+              Size: 'Large'
+            },
+            properties: {
+              'Image URL': 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=900&h=500&fit=crop',
+              'Alt Text': 'A bright living room corner filled with a large monstera and trailing plants'
+            }
+          },
+          {
+            componentId: 'paragraph',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Center'
+            },
+            properties: {
+              Text: 'Greenhouse-grown in Portland, hand-potted to order, and delivered to your door in 48 hours. Every plant arrives with a care card and our 30-day stay-alive guarantee.'
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Type: 'Standard',
+              Variant: 'Default',
+              Corner: 'Rounded'
+            },
+            properties: {
+              Label: 'Shop the collection',
+              'Left Icon': 'none',
+              'Right Icon': 'ArrowRight',
+              'Full Width': true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '30-day guarantee',
+              Description: "Every plant is covered if it doesn't thrive.",
+              Icon: 'ShieldCheck',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Free repotting',
+              Description: 'We pot every plant by hand before it ships.',
+              Icon: 'Sprout',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '10k+ plants delivered',
+              Description: 'Shipped to homes across the country last year.',
+              Icon: 'Truck',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '4.9 stars',
+              Description: 'Across 3,200+ verified customer reviews.',
+              Icon: 'Star',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'SHOP'
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Shop by Room',
+              Subheading: 'Find the right plant for the light you actually have.'
+            }
+          },
+          {
+            componentId: 'list',
+            variants: {
+              Layout: 'Card',
+              'Card Image Style': 'Square',
+              'Card Layout': 'Vertical',
+              'Card Size': 'Medium',
+              'Card Action': 'None'
+            },
+            properties: {
+              'Show Header': false,
+              Items: JSON.stringify([
+                {
+                  title: 'Low-Light Corners',
+                  description: 'Snake plants, ZZ, pothos',
+                  image: 'https://images.unsplash.com/photo-1463320726281-696a485928c7?w=400&h=400&fit=crop'
+                },
+                {
+                  title: 'Pet-Safe Picks',
+                  description: 'Calatheas, ferns, prayer plants',
+                  image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=400&fit=crop'
+                },
+                {
+                  title: 'Sunny Desks & Shelves',
+                  description: 'Succulents, cacti, string-of-pearls',
+                  image: 'https://images.unsplash.com/photo-1545241047-6083a3684587?w=400&h=400&fit=crop'
+                },
+                {
+                  title: 'Statement Floor Plants',
+                  description: 'Fiddle-leaf figs, birds of paradise',
+                  image: 'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=400&h=400&fit=crop'
+                }
+              ])
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: "This Week's Bestsellers",
+              Subheading: 'Hand-potted in our greenhouse and shipped within 48 hours.'
+            }
+          },
+          {
+            componentId: 'product-list',
+            variants: {
+              Layout: 'Grid'
+            },
+            properties: {
+              Title: '',
+              'Show Toolbar': false,
+              'Show Images': true,
+              'Add New Card': false,
+              Currency: '$',
+              'Button Label': 'Add to Cart',
+              Products: JSON.stringify([
+                {
+                  name: 'Monstera Deliciosa — 6" Pot',
+                  price: '38.00',
+                  image: 'https://images.unsplash.com/photo-1593691509543-c55fb32d8de5?w=400&h=400&fit=crop',
+                  description: 'Split-leaf classic, easy in bright indirect light.'
+                },
+                {
+                  name: 'Golden Pothos — Hanging Basket',
+                  price: '24.00',
+                  image: 'https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?w=400&h=400&fit=crop',
+                  description: 'Trailing, forgiving, and nearly unkillable.'
+                },
+                {
+                  name: "Snake Plant 'Laurentii'",
+                  price: '29.00',
+                  image: 'https://images.unsplash.com/photo-1512428813834-c702c7702b78?w=400&h=400&fit=crop',
+                  description: 'Low-light champion that purifies the air.'
+                },
+                {
+                  name: 'ZZ Plant — 5" Pot',
+                  price: '32.00',
+                  image: 'https://images.unsplash.com/photo-1604762524889-3e2fcc145683?w=400&h=400&fit=crop',
+                  description: 'Glossy and drought-tolerant — water it monthly.'
+                },
+                {
+                  name: 'Calathea Orbifolia — Pet-Safe',
+                  price: '34.00',
+                  image: 'https://images.unsplash.com/photo-1602923668104-8f9e03e77e62?w=400&h=400&fit=crop',
+                  description: 'Striped show-off that loves humidity.'
+                },
+                {
+                  name: 'Fiddle-Leaf Fig — 10" Floor',
+                  price: '72.00',
+                  image: 'https://images.unsplash.com/photo-1611211232932-da3113c5b960?w=400&h=400&fit=crop',
+                  description: 'The statement tree for a bright, draft-free spot.'
+                }
+              ])
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'WHY FERNWELL'
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Plants You Can Actually Keep Alive',
+              Subheading: 'We sweat the details so your plant shows up healthy and stays that way.'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Care guarantee',
+              Description: '30 days of free replacements if anything goes wrong.',
+              Icon: 'ShieldCheck',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Sustainably grown',
+              Description: 'Peat-free soil and recycled nursery pots, always.',
+              Icon: 'Leaf',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Expert support',
+              Description: 'Text a real plant grower seven days a week.',
+              Icon: 'MessageCircle',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Carbon-neutral delivery',
+              Description: 'Every shipment is offset and plastic-free.',
+              Icon: 'Truck',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Packed to survive',
+              Description: 'Custom boxes keep roots snug and leaves intact.',
+              Icon: 'Package',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Care card included',
+              Description: 'Light, water, and humidity tips for every plant.',
+              Icon: 'BookOpen',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'HOW IT WORKS'
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'From Greenhouse to Your Home',
+              Subheading: 'Four simple steps and your new plant is thriving.'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '1 · Pick your plant',
+              Description: 'Browse by room or light and choose your match.',
+              Icon: 'Search',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '2 · We pot & pack',
+              Description: 'Hand-potted, watered, and boxed within 48 hours.',
+              Icon: 'Sprout',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '3 · Delivered to your door',
+              Description: 'Arrives in days, carbon-neutral, ready to unbox.',
+              Icon: 'Truck',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '4 · We check in',
+              Description: 'A week later we follow up with care tips so it thrives.',
+              Icon: 'MessageCircle',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Square',
+              Layout: 'Vertical',
+              Action: 'Button',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Plant care made easy',
+              Description: 'Open the Fernwell app for watering reminders, light checks, and one-tap access to a real grower when a leaf looks off. No green thumb required.',
+              'Image URL': 'https://images.unsplash.com/photo-1466781783364-36c955e42a7f?w=700&h=380&fit=crop',
+              'Button Label': 'Explore care guides'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'REVIEWS'
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Loved by 10,000+ Plant Parents',
+              Subheading: 'Real notes from real Fernwell homes.'
+            }
+          },
+          {
+            componentId: 'testimonial',
+            properties: {
+              'Show Avatars': true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Get the Care Promise in Your Inbox',
+              Subheading: 'Seasonal repotting tips, restock alerts, and member-only sales.'
+            }
+          },
+          {
+            componentId: 'paragraph',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Center'
+            },
+            properties: {
+              Text: 'Join the Fernwell list for monthly plant-care notes written by our growers — plus first dibs on rare drops and early access to every seasonal sale. No spam, just greener thumbs.'
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Type: 'Standard',
+              Variant: 'Secondary',
+              Corner: 'Rounded'
+            },
+            properties: {
+              Label: 'Join the newsletter',
+              'Left Icon': 'Mail',
+              'Right Icon': 'none',
+              'Full Width': true
+            }
+          },
+          {
+            componentId: 'social-follow',
+            variants: {
+              Layout: 'Wrap',
+              Variant: 'Secondary',
+              Filled: 'No'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Ready to Bring One Home?',
+              Subheading: 'Spring sale ends June 21 — 20% off every potted plant.'
+            }
+          },
+          {
+            componentId: 'paragraph',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Center'
+            },
+            properties: {
+              Text: 'Free terracotta pot on orders over $60, and a 30-day guarantee on every leaf. Your living room is one plant away from better.'
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Type: 'Standard',
+              Variant: 'Default',
+              Corner: 'Rounded'
+            },
+            properties: {
+              Label: 'Shop the collection',
+              'Left Icon': 'none',
+              'Right Icon': 'ArrowRight',
+              'Full Width': true
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Type: 'Standard',
+              Variant: 'Outlined',
+              Corner: 'Rounded'
+            },
+            properties: {
+              Label: 'View all plants',
+              'Left Icon': 'none',
+              'Right Icon': 'none',
+              'Full Width': true
+            }
+          }
+        ]
+      },
+      {
+        id: 'page-2',
+        name: 'Shop',
+        icon: 'Sprout',
+        requireLogin: true,
+        elements: [
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Left'
+            },
+            properties: {
+              Heading: 'The Full Greenhouse',
+              Subheading: 'Every plant ships with a care card and a 30-day stay-alive guarantee.'
+            }
+          },
+          {
+            componentId: 'list',
+            variants: {
+              Layout: 'Card',
+              'Card Image Style': 'Square',
+              'Card Layout': 'Vertical',
+              'Card Size': 'Medium',
+              'Card Action': 'None'
+            },
+            properties: {
+              'Show Header': false,
+              Items: JSON.stringify([
+                {
+                  title: 'Low-Light Corners',
+                  description: 'Snake plants, ZZ, pothos',
+                  image: 'https://images.unsplash.com/photo-1463320726281-696a485928c7?w=400&h=400&fit=crop'
+                },
+                {
+                  title: 'Pet-Safe Picks',
+                  description: 'Calatheas, ferns, prayer plants',
+                  image: 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=400&fit=crop'
+                },
+                {
+                  title: 'Sunny Desks & Shelves',
+                  description: 'Succulents, cacti, string-of-pearls',
+                  image: 'https://images.unsplash.com/photo-1545241047-6083a3684587?w=400&h=400&fit=crop'
+                },
+                {
+                  title: 'Statement Floor Plants',
+                  description: 'Fiddle-leaf figs, birds of paradise',
+                  image: 'https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=400&h=400&fit=crop'
+                }
+              ])
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 24
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Left'
+            },
+            properties: {
+              Heading: 'All Plants',
+              Subheading: 'Hand-potted to order, shipped within 48 hours.'
+            }
+          },
+          {
+            componentId: 'product-list',
+            variants: {
+              Layout: 'Grid'
+            },
+            properties: {
+              Title: '',
+              'Show Toolbar': false,
+              'Show Images': true,
+              'Add New Card': false,
+              Currency: '$',
+              'Button Label': 'Add to Cart',
+              Products: JSON.stringify([
+                {
+                  name: 'Monstera Deliciosa — 6" Pot',
+                  price: '38.00',
+                  image: 'https://images.unsplash.com/photo-1593691509543-c55fb32d8de5?w=400&h=400&fit=crop',
+                  description: 'Split-leaf classic, easy in bright indirect light.'
+                },
+                {
+                  name: 'Golden Pothos — Hanging Basket',
+                  price: '24.00',
+                  image: 'https://images.unsplash.com/photo-1459411552884-841db9b3cc2a?w=400&h=400&fit=crop',
+                  description: 'Trailing, forgiving, and nearly unkillable.'
+                },
+                {
+                  name: "Snake Plant 'Laurentii'",
+                  price: '29.00',
+                  image: 'https://images.unsplash.com/photo-1512428813834-c702c7702b78?w=400&h=400&fit=crop',
+                  description: 'Low-light champion that purifies the air.'
+                },
+                {
+                  name: 'ZZ Plant — 5" Pot',
+                  price: '32.00',
+                  image: 'https://images.unsplash.com/photo-1604762524889-3e2fcc145683?w=400&h=400&fit=crop',
+                  description: 'Glossy and drought-tolerant — water it monthly.'
+                },
+                {
+                  name: 'Calathea Orbifolia — Pet-Safe',
+                  price: '34.00',
+                  image: 'https://images.unsplash.com/photo-1602923668104-8f9e03e77e62?w=400&h=400&fit=crop',
+                  description: 'Striped show-off that loves humidity.'
+                },
+                {
+                  name: 'Fiddle-Leaf Fig — 10" Floor',
+                  price: '72.00',
+                  image: 'https://images.unsplash.com/photo-1611211232932-da3113c5b960?w=400&h=400&fit=crop',
+                  description: 'The statement tree for a bright, draft-free spot.'
+                }
+              ])
+            }
+          }
+        ]
+      },
+      {
+        id: 'page-3',
+        name: 'Account',
+        icon: 'Users',
+        requireLogin: true,
+        elements: [
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Left'
+            },
+            properties: {
+              Heading: 'Your Account',
+              Subheading: 'Orders, addresses, and your plant-care reminders.'
+            }
+          },
+          {
+            componentId: 'list',
+            variants: {
+              Layout: 'Card',
+              'Card Image Style': 'Square',
+              'Card Layout': 'Vertical',
+              'Card Size': 'Medium',
+              'Card Action': 'None'
+            },
+            properties: {
+              'Show Header': false,
+              Items: JSON.stringify([
+                {
+                  title: 'Order #FW-2041',
+                  description: '2 plants · Out for delivery',
+                  image: 'https://images.unsplash.com/photo-1572688484438-313a6e50c333?w=400&h=400&fit=crop'
+                },
+                {
+                  title: 'Saved for Later',
+                  description: 'Calathea Orbifolia · String-of-Pearls',
+                  image: 'https://images.unsplash.com/photo-1453904300235-0f2f60b15b5d?w=400&h=400&fit=crop'
+                },
+                {
+                  title: 'Care Reminders',
+                  description: 'Water the Monstera every Sunday',
+                  image: 'https://images.unsplash.com/photo-1591857177580-dc82b9ac4e1e?w=400&h=400&fit=crop'
+                }
+              ])
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 24
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Left'
+            },
+            properties: {
+              Heading: 'Member Perks',
+              Subheading: 'What you get as a Fernwell plant parent.'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Reorder favorites',
+              Description: 'One tap to restock the plants you love.',
+              Icon: 'RotateCcw',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Care reminders',
+              Description: 'Watering and light alerts for every plant.',
+              Icon: 'Bell',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Member pricing',
+              Description: 'Early access to drops and seasonal sales.',
+              Icon: 'Tag',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Talk to a grower',
+              Description: 'Message expert support seven days a week.',
+              Icon: 'MessageCircle',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 24
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Type: 'Standard',
+              Variant: 'Outlined',
+              Corner: 'Rounded'
+            },
+            properties: {
+              Label: 'Manage account settings',
+              'Left Icon': 'Settings',
+              'Right Icon': 'none',
+              'Full Width': true
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'landing-registration',
+    name: 'Landing — Registration',
+    appTitle: 'Aperture Weekend',
+    appSubtitle: 'A 2-day photography intensive',
+    headerActions: [],
+    pages: [
+      {
+        id: 'page-1',
+        name: 'Workshop',
+        icon: 'Camera',
+        landing: true,
+        elements: [
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Aperture Weekend',
+              Subheading: 'Mar 14 – 15, 2026 · Portland, OR'
+            }
+          },
+          {
+            componentId: 'image',
+            variants: {
+              'Has Image': 'Yes',
+              Alignment: 'Center',
+              Size: 'Large'
+            },
+            properties: {
+              'Image URL': 'https://images.unsplash.com/photo-1531403009284-440f080d1e12?w=900&h=500&fit=crop',
+              'Alt Text': 'Photographers in a hands-on workshop session'
+            }
+          },
+          {
+            componentId: 'paragraph',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Center'
+            },
+            properties: {
+              Text: 'Two days, one camera, and a small cohort of 16. Learn to shoot in manual, light a portrait from scratch, and edit a finished series — all under the guidance of working pros. No degree required, just bring whatever camera you own.'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'BY THE NUMBERS',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'A weekend that punches above its size',
+              Subheading: 'Small on seats, big on outcomes.'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '2 days',
+              Description: 'of full hands-on shooting, lighting, and editing — start to finish.',
+              Icon: 'CalendarDays',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '12 seats',
+              Description: 'per cohort, so every shot you take gets a one-on-one look.',
+              Icon: 'Users',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '15+ alumni shows',
+              Description: 'of work that started right here, now hanging in galleries.',
+              Icon: 'Frame',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '4.9 rating',
+              Description: 'averaged across 180+ past participants over four years.',
+              Icon: 'Star',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'CURRICULUM',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: "What you'll learn",
+              Subheading: "Six core skills you'll practice on real subjects, not slides."
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Manual exposure',
+              Description: 'Own aperture, shutter, and ISO until the meter is muscle memory.',
+              Icon: 'Aperture',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Studio lighting',
+              Description: 'Sculpt a face with one light, then build to a three-light setup.',
+              Icon: 'Lightbulb',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Composition',
+              Description: 'Frame, layer, and lead the eye so every shot feels intentional.',
+              Icon: 'Crop',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Directing people',
+              Description: 'Pose, prompt, and put a nervous subject at ease in seconds.',
+              Icon: 'MessageSquare',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Lightroom editing',
+              Description: 'Cull, color-grade, and finish a cohesive ten-image series.',
+              Icon: 'Sliders',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Building a portfolio',
+              Description: 'Sequence and present work that actually gets you booked.',
+              Icon: 'BookImage',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'YOUR WEEKEND',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'How the two days unfold',
+              Subheading: 'Foundations on Saturday, studio and edit on Sunday, your show at the end.'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Sat AM · Foundations',
+              Description: 'Manual-exposure bootcamp and the language of natural light.',
+              Icon: 'Sunrise',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Sat PM · Light walk',
+              Description: 'A golden-hour street walk through the Pearl District.',
+              Icon: 'MapPin',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Sun AM · Studio',
+              Description: 'Light live models with strobes and learn to shape hard light.',
+              Icon: 'Camera',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Sun PM · Edit & show',
+              Description: 'Build your ten-image series in the Lightroom lab, then present it.',
+              Icon: 'Award',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Taught by working photographers',
+              Subheading: 'People who shoot for a living, in the room with you all weekend.'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Square',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              'Image URL': 'https://images.unsplash.com/photo-1554048612-b6a482bc67e5?w=700&h=380&fit=crop',
+              Title: 'Maya Okonkwo · Lead instructor',
+              Description: 'Editorial and portrait photographer with a decade of magazine covers and gallery shows. She runs the studio-lighting and directing sessions.'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Square',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              'Image URL': 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=700&h=380&fit=crop',
+              Title: 'Daniel Reyes · Edit & critique',
+              Description: 'Documentary shooter and longtime retoucher. He leads the Lightroom lab and the shot-by-shot portfolio critiques.'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'PAST WORK',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Shot by alumni, in two days',
+              Subheading: 'Every frame below was made by a first-time participant.'
+            }
+          },
+          {
+            componentId: 'image-gallery',
+            variants: {
+              Layout: '4'
+            },
+            properties: {
+              Images: JSON.stringify([
+                'https://images.unsplash.com/photo-1495567720989-cebdbdd97913?w=400&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1500051638674-ff996a0ec29e?w=400&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1506277886164-e25aa3f4ef7f?w=400&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400&h=400&fit=crop'
+              ])
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'REVIEWS',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Loved by past cohorts',
+              Subheading: 'What alumni say after their weekend.'
+            }
+          },
+          {
+            componentId: 'testimonial',
+            properties: {
+              'Show Avatars': true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'RESERVE',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Reserve your spot',
+              Subheading: 'Only 12 seats — early-bird pricing ends Feb 1.'
+            }
+          },
+          {
+            componentId: 'login-signup',
+            variants: {
+              Mode: 'Signup',
+              Layout: 'Center'
+            },
+            properties: {
+              Title: 'Save your seat',
+              Subtitle: 'Register in 30 seconds. $349 early-bird — pay at confirmation, no card to hold your spot.',
+              'Button Label': 'Register now',
+              'Input Icons': true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'BEFORE YOU BOOK',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Good to know',
+              Subheading: 'The answers we get asked most.'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Horizontal',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Pricing',
+              Description: '$349 early-bird through Feb 1, then $399. Pay at confirmation — no deposit holds your seat.',
+              Icon: 'Tag'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Horizontal',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: "What's included",
+              Description: 'All studio time, live models, lighting gear, lunch both days, and a completion certificate.',
+              Icon: 'PackageCheck'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Horizontal',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Refund policy',
+              Description: 'Full refund up to 14 days before. Within 14 days, transfer your seat to a friend or a future weekend.',
+              Icon: 'Undo2'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Horizontal',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Gear to bring',
+              Description: 'Any camera with manual mode, a charged battery, an SD card, and a laptop for the edit lab. No camera? Borrow one of ours.',
+              Icon: 'Backpack'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Ready to shoot all weekend?',
+              Subheading: '12 seats, one cohort, a portfolio by Sunday night.'
+            }
+          },
+          {
+            componentId: 'paragraph',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Center'
+            },
+            properties: {
+              Text: "Early-bird pricing ends Feb 1. Lock in your seat now and we'll send the full schedule and gear list straight to your inbox."
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Type: 'Standard',
+              Variant: 'Default',
+              Corner: 'Rounded'
+            },
+            properties: {
+              Label: 'Reserve my seat',
+              'Left Icon': 'none',
+              'Right Icon': 'ArrowRight',
+              'Full Width': true
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Type: 'Standard',
+              Variant: 'Outlined',
+              Corner: 'Rounded'
+            },
+            properties: {
+              Label: 'View the full agenda',
+              'Left Icon': 'CalendarDays',
+              'Right Icon': 'none',
+              'Full Width': true
+            }
+          }
+        ]
+      },
+      {
+        id: 'page-schedule',
+        name: 'Schedule',
+        icon: 'CalendarCheck',
+        requireLogin: true,
+        elements: [
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Left'
+            },
+            properties: {
+              Heading: 'Weekend Agenda',
+              Subheading: 'Two full days · Doors at 9:00 AM, both mornings'
+            }
+          },
+          {
+            componentId: 'paragraph',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Left'
+            },
+            properties: {
+              Text: "Here's how the two days break down. Each block is hands-on — you'll be shooting or editing, not sitting through lectures. Times are approximate; we follow the light."
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 24
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Left'
+            },
+            properties: {
+              Heading: 'Saturday · Foundations',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'list',
+            variants: {
+              Layout: 'Card',
+              'Card Image Style': 'Square',
+              'Card Layout': 'Vertical',
+              'Card Size': 'Medium',
+              'Card Action': 'None'
+            },
+            properties: {
+              'Show Header': false,
+              Items: JSON.stringify([
+                {
+                  title: '9:00 — Manual Mode Bootcamp',
+                  description: 'Aperture, shutter, ISO — demystified by lunch.',
+                  image: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=400&h=400&fit=crop'
+                },
+                {
+                  title: '1:00 — Natural Light Walk',
+                  description: 'Shoot the Pearl District in golden afternoon light.',
+                  image: 'https://images.unsplash.com/photo-1452587925148-ce544e77e70d?w=400&h=400&fit=crop'
+                },
+                {
+                  title: '4:00 — Group Critique',
+                  description: 'Bring your best three frames to the table.',
+                  image: 'https://images.unsplash.com/photo-1542744173-8e7e53415bb0?w=400&h=400&fit=crop'
+                }
+              ])
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 24
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Left'
+            },
+            properties: {
+              Heading: 'Sunday · Studio & Edit',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'list',
+            variants: {
+              Layout: 'Card',
+              'Card Image Style': 'Square',
+              'Card Layout': 'Vertical',
+              'Card Size': 'Medium',
+              'Card Action': 'None'
+            },
+            properties: {
+              'Show Header': false,
+              Items: JSON.stringify([
+                {
+                  title: '9:00 — Studio Portrait Lighting',
+                  description: 'One light, then three — sculpting a face with strobes.',
+                  image: 'https://images.unsplash.com/photo-1554080353-a576cf803bda?w=400&h=400&fit=crop'
+                },
+                {
+                  title: '1:00 — Lightroom Edit Lab',
+                  description: 'Cull, color, and finish a 10-image series.',
+                  image: 'https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?w=400&h=400&fit=crop'
+                },
+                {
+                  title: '4:00 — Portfolio Showcase',
+                  description: 'Present your finished series; certificates handed out.',
+                  image: 'https://images.unsplash.com/photo-1505373877841-8d25f7d46678?w=400&h=400&fit=crop'
+                }
+              ])
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 24
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Left'
+            },
+            properties: {
+              Heading: 'Both evenings · Optional',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Horizontal',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '6:30 — Cohort dinner',
+              Description: 'Walk to a nearby spot for a relaxed group dinner. Optional, and a great place to ask the instructors anything.',
+              Icon: 'Utensils'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Horizontal',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '8:00 — Open edit hours',
+              Description: 'Studio stays open with an instructor on hand if you want extra time on your edits.',
+              Icon: 'Clock'
+            }
+          }
+        ]
+      },
+      {
+        id: 'page-registration',
+        name: 'My Registration',
+        icon: 'Ticket',
+        requireLogin: true,
+        elements: [
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Left'
+            },
+            properties: {
+              Heading: "You're registered",
+              Subheading: 'Seat #07 · Aperture Weekend, Mar 14 – 15'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 8
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Square',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              'Image URL': 'https://images.unsplash.com/photo-1554048612-b6a482bc67e5?w=700&h=380&fit=crop',
+              Title: 'See you in Studio 6',
+              Description: "Your seat is confirmed and paid. Add the weekend to your calendar below so it's locked in."
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 16
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Horizontal',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Location',
+              Description: 'Studio 6, 1140 NW Everett St, Portland, OR 97209',
+              Icon: 'MapPin'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Horizontal',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Arrival',
+              Description: 'Doors 9:00 AM both days. Coffee and bagels from 8:30.',
+              Icon: 'Clock'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Horizontal',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'What to bring',
+              Description: 'Any camera, a charged battery, and a laptop for the edit lab.',
+              Icon: 'Camera'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 24
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Left'
+            },
+            properties: {
+              Heading: 'Your booking',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Horizontal',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Order #AW-2026-0147',
+              Description: '$349 early-bird · Paid Jan 12, 2026 · Visa ending 4421',
+              Icon: 'Receipt'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Horizontal',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Need to change plans?',
+              Description: "Full refund up to 14 days out, or transfer your seat to a friend any time. Reply to your confirmation email and we'll sort it.",
+              Icon: 'Undo2'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 16
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Type: 'Standard',
+              Variant: 'Default',
+              Corner: 'Rounded'
+            },
+            properties: {
+              Label: 'Add to calendar',
+              'Left Icon': 'CalendarPlus',
+              'Right Icon': 'none',
+              'Full Width': true
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Type: 'Standard',
+              Variant: 'Outlined',
+              Corner: 'Rounded'
+            },
+            properties: {
+              Label: 'View the full agenda',
+              'Left Icon': 'CalendarDays',
+              'Right Icon': 'none',
+              'Full Width': true
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'landing-editorial',
+    name: 'Landing — Editorial',
+    appTitle: 'Northside Table',
+    appSubtitle: 'A neighborhood food bank, run by neighbors',
+    headerActions: [],
+    pages: [
+      {
+        id: 'page-1',
+        name: 'Home',
+        icon: 'House',
+        landing: true,
+        elements: [
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'No one on Northside should go hungry.',
+              Subheading: "Since 2009, we've turned a church basement into a fresh-food pantry serving 1,400 families a week."
+            }
+          },
+          {
+            componentId: 'image',
+            variants: {
+              'Has Image': 'Yes',
+              Alignment: 'Center',
+              Size: 'Large'
+            },
+            properties: {
+              'Image URL': 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=900&h=500&fit=crop',
+              'Alt Text': 'Volunteers packing fresh produce boxes at the Northside Table pantry'
+            }
+          },
+          {
+            componentId: 'paragraph',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Center'
+            },
+            properties: {
+              Text: 'It started with one folding table and a few crates of bruised apples. Fifteen years later, our volunteers rescue 90,000 pounds of food a month from going to waste — and put it on the tables of our own neighbors, no questions asked.'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'OUR IMPACT',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'What your neighbors built',
+              Subheading: 'Every number here is a real plate of food, made possible by people who live a few blocks away.'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 16
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '12,000 meals',
+              Description: 'packed and handed out in the last month alone, free to any family who walks in.',
+              Icon: 'Utensils',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '300 volunteers',
+              Description: 'neighbors, students, and retirees who sort, drive, and cook every single week.',
+              Icon: 'HandHeart',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '8 years',
+              Description: 'of keeping the lights on and the shelves full, through good times and hard ones.',
+              Icon: 'CalendarHeart',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '40 partners',
+              Description: 'local grocers, farms, and bakeries who donate good food before it goes to waste.',
+              Icon: 'Handshake',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Our story',
+              Subheading: 'How a folding table on 4th Street became a neighborhood institution.'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 16
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Square',
+              Layout: 'Vertical',
+              Action: 'None'
+            },
+            properties: {
+              Title: 'Our story: a table that grew',
+              Description: "When the plant on 4th Street closed, Rosa Mendez started cooking extra to share with laid-off neighbors. The line outside her door became a pantry, the pantry became a co-op, and the co-op became Northside Table. We still cook from Rosa's chili recipe every Friday.",
+              'Image URL': 'https://images.unsplash.com/photo-1497486751825-1233686d5d80?w=700&h=380&fit=crop'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Square',
+              Layout: 'Vertical',
+              Action: 'Button'
+            },
+            properties: {
+              Title: 'More than a meal',
+              Description: 'Hunger is rarely the only thing a family is carrying. Alongside groceries, our caseworkers help neighbors sign up for benefits, find work, and connect with a clinic next door. Last year we made 2,300 of those warm hand-offs.',
+              'Button Label': 'Read more stories',
+              'Image URL': 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=700&h=380&fit=crop'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'PROGRAMS',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'How we help',
+              Subheading: 'Four programs that meet our neighbors wherever they are — at home, at school, or on the corner.'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 16
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Mobile pantry',
+              Description: 'Our produce truck parks in five neighborhoods a week so groceries reach folks without a ride.',
+              Icon: 'Truck',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Hot meals',
+              Description: "Friday night dinners from Rosa's kitchen — a warm plate and a table where everyone's welcome.",
+              Icon: 'Soup',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Kids backpacks',
+              Description: 'Weekend food packs tucked into 600 backpacks so no child goes hungry when school meals stop.',
+              Icon: 'Backpack',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Senior delivery',
+              Description: 'Volunteer drivers carry boxes right to the door for homebound elders across Northside.',
+              Icon: 'HousePlus',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'In photos',
+              Subheading: 'Market mornings, packing nights, and full tables — straight from our pantry floor.'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 16
+            }
+          },
+          {
+            componentId: 'image-gallery',
+            variants: {
+              Layout: '4'
+            },
+            properties: {
+              Images: JSON.stringify([
+                'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=400&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1546074177-31bfa593f731?w=400&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1577896851231-70ef18881754?w=400&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&h=400&fit=crop'
+              ])
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'GET INVOLVED',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'How you can help',
+              Subheading: "Four simple ways to keep a neighbor's table full this week."
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 16
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '1 · Donate',
+              Description: 'Just $1 buys three meals through our wholesale partners. A monthly gift keeps the truck running.',
+              Icon: 'HeartHandshake',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '2 · Volunteer',
+              Description: "Give two hours sorting, driving, or cooking. We'll match you to a role and a shift that fits.",
+              Icon: 'Users',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '3 · Host a drive',
+              Description: "Run a food or fund drive at work, school, or on your block — we'll send a kit.",
+              Icon: 'Boxes',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '4 · Spread the word',
+              Description: 'Share our pantry hours with a neighbor who needs them, or post our story to your feed.',
+              Icon: 'Megaphone',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'VOICES',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'From the people we feed and serve',
+              Subheading: 'Neighbors and volunteers on what Northside Table means to them.'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 16
+            }
+          },
+          {
+            componentId: 'testimonial',
+            properties: {
+              'Show Avatars': true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'donation-box',
+            variants: {
+              'Heading Alignment': 'Center',
+              Size: 'Web'
+            },
+            properties: {
+              Title: 'Help us do more',
+              Description: '$1 buys 3 meals through our wholesale partners. Our spring goal keeps the produce truck running through the summer gap, when school meals stop.',
+              'Show Goal': true,
+              'Raised Amount': '$31,000',
+              'Goal Amount': '$50,000',
+              'Goal Progress': 62,
+              'Show Custom Amount': true,
+              'Currency Symbol': '$',
+              'Button Label': 'Donate Now'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Follow along',
+              Subheading: 'Market days, volunteer calls, and the occasional photo of a very full truck.'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 16
+            }
+          },
+          {
+            componentId: 'social-follow',
+            variants: {
+              Layout: 'Wrap',
+              Variant: 'Secondary',
+              Filled: 'No'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Ready to set a place at the table?',
+              Subheading: 'Whether you give an hour or a dollar, you keep a neighbor fed this week.'
+            }
+          },
+          {
+            componentId: 'paragraph',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Center'
+            },
+            properties: {
+              Text: "Join 300 neighbors who already pitch in. Pick a shift, make a gift, or just stop by the next market and say hello — there's room for everyone at Northside Table."
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 16
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Type: 'Standard',
+              Variant: 'Default',
+              Corner: 'Rounded'
+            },
+            properties: {
+              Label: 'Get involved',
+              'Left Icon': 'none',
+              'Right Icon': 'ArrowRight',
+              'Full Width': true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 8
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Type: 'Standard',
+              Variant: 'Outlined',
+              Corner: 'Rounded'
+            },
+            properties: {
+              Label: 'Donate today',
+              'Left Icon': 'Heart',
+              'Right Icon': 'none',
+              'Full Width': true
+            }
+          }
+        ]
+      },
+      {
+        id: 'page-2',
+        name: 'Events',
+        icon: 'CalendarCheck',
+        requireLogin: true,
+        elements: [
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Left'
+            },
+            properties: {
+              Heading: 'Upcoming events',
+              Subheading: 'Come for the food, stay for the neighbors.'
+            }
+          },
+          {
+            componentId: 'list',
+            variants: {
+              Layout: 'Card',
+              'Card Image Style': 'Square',
+              'Card Layout': 'Vertical',
+              'Card Size': 'Medium',
+              'Card Action': 'Button'
+            },
+            properties: {
+              'Show Header': false,
+              'Button Label': 'RSVP',
+              Items: JSON.stringify([
+                {
+                  title: 'Saturday Fresh Market',
+                  description: 'Jun 14 · 9am–12pm · Northside Hall — Free produce, no ID needed',
+                  image: 'https://images.unsplash.com/photo-1497633762265-9d179a990aa6?w=400&h=400&fit=crop'
+                },
+                {
+                  title: 'Community Cook-Off Fundraiser',
+                  description: "Jun 21 · 5pm · Rosa's Kitchen — $20 a plate, all you can eat chili",
+                  image: 'https://images.unsplash.com/photo-1546074177-31bfa593f731?w=400&h=400&fit=crop'
+                },
+                {
+                  title: 'Back-to-School Pantry Drive',
+                  description: 'Aug 9 · 10am–2pm · 4th Street Lot — Groceries + free backpacks',
+                  image: 'https://images.unsplash.com/photo-1577896851231-70ef18881754?w=400&h=400&fit=crop'
+                },
+                {
+                  title: 'Harvest Volunteer Day',
+                  description: 'Aug 23 · 8am · Riverside Farm — Glean fields, then share lunch',
+                  image: 'https://images.unsplash.com/photo-1530563885674-66db50a1af19?w=400&h=400&fit=crop'
+                }
+              ])
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Left'
+            },
+            properties: {
+              Heading: 'What to expect',
+              Subheading: 'A few things that are true at every Northside Table gathering.'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 16
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Always free',
+              Description: "Markets and meals cost nothing. Fundraisers are clearly marked when they're not.",
+              Icon: 'Gift',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Everyone welcome',
+              Description: "No ID, no income check, no questions. If you're hungry, you belong here.",
+              Icon: 'Users',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Family friendly',
+              Description: "Bring the kids — there's a craft table at every market and snacks to spare.",
+              Icon: 'Baby',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Easy to reach',
+              Description: 'Every venue sits on a bus line, with parking and step-free entry at the door.',
+              Icon: 'Bus',
+              Shrinked: true
+            }
+          }
+        ]
+      },
+      {
+        id: 'page-3',
+        name: 'Volunteer',
+        icon: 'HandHeart',
+        requireLogin: true,
+        elements: [
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Left'
+            },
+            properties: {
+              Heading: 'Lend a hand',
+              Subheading: 'Two hours a week feeds a dozen families. Pick a role that fits your schedule.'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 16
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Sort & pack',
+              Description: 'Box up produce and dry goods on Tuesday and Thursday mornings.',
+              Icon: 'Truck',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Welcome desk',
+              Description: 'Greet neighbors, sign families in, and point folks to resources.',
+              Icon: 'Users',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Food rescue driver',
+              Description: 'Pick up donations from grocers in our van, on your own hours.',
+              Icon: 'Recycle',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Friday kitchen',
+              Description: "Cook and serve Rosa's chili for the weekly community dinner.",
+              Icon: 'Flame',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Left'
+            },
+            properties: {
+              Heading: 'Open volunteer roles',
+              Subheading: 'Browse what we need this season and sign up in a tap.'
+            }
+          },
+          {
+            componentId: 'list',
+            variants: {
+              Layout: 'Card',
+              'Card Image Style': 'Square',
+              'Card Layout': 'Vertical',
+              'Card Size': 'Medium',
+              'Card Action': 'Button'
+            },
+            properties: {
+              'Show Header': false,
+              'Button Label': 'Sign up',
+              Items: JSON.stringify([
+                {
+                  title: 'Tuesday Morning Packers',
+                  description: '8am–11am · Northside Hall — Sort produce and build family boxes. No experience needed.',
+                  image: 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?w=400&h=400&fit=crop'
+                },
+                {
+                  title: 'Mobile Pantry Crew',
+                  description: 'Wed & Fri · Various stops — Ride the truck, set up tables, and hand out groceries.',
+                  image: 'https://images.unsplash.com/photo-1497486751825-1233686d5d80?w=400&h=400&fit=crop'
+                },
+                {
+                  title: 'Senior Delivery Drivers',
+                  description: 'Fridays · Flexible route — Carry boxes door-to-door for homebound elders. Your car, our gas card.',
+                  image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&h=400&fit=crop'
+                },
+                {
+                  title: 'Friday Kitchen Team',
+                  description: "4pm–8pm · Rosa's Kitchen — Prep, cook, and serve the weekly community dinner.",
+                  image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=400&h=400&fit=crop'
+                }
+              ])
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Left'
+            },
+            properties: {
+              Heading: 'Why volunteers stay',
+              Subheading: 'The small things that make a shift worth showing up for.'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 16
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Flexible shifts',
+              Description: 'Sign up for one morning or every week — swap and cancel anytime, no guilt.',
+              Icon: 'CalendarClock',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Real community',
+              Description: "You'll learn names, share a meal, and leave knowing exactly who you helped.",
+              Icon: 'HeartHandshake',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'We train you',
+              Description: "Every role starts with a friendly orientation. Show up curious; we'll handle the rest.",
+              Icon: 'GraduationCap',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Hours that count',
+              Description: 'We log and verify service hours for students, employers, and court programs.',
+              Icon: 'BadgeCheck',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 24
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Type: 'Standard',
+              Variant: 'Default',
+              Corner: 'Rounded'
+            },
+            properties: {
+              Label: 'Sign up to volunteer',
+              'Left Icon': 'none',
+              'Right Icon': 'ArrowRight',
+              'Full Width': true
+            }
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'landing-saas',
+    name: 'Landing — SaaS',
+    appTitle: 'Tally',
+    appSubtitle: 'Budgeting that finally sticks',
+    headerActions: [],
+    pages: [
+      {
+        id: 'page-1',
+        name: 'Landing — SaaS',
+        icon: 'Wallet',
+        landing: true,
+        elements: [
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Budgeting that finally sticks.',
+              Subheading: 'Tally watches your spending, builds your budget, and nudges you before you overspend.'
+            }
+          },
+          {
+            componentId: 'image',
+            variants: {
+              'Has Image': 'Yes',
+              Alignment: 'Center',
+              Size: 'Large'
+            },
+            properties: {
+              'Image URL': 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=900&h=500&fit=crop',
+              'Alt Text': "Tally's budget dashboard open on a laptop"
+            }
+          },
+          {
+            componentId: 'paragraph',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Center'
+            },
+            properties: {
+              Text: 'Connect your accounts in two minutes. Tally does the categorizing, the math, and the reminders — you just spend smarter.'
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Type: 'Standard',
+              Variant: 'Default',
+              Corner: 'Rounded'
+            },
+            properties: {
+              Label: 'Start free',
+              'Left Icon': 'none',
+              'Right Icon': 'ArrowRight',
+              'Full Width': true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'FEATURES',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Everything your money needs',
+              Subheading: 'Six tools that quietly do the boring parts for you.'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Auto-categorize',
+              Description: 'Every transaction sorted the moment it lands — no spreadsheets.',
+              Icon: 'Sparkles',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Smart budgets',
+              Description: 'Budgets that build themselves from how you actually spend.',
+              Icon: 'Wallet',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Bill reminders',
+              Description: 'A heads-up before every bill, so nothing slips through.',
+              Icon: 'BellRing',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Savings goals',
+              Description: 'Name a goal, set a date, and watch Tally find the money.',
+              Icon: 'PiggyBank',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Spending insights',
+              Description: 'See where it went with clear weekly and monthly trends.',
+              Icon: 'TrendingUp',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Bank-level security',
+              Description: '256-bit encryption, read-only access, never sold.',
+              Icon: 'ShieldCheck',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'HOW IT WORKS',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Set up in two minutes',
+              Subheading: 'No spreadsheets, no manual entry — just connect and go.'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '1 · Connect',
+              Description: 'Securely link your bank in a couple of taps.',
+              Icon: 'Link2',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '2 · Auto-sort',
+              Description: 'Tally categorizes every transaction for you.',
+              Icon: 'Wand2',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '3 · Set budgets',
+              Description: 'Pick limits per category; we track them live.',
+              Icon: 'SlidersHorizontal',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '4 · Stay ahead',
+              Description: 'Get a nudge before you overspend, every time.',
+              Icon: 'BellRing',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'REVIEWS',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Loved by people who hate budgeting',
+              Subheading: 'What members say after their first month.'
+            }
+          },
+          {
+            componentId: 'testimonial',
+            properties: {
+              'Show Avatars': true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'PRICING',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Simple, honest pricing',
+              Subheading: 'Start free. Upgrade only when it pays for itself.'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'None',
+              Layout: 'Vertical',
+              Action: 'Button'
+            },
+            properties: {
+              Title: 'Free · $0',
+              Description: 'Track spending, one budget, and manual sync. Everything you need to start.',
+              'Button Label': 'Get started'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'None',
+              Layout: 'Vertical',
+              Action: 'Button'
+            },
+            properties: {
+              Title: 'Plus · $8/mo',
+              Description: 'Unlimited budgets, automatic sync, bill reminders, and savings goals.',
+              'Button Label': 'Start free trial'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'None',
+              Layout: 'Vertical',
+              Action: 'Button'
+            },
+            properties: {
+              Title: 'Family · $14/mo',
+              Description: 'Everything in Plus for up to 5 people, with shared budgets and kid accounts.',
+              'Button Label': 'Start free trial'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'FAQ',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Questions, answered',
+              Subheading: 'Still curious? Reach us any time at hello@tally.app.'
+            }
+          },
+          {
+            componentId: 'list',
+            variants: {
+              Layout: 'Basic',
+              'Image Style': 'None',
+              Size: 'Regular',
+              Action: 'None'
+            },
+            properties: {
+              'Show Header': false,
+              Items: JSON.stringify([
+                {
+                  title: 'Is my financial data secure?',
+                  description: 'Yes — bank-level 256-bit encryption, read-only access, and we never sell your data.'
+                },
+                {
+                  title: 'Can I cancel anytime?',
+                  description: 'One tap, no fees, and you keep a full export of your data.'
+                },
+                {
+                  title: 'Which banks are supported?',
+                  description: 'Over 12,000 banks and cards across the US, UK, and Canada.'
+                },
+                {
+                  title: 'Is there really a free plan?',
+                  description: 'Always. The Free plan stays free and never asks for a card.'
+                },
+                {
+                  title: 'Do you have a family plan?',
+                  description: 'Yes — Family covers up to 5 people with shared and private budgets.'
+                }
+              ])
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Your best money month starts today.',
+              Subheading: 'Join 80,000 people who finally feel on top of their money — free to start, no card needed.'
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Type: 'Standard',
+              Variant: 'Default',
+              Corner: 'Rounded'
+            },
+            properties: {
+              Label: 'Start free',
+              'Left Icon': 'none',
+              'Right Icon': 'ArrowRight',
+              'Full Width': true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Tally',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'paragraph',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Text: 'Features · Pricing · Security · Help Center · Privacy · Terms'
+            }
+          },
+          {
+            componentId: 'paragraph',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Text: '© 2026 Tally, Inc. · Made in Portland, OR.'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 24
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Follow along',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'social-follow',
+            variants: {
+              Layout: 'Wrap',
+              Variant: 'Secondary',
+              Filled: 'No'
+            }
+          }
+        ]
+      },
+      {
+        id: 'page-2',
+        name: 'Dashboard',
+        icon: 'LayoutDashboard',
+        requireLogin: true,
+        elements: [
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Left'
+            },
+            properties: {
+              Heading: 'This month',
+              Subheading: "You're $240 under budget — nice."
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Spent',
+              Description: '$1,840 across 86 transactions',
+              Icon: 'Wallet',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Left to spend',
+              Description: '$560 over the next 11 days',
+              Icon: 'PiggyBank',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Saved',
+              Description: '$300 toward your Japan trip',
+              Icon: 'TrendingUp',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Top category',
+              Description: 'Groceries · $420',
+              Icon: 'ShoppingCart',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 16
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Left'
+            },
+            properties: {
+              Heading: 'Recent activity',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'list',
+            variants: {
+              Layout: 'Basic',
+              'Image Style': 'None',
+              Size: 'Compact',
+              Action: 'None'
+            },
+            properties: {
+              'Show Header': false,
+              Items: JSON.stringify([
+                {
+                  title: 'Whole Foods',
+                  description: 'Groceries · -$84.20'
+                },
+                {
+                  title: 'Spotify',
+                  description: 'Subscriptions · -$11.99'
+                },
+                {
+                  title: 'Payroll',
+                  description: 'Income · +$2,400.00'
+                },
+                {
+                  title: 'Shell',
+                  description: 'Transport · -$52.40'
+                }
+              ])
+            }
+          }
+        ]
+      },
+      {
+        id: 'page-3',
+        name: 'Account',
+        icon: 'User',
+        requireLogin: true,
+        elements: [
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Left'
+            },
+            properties: {
+              Heading: 'Your plan',
+              Subheading: 'Plus · renews May 1'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Subscription',
+              Description: 'Manage or change your plan',
+              Icon: 'CreditCard',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Payment method',
+              Description: 'Visa ending 4242',
+              Icon: 'Wallet',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Connected banks',
+              Description: '3 accounts linked',
+              Icon: 'Landmark',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Notifications',
+              Description: 'Bills, budgets, and goals',
+              Icon: 'Bell',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 16
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Type: 'Standard',
+              Variant: 'Outlined',
+              Corner: 'Rounded'
+            },
+            properties: {
+              Label: 'Sign out',
+              'Left Icon': 'none',
+              'Right Icon': 'none',
+              'Full Width': true
+            }
+          }
+        ]
+      }
+    ]
   },
 ]
 

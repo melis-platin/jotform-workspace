@@ -242,7 +242,7 @@ function buildInitialStateFromPreset(preset: AppPreset | undefined): {
   const pages: AppPage[] = preset.pages.map((p) => {
     const built = buildCanvasElementsFromPreset(p.elements, nextId)
     nextId = built.nextId
-    return { id: p.id, name: p.name, icon: p.icon, elements: built.elements }
+    return { id: p.id, name: p.name, icon: p.icon, landing: p.landing, requireLogin: p.requireLogin, elements: built.elements }
   })
   const headerBuilt = buildCanvasElementsFromPreset(preset.headerActions, nextId)
   return {
@@ -5127,7 +5127,7 @@ export function BuildPage({
 
                       {visibleProps.map((prop) => (
                         <div key={prop.name} className="property-panel__field">
-                          <DSFormField title={prop.name} size="md" showDescription={false} showHelpText={false}>
+                          <DSFormField title={prop.name} size="md" description={prop.description} showDescription={Boolean(prop.description)} showHelpText={false}>
                             {prop.type === 'boolean' ? (
                               <DSToggle
                                 checked={Boolean(selectedElement.properties[prop.name])}
@@ -5153,9 +5153,26 @@ export function BuildPage({
                                   handlePropertyChange(selectedElement.id, prop.name, val)
                                 }
                               />
+                            ) : prop.type === 'select' && prop.options ? (
+                              <Segmented
+                                accent="apps"
+                                variant="text"
+                                value={String(selectedElement.properties[prop.name] ?? prop.default ?? '')}
+                                onChange={(val) => handlePropertyChange(selectedElement.id, prop.name, val)}
+                                items={prop.options.map((opt) => ({ value: opt, label: opt }))}
+                              />
                             ) : (
                               <DSInput
                                 value={String(selectedElement.properties[prop.name] || '')}
+                                placeholder={prop.placeholder}
+                                maxLength={prop.maxLength}
+                                rightContent={
+                                  prop.maxLength ? (
+                                    <span className="property-panel__char-count">
+                                      {String(selectedElement.properties[prop.name] || '').length}/{prop.maxLength}
+                                    </span>
+                                  ) : undefined
+                                }
                                 onChange={(e) =>
                                   handlePropertyChange(selectedElement.id, prop.name, e.target.value)
                                 }

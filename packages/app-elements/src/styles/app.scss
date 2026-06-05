@@ -535,25 +535,31 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-// ── Balanced text wrapping ───────────────────────────────────────────────────
-// Single source of truth: heading / paragraph / app-header / card / list text
-// balances its line lengths so a multi-line title or description never drops a
-// lone orphan word on the last line (text-wrap: balance). Unsupported browsers
-// fall back to normal wrapping. Inline-editable instances reset to normal on
-// :focus so the caret doesn't jitter from re-balancing on every keystroke —
-// manual line breaks (white-space: pre-wrap) are preserved either way.
+// ── Text wrapping ────────────────────────────────────────────────────────────
+// Single source of truth. TITLES balance their line lengths so a short multi-line
+// heading reads symmetrically (text-wrap: balance). Longer DESCRIPTIVE text
+// (subtitles, paragraphs, descriptions) instead wraps "pretty" — it prevents an
+// orphan last line without the awkward mid-phrase splits balance forces on 2-line
+// body text (e.g. breaking "any time" or "manual entry" across lines). Both are
+// progressive enhancements; unsupported browsers fall back to normal wrapping.
+// Inline-editable instances reset to normal on :focus so the caret doesn't jitter
+// from re-wrapping on every keystroke — manual line breaks (white-space: pre-wrap)
+// are preserved either way.
 .jf-heading__title,
-.jf-heading__subtitle,
 .jf-app-header__title,
+.jf-card__title,
+.jf-list__title,
+.jf-list-item__title {
+  text-wrap: balance;
+}
+
+.jf-heading__subtitle,
 .jf-app-header__subtitle,
 .jf-paragraph__editor,
-.jf-card__title,
 .jf-card__description,
-.jf-list__title,
 .jf-list__subtitle,
-.jf-list-item__title,
 .jf-list-item__desc {
-  text-wrap: balance;
+  text-wrap: pretty;
 }
 
 .jf-heading__title:focus,
