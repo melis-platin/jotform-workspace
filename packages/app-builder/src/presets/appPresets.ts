@@ -19,13 +19,25 @@ export interface PresetPage {
 
 export interface AppHeaderPresetConfig {
   layout?: 'Left' | 'Center' | 'Right'
+  contentAlign?: 'Center' | 'Bottom'
+  size?: 'Large' | 'Medium' | 'Small'
+  minHeight?: number
   icon?: string
   imageStyle?: 'Icon' | 'Image' | 'None'
   imageUrl?: string | null
   imageName?: string | null
   textColor?: string
+  textColorMode?: 'auto' | 'light' | 'dark'
   backgroundImageUrl?: string | null
   backgroundImageName?: string | null
+  bgSource?: 'color' | 'image'
+  backgroundMode?: 'solid' | 'gradient'
+  backgroundColor?: string
+  gradientStart?: string
+  gradientEnd?: string
+  /** Override the banner title/subtitle independently of appTitle/appSubtitle. */
+  title?: string
+  subtitle?: string
   show?: boolean
 }
 
@@ -7061,6 +7073,607 @@ export const APP_PRESETS: AppPreset[] = [
         ]
       }
     ]
+  },
+  {
+    id: 'landing-b2b',
+    name: 'Landing — B2B',
+    appTitle: 'Cadence',
+    appSubtitle: 'Revenue intelligence for B2B sales teams',
+    pages: [
+      {
+        id: 'page-1',
+        name: 'Landing — B2B',
+        icon: 'TrendingUp',
+        landing: true,
+        elements: [
+          {
+            componentId: 'button',
+            properties: {
+              Label: 'Book My Demo'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 24
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Your pipeline is a black box.',
+              Subheading: 'Forecasts are gut calls, reps work the wrong deals, and reporting eats your week.',
+              'Add Emphasis': true,
+              'Emphasis Text': 'THE PROBLEM'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: 'Forecasts you can’t trust',
+              Description: 'Spreadsheets and gut feel instead of real signal.',
+              Icon: 'TriangleAlert',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: 'Reps fly blind',
+              Description: 'No clear view of which deals to push today.',
+              Icon: 'EyeOff',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: 'Deals slip silently',
+              Description: 'Risk only shows up after the deal is already lost.',
+              Icon: 'TrendingDown',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: 'Reporting eats hours',
+              Description: 'Rebuilding the same board by hand every week.',
+              Icon: 'Clock',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'One platform for the whole funnel.',
+              Subheading: 'Pipeline, forecasting, and coaching in one place — synced to your CRM.',
+              'Add Emphasis': true,
+              'Emphasis Text': 'THE SOLUTION'
+            }
+          },
+          {
+            componentId: 'image',
+            variants: {
+              'Has Image': 'Yes',
+              Size: 'Large'
+            },
+            properties: {
+              'Image URL': 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=900&h=500&fit=crop',
+              'Alt Text': 'The Cadence revenue dashboard'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: 'Pipeline analytics',
+              Description: 'See every deal’s health and stage velocity.',
+              Icon: 'BarChart3',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: 'AI forecasting',
+              Description: 'Roll-ups you can defend, updated daily.',
+              Icon: 'Sparkles',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: 'Deal alerts',
+              Description: 'Get pinged the moment a deal goes quiet.',
+              Icon: 'BellRing',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: 'Rep scorecards',
+              Description: 'Coach with activity and outcome metrics.',
+              Icon: 'Trophy',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: 'Revenue reporting',
+              Description: 'Board-ready reports without the rebuild.',
+              Icon: 'FileText',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: 'CRM sync',
+              Description: 'Two-way sync with Salesforce and HubSpot.',
+              Icon: 'RefreshCw',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Featured Case Studies'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              Layout: 'Vertical',
+              Action: 'Button'
+            },
+            properties: {
+              Title: 'Northwind, Inc.',
+              Description: '“Cadence gave us a forecast the board actually trusts — and our reps finally know where to spend their day.”  — VP of Sales',
+              'Button Label': 'Read More',
+              'Image URL': 'https://images.unsplash.com/photo-1556761175-5973dc0f32e7?w=700&h=380&fit=crop',
+              'Card Action': 'Open Form'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              Layout: 'Vertical',
+              Action: 'Button'
+            },
+            properties: {
+              Title: 'Meridian Logistics',
+              Description: 'Cadence turned our pipeline guesswork into a number finance signs off on every quarter',
+              'Button Label': 'Read More',
+              'Card Action': 'Open Form',
+              'Image URL': 'https://images.unsplash.com/photo-1565793298595-6a879b1d9492?w=700&h=380&fit=crop'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Loved by revenue leaders.',
+              Subheading: 'What sales and RevOps teams say after a quarter on Cadence.',
+              'Add Emphasis': true,
+              'Emphasis Text': 'TESTIMONIALS'
+            }
+          },
+          {
+            componentId: 'testimonial',
+            properties: {
+              'Show Avatars': true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Questions, answered.',
+              Subheading: 'Still curious? Talk to us at sales@cadence.io.',
+              'Add Emphasis': true,
+              'Emphasis Text': 'FAQ'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 8
+            }
+          },
+          {
+            componentId: 'list',
+            variants: {
+              'Image Style': 'None',
+              'Card Image Style': 'None'
+            },
+            properties: {
+              Items: JSON.stringify([
+                {
+                  title: 'How long is setup?',
+                  description: 'Most teams are live in under a week with native CRM sync.'
+                },
+                {
+                  title: 'Which CRMs do you support?',
+                  description: 'Two-way sync with Salesforce and HubSpot today, more coming.'
+                },
+                {
+                  title: 'Is our data secure?',
+                  description: 'SOC 2 Type II, SSO/SAML, and encryption in transit and at rest.'
+                },
+                {
+                  title: 'Do you help with onboarding?',
+                  description: 'Every plan includes a dedicated onboarding specialist.'
+                },
+                {
+                  title: 'How is pricing structured?',
+                  description: 'Per seat, billed annually, with volume discounts for larger teams.'
+                }
+              ])
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'See Cadence on your pipeline.',
+              Subheading: 'Book a 20-minute demo and we’ll show you your own funnel, clarified.'
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Corner: 'Rounded',
+              Width: 'Auto'
+            },
+            properties: {
+              Label: 'Book a demo',
+              'Full Width': true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 19
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Cadence'
+            }
+          },
+          {
+            componentId: 'paragraph',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Text: '© 2026 Cadence, Inc. · SOC 2 Type II certified.'
+            }
+          },
+          {
+            componentId: 'social-follow',
+            variants: {
+              Layout: 'Wrap',
+              Variant: 'Secondary',
+              Filled: 'No'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 24
+            }
+          }
+        ]
+      },
+      {
+        id: 'page-2',
+        name: 'Dashboard',
+        icon: 'LayoutDashboard',
+        requireLogin: true,
+        elements: [
+          {
+            componentId: 'heading',
+            properties: {
+              Heading: 'This quarter',
+              Subheading: 'Pipeline is pacing 112% to plan.'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: '$4.8M',
+              Description: 'qualified pipeline',
+              Icon: 'BarChart3',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: '112%',
+              Description: 'to quarterly plan',
+              Icon: 'TrendingUp',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: '38 days',
+              Description: 'avg deal cycle',
+              Icon: 'Timer',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: '7 at risk',
+              Description: 'deals flagged this week',
+              Icon: 'TriangleAlert',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 16
+            }
+          },
+          {
+            componentId: 'heading',
+            properties: {
+              Heading: 'Deals to work today'
+            }
+          },
+          {
+            componentId: 'list',
+            variants: {
+              'Image Style': 'None',
+              Size: 'Compact'
+            },
+            properties: {
+              Items: JSON.stringify([
+                {
+                  title: 'Globex — Renewal',
+                  description: '$120k · Negotiation · slipping'
+                },
+                {
+                  title: 'Initech — Expansion',
+                  description: '$64k · Proposal · on track'
+                },
+                {
+                  title: 'Umbra — New logo',
+                  description: '$210k · Discovery · quiet 6 days'
+                },
+                {
+                  title: 'Hooli — Upsell',
+                  description: '$48k · Closing · ready to sign'
+                }
+              ])
+            }
+          }
+        ]
+      },
+      {
+        id: 'page-3',
+        name: 'Account',
+        icon: 'User',
+        requireLogin: true,
+        elements: [
+          {
+            componentId: 'heading',
+            properties: {
+              Heading: 'Your workspace',
+              Subheading: 'Cadence Team · 24 seats'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: 'Plan & billing',
+              Description: 'Team plan, renews May 1',
+              Icon: 'CreditCard',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: 'Integrations',
+              Description: 'Salesforce · HubSpot connected',
+              Icon: 'RefreshCw',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: 'Team',
+              Description: 'Invite reps and managers',
+              Icon: 'Users',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: 'Security',
+              Description: 'SSO, SAML, and audit log',
+              Icon: 'ShieldCheck',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 16
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Variant: 'Outlined',
+              Corner: 'Rounded'
+            },
+            properties: {
+              Label: 'Sign out',
+              'Full Width': true
+            }
+          }
+        ]
+      }
+    ],
+    headerActions: [],
+    appHeader: {
+      layout: 'Center',
+      contentAlign: 'Center',
+      size: 'Large',
+      minHeight: 320,
+      icon: 'Leaf',
+      imageStyle: 'None',
+      textColor: '#FFFFFF',
+      textColorMode: 'auto',
+      bgSource: 'image',
+      backgroundMode: 'solid',
+      backgroundImageUrl: 'https://images.unsplash.com/photo-1665686308827-eb62e4f6604d?w=1200&h=640&fit=crop',
+      title: 'Stop guessing your pipeline.',
+      subtitle: 'Cadence turns your CRM into forecasts you can trust — and shows reps exactly which deals to work today.',
+      show: true
+    }
   },
 ]
 
