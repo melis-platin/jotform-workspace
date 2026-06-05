@@ -7916,19 +7916,6 @@ export const APP_PRESETS: AppPreset[] = [
             }
           },
           {
-            componentId: 'card',
-            variants: {
-              'Image Style': 'Square',
-              Layout: 'Vertical',
-              Action: 'None'
-            },
-            properties: {
-              Title: 'Riverside Athletic · +52% members',
-              Description: 'Riverside ditched three apps and a clipboard. One season on Rally, registrations doubled and dues chased themselves.',
-              'Image URL': 'https://images.unsplash.com/photo-1594381898411-846e7d193883?w=700&h=380&fit=crop'
-            }
-          },
-          {
             componentId: 'testimonial',
             properties: {
               'Show Avatars': true
@@ -7994,16 +7981,6 @@ export const APP_PRESETS: AppPreset[] = [
             properties: {
               Heading: 'Rally',
               Subheading: ''
-            }
-          },
-          {
-            componentId: 'paragraph',
-            variants: {
-              Size: 'Small',
-              Alignment: 'Center'
-            },
-            properties: {
-              Text: 'Features · Pricing · Security · Help Center · Privacy · Terms'
             }
           },
           {
