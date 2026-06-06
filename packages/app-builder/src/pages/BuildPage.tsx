@@ -21,10 +21,12 @@ import {
   compressImageFiles,
   ensureProductIds,
   ensureFaqIds,
+  ensureTestimonialIds,
   generateVariants,
   makeDimensionId,
   type ProductItem,
   type FaqItem,
+  type TestimonialItem,
   type ProductModifier,
   type ProductOptionChoice,
   type ProductSubscription,
@@ -1361,16 +1363,19 @@ export function BuildPage({
   const [visibilityFilter, setVisibilityFilter] = useState('all')
   const productSearchFieldRef = useRef<HTMLDivElement>(null)
   const [editingFaqIndex, setEditingFaqIndex] = useState<number | null>(null)
-  useEffect(() => { setEditingProductIndex(null); setEditingOptionIndex(null); setProductSettingsTab('basic'); setProductSearch(''); setFilterOpen(false); setOptionModalOpen(false); setEditingModifierIndex(null); setModifierModalOpen(false); setSubscriptionModalOpen(false); setEditingFaqIndex(null) }, [selectedElementId, propertyTab])
+  const [editingTestimonialIndex, setEditingTestimonialIndex] = useState<number | null>(null)
+  useEffect(() => { setEditingProductIndex(null); setEditingOptionIndex(null); setProductSettingsTab('basic'); setProductSearch(''); setFilterOpen(false); setOptionModalOpen(false); setEditingModifierIndex(null); setModifierModalOpen(false); setSubscriptionModalOpen(false); setEditingFaqIndex(null); setEditingTestimonialIndex(null) }, [selectedElementId, propertyTab])
 
-  const migratedSocialFollowIds = useRef<Set<string>>(new Set())
+  // Seed missing default properties on selection for elements whose schema gained
+  // new props after they were already on the canvas (e.g. Testimonial's Items list).
+  const migratedDefaultIds = useRef<Set<string>>(new Set())
   useEffect(() => {
     if (!selectedElementId) return
-    if (migratedSocialFollowIds.current.has(selectedElementId)) return
+    if (migratedDefaultIds.current.has(selectedElementId)) return
     const all = [...pagesRef.current.flatMap((p) => p.elements), ...headerActionsRef.current]
     const el = all.find((e) => e.id === selectedElementId)
-    if (!el || el.componentId !== 'social-follow') return
-    const comp = ComponentRegistry.get('social-follow')
+    if (!el || (el.componentId !== 'social-follow' && el.componentId !== 'testimonial')) return
+    const comp = ComponentRegistry.get(el.componentId)
     if (!comp) return
     const updates: Record<string, string | boolean | number> = {}
     for (const prop of comp.properties) {
@@ -1379,7 +1384,7 @@ export function BuildPage({
         updates[prop.name] = prop.default as string | boolean | number
       }
     }
-    migratedSocialFollowIds.current.add(selectedElementId)
+    migratedDefaultIds.current.add(selectedElementId)
     if (Object.keys(updates).length === 0) return
     setPages((prev) =>
       prev.map((page) => ({
@@ -1487,7 +1492,7 @@ export function BuildPage({
   const [skipSliderTransition, setSkipSliderTransition] = useState(false)
   const prevAsideVisibleRef = useRef(true)
   useLayoutEffect(() => {
-    const isAsideVisible = isLivePreviewVisible || rightPanel === 'designer'
+    const isAsideVisible = isLivePreviewVisible || rightPanel !== 'preview'
     if (prevAsideVisibleRef.current !== isAsideVisible) {
       setSkipSliderTransition(true)
       prevAsideVisibleRef.current = isAsideVisible
@@ -2933,11 +2938,11 @@ export function BuildPage({
       }}>
           {/* Floating Buttons */}
           <div className="build-page__floating-buttons">
-            <button className={`build-page__add-element-btn${leftPanelOpen ? ' build-page__add-element-btn--hidden' : ''}`} onClick={(e) => { e.stopPropagation(); if (isMobileView) { setMobileElementsSheet(true); } else { setLeftPanelOpen(true); } }}>
+            <button className={`build-page__add-element-btn${leftPanelOpen || (selectedElementId === APP_HEADER_ID && rightPanel === 'properties') ? ' build-page__add-element-btn--hidden' : ''}`} onClick={(e) => { e.stopPropagation(); if (isMobileView) { setMobileElementsSheet(true); } else { setLeftPanelOpen(true); } }}>
               <Icon name="plus" category="general" size={24} />
               <span className="build-page__add-element-btn-tooltip">Add Element</span>
             </button>
-            <button ref={designBtnRef} className={`build-page__design-btn${rightPanel === 'designer' ? ' build-page__design-btn--hidden' : ''}${!designBtnOnHeader ? ' build-page__design-btn--brand' : ''}`} onClick={(e) => {
+            <button ref={designBtnRef} className={`build-page__design-btn${rightPanel === 'designer' || (selectedElementId === APP_HEADER_ID && rightPanel === 'properties') ? ' build-page__design-btn--hidden' : ''}${!designBtnOnHeader ? ' build-page__design-btn--brand' : ''}`} onClick={(e) => {
               e.stopPropagation()
               setSelectedElementId(null)
               setRightPanel('designer')
@@ -3161,7 +3166,7 @@ export function BuildPage({
       )}
 
       {/* Right Panel - Designer/Properties or Live Preview */}
-      <aside className={`build-page__right ${isLivePreviewVisible || rightPanel === 'designer' ? '' : 'build-page__right--hidden'}`}>
+      <aside className={`build-page__right ${isLivePreviewVisible || rightPanel !== 'preview' ? '' : 'build-page__right--hidden'}`}>
 
         {/* Sliding content wrapper */}
         <div className={`build-page__right-slider${sliderMode === 'designer' ? ' build-page__right-slider--designer' : ''}${skipSliderTransition ? ' build-page__right-slider--no-transition' : ''}`}>
@@ -3240,11 +3245,22 @@ export function BuildPage({
                       </button>
                       <span className="property-panel__title">FAQ Item</span>
                     </div>
+                  ) : selectedComponent.id === 'testimonial' && propertyTab === 'general' && editingTestimonialIndex !== null ? (
+                    <div className="property-panel__header-nav">
+                      <button
+                        className="property-panel__back"
+                        onClick={() => setEditingTestimonialIndex(null)}
+                        aria-label="Back"
+                      >
+                        <AppIcon name="ArrowLeft" size={18} />
+                      </button>
+                      <span className="property-panel__title">Testimonial</span>
+                    </div>
                   ) : (
                     <span className="property-panel__title">{selectedComponent.name}</span>
                   )}
                   <div className="property-panel__header-actions">
-                    {!(selectedComponent.id === 'product-list' && propertyTab === 'products' && editingProductIndex !== null) && !(selectedComponent.id === 'faq' && propertyTab === 'general' && editingFaqIndex !== null) && selectedElement.id !== APP_HEADER_ID && (
+                    {!(selectedComponent.id === 'product-list' && propertyTab === 'products' && editingProductIndex !== null) && !(selectedComponent.id === 'faq' && propertyTab === 'general' && editingFaqIndex !== null) && !(selectedComponent.id === 'testimonial' && propertyTab === 'general' && editingTestimonialIndex !== null) && selectedElement.id !== APP_HEADER_ID && (
                       <button
                         className="property-panel__close"
                         onClick={() => handleRemoveElement(selectedElement.id)}
@@ -3267,7 +3283,7 @@ export function BuildPage({
                   </div>
                 </div>
 
-                {!(selectedComponent.id === 'product-list' && propertyTab === 'products' && editingProductIndex !== null) && !(selectedComponent.id === 'faq' && propertyTab === 'general' && editingFaqIndex !== null) && (
+                {!(selectedComponent.id === 'product-list' && propertyTab === 'products' && editingProductIndex !== null) && !(selectedComponent.id === 'faq' && propertyTab === 'general' && editingFaqIndex !== null) && !(selectedComponent.id === 'testimonial' && propertyTab === 'general' && editingTestimonialIndex !== null) && (
                 <div className="property-panel__tabs">
                   <DSTabs
                     accent="apps"
@@ -3314,6 +3330,12 @@ export function BuildPage({
                                     { value: 'condition', label: 'Condition' },
                                   ]
                                 : selectedComponent.id === 'faq'
+                                ? [
+                                    { value: 'general', label: 'General' },
+                                    { value: 'style', label: 'Style' },
+                                    { value: 'condition', label: 'Condition' },
+                                  ]
+                                : selectedComponent.id === 'testimonial'
                                 ? [
                                     { value: 'general', label: 'General' },
                                     { value: 'style', label: 'Style' },
@@ -3458,6 +3480,7 @@ export function BuildPage({
                   const isImageGallery = selectedComponent.id === 'image-gallery'
                   const isProductList = selectedComponent.id === 'product-list'
                   const isFaq = selectedComponent.id === 'faq'
+                  const isTestimonial = selectedComponent.id === 'testimonial'
                   const isSocialFollow = selectedComponent.id === 'social-follow'
                   const socialPlatforms = [
                     { key: 'Facebook', icon: <Icon name="facebook-square-filled" category="brands" size={20} />, placeholder: 'Enter your Facebook username' },
@@ -3613,6 +3636,206 @@ export function BuildPage({
                             </div>
                           )
                         })()}
+                      </div>
+                    )
+                  }
+
+                  // Testimonial items tab — list view + drill-down edit form (image / title / description).
+                  if (isTestimonial && propertyTab === 'general') {
+                    const readItems = (): TestimonialItem[] => {
+                      try {
+                        const parsed = JSON.parse(String(selectedElement.properties['Items'] ?? '[]'))
+                        return Array.isArray(parsed) ? parsed : []
+                      } catch {
+                        return []
+                      }
+                    }
+                    const writeItems = (next: TestimonialItem[]) => handlePropertyChange(selectedElement.id, 'Items', JSON.stringify(ensureTestimonialIds(next)))
+                    const list = readItems()
+
+                    const idx = editingTestimonialIndex
+                    const editing = idx !== null
+                    const isNew = idx !== null && idx === list.length
+                    const current: TestimonialItem =
+                      idx !== null && idx < list.length
+                        ? (list[idx] ?? { name: '', text: '' })
+                        : { name: '', text: '' }
+                    const updateItem = (updates: Partial<TestimonialItem>) => {
+                      if (idx === null) return
+                      const next = [...list]
+                      if (isNew) next.push({ ...current, ...updates })
+                      else next[idx] = { ...current, ...updates }
+                      writeItems(next)
+                    }
+                    const updateField = <K extends keyof TestimonialItem>(field: K, value: TestimonialItem[K]) =>
+                      updateItem({ [field]: value } as Partial<TestimonialItem>)
+                    const editInputId = `testimonial-image-${selectedElement.id}`
+                    const slidePos = editing ? 1 : 0
+
+                    return (
+                      <div className="property-panel__body product-panel-host">
+                        <div className="product-panel-slider" data-slide={slidePos}>
+
+                          {/* Slide 1 — Testimonials list */}
+                          <div className="product-panel-slide product-list-panel">
+                            <div className="product-list-rows faq-rows">
+                              {list.map((t, i) => (
+                                <button
+                                  key={i}
+                                  type="button"
+                                  className="testimonial-row"
+                                  onClick={() => setEditingTestimonialIndex(i)}
+                                >
+                                  <span className="testimonial-row__handle">
+                                    <Icon name="grid-dots-vertical" category="general" size={16} />
+                                  </span>
+                                  <div className="testimonial-row__card">
+                                    <div className="testimonial-row__image">
+                                      {t.avatar ? (
+                                        <img src={t.avatar} alt="" />
+                                      ) : (
+                                        <Icon name="user-filled" category="users" size={18} />
+                                      )}
+                                    </div>
+                                    <div className="testimonial-row__info">
+                                      <div className="testimonial-row__name">{t.name || 'Untitled'}</div>
+                                      <div className="testimonial-row__subtitle">{t.text ? t.text : 'No description yet'}</div>
+                                    </div>
+                                    <span className="testimonial-row__actions">
+                                      <button
+                                        type="button"
+                                        className="testimonial-row__btn"
+                                        aria-label="Delete testimonial"
+                                        onClick={(e) => {
+                                          e.stopPropagation()
+                                          writeItems(list.filter((_, j) => j !== i))
+                                        }}
+                                      >
+                                        <Icon name="trash-filled" category="general" size={16} />
+                                      </button>
+                                      <button
+                                        type="button"
+                                        className="testimonial-row__btn"
+                                        aria-label="Edit testimonial"
+                                        onClick={(e) => {
+                                          e.stopPropagation()
+                                          setEditingTestimonialIndex(i)
+                                        }}
+                                      >
+                                        <Icon name="pencil-filled" category="editor" size={16} />
+                                      </button>
+                                    </span>
+                                  </div>
+                                </button>
+                              ))}
+                            </div>
+                            <div className="product-list-panel__footer">
+                              <DSButton
+                                variant="filled"
+                                colorScheme="primary"
+                                leftIcon={<Icon name="plus" category="general" size={20} />}
+                                onClick={() => setEditingTestimonialIndex(list.length)}
+                                className="product-list-panel__add-btn"
+                              >
+                                Add Testimonial
+                              </DSButton>
+                            </div>
+                          </div>
+
+                          {/* Slide 2 — Testimonial settings */}
+                          <div className="product-panel-slide">
+                            {editing && (
+                              <div className="product-settings">
+                                <div className="product-settings__body">
+                                  <div className="property-panel__field">
+                                    <DSFormField title="Image" size="md" showDescription={false} showHelpText={false}>
+                                      <input
+                                        id={editInputId}
+                                        type="file"
+                                        accept="image/*"
+                                        hidden
+                                        onChange={(e) => {
+                                          const file = e.target.files?.[0]
+                                          if (!file) return
+                                          compressImageFile(file).then((url) => updateItem({ avatar: url, avatarName: file.name }))
+                                          e.target.value = ''
+                                        }}
+                                      />
+                                      {current.avatar ? (
+                                        <div className="image-preview">
+                                          <div
+                                            className="image-preview__thumb"
+                                            style={{ backgroundImage: `url(${current.avatar})` }}
+                                          />
+                                          <span className="image-preview__name" title={current.avatarName ?? ''}>
+                                            {current.avatarName ?? 'image'}
+                                          </span>
+                                          <button
+                                            type="button"
+                                            className="image-preview__remove"
+                                            aria-label="Remove image"
+                                            onClick={() => updateItem({ avatar: undefined, avatarName: undefined })}
+                                          >
+                                            <Icon name="trash-filled" category="general" size={16} />
+                                          </button>
+                                        </div>
+                                      ) : (
+                                        <div className="upload-area">
+                                          <DSButton
+                                            variant="filled"
+                                            colorScheme="secondary"
+                                            shape="rectangle"
+                                            size="md"
+                                            leftIcon={<Icon name="image-plus-filled" category="media" size={16} />}
+                                            onClick={() => document.getElementById(editInputId)?.click()}
+                                          >
+                                            Choose File
+                                          </DSButton>
+                                          <span className="upload-area__hint">OR DRAG AND DROP HERE</span>
+                                        </div>
+                                      )}
+                                    </DSFormField>
+                                  </div>
+                                  <div className="property-panel__field">
+                                    <DSFormField title="Title" required size="md" showDescription={false} showHelpText={false}>
+                                      <DSInput
+                                        value={current.name}
+                                        placeholder="Name"
+                                        onChange={(e) => updateField('name', e.target.value)}
+                                      />
+                                    </DSFormField>
+                                  </div>
+                                  <div className="property-panel__field">
+                                    <DSFormField title="Description" size="md" showDescription={false} showHelpText={false}>
+                                      <DSTextArea
+                                        size="md"
+                                        rows={5}
+                                        placeholder="What did they say?"
+                                        value={current.text ?? ''}
+                                        onChange={(e) => updateField('text', e.target.value)}
+                                      />
+                                    </DSFormField>
+                                  </div>
+                                  <div className="property-panel__field property-panel__field--inline">
+                                    <DSFormField
+                                      title="Show in carousel"
+                                      description="Display this testimonial in the carousel."
+                                      size="md"
+                                      showDescription
+                                      showHelpText={false}
+                                    >
+                                      <DSToggle
+                                        size="md"
+                                        checked={current.visible !== false}
+                                        onChange={(e) => updateField('visible', e.target.checked)}
+                                      />
+                                    </DSFormField>
+                                  </div>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     )
                   }
@@ -5052,6 +5275,12 @@ export function BuildPage({
                       if (isFaq) {
                         // The General tab is a bespoke list panel (returns early); the Style
                         // tab shows variants. No generic property fields for FAQ.
+                        return false
+                      }
+                      if (isTestimonial) {
+                        // General is a bespoke list panel (returns early); Style shows the
+                        // Show Avatars display toggle. Items is managed by the list panel.
+                        if (propertyTab === 'style') return prop.name === 'Show Avatars'
                         return false
                       }
                       if (isButton) {

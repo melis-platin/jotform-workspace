@@ -1,7 +1,13 @@
 import { ComponentRegistry } from '../../types/registry';
-import { Testimonial } from './Testimonial';
+import { Testimonial, type TestimonialItem } from './Testimonial';
 import type { VariantValues, PropertyValues, StateValues } from '../../types/component';
 import testimonialScss from './Testimonial.scss?raw';
+
+const DEFAULT_ITEMS: TestimonialItem[] = [
+  { name: 'Sarah Johnson', text: '“This platform transformed how we collect donations. The interface is intuitive and our donors love it.”', avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=face' },
+  { name: 'Michael Chen', text: '“Setup was incredibly easy. We were up and running in minutes, not days.”', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face' },
+  { name: 'Emily Davis', text: '“The best investment we made for our nonprofit. Highly recommended!”', avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop&crop=face' },
+];
 
 ComponentRegistry.register({
   id: 'testimonial',
@@ -12,9 +18,10 @@ ComponentRegistry.register({
   variants: {},
 
   properties: [
-    { name: 'Show Avatars', type: 'boolean', default: false },
+    { name: 'Show Avatars', type: 'boolean', default: true },
     { name: 'Selected', type: 'boolean', default: false },
     { name: 'Skeleton', type: 'boolean', default: false },
+    { name: 'Items', type: 'text', default: JSON.stringify(DEFAULT_ITEMS) },
   ],
 
   states: [],
@@ -32,15 +39,13 @@ ComponentRegistry.register({
 
   usage: `import { Testimonial } from '@/components/Testimonial';
 
-// Default testimonial carousel
-<Testimonial />
-
-// Custom testimonials
+// Testimonial carousel with avatars
 <Testimonial
+  showAvatars
   items={[
-    { name: "Jane Doe", text: "\u201CAbsolutely amazing product!\u201D" },
-    { name: "John Smith", text: "\u201CChanged how we work.\u201D" },
-    { name: "Sarah Lee", text: "\u201CHighly recommended.\u201D" },
+    { name: "Jane Doe", text: "“Absolutely amazing product!”", avatar: "/avatars/jane.jpg" },
+    { name: "John Smith", text: "“Changed how we work.”" },
+    { name: "Sarah Lee", text: "“Highly recommended.”" },
   ]}
 />`,
 
@@ -50,7 +55,13 @@ ComponentRegistry.register({
       type: 'TestimonialItem[]',
       default: '[3 default items]',
       description:
-        'Array of testimonials. Each has `name` (H6/Bold, 20px) and `text` (Paragraph/XSmall, 12px). Navigated with chevron buttons.',
+        'Array of testimonials shown as a carousel. Each item has an `avatar` (image), a `name` (title) and `text` (description). Managed from the properties panel — add, edit, delete, or hide individual items.',
+    },
+    {
+      name: 'showAvatars',
+      type: 'boolean',
+      default: 'true',
+      description: 'Toggles the avatar/image area. When off, each card shows only the name and quote.',
     },
     {
       name: 'selected',
@@ -61,17 +72,17 @@ ComponentRegistry.register({
   ],
 
   render(_variants: VariantValues, props: PropertyValues, _states: StateValues): React.ReactNode {
-    const showAvatars = props['Show Avatars'] as boolean;
-    const items = showAvatars
-      ? [
-          { name: 'Sarah Johnson', text: '\u201CThis platform transformed how we collect donations. The interface is intuitive and our donors love it.\u201D', avatar: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=200&h=200&fit=crop&crop=face' },
-          { name: 'Michael Chen', text: '\u201CSetup was incredibly easy. We were up and running in minutes, not days.\u201D', avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=200&h=200&fit=crop&crop=face' },
-          { name: 'Emily Davis', text: '\u201CThe best investment we made for our nonprofit. Highly recommended!\u201D', avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=200&h=200&fit=crop&crop=face' },
-        ]
-      : undefined;
+    let items: TestimonialItem[] | undefined;
+    try {
+      const parsed = JSON.parse(props['Items'] as string);
+      items = Array.isArray(parsed) ? parsed : undefined;
+    } catch {
+      items = undefined;
+    }
     return (
       <Testimonial
         items={items}
+        showAvatars={props['Show Avatars'] as boolean}
         selected={props['Selected'] as boolean}
         skeleton={props['Skeleton'] as boolean}
       />
