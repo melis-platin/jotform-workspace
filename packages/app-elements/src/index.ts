@@ -22,6 +22,7 @@ import './components/Button/register';
 import './components/DonationBox/register';
 import './components/ProductList/register';
 import './components/FAQ/register';
+import './components/Banner/register';
 import './components/Heading/register';
 import './components/List/register';
 import './components/Document/register';
@@ -63,6 +64,8 @@ export { ProductList, generateVariants, ensureProductIds, makeDimensionId, varia
 export type { ProductListProps, ProductListLayout, ProductItem, ProductOptionDimension, ProductOptionChoice, ProductVariant, ProductModifier, ProductModifierFieldType, ProductModifierChoice, ProductSubscription, ProductSubscriptionRepeatUnit } from './components/ProductList';
 export { FAQ, ensureFaqIds, makeFaqId } from './components/FAQ';
 export type { FaqProps, FaqItem, FaqStyle, FaqIcon, FaqIconPosition } from './components/FAQ';
+export { Banner } from './components/Banner';
+export type { BannerProps, BannerAlignment, BannerBgSource, BannerBgMode, BannerTextMode } from './components/Banner';
 export { ImageGallery } from './components/ImageGallery';
 export { Document } from './components/Document';
 export { SignDocument } from './components/SignDocument';

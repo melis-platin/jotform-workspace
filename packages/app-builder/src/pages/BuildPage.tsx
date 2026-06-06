@@ -124,6 +124,7 @@ const ELEMENT_ICON_MAP: Record<string, { icon: string; iconCategory: string }> =
   'product-list': { icon: 'cart-shopping-filled', iconCategory: 'finance' },
   'donation-box': { icon: 'heart-filled', iconCategory: 'general' },
   'faq': { icon: 'question-circle-filled', iconCategory: 'general' },
+  'banner': { icon: 'megaphone-filled', iconCategory: 'alerts-feedback' },
   'image': { icon: 'image-line-filled', iconCategory: 'general' },
   'image-gallery': { icon: 'images-filled', iconCategory: 'media' },
   'table': { icon: 'table', iconCategory: 'general' },
@@ -141,7 +142,7 @@ interface PanelGroup {
 }
 
 const BASIC_GROUPS: PanelGroup[] = [
-  { elementIds: ['form', 'heading', 'list', 'paragraph', 'card', 'sign-document', 'document', 'image', 'image-gallery', 'button', 'spacer'] },
+  { elementIds: ['form', 'heading', 'banner', 'list', 'paragraph', 'card', 'sign-document', 'document', 'image', 'image-gallery', 'button', 'spacer'] },
   { label: 'PAYMENT ELEMENTS', elementIds: ['product-list', 'donation-box'] },
   { label: 'FEATURED WIDGETS', elementIds: ['social-follow', 'testimonial', 'faq'] },
   { label: 'DATA ELEMENTS', elementIds: ['table'] },
@@ -269,7 +270,7 @@ function nextElementId(pages: AppPage[], headerActions: CanvasElement[] = []): s
 
 const APP_HEADER_ID = 'app-header'
 type AppHeaderImageStyle = 'Image' | 'Icon' | 'None'
-type AppHeaderSize = 'Large' | 'Medium' | 'Small'
+type AppHeaderSize = 'XLarge' | 'Large' | 'Medium' | 'Small'
 type AppHeaderContentAlign = 'Center' | 'Bottom'
 interface AppHeaderState {
   layout: string
@@ -427,6 +428,10 @@ const INLINE_EDITABLE_MAP: Record<string, { selector: string; property: string }
   'donation-box': [
     { selector: '.jf-donation__title', property: 'Title' },
     { selector: '.jf-donation__description', property: 'Description' },
+  ],
+  'banner': [
+    { selector: '.jf-banner__title', property: 'Title' },
+    { selector: '.jf-banner__description', property: 'Description' },
   ],
 }
 
@@ -3371,6 +3376,12 @@ export function BuildPage({
                                     { value: 'style', label: 'Style' },
                                     { value: 'condition', label: 'Condition' },
                                   ]
+                                : selectedComponent.id === 'banner'
+                                ? [
+                                    { value: 'general', label: 'Content' },
+                                    { value: 'style', label: 'Style' },
+                                    { value: 'condition', label: 'Condition' },
+                                  ]
                                 : selectedComponent.id === 'social-follow'
                                   ? [
                                       { value: 'general', label: 'General' },
@@ -3444,6 +3455,7 @@ export function BuildPage({
                               value={appHeaderState.size ?? 'Large'}
                               onChange={(value) => setAppHeaderState((s) => ({ ...s, size: value as AppHeaderSize }))}
                               items={[
+                                { value: 'XLarge', label: 'XLarge' },
                                 { value: 'Large', label: 'Large' },
                                 { value: 'Medium', label: 'Medium' },
                                 { value: 'Small', label: 'Small' },
@@ -3511,6 +3523,7 @@ export function BuildPage({
                   const isProductList = selectedComponent.id === 'product-list'
                   const isFaq = selectedComponent.id === 'faq'
                   const isTestimonial = selectedComponent.id === 'testimonial'
+                  const isBanner = selectedComponent.id === 'banner'
                   const isSocialFollow = selectedComponent.id === 'social-follow'
                   const socialPlatforms = [
                     { key: 'Facebook', icon: <Icon name="facebook-square-filled" category="brands" size={20} />, placeholder: 'Enter your Facebook username' },
@@ -3666,6 +3679,231 @@ export function BuildPage({
                             </div>
                           )
                         })()}
+                      </div>
+                    )
+                  }
+
+                  // Banner Content tab — toggleable text slots + button action.
+                  if (isBanner && propertyTab === 'general') {
+                    const p = selectedElement.properties
+                    const set = (name: string, value: string | boolean | number) => handlePropertyChange(selectedElement.id, name, value)
+                    const bool = (name: string) => Boolean(p[name])
+                    const str = (name: string) => String(p[name] ?? '')
+                    const action = str('Button Action') || 'Do Nothing'
+                    const bannerActionOptions = [
+                      { value: 'Do Nothing', label: 'Do Nothing', icon: 'minus-sm', iconCategory: 'general' },
+                      { value: 'Navigate to Page', label: 'Navigate to Page', icon: 'form-title-filled', iconCategory: 'general' },
+                      { value: 'Open Form', label: 'Open Form', icon: 'form-filled', iconCategory: 'forms-files' },
+                      { value: 'Open URL', label: 'Open URL', icon: 'link-horizontal', iconCategory: 'general' },
+                      { value: 'Send Email', label: 'Send Email', icon: 'envelope-closed-filled', iconCategory: 'communication' },
+                      { value: 'Make Call', label: 'Make Call', icon: 'phone-filled', iconCategory: 'communication' },
+                    ]
+                    return (
+                      <div className="property-panel__body">
+                        <div className="property-panel__field">
+                          <DSFormField title="Title" size="md" showDescription={false} showHelpText={false}>
+                            <DSInput value={str('Title')} placeholder="Title" onChange={(e) => set('Title', e.target.value)} />
+                          </DSFormField>
+                        </div>
+                        <div className="property-panel__field">
+                          <DSFormField title="Description" size="md" showDescription={false} showHelpText={false}>
+                            <DSTextArea size="md" rows={3} value={str('Description')} placeholder="Description" onChange={(e) => set('Description', e.target.value)} />
+                          </DSFormField>
+                        </div>
+                        <div className="property-panel__field property-panel__field--inline">
+                          <DSFormField title="Show Button" size="md" showDescription={false} showHelpText={false}>
+                            <DSToggle size="md" checked={bool('Show Button')} onChange={(e) => set('Show Button', e.target.checked)} />
+                          </DSFormField>
+                        </div>
+                        {bool('Show Button') && (
+                          <>
+                            <div className="property-panel__field">
+                              <DSFormField title="Button Label" size="md" showDescription={false} showHelpText={false}>
+                                <DSInput value={str('Button Label')} placeholder="Button Label" onChange={(e) => set('Button Label', e.target.value)} />
+                              </DSFormField>
+                            </div>
+                            <div className="property-panel__field">
+                              <DSFormField title="Button Action" size="md" showDescription={false} showHelpText={false}>
+                                <DSDropdownSingle
+                                  value={action}
+                                  onChange={(val) => set('Button Action', val)}
+                                  options={bannerActionOptions.map((o) => ({
+                                    value: o.value,
+                                    label: o.label,
+                                    leading: <Icon name={o.icon} category={o.iconCategory} size={20} />,
+                                  }))}
+                                />
+                              </DSFormField>
+                            </div>
+                            {action === 'Navigate to Page' && (
+                              <div className="property-panel__field">
+                                <DSFormField title="Page" size="md" showDescription={false} showHelpText={false}>
+                                  <DSDropdownSingle
+                                    value={str('Action Page')}
+                                    onChange={(val) => set('Action Page', val)}
+                                    options={pages.map((pg) => ({ value: pg.id, label: pg.name }))}
+                                  />
+                                </DSFormField>
+                              </div>
+                            )}
+                            {action === 'Open URL' && (
+                              <div className="property-panel__field">
+                                <DSFormField title="URL" size="md" showDescription={false} showHelpText={false}>
+                                  <DSInput value={str('Action URL')} placeholder="https://example.com" onChange={(e) => set('Action URL', e.target.value)} />
+                                </DSFormField>
+                              </div>
+                            )}
+                            {action === 'Open Form' && (
+                              <div className="property-panel__field">
+                                <DSFormField title="Form" size="md" showDescription={false} showHelpText={false}>
+                                  <DSInput value={str('Action Form')} placeholder="Form name or ID" onChange={(e) => set('Action Form', e.target.value)} />
+                                </DSFormField>
+                              </div>
+                            )}
+                            {action === 'Send Email' && (
+                              <div className="property-panel__field">
+                                <DSFormField title="Email" size="md" showDescription={false} showHelpText={false}>
+                                  <DSInput value={str('Action Email')} placeholder="hello@example.com" onChange={(e) => set('Action Email', e.target.value)} />
+                                </DSFormField>
+                              </div>
+                            )}
+                            {action === 'Make Call' && (
+                              <div className="property-panel__field">
+                                <DSFormField title="Phone" size="md" showDescription={false} showHelpText={false}>
+                                  <DSInput value={str('Action Phone')} placeholder="+1 555 000 0000" onChange={(e) => set('Action Phone', e.target.value)} />
+                                </DSFormField>
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    )
+                  }
+
+                  // Banner Style tab — alignment, background (color/gradient/image), text color, height.
+                  if (isBanner && propertyTab === 'style') {
+                    const p = selectedElement.properties
+                    const set = (name: string, value: string | boolean | number) => handlePropertyChange(selectedElement.id, name, value)
+                    const str = (name: string) => String(p[name] ?? '')
+                    const bgSource = str('Background Source') || 'theme'
+                    const bannerBgInputId = `banner-bg-${selectedElement.id}`
+                    const alignment = String(selectedElement.variants['Alignment'] ?? 'Center')
+                    return (
+                      <div className="property-panel__body">
+                        <div className="property-panel__field">
+                          <DSFormField title="Alignment" size="md" showDescription={false} showHelpText={false}>
+                            <Segmented
+                              accent="apps"
+                              variant="text"
+                              value={alignment}
+                              onChange={(val) => handleVariantChange(selectedElement.id, 'Alignment', val)}
+                              items={[{ value: 'Left', label: 'Left' }, { value: 'Center', label: 'Center' }]}
+                            />
+                          </DSFormField>
+                        </div>
+                        <div className="property-panel__field">
+                          <DSFormField title="Background" size="md" showDescription={false} showHelpText={false}>
+                            <Segmented
+                              accent="apps"
+                              variant="text"
+                              value={bgSource}
+                              onChange={(val) => set('Background Source', val)}
+                              items={[{ value: 'theme', label: 'Theme' }, { value: 'color', label: 'Color' }, { value: 'image', label: 'Image' }]}
+                            />
+                          </DSFormField>
+                        </div>
+                        {bgSource === 'color' && (
+                          <div className="property-panel__field">
+                            <DSFormField title="Background Color" size="md" showDescription={false} showHelpText={false}>
+                              <HeaderBackgroundField
+                                mode={(str('Background Mode') as 'solid' | 'gradient') || 'solid'}
+                                color={str('Background Color')}
+                                gradientStart={str('Gradient Start')}
+                                gradientEnd={str('Gradient End')}
+                                onModeChange={(m) => set('Background Mode', m)}
+                                onColorChange={(c) => set('Background Color', c)}
+                                onGradientChange={(s, e) => { set('Gradient Start', s); set('Gradient End', e) }}
+                              />
+                            </DSFormField>
+                          </div>
+                        )}
+                        {bgSource === 'image' && (
+                          <div className="property-panel__field">
+                            <DSFormField title="Background Image" size="md" showDescription={false} showHelpText={false}>
+                              <input
+                                id={bannerBgInputId}
+                                type="file"
+                                accept="image/*"
+                                hidden
+                                onChange={(e) => {
+                                  const file = e.target.files?.[0]
+                                  if (!file) return
+                                  compressImageFile(file).then((url) => {
+                                    set('Background Image', url)
+                                    set('Background Image Name', file.name)
+                                  })
+                                  e.target.value = ''
+                                }}
+                              />
+                              {str('Background Image') ? (
+                                <div className="image-preview">
+                                  <div className="image-preview__thumb" style={{ backgroundImage: `url(${str('Background Image')})` }} />
+                                  <span className="image-preview__name" title={str('Background Image Name')}>
+                                    {str('Background Image Name') || 'image'}
+                                  </span>
+                                  <button
+                                    type="button"
+                                    className="image-preview__remove"
+                                    aria-label="Remove image"
+                                    onClick={() => { set('Background Image', ''); set('Background Image Name', '') }}
+                                  >
+                                    <Icon name="trash-filled" category="general" size={16} />
+                                  </button>
+                                </div>
+                              ) : (
+                                <div className="upload-area">
+                                  <DSButton
+                                    variant="filled"
+                                    colorScheme="secondary"
+                                    shape="rectangle"
+                                    size="md"
+                                    leftIcon={<Icon name="image-plus-filled" category="media" size={16} />}
+                                    onClick={() => document.getElementById(bannerBgInputId)?.click()}
+                                  >
+                                    Choose File
+                                  </DSButton>
+                                  <span className="upload-area__hint">OR DRAG AND DROP HERE</span>
+                                </div>
+                              )}
+                            </DSFormField>
+                          </div>
+                        )}
+                        <div className="property-panel__field">
+                          <DSFormField title="Text Color" size="md" showDescription={false} showHelpText={false}>
+                            <Segmented
+                              accent="apps"
+                              variant="text"
+                              value={str('Text Color') || 'auto'}
+                              onChange={(val) => set('Text Color', val)}
+                              items={[{ value: 'auto', label: 'Auto' }, { value: 'light', label: 'Light' }, { value: 'dark', label: 'Dark' }]}
+                            />
+                          </DSFormField>
+                        </div>
+                        <div className="property-panel__field">
+                          <DSFormField title="Height" size="md" showDescription={false} showHelpText={false}>
+                            <DSSlider
+                              size="md"
+                              min={120}
+                              max={720}
+                              step={4}
+                              value={Number(p['Height']) || 320}
+                              onChange={(v) => set('Height', v)}
+                              showValue
+                              formatValue={(v) => `${v}px`}
+                              aria-label="Banner height"
+                            />
+                          </DSFormField>
+                        </div>
                       </div>
                     )
                   }
@@ -5333,6 +5571,10 @@ export function BuildPage({
                         // General is a bespoke list panel (returns early); Style shows the
                         // display toggles. Items is managed by the list panel.
                         if (propertyTab === 'style') return ['Show Avatars', 'Show Rating', 'Show Role', 'Show Quote Icon', 'Show Arrows'].includes(prop.name)
+                        return false
+                      }
+                      if (isBanner) {
+                        // Banner has fully bespoke Content + Style panels.
                         return false
                       }
                       if (isButton) {

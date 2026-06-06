@@ -1,0 +1,114 @@
+// ============================================
+// JotForm Apps - Banner / CTA Component
+// ============================================
+
+.jf-banner {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-height: var(--banner-min-height, 320px);
+  font-family: var(--font-family);
+  display: flex;
+  align-items: center;
+  padding: var(--space-8);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  position: relative;
+
+  // No explicit fill → light brand surface (matches the card icon background).
+  // App Designer keeps the brand palette light even in dark mode, so pair the
+  // light tint with the brand's darkest shade for theme-robust contrast.
+  &--brand {
+    background: var(--bg-surface-brand);
+    color: var(--primary-900);
+  }
+
+  // Text contrast is computed from the banner's OWN background, so use fixed
+  // light/dark values (as AppHeader does) rather than the app-theme fg tokens —
+  // the App Designer can repaint --fg-inverse/--fg-primary to a brand-tinted
+  // colour that would not read on a photo or a custom fill.
+  &--text-light {
+    color: #FFFFFF;
+  }
+
+  &--text-dark {
+    color: #091141;
+  }
+
+  &--selected {
+    outline: 2px solid var(--border-info);
+    outline-offset: 4px;
+  }
+
+  &--shrinked {
+    min-height: 220px;
+    padding: var(--space-6);
+  }
+}
+
+// =========================================
+// Content block
+// =========================================
+.jf-banner__content {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  position: relative;
+  z-index: 1;
+}
+
+.jf-banner--align-center .jf-banner__content {
+  max-width: 640px;
+  margin: 0 auto;
+  align-items: center;
+  text-align: center;
+}
+
+.jf-banner--align-left .jf-banner__content {
+  max-width: 720px;
+  align-items: flex-start;
+  text-align: left;
+}
+
+// Subtle text shadow keeps text legible over a photo.
+.jf-banner--has-image .jf-banner__content {
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.45);
+}
+
+// =========================================
+// Title
+// =========================================
+.jf-banner__title {
+  margin: 0;
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-heading-lg);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-heading-lg);
+  letter-spacing: -0.02em;
+  color: inherit;
+  text-wrap: balance;
+  overflow-wrap: anywhere;
+}
+
+// =========================================
+// Description
+// =========================================
+.jf-banner__description {
+  margin: 0;
+  font-size: var(--font-size-paragraph-md);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-paragraph-md);
+  color: inherit;
+  opacity: 0.92;
+  text-wrap: pretty;
+  overflow-wrap: anywhere;
+}
+
+// =========================================
+// CTA — the shared Button element with its native theme styling, exactly like
+// the App Header action buttons (brand fill in every background mode).
+// =========================================
+.jf-banner__cta {
+  margin-top: var(--space-2);
+}

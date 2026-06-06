@@ -252,6 +252,13 @@
 // width (container-type on .jf-app-header), so the text is responsive like the
 // Heading element. Default (Large) is the base title/subtitle above.
 // ============================================
+.jf-app-header--size-xlarge {
+  .jf-app-header__title {
+    font-size: var(--font-size-heading-xxl);
+    line-height: var(--line-height-heading-xxl);
+  }
+}
+
 .jf-app-header--size-medium {
   .jf-app-header__title {
     font-size: var(--font-size-heading-sm);

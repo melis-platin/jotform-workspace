@@ -6,7 +6,7 @@ export type AppHeaderLayout = 'Left' | 'Center' | 'Right';
 
 export type AppHeaderImageStyle = 'Image' | 'Icon' | 'None';
 
-export type AppHeaderSize = 'Large' | 'Medium' | 'Small';
+export type AppHeaderSize = 'XLarge' | 'Large' | 'Medium' | 'Small';
 
 export type AppHeaderContentAlign = 'Center' | 'Bottom';
 
