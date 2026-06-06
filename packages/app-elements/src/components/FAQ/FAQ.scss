@@ -113,7 +113,7 @@
   min-width: 0;
   margin: 0;
   font-size: var(--font-size-paragraph-md);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-bold);
   line-height: var(--line-height-paragraph-md);
   color: var(--fg-primary);
   outline: none;
@@ -151,9 +151,9 @@
 
 .jf-faq__answer-text {
   margin: 0;
-  font-size: var(--font-size-paragraph-md);
+  font-size: var(--font-size-paragraph-sm-fluid);
   font-weight: var(--font-weight-regular);
-  line-height: var(--line-height-paragraph-md);
+  line-height: var(--line-height-paragraph-sm);
   color: var(--fg-secondary);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
