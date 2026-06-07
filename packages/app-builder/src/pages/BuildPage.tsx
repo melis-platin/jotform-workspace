@@ -51,6 +51,7 @@ import { LivePreviewProductDetailPage } from '../components/LivePreviewProductDe
 import { LivePreviewCheckoutPage } from '../components/LivePreviewCheckoutPage'
 import { LivePreviewOrderBar } from '../components/LivePreviewOrderBar'
 import { LivePreviewAvatarPopover } from '../components/LivePreviewAvatarPopover'
+import { LivePreviewProfilePage } from '../components/LivePreviewProfilePage'
 import { LivePreviewLoginPopover } from '../components/LivePreviewLoginPopover'
 import { QrPopover } from '../components/QrPopover'
 import { MobileBottomBar } from '../components/MobileBottomBar'
@@ -379,6 +380,20 @@ function resolveHeaderTextColor(s: AppHeaderState): string | undefined {
 const APP_HEADER_HEIGHT_MIN = 160
 const APP_HEADER_HEIGHT_MAX = 600
 const APP_HEADER_HEIGHT_DEFAULT = 272
+
+// Mock account shown on the avatar-popover → Profile system page (no backend).
+const PROFILE_USER = {
+  name: 'Okan Düngel',
+  username: 'okandungel',
+  email: 'okandungel@jotform.com',
+}
+// First + last initials for the profile header avatar (e.g. "Okan Düngel" → "OD").
+const PROFILE_INITIALS = (() => {
+  const words = PROFILE_USER.name.trim().split(/\s+/)
+  const first = words[0]?.charAt(0) ?? ''
+  const last = words.length > 1 ? (words[words.length - 1]?.charAt(0) ?? '') : ''
+  return (first + last).toUpperCase()
+})()
 
 // Elements droppable into the app header. Button / Social Follow are the
 // interactive actions; Image (e.g. a hero graphic/badge) and Spacer (vertical
@@ -1506,6 +1521,7 @@ export function BuildPage({
   const [isPreviewCartOpen, setIsPreviewCartOpen] = useState(false)
   const [isPreviewDetailOpen, setIsPreviewDetailOpen] = useState(false)
   const [isPreviewCheckoutOpen, setIsPreviewCheckoutOpen] = useState(false)
+  const [isPreviewProfileOpen, setIsPreviewProfileOpen] = useState(false)
   const [isAvatarPopoverOpen, setIsAvatarPopoverOpen] = useState(false)
   const [isLoginPopoverOpen, setIsLoginPopoverOpen] = useState(false)
   const [loginPopoverView, setLoginPopoverView] = useState<'login' | 'signup'>('login')
@@ -1645,10 +1661,12 @@ export function BuildPage({
   const landingActive = !!landingPage
   const showLandingNav = landingActive && !isPreviewLoggedIn
   // Hidden pages (Show Page on Navigation toggle) stay editable in the canvas but
-  // drop out of the app's nav. The landing page is also hidden once logged in.
+  // drop out of the app's nav. The landing page never self-links in the nav (the
+  // app logo/brand returns home), so it is dropped from the nav whenever it is the
+  // landing page — both on the public landing (signed out) and once signed in.
   const navPages = pages.filter((p) => {
     if (p.hidden) return false
-    if (landingActive && isPreviewLoggedIn && p.id === landingPage!.id) return false
+    if (landingActive && p.id === landingPage!.id) return false
     // Landing mode + signed out: the public landing nav only lists public pages —
     // login-required pages stay hidden from the nav until the visitor signs in.
     if (showLandingNav && p.requireLogin) return false
@@ -1675,6 +1693,8 @@ export function BuildPage({
       setPreviewAuthView('login')
       return
     }
+    setIsPreviewProfileOpen(false)
+    setIsAvatarPopoverOpen(false)
     setActivePageId(pageId)
   }, [isPreviewLoggedIn])
 
@@ -2074,6 +2094,7 @@ export function BuildPage({
     setIsPreviewLoggedIn(false)
     setIsAvatarPopoverOpen(false)
     setIsMorePageOpen(false)
+    setIsPreviewProfileOpen(false)
     const arr = pagesRef.current
     if (arr[0]?.landing) setActivePageId(arr[0].id)
   }, [])
@@ -2513,6 +2534,20 @@ export function BuildPage({
     }
   }
 
+  // Profile system page header: a brand cover banner with the app-identity icon
+  // card straddling its bottom edge and the account name beside it. This is the
+  // ONLY profile-specific override — it slots into the same app-header-slot the
+  // first page uses, so the page body (card + Heading/List/Button) is untouched.
+  const profileHeaderEl = (
+    <div className="live-preview__profile-header">
+      <div className="live-preview__profile-header-cover" />
+      <div className="live-preview__profile-header-identity">
+        <span className="live-preview__profile-header-avatar">{PROFILE_INITIALS}</span>
+        <h1 className="live-preview__profile-header-name">{PROFILE_USER.name}</h1>
+      </div>
+    </div>
+  )
+
   const phoneScreenContent = (
     <CollectionsProvider>
     <CartProvider>
@@ -2532,6 +2567,23 @@ export function BuildPage({
       )}
       <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${desktopNavVariant === 'compact' ? ' live-preview__top-header--compact' : ''}${desktopNavVariant === 'contained' ? ' live-preview__top-header--contained' : ''}`} data-nav-align={desktopNavAlignment}>
         {(() => {
+          // Profile system page: a back affordance + "Profile" title (mobile/tablet
+          // only — desktop keeps its branded nav). Desktop exits via the nav links.
+          if (isPreviewProfileOpen && previewDevice !== 'desktop') {
+            return (
+              <div className="live-preview__top-header-page">
+                <button
+                  type="button"
+                  className="live-preview__top-header-back"
+                  aria-label="Back"
+                  onClick={() => setIsPreviewProfileOpen(false)}
+                >
+                  <AppIcon name="ChevronLeft" size={24} />
+                </button>
+                <span className="live-preview__top-header-page-name">Profile</span>
+              </div>
+            )
+          }
           const isFirstPage = activePageId === pages[0]?.id
           // Always brand the top header on the landing, and on the first page when
           // the app header is closed — otherwise keep the scroll-driven behavior.
@@ -2601,19 +2653,20 @@ export function BuildPage({
           )}
           {isPreviewLoggedIn ? (
             <>
-              <button
-                type="button"
-                className="live-preview__top-header-avatar-btn"
-                aria-label="Account menu"
-                onClick={() => setIsAvatarPopoverOpen((v) => !v)}
-              >
-                <img
-                  className="live-preview__top-header-avatar"
-                  src={previewUserAvatar}
-                  alt=""
-                  aria-hidden="true"
-                />
-              </button>
+              {/* The profile page (mobile/tablet) drops the account avatar from the
+                  top header — the back affordance handles the exit there. */}
+              {!(isPreviewProfileOpen && previewDevice !== 'desktop') && (
+                <button
+                  type="button"
+                  className="live-preview__top-header-avatar-btn"
+                  aria-label="Account menu"
+                  onClick={() => setIsAvatarPopoverOpen((v) => !v)}
+                >
+                  <span className="live-preview__top-header-avatar" aria-hidden="true">
+                    {PROFILE_INITIALS}
+                  </span>
+                </button>
+              )}
               {/* On desktop + left variant the account menu lives in the sidebar
                   footer instead — avoid a duplicate popover (and its outside-click
                   listener) here. */}
@@ -2622,6 +2675,7 @@ export function BuildPage({
                   open={isAvatarPopoverOpen}
                   onClose={() => setIsAvatarPopoverOpen(false)}
                   onLogout={handlePreviewLogout}
+                  onProfile={() => setIsPreviewProfileOpen(true)}
                 />
               )}
             </>
@@ -2725,6 +2779,7 @@ export function BuildPage({
                   open={isAvatarPopoverOpen}
                   onClose={() => setIsAvatarPopoverOpen(false)}
                   onLogout={handlePreviewLogout}
+                  onProfile={() => setIsPreviewProfileOpen(true)}
                 />
               </div>
             ) : (
@@ -2754,7 +2809,26 @@ export function BuildPage({
       )}
       <div ref={setPreviewContentScalerEl} className="live-preview__content-scaler app-scope">
         <div className="live-preview__content app-scope">
-          {isMorePageOpen ? (
+          {isPreviewProfileOpen ? (
+            <>
+              <div className="live-preview__app-header-slot">
+                {profileHeaderEl}
+              </div>
+              <div className="themes-view__canvas themes-view__canvas--first">
+                <div className="themes-view__app">
+                  <section className="themes-view__section">
+                    <LivePreviewProfilePage
+                      onLogout={handlePreviewLogout}
+                      onClose={() => setIsPreviewProfileOpen(false)}
+                      name={PROFILE_USER.name}
+                      username={PROFILE_USER.username}
+                      email={PROFILE_USER.email}
+                    />
+                  </section>
+                </div>
+              </div>
+            </>
+          ) : isMorePageOpen ? (
             <LivePreviewMorePagesView
               pages={navPages}
               onPageSelect={handleMorePageSelect}
@@ -2833,7 +2907,7 @@ export function BuildPage({
           })()}
         </div>
       </div>
-      {pages.length > 1 && bottomNavEnabled && !isPreviewCartOpen && !isPreviewCheckoutOpen && !isPreviewDetailOpen && !showLandingNav && (
+      {pages.length > 1 && bottomNavEnabled && !isPreviewCartOpen && !isPreviewCheckoutOpen && !isPreviewDetailOpen && !isPreviewProfileOpen && !showLandingNav && (
         <div className="live-preview__bottom-nav app-scope">
           <BottomNavigation
             items={bottomNavItems}
@@ -2865,7 +2939,7 @@ export function BuildPage({
         onLoggedIn={handlePreviewLogin}
       />
       <LivePreviewOrderBar
-        hidden={isPreviewCartOpen || isPreviewCheckoutOpen || isPreviewDetailOpen}
+        hidden={isPreviewCartOpen || isPreviewCheckoutOpen || isPreviewDetailOpen || isPreviewProfileOpen}
         hasBottomNav={pages.length > 1}
         onClick={() => setIsPreviewCheckoutOpen(true)}
       />
@@ -5982,6 +6056,23 @@ export function BuildPage({
                       )}
                       <div className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}`} data-nav-align={desktopNavAlignment}>
                         {(() => {
+                          // Profile system page: a back affordance + "Profile" title
+                          // (mobile/tablet only — desktop keeps its branded nav).
+                          if (isPreviewProfileOpen && previewDevice !== 'desktop') {
+                            return (
+                              <div className="live-preview__top-header-page">
+                                <button
+                                  type="button"
+                                  className="live-preview__top-header-back"
+                                  aria-label="Back"
+                                  onClick={() => setIsPreviewProfileOpen(false)}
+                                >
+                                  <AppIcon name="ChevronLeft" size={24} />
+                                </button>
+                                <span className="live-preview__top-header-page-name">Profile</span>
+                              </div>
+                            )
+                          }
                           const isFirstPage = activePageId === pages[0]?.id
                           // Show the app icon + title in the top header: always on the
                           // landing, and on the first page whenever the app header is
@@ -6033,23 +6124,25 @@ export function BuildPage({
                           )}
                           {isPreviewLoggedIn ? (
                             <>
-                              <button
-                                type="button"
-                                className="live-preview__top-header-avatar-btn"
-                                aria-label="Account menu"
-                                onClick={() => setIsAvatarPopoverOpen((v) => !v)}
-                              >
-                                <img
-                                  className="live-preview__top-header-avatar"
-                                  src={previewUserAvatar}
-                                  alt=""
-                                  aria-hidden="true"
-                                />
-                              </button>
+                              {/* Profile page (mobile/tablet): drop the account avatar
+                                  from the top header — back affordance handles exit. */}
+                              {!(isPreviewProfileOpen && previewDevice !== 'desktop') && (
+                                <button
+                                  type="button"
+                                  className="live-preview__top-header-avatar-btn"
+                                  aria-label="Account menu"
+                                  onClick={() => setIsAvatarPopoverOpen((v) => !v)}
+                                >
+                                  <span className="live-preview__top-header-avatar" aria-hidden="true">
+                                    {PROFILE_INITIALS}
+                                  </span>
+                                </button>
+                              )}
                               <LivePreviewAvatarPopover
                                 open={isAvatarPopoverOpen}
                                 onClose={() => setIsAvatarPopoverOpen(false)}
                                 onLogout={handlePreviewLogout}
+                                onProfile={() => setIsPreviewProfileOpen(true)}
                               />
                             </>
                           ) : showLandingNav ? (
@@ -6084,7 +6177,26 @@ export function BuildPage({
                       )}
                       <div ref={setPreviewContentScalerEl} className="live-preview__content-scaler app-scope">
                         <div className="live-preview__content app-scope">
-                          {isMorePageOpen ? (
+                          {isPreviewProfileOpen ? (
+                            <>
+                              <div className="live-preview__app-header-slot">
+                                {profileHeaderEl}
+                              </div>
+                              <div className="themes-view__canvas themes-view__canvas--first">
+                                <div className="themes-view__app">
+                                  <section className="themes-view__section">
+                                    <LivePreviewProfilePage
+                                      onLogout={handlePreviewLogout}
+                                      onClose={() => setIsPreviewProfileOpen(false)}
+                                      name={PROFILE_USER.name}
+                                      username={PROFILE_USER.username}
+                                      email={PROFILE_USER.email}
+                                    />
+                                  </section>
+                                </div>
+                              </div>
+                            </>
+                          ) : isMorePageOpen ? (
                             <LivePreviewMorePagesView
                               pages={navPages}
                               onPageSelect={handleMorePageSelect}
@@ -6163,7 +6275,7 @@ export function BuildPage({
                           })()}
                         </div>
                       </div>
-                      {pages.length > 1 && bottomNavEnabled && !isPreviewCartOpen && !isPreviewCheckoutOpen && !isPreviewDetailOpen && !showLandingNav && (
+                      {pages.length > 1 && bottomNavEnabled && !isPreviewCartOpen && !isPreviewCheckoutOpen && !isPreviewDetailOpen && !isPreviewProfileOpen && !showLandingNav && (
                         <div className="live-preview__bottom-nav app-scope">
                           <BottomNavigation
                             items={bottomNavItems}
@@ -6195,7 +6307,7 @@ export function BuildPage({
                         onLoggedIn={handlePreviewLogin}
                       />
                       <LivePreviewOrderBar
-                        hidden={isPreviewCartOpen || isPreviewCheckoutOpen || isPreviewDetailOpen}
+                        hidden={isPreviewCartOpen || isPreviewCheckoutOpen || isPreviewDetailOpen || isPreviewProfileOpen}
                         hasBottomNav={pages.length > 1}
                         onClick={() => setIsPreviewCheckoutOpen(true)}
                       />

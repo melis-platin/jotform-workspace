@@ -4,12 +4,12 @@ interface LivePreviewAvatarPopoverProps {
   open: boolean
   onClose: () => void
   onLogout?: () => void
+  onProfile?: () => void
   userName?: string
 }
 
 const ITEMS = [
   { id: 'profile', label: 'Profile' },
-  { id: 'orders', label: 'Previous Orders' },
   { id: 'logout', label: 'Log out' },
 ]
 
@@ -17,6 +17,7 @@ export function LivePreviewAvatarPopover({
   open,
   onClose,
   onLogout,
+  onProfile,
   userName = 'Okan Düngel',
 }: LivePreviewAvatarPopoverProps) {
   const ref = useRef<HTMLDivElement>(null)
@@ -51,8 +52,13 @@ export function LivePreviewAvatarPopover({
               type="button"
               className="live-preview__avatar-popover-item"
               onClick={() => {
-                if (item.id === 'logout' && onLogout) onLogout()
-                else onClose()
+                if (item.id === 'logout') {
+                  onLogout?.()
+                  onClose()
+                  return
+                }
+                if (item.id === 'profile') onProfile?.()
+                onClose()
               }}
             >
               {item.label}

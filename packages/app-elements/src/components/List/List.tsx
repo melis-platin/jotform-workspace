@@ -27,6 +27,8 @@ export interface ListProps {
   imageStyle?: ListImageStyle;
   size?: ListSize;
   action?: ListAction;
+  /** Icon name for the per-item action when `action="Icon"` (default ChevronRight). */
+  actionIcon?: string;
   actionIconFilled?: boolean;
   buttonLabel?: string;
   // Card layout props
@@ -53,13 +55,13 @@ const ImagePlaceholder: FC<{ size: number }> = ({ size: s }) => (
 // ============================================
 // Action element (matches Card component style)
 // ============================================
-const ListActionEl: FC<{ action: ListAction; actionIconFilled: boolean; buttonLabel: string }> = ({ action, actionIconFilled, buttonLabel }) => {
+const ListActionEl: FC<{ action: ListAction; actionIcon: string; actionIconFilled: boolean; buttonLabel: string }> = ({ action, actionIcon, actionIconFilled, buttonLabel }) => {
   if (action === 'None') return null;
   if (action === 'Icon') {
     return (
       <Button
         iconOnly
-        iconOnlyIcon="ChevronRight"
+        iconOnlyIcon={actionIcon}
         iconOnlyFilled={actionIconFilled}
         corner="Default"
       />
@@ -80,9 +82,10 @@ const BasicListItem: FC<{
   imageStyle: ListImageStyle;
   size: ListSize;
   action: ListAction;
+  actionIcon: string;
   actionIconFilled: boolean;
   buttonLabel: string;
-}> = ({ item, imageStyle, size, action, actionIconFilled, buttonLabel }) => {
+}> = ({ item, imageStyle, size, action, actionIcon, actionIconFilled, buttonLabel }) => {
   const isCompact = size === 'Compact';
   const imgSize = isCompact ? 60 : 104;
   const iconSize = isCompact ? 32 : 48;
@@ -109,7 +112,7 @@ const BasicListItem: FC<{
           <div className="jf-list-item__title">{item.title}</div>
           <div className="jf-list-item__desc">{item.description}</div>
         </div>
-        <ListActionEl action={action} actionIconFilled={actionIconFilled} buttonLabel={buttonLabel} />
+        <ListActionEl action={action} actionIcon={actionIcon} actionIconFilled={actionIconFilled} buttonLabel={buttonLabel} />
       </div>
     </div>
   );
@@ -196,6 +199,7 @@ export const List: FC<ListProps> = ({
   imageStyle = 'Square',
   size = 'Regular',
   action = 'None',
+  actionIcon = 'ChevronRight',
   actionIconFilled = true,
   buttonLabel = 'Edit',
   cardImageStyle = 'Square',
@@ -283,7 +287,7 @@ export const List: FC<ListProps> = ({
       {header}
       {items.map((item, i) => (
         <Fragment key={i}>
-          <BasicListItem item={item} imageStyle={imageStyle} size={size} action={action} actionIconFilled={actionIconFilled} buttonLabel={buttonLabel} />
+          <BasicListItem item={item} imageStyle={imageStyle} size={size} action={action} actionIcon={actionIcon} actionIconFilled={actionIconFilled} buttonLabel={buttonLabel} />
           {i < items.length - 1 && <div className="jf-list__divider" />}
         </Fragment>
       ))}

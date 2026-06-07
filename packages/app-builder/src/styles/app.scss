@@ -1710,6 +1710,21 @@ body {
   min-width: 0;
 }
 
+// Back affordance shown on the profile system page (mobile/tablet top header).
+.live-preview__top-header-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: -6px;
+  margin-right: var(--space-3);
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
 .live-preview__top-header-page-name {
   font-family: var(--font-family-heading);
   font-size: var(--font-size-heading-sm);
@@ -1772,13 +1787,22 @@ body {
 }
 
 .live-preview__top-header-avatar {
-  width: 32px;
-  height: 32px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 50%;
-  object-fit: cover;
-  display: block;
-  border: 1.5px solid #fff;
-  box-shadow: var(--shadow-sm);
+  // Initials avatar — same style as the profile page avatar (Card icon colors:
+  // brand-tinted surface bg + brand fg), scaled to the nav size with a 2px inner
+  // border (the profile uses 4px at 118px).
+  background: var(--bg-surface-brand);
+  color: var(--fg-brand);
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-label-md);
+  font-weight: 700;
+  line-height: 1;
+  box-shadow: inset 0 0 0 2px var(--bg-surface);
 }
 
 .live-preview__top-header-avatar-btn {
@@ -2566,12 +2590,13 @@ body {
     // (app-elements) flips this to a wrapping row and flows --shrinked tiles by
     // --card-min once the page card is wide enough (tablet/desktop). Only the
     // spacing chrome lives here; flow is owned by the shared rule.
-    padding: var(--space-4, 16px);
+    // Every page carries a 40px (--space-10) bottom margin under its content.
+    padding: var(--space-4, 16px) var(--space-4, 16px) var(--space-10);
     gap: var(--space-4, 16px);
     flex-shrink: 0;
 
     @container app-content (min-width: 560px) {
-      padding: var(--space-6);
+      padding: var(--space-6) var(--space-6) var(--space-10);
     }
   }
 
@@ -2749,6 +2774,101 @@ body {
   flex-shrink: 0;
   padding: var(--space-3) var(--space-4) var(--space-10);
   border-top: 1px solid var(--border-tertiary);
+}
+
+// ---- Profile (Account) Page ----
+// Built entirely from real app-elements (Heading + List + Button) and rendered
+// inside the standard first-page card (.themes-view__canvas--first, below an
+// AppHeader hero), so it inherits the page card's width, radius, shadow and
+// header tuck on every shell — it reads exactly like a default page.
+// .themes-view__canvas is otherwise transparent (page elements carry their own
+// fill); give it an explicit surface fill when it holds the profile.
+.themes-view__canvas:has(.live-preview__profile) {
+  background: var(--bg-surface);
+}
+
+.live-preview__profile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+// Extra breathing room between sections: a heading that starts a new section
+// (i.e. directly follows a list) gets additional top space on top of the gap.
+.live-preview__profile > .jf-list + .jf-heading {
+  margin-top: var(--space-6);
+}
+
+.live-preview__profile-logout {
+  display: flex;
+  // Match the between-section gap (gap + this margin = the same 48px).
+  margin-top: var(--space-6);
+}
+
+// Profile header (lives in the app-header-slot, replacing the AppHeader for the
+// profile page only — the page body/card below is untouched): a full-bleed brand
+// cover with the app-icon card straddling its bottom edge and the name beside it.
+// The identity row tracks the page card's width/inset so the icon lines up with
+// the body's content (e.g. "Personal Details"). The area under the cover is
+// transparent, so it shows the page surface (--bg-page on desktop).
+.live-preview__profile-header-cover {
+  height: 148px;
+  background: var(--bg-fill-brand);
+}
+
+.live-preview__profile-header-identity {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-5);
+  width: 100%;
+  max-width: var(--app-header-max, 100%);
+  margin-inline: auto;
+  // Avatar aligns with the page content (same --app-header-inset on both sides).
+  // The desktop shell overrides the left to 0 so it sits flush with the centered
+  // card's edge instead. The row sits at the cover bottom; avatar and name take
+  // their own vertical offsets below.
+  padding: 0 var(--app-header-inset, var(--space-4)) var(--space-10);
+}
+
+// Desktop: avatar flush with the centered page card's left edge (full-bleed
+// mobile/tablet keep the content inset so the avatar lines up with the rows).
+.app-preview-screen__desktop .live-preview__profile-header-identity {
+  padding-left: 0;
+}
+
+.live-preview__profile-header-avatar {
+  flex-shrink: 0;
+  width: 118px;
+  height: 118px;
+  // Straddle the cover bottom edge: 30px above it, 88px below.
+  margin-top: -30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  // Initials avatar — mirror the Card element's icon colors: brand-tinted
+  // surface background + brand foreground.
+  background: var(--bg-surface-brand);
+  color: var(--fg-brand);
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-heading-xl);
+  font-weight: 700;
+  line-height: 1;
+  // 4px inner border (inset box-shadow, per the DS border convention).
+  box-shadow: inset 0 0 0 4px var(--bg-surface);
+}
+
+.live-preview__profile-header-name {
+  // 18px below the cover bottom (the row sits at the cover edge).
+  margin: 18px 0 0;
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-heading-md);
+  font-weight: 700;
+  line-height: 1.1;
+  // Match the Heading element's letter-spacing for the heading-md size (its
+  // Large title): jf-heading__title--large uses -0.56px.
+  letter-spacing: -0.56px;
+  color: var(--fg-primary);
 }
 
 // ---- Cart Page ----
