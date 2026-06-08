@@ -6897,6 +6897,470 @@ export const APP_PRESETS: AppPreset[] = [
             }
           }
         ]
+      },
+      {
+        id: 'page-4',
+        name: 'About',
+        icon: 'Info',
+        elements: [
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 4
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Money should feel calm',
+              Subheading: 'We’re building the budgeting app we always wanted — one that quietly does the boring parts for you.',
+              'Add Emphasis': true,
+              'Emphasis Text': 'ABOUT',
+              'Emphasis Style': 'Badge'
+            }
+          },
+          {
+            componentId: 'paragraph',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Center'
+            },
+            properties: {
+              Text: 'Tally started in 2021 around a kitchen table in Portland, after one too many late nights wrestling with spreadsheets. We thought budgeting should feel less like homework and more like a gentle nudge in the right direction. Today, Tally helps over 200,000 people spend with intention — without the guilt, the math, or the manual entry.'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 24
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'What we stand for',
+              'Add Emphasis': true,
+              'Emphasis Text': 'WHAT WE BELIEVE',
+              'Emphasis Style': 'Badge'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: 'Clarity over guilt',
+              Description: 'Budgets should make you feel in control — never ashamed.',
+              Icon: 'Sparkles',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: 'Privacy by default',
+              Description: 'Your data is yours. Read-only access, encrypted, never sold.',
+              Icon: 'ShieldCheck',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: 'Quietly automatic',
+              Description: 'The best app is the one you barely have to open.',
+              Icon: 'WandSparkles',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: 'Independent for good',
+              Description: 'No ads, no investors pulling strings — just people who pay for Tally.',
+              Icon: 'Heart',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 24
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'A community that’s growing',
+              'Add Emphasis': true,
+              'Emphasis Text': 'BY THE NUMBERS',
+              'Emphasis Style': 'Badge'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: '200k+',
+              Description: 'people budgeting with Tally',
+              Icon: 'Users',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: '$1.2B',
+              Description: 'tracked every month',
+              Icon: 'TrendingUp',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: '4.9★',
+              Description: 'across 40k App Store reviews',
+              Icon: 'Star',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: '12k+',
+              Description: 'banks and cards supported',
+              Icon: 'Landmark',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 24
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Come build calmer money with us',
+              Subheading: 'Start free — no card, no spreadsheets.'
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Corner: 'Rounded',
+              Width: 'Auto'
+            },
+            properties: {
+              Label: 'Get started',
+              'Full Width': true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 16
+            }
+          },
+          {
+            componentId: 'paragraph',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Text: '© 2026 Tally, Inc. · Made in Portland, OR.',
+              Shrinked: false
+            }
+          }
+        ]
+      },
+      {
+        id: 'page-5',
+        name: 'Contact',
+        icon: 'Mail',
+        elements: [
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 4
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'We’re here to help',
+              Subheading: 'Real humans, usually back within a few hours.',
+              'Add Emphasis': true,
+              'Emphasis Text': 'CONTACT',
+              'Emphasis Style': 'Badge'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon'
+            },
+            properties: {
+              Title: 'Email us',
+              Description: 'hello@tally.app',
+              Icon: 'Mail'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon'
+            },
+            properties: {
+              Title: 'Live chat',
+              Description: 'In-app, 7am–7pm PT, every day',
+              Icon: 'MessageCircle'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon'
+            },
+            properties: {
+              Title: 'Help center',
+              Description: 'Guides, answers, and how-tos',
+              Icon: 'LifeBuoy'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon'
+            },
+            properties: {
+              Title: 'Visit us',
+              Description: 'Portland, OR',
+              Icon: 'MapPin'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 24
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Send us a note',
+              Subheading: 'Tell us what’s on your mind and we’ll take it from there.'
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Corner: 'Rounded',
+              Width: 'Auto'
+            },
+            properties: {
+              Label: 'Send a message',
+              'Full Width': true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 24
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Follow Us'
+            }
+          },
+          {
+            componentId: 'social-follow',
+            variants: {
+              Layout: 'Wrap',
+              Variant: 'Secondary'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 16
+            }
+          },
+          {
+            componentId: 'paragraph',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Text: '© 2026 Tally, Inc. · Made in Portland, OR.',
+              Shrinked: false
+            }
+          }
+        ]
+      },
+      {
+        id: 'page-6',
+        name: 'FAQ',
+        icon: 'CircleQuestionMark',
+        elements: [
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 4
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Questions, answered',
+              Subheading: 'Still curious? Email us any time at hello@tally.app.',
+              'Add Emphasis': true,
+              'Emphasis Text': 'FAQ',
+              'Emphasis Style': 'Badge'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 8
+            }
+          },
+          {
+            componentId: 'faq',
+            variants: {
+              Style: 'Divider',
+              Icon: 'Chevron',
+              'Icon Position': 'Right'
+            },
+            properties: {
+              Items: JSON.stringify([
+                {
+                  question: 'Is my financial data secure?',
+                  answer: 'Yes — bank-level 256-bit encryption, read-only access, and we never sell your data.'
+                },
+                {
+                  question: 'Can I cancel anytime?',
+                  answer: 'One tap, no fees, and you keep a full export of your data.'
+                },
+                {
+                  question: 'Which banks are supported?',
+                  answer: 'Over 12,000 banks and cards across the US, UK, and Canada.'
+                },
+                {
+                  question: 'Is there really a free plan?',
+                  answer: 'Always. The Free plan stays free and never asks for a card.'
+                },
+                {
+                  question: 'Do you have a family plan?',
+                  answer: 'Yes — Family covers up to 5 people with shared and private budgets.'
+                },
+                {
+                  question: 'Can I use Tally on desktop and mobile?',
+                  answer: 'Yes — your budgets sync instantly across iPhone, Android, and the web.'
+                },
+                {
+                  question: 'How does Tally make money?',
+                  answer: 'From simple paid plans — never by selling your data or showing ads.'
+                }
+              ])
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 24
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Still have a question?',
+              Subheading: 'We’re a quick message away.'
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Corner: 'Rounded',
+              Width: 'Auto'
+            },
+            properties: {
+              Label: 'Contact us',
+              'Full Width': true
+            }
+          }
+        ]
       }
     ],
     headerActions: [],
@@ -7503,6 +7967,476 @@ export const APP_PRESETS: AppPreset[] = [
             },
             properties: {
               Label: 'Sign out',
+              'Full Width': true
+            }
+          }
+        ]
+      },
+      {
+        id: 'page-4',
+        name: 'About',
+        icon: 'Info',
+        elements: [
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 4
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'We turn CRM noise into revenue signal',
+              Subheading: 'Cadence helps revenue teams forecast with confidence and coach with data.',
+              'Add Emphasis': true,
+              'Emphasis Text': 'ABOUT'
+            }
+          },
+          {
+            componentId: 'paragraph',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Center'
+            },
+            properties: {
+              Text: 'Cadence was founded in 2020 by a team of RevOps and sales leaders tired of forecasts built on gut feel. We’d lived the Monday pipeline reviews, the spreadsheet rebuilds, and the quarters that slipped without warning. So we built the system we wished we’d had: one place where every deal’s health is visible, every forecast is defensible, and every rep knows exactly where to spend their day.'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'How we think',
+              'Add Emphasis': true,
+              'Emphasis Text': 'WHAT DRIVES US'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: 'Signal over noise',
+              Description: 'Every metric earns its place — or it’s gone.',
+              Icon: 'Sparkles',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: 'Defensible by design',
+              Description: 'Numbers your board and finance can trust.',
+              Icon: 'ShieldCheck',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: 'Built for RevOps',
+              Description: 'Made with the people who live in the pipeline.',
+              Icon: 'Users',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: 'Adoption first',
+              Description: 'If reps won’t use it, it doesn’t ship.',
+              Icon: 'Trophy',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Trusted by revenue teams',
+              'Add Emphasis': true,
+              'Emphasis Text': 'BY THE NUMBERS'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: '$12B+',
+              Description: 'pipeline managed on Cadence',
+              Icon: 'ChartColumn',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: '1,400+',
+              Description: 'revenue teams',
+              Icon: 'Building2',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: '27%',
+              Description: 'average lift in forecast accuracy',
+              Icon: 'TrendingUp',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical'
+            },
+            properties: {
+              Title: 'SOC 2',
+              Description: 'Type II certified',
+              Icon: 'ShieldCheck',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'See Cadence on your pipeline.',
+              Subheading: 'Book a 20-minute demo and we’ll show you your own funnel, clarified.'
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Corner: 'Rounded',
+              Width: 'Auto'
+            },
+            properties: {
+              Label: 'Book a demo',
+              'Full Width': true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 19
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Cadence'
+            }
+          },
+          {
+            componentId: 'paragraph',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Text: '© 2026 Cadence, Inc. · SOC 2 Type II certified.'
+            }
+          },
+          {
+            componentId: 'social-follow',
+            variants: {
+              Layout: 'Wrap',
+              Variant: 'Secondary',
+              Filled: 'No'
+            }
+          }
+        ]
+      },
+      {
+        id: 'page-5',
+        name: 'Contact',
+        icon: 'Mail',
+        elements: [
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 4
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Talk to our team',
+              Subheading: 'Sales, support, or partnerships — we’ll route you to the right person.',
+              'Add Emphasis': true,
+              'Emphasis Text': 'CONTACT'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon'
+            },
+            properties: {
+              Title: 'Talk to sales',
+              Description: 'sales@cadence.io',
+              Icon: 'Mail'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon'
+            },
+            properties: {
+              Title: 'Customer support',
+              Description: 'support@cadence.io · 24/5',
+              Icon: 'LifeBuoy'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon'
+            },
+            properties: {
+              Title: 'Partnerships',
+              Description: 'partners@cadence.io',
+              Icon: 'Handshake'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon'
+            },
+            properties: {
+              Title: 'Headquarters',
+              Description: 'Austin, TX',
+              Icon: 'MapPin'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Book a demo',
+              Subheading: 'Twenty minutes, your pipeline, zero slides.'
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Corner: 'Rounded',
+              Width: 'Auto'
+            },
+            properties: {
+              Label: 'Book a demo',
+              'Full Width': true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 24
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Cadence'
+            }
+          },
+          {
+            componentId: 'social-follow',
+            variants: {
+              Layout: 'Wrap',
+              Variant: 'Secondary',
+              Filled: 'No'
+            }
+          },
+          {
+            componentId: 'paragraph',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Text: '© 2026 Cadence, Inc. · SOC 2 Type II certified.'
+            }
+          }
+        ]
+      },
+      {
+        id: 'page-6',
+        name: 'FAQ',
+        icon: 'CircleQuestionMark',
+        elements: [
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 4
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Questions, answered',
+              Subheading: 'Still curious? Talk to us at sales@cadence.io.',
+              'Add Emphasis': true,
+              'Emphasis Text': 'FAQ'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 8
+            }
+          },
+          {
+            componentId: 'faq',
+            variants: {
+              Style: 'Divider',
+              Icon: 'Chevron',
+              'Icon Position': 'Right'
+            },
+            properties: {
+              Items: JSON.stringify([
+                {
+                  question: 'How long is setup?',
+                  answer: 'Most teams are live in under a week with native CRM sync.'
+                },
+                {
+                  question: 'Which CRMs do you support?',
+                  answer: 'Two-way sync with Salesforce and HubSpot today, with more on the way.'
+                },
+                {
+                  question: 'Is our data secure?',
+                  answer: 'SOC 2 Type II, SSO/SAML, and encryption in transit and at rest.'
+                },
+                {
+                  question: 'Do you help with onboarding?',
+                  answer: 'Every plan includes a dedicated onboarding specialist.'
+                },
+                {
+                  question: 'How is pricing structured?',
+                  answer: 'Per seat, billed annually, with volume discounts for larger teams.'
+                },
+                {
+                  question: 'Can we keep our existing reports?',
+                  answer: 'Yes — Cadence layers on top of your CRM without replacing it.'
+                },
+                {
+                  question: 'Do you offer a trial?',
+                  answer: 'We run a guided 14-day pilot on your own pipeline data.'
+                }
+              ])
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Still evaluating?',
+              Subheading: 'We’ll walk you through it on your own data.'
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Corner: 'Rounded',
+              Width: 'Auto'
+            },
+            properties: {
+              Label: 'Book a demo',
               'Full Width': true
             }
           }
@@ -8226,6 +9160,520 @@ export const APP_PRESETS: AppPreset[] = [
             },
             properties: {
               Label: 'Sign out',
+              'Left Icon': 'none',
+              'Right Icon': 'none',
+              'Full Width': true
+            }
+          }
+        ]
+      },
+      {
+        id: 'page-4',
+        name: 'About',
+        icon: 'Info',
+        elements: [
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 4
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Built by coaches, for coaches',
+              Subheading: 'We handle the busywork so you can get back to the field.',
+              'Add Emphasis': true,
+              'Emphasis Text': 'ABOUT',
+              'Emphasis Style': 'Badge'
+            }
+          },
+          {
+            componentId: 'paragraph',
+            variants: {
+              Size: 'Medium',
+              Alignment: 'Center'
+            },
+            properties: {
+              Text: 'Rally began on the sidelines. Our founders spent years coaching youth soccer and running a martial-arts studio — and losing their evenings to spreadsheets, group texts, and unpaid dues. They knew there had to be a better way to run a club. Today, Rally powers over 2,000 clubs and studios, helping coaches spend less time on admin and more time doing what they love.'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'What we stand for',
+              'Add Emphasis': true,
+              'Emphasis Text': 'WHAT WE BELIEVE',
+              'Emphasis Style': 'Badge'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Coaching first',
+              Description: 'Every feature gives you time back for your members.',
+              Icon: 'Trophy',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'No one left out',
+              Description: 'Coaches, parents, and admins each get a view that fits.',
+              Icon: 'Users',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Fair and simple',
+              Description: 'Honest pricing, no setup fees, cancel anytime.',
+              Icon: 'Heart',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Built to last',
+              Description: 'Independent and here for the long season.',
+              Icon: 'ShieldCheck',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'A growing community',
+              'Add Emphasis': true,
+              'Emphasis Text': 'BY THE NUMBERS',
+              'Emphasis Style': 'Badge'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '2,000+',
+              Description: 'clubs and studios',
+              Icon: 'Trophy',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '+38%',
+              Description: 'average member growth in year one',
+              Icon: 'TrendingUp',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '4.9★',
+              Description: 'from 1,800+ coaches',
+              Icon: 'Star',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Vertical',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: '1M+',
+              Description: 'check-ins every season',
+              Icon: 'QrCode',
+              Shrinked: true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Run your club the easy way',
+              Subheading: 'Start free today — no card, cancel anytime.'
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Type: 'Standard',
+              Variant: 'Default',
+              Corner: 'Rounded'
+            },
+            properties: {
+              Label: 'Try it free',
+              'Left Icon': 'none',
+              'Right Icon': 'ArrowRight',
+              'Full Width': true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 24
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Rally',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'paragraph',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Text: '© 2026 Rally, Inc. · Made for coaches.'
+            }
+          },
+          {
+            componentId: 'social-follow',
+            variants: {
+              Layout: 'Wrap',
+              Variant: 'Secondary',
+              Filled: 'No'
+            }
+          }
+        ]
+      },
+      {
+        id: 'page-5',
+        name: 'Contact',
+        icon: 'Mail',
+        elements: [
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 4
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'We’d love to hear from you',
+              Subheading: 'Questions, demos, or just saying hi — we’re here.',
+              'Add Emphasis': true,
+              'Emphasis Text': 'CONTACT',
+              'Emphasis Style': 'Badge'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Horizontal',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Email us',
+              Description: 'hello@rally.club',
+              Icon: 'Mail'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Horizontal',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Live chat',
+              Description: 'In-app, 8am–8pm, Mon–Sat',
+              Icon: 'MessageCircle'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Horizontal',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Book a demo',
+              Description: 'See Rally on your club in 15 minutes',
+              Icon: 'CalendarCheck'
+            }
+          },
+          {
+            componentId: 'card',
+            variants: {
+              'Image Style': 'Icon',
+              Layout: 'Horizontal',
+              Action: 'None',
+              'Icon Filled': 'No'
+            },
+            properties: {
+              Title: 'Visit us',
+              Description: 'Denver, CO',
+              Icon: 'MapPin'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Send us a message',
+              Subheading: 'Tell us about your club and we’ll be right with you.'
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Type: 'Standard',
+              Variant: 'Default',
+              Corner: 'Rounded'
+            },
+            properties: {
+              Label: 'Send a message',
+              'Left Icon': 'none',
+              'Right Icon': 'ArrowRight',
+              'Full Width': true
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 24
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Rally',
+              Subheading: ''
+            }
+          },
+          {
+            componentId: 'social-follow',
+            variants: {
+              Layout: 'Wrap',
+              Variant: 'Secondary',
+              Filled: 'No'
+            }
+          },
+          {
+            componentId: 'paragraph',
+            variants: {
+              Size: 'Small',
+              Alignment: 'Center'
+            },
+            properties: {
+              Text: '© 2026 Rally, Inc. · Made for coaches.'
+            }
+          }
+        ]
+      },
+      {
+        id: 'page-6',
+        name: 'FAQ',
+        icon: 'CircleQuestionMark',
+        elements: [
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 4
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Questions, answered',
+              Subheading: 'Still curious? Email us any time at hello@rally.club.',
+              'Add Emphasis': true,
+              'Emphasis Text': 'FAQ',
+              'Emphasis Style': 'Badge'
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 8
+            }
+          },
+          {
+            componentId: 'faq',
+            variants: {
+              Style: 'Divider',
+              Icon: 'Chevron',
+              'Icon Position': 'Right'
+            },
+            properties: {
+              Items: JSON.stringify([
+                {
+                  question: 'How long does setup take?',
+                  answer: 'Most clubs are up and running in an afternoon — import your roster, set a schedule, and open registration.'
+                },
+                {
+                  question: 'Do my members need to download an app?',
+                  answer: 'No — members register, book, and pay from any browser. A mobile app is optional.'
+                },
+                {
+                  question: 'How do payments work?',
+                  answer: 'Rally collects dues and one-off payments automatically, and chases late ones for you.'
+                },
+                {
+                  question: 'Can I manage more than one team or location?',
+                  answer: 'Yes — run multiple teams, classes, and locations from a single account.'
+                },
+                {
+                  question: 'Is there a setup fee?',
+                  answer: 'Never. Start free, and only pay as your club grows.'
+                },
+                {
+                  question: 'What sports and activities does Rally support?',
+                  answer: 'Soccer, studios, dojos, dance, and more — if you run a roster, Rally fits.'
+                },
+                {
+                  question: 'Can parents and coaches have different access?',
+                  answer: 'Yes — coaches, parents, and admins each see a view tailored to their role.'
+                }
+              ])
+            }
+          },
+          {
+            componentId: 'spacer',
+            properties: {
+              Height: 32
+            }
+          },
+          {
+            componentId: 'heading',
+            variants: {
+              Size: 'Large',
+              Alignment: 'Center'
+            },
+            properties: {
+              Heading: 'Still have questions?',
+              Subheading: 'We’re a quick message away.'
+            }
+          },
+          {
+            componentId: 'button',
+            variants: {
+              Type: 'Standard',
+              Variant: 'Outlined',
+              Corner: 'Rounded'
+            },
+            properties: {
+              Label: 'Contact us',
               'Left Icon': 'none',
               'Right Icon': 'none',
               'Full Width': true
