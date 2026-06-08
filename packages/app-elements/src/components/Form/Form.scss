@@ -86,15 +86,15 @@
   width: 100%;
 
   &--normal {
-    font-size: var(--font-size-paragraph-md); // fluid 16→18 (content title; label-lg stays fixed for controls)
-    line-height: var(--line-height-label-lg);
-    max-height: var(--line-height-label-lg);
+    font-size: var(--font-size-paragraph-md); // fluid 16→18 (content title)
+    line-height: var(--line-height-paragraph-md);
+    max-height: 1lh;
   }
 
   &--large {
     font-size: var(--font-size-paragraph-md); // fluid 16→18
-    line-height: var(--line-height-label-lg);
-    max-height: var(--line-height-label-lg);
+    line-height: var(--line-height-paragraph-md);
+    max-height: 1lh;
   }
 }
 
@@ -200,7 +200,7 @@
   align-items: center;
   font-family: var(--font-family);
   font-size: var(--font-size-paragraph-sm);
-  line-height: var(--line-height-label-lg);
+  line-height: var(--line-height-paragraph-sm);
   font-weight: var(--font-weight-regular);
   color: var(--fg-primary);
   outline: none;
@@ -222,7 +222,7 @@
 
 .jf-form-open__hint {
   font-size: var(--font-size-paragraph-sm);
-  line-height: var(--line-height-label-sm);
+  line-height: var(--line-height-paragraph-sm);
   font-weight: var(--font-weight-regular);
   color: var(--fg-tertiary);
 }
@@ -243,7 +243,7 @@
 
 .jf-form-open__option-label {
   font-size: var(--font-size-paragraph-sm);
-  line-height: var(--line-height-label-lg);
+  line-height: var(--line-height-paragraph-sm);
   font-weight: var(--font-weight-regular);
   color: var(--fg-primary);
 }
@@ -340,7 +340,7 @@
 
 .jf-form-open__upload-title {
   font-size: var(--font-size-paragraph-md); // fluid 16→18 (content title)
-  line-height: var(--line-height-label-lg);
+  line-height: var(--line-height-paragraph-md);
   font-weight: var(--font-weight-bold);
   color: var(--fg-primary);
 }

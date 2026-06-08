@@ -154,17 +154,18 @@
   min-width: 0;
 }
 
-// Item title — fluid (16→18) like body so it scales with the page width; the
-// shared --font-size-label-lg stays fixed for buttons / subtitles.
+// Item title — fluid (16→18) like body so it scales with the page width; all
+// type tokens come from the paragraph scale (line-height: paragraph-md ratio,
+// max-height: 1lh tracks the fluid leading for the single-line clamp).
 .jf-list-item__title {
   font-size: var(--font-size-paragraph-md);
   font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-label-lg);
+  line-height: var(--line-height-paragraph-md);
   color: var(--fg-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-height: var(--line-height-label-lg);
+  max-height: 1lh;
 }
 
 // Paragraph/Small/Regular — fluid 14→16 (scoped, scales with the item title)
@@ -197,7 +198,7 @@
   font-weight: var(--font-weight-bold);
   line-height: var(--line-height-heading-sm);
   color: var(--fg-primary);
-  letter-spacing: -0.48px;
+  letter-spacing: var(--letter-spacing-heading);
   overflow: hidden;
   max-height: 128px;
   margin: 0;

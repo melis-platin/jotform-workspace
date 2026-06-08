@@ -276,7 +276,7 @@
   font-size: var(--font-size-heading-lg);
   font-weight: 700;
   line-height: 1.15;
-  letter-spacing: -0.02em;
+  letter-spacing: var(--letter-spacing-heading);
   color: var(--fg-primary);
 
   .attribution-modal--remove & {
@@ -291,7 +291,7 @@
 .attribution-modal__subtitle {
   margin: 0 0 var(--space-4);
   font-size: var(--font-size-paragraph-md);
-  line-height: 1.5;
+  line-height: var(--line-height-paragraph-md);
   color: var(--fg-secondary);
 
   .attribution-modal--remove & {
@@ -310,7 +310,7 @@
   color: var(--fg-primary);
   font-family: var(--font-family);
   font-size: var(--font-size-paragraph-sm);
-  line-height: var(--line-height-label-lg);
+  line-height: var(--line-height-paragraph-sm);
   font-weight: var(--font-weight-regular);
   outline: none;
   resize: none;
@@ -358,7 +358,7 @@
   color: var(--fg-secondary);
   font-family: inherit;
   font-size: var(--font-size-label-sm);
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   white-space: nowrap;
   cursor: pointer;
   transition: background 150ms ease, color 150ms ease, border-color 150ms ease;

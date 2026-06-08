@@ -90,14 +90,14 @@
 
   &--normal {
     font-size: var(--font-size-paragraph-md); // fluid 16→18 (content title)
-    line-height: var(--line-height-label-lg);
-    max-height: var(--line-height-label-lg);
+    line-height: var(--line-height-paragraph-md);
+    max-height: 1lh;
   }
 
   &--large {
     font-size: var(--font-size-paragraph-md); // fluid 16→18
-    line-height: var(--line-height-label-lg);
-    max-height: var(--line-height-label-lg);
+    line-height: var(--line-height-paragraph-md);
+    max-height: 1lh;
   }
 }
 

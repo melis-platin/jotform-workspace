@@ -20,7 +20,7 @@
   font-size: var(--font-size-paragraph-md);
   font-weight: var(--font-weight-regular);
   line-height: var(--line-height-paragraph-md);
-  letter-spacing: -0.176px;
+  letter-spacing: var(--letter-spacing-paragraph);
   white-space: nowrap;
 
   &--shimmer {

@@ -198,7 +198,7 @@
   font-size: var(--font-size-heading-md);
   font-weight: var(--font-weight-bold);
   line-height: var(--line-height-heading-md);
-  letter-spacing: -0.588px;
+  letter-spacing: var(--letter-spacing-heading);
   color: inherit;
   margin: 0;
   // Honor manual line breaks (Enter in the inline editor) while still wrapping

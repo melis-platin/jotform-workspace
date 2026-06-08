@@ -126,6 +126,14 @@
   --line-height-label-sm: 16px;
   --line-height-label-xs: 14px;
 
+  // ---- Letter Spacing ----
+  // Headings use a slight negative tracking (-2%, em-based so it scales with the
+  // fluid font); body and label text use normal tracking. Mapped per category:
+  // heading titles → --letter-spacing-heading; paragraph/label → 0 (normal).
+  --letter-spacing-heading: -0.02em;
+  --letter-spacing-paragraph: 0;
+  --letter-spacing-label: 0;
+
   // ---- Spacing (4px base) ----
   --space-0: 0px;
   --space-1: 4px;

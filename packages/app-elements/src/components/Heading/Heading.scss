@@ -76,7 +76,7 @@
   &--large {
     font-size: var(--font-size-heading-md);
     line-height: var(--line-height-heading-md);
-    letter-spacing: -0.56px;
+    letter-spacing: var(--letter-spacing-heading);
     min-height: 1lh;
     max-height: 4lh;
   }
@@ -85,7 +85,7 @@
   &--medium {
     font-size: var(--font-size-heading-sm);
     line-height: var(--line-height-heading-sm);
-    letter-spacing: -0.48px;
+    letter-spacing: var(--letter-spacing-heading);
     min-height: 1lh;
     max-height: 4lh;
   }
@@ -94,7 +94,7 @@
   &--small {
     font-size: var(--font-size-heading-xs);
     line-height: var(--line-height-heading-xs);
-    letter-spacing: -0.4px;
+    letter-spacing: var(--letter-spacing-heading);
     min-height: 1lh;
     max-height: 3lh;
   }

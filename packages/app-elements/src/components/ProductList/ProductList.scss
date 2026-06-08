@@ -40,7 +40,7 @@
   font-weight: var(--font-weight-bold);
   line-height: var(--line-height-heading-sm);
   color: var(--fg-primary);
-  letter-spacing: -0.48px;
+  letter-spacing: var(--letter-spacing-heading);
   overflow: hidden;
   max-height: 128px;
   margin: 0;

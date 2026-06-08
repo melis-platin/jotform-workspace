@@ -44,8 +44,8 @@
 
 .bottom-nav__label {
   font-size: var(--font-size-label-sm); // fixed 12px nav label (was hardcoded)
-  font-weight: 400;
-  line-height: 16px;
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-label-sm);
   text-align: center;
 }
 

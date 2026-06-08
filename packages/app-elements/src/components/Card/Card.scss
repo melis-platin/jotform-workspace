@@ -137,19 +137,19 @@
   }
 }
 
-// Title: Label/Large/Bold
+// Title: Paragraph/Medium/Bold
 .jf-card__title {
-  // Fluid (16→18) so the card item title scales with the page width; keep the
-  // shared --font-size-label-lg fixed for buttons / subtitles. Line-height stays
-  // label-lg (24px), which comfortably fits the 16–18px range.
+  // Fluid (16→18) so the card item title scales with the page width. font-size,
+  // line-height, and the single-line clamp all come from the paragraph scale —
+  // line-height is the unitless paragraph-md ratio and max-height: 1lh tracks it.
   font-size: var(--font-size-paragraph-md);
   font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-label-lg);
+  line-height: var(--line-height-paragraph-md);
   color: var(--fg-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-height: var(--line-height-label-lg);
+  max-height: 1lh;
   width: 100%;
 }
 

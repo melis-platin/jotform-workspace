@@ -85,7 +85,7 @@
   font-size: var(--font-size-heading-lg);
   font-weight: var(--font-weight-bold);
   line-height: var(--line-height-heading-lg);
-  letter-spacing: -0.02em;
+  letter-spacing: var(--letter-spacing-heading);
   color: inherit;
   text-wrap: balance;
   overflow-wrap: anywhere;

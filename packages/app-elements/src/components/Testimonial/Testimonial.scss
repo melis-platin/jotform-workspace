@@ -143,7 +143,7 @@
 .jf-testimonial__name {
   font-size: var(--font-size-paragraph-md);
   font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-label-lg);
+  line-height: var(--line-height-paragraph-md);
   color: var(--fg-primary);
   overflow-wrap: anywhere;
 }
@@ -264,7 +264,7 @@
   font-size: var(--font-size-heading-sm);
   font-weight: var(--font-weight-medium);
   line-height: var(--line-height-heading-sm);
-  letter-spacing: -0.32px;
+  letter-spacing: var(--letter-spacing-heading);
 }
 
 .jf-testimonial--spotlight .jf-testimonial__author {
