@@ -93,25 +93,27 @@
   --font-size-label-xs: 10px;
 
   // ---- Line Heights ----
-  // Responsive: each line-height that pairs with a FLUID font-size token is
-  // derived from that token via calc(font-size * ratio), so the leading scales
-  // WITH the font instead of staying fixed. ratio = the original design
-  // line-height / design font-size (the fixed-px fallback), so the look is
-  // preserved at the design anchor AND when container queries are unsupported
-  // (calc(fallbackPx * ratio) == the original px), then tracks the font across
-  // the whole fluid range — keeping a constant, healthy ratio. Without this,
-  // fixed px leading drifts: big headings cramped to ~1.0 (line-height == font,
-  // clipping) on wide cards, body too airy on narrow ones.
+  // Fluid line-heights are UNITLESS ratios (= design line-height / design
+  // font-size at the px-fallback anchor, e.g. 36/28 = 1.2857). A unitless
+  // leading multiplies the element's OWN used font-size — so it scales WITH the
+  // fluid clamp() font for free, stays correct when container queries are
+  // unsupported (ratio * fallbackPx == the original design px), and is
+  // inheritance-safe (descendants recompute against their own font-size instead
+  // of inheriting a frozen length). Where a one-line LENGTH is needed (height
+  // reservation / single-line truncation) consumers use the `lh` unit: `1lh` is
+  // the element's own computed line box, `Nlh` an N-line cap — so the reserved
+  // height tracks the exact rendered leading. The fixed tokens below
+  // (paragraph-sm/xs, label-*) stay px and may still be used directly as a length.
   // Heading
-  --line-height-heading-xxl: calc(var(--font-size-heading-xxl) * 1.2);    // design 40/48
-  --line-height-heading-xl: calc(var(--font-size-heading-xl) * 1.2222);   // design 36/44
-  --line-height-heading-lg: calc(var(--font-size-heading-lg) * 1.25);     // design 32/40
-  --line-height-heading-md: calc(var(--font-size-heading-md) * 1.2857);   // design 28/36
-  --line-height-heading-sm: calc(var(--font-size-heading-sm) * 1.3333);   // design 24/32
-  --line-height-heading-xs: calc(var(--font-size-heading-xs) * 1.4);      // design 20/28
+  --line-height-heading-xxl: 1.2;     // design 40/48
+  --line-height-heading-xl: 1.2222;   // design 36/44
+  --line-height-heading-lg: 1.25;     // design 32/40
+  --line-height-heading-md: 1.2857;   // design 28/36
+  --line-height-heading-sm: 1.3333;   // design 24/32
+  --line-height-heading-xs: 1.4;      // design 20/28
   // Paragraph
-  --line-height-paragraph-lg: calc(var(--font-size-paragraph-lg) * 1.5556); // design 18/28
-  --line-height-paragraph-md: calc(var(--font-size-paragraph-md) * 1.5);    // design 16/24
+  --line-height-paragraph-lg: 1.5556; // design 18/28
+  --line-height-paragraph-md: 1.5;    // design 16/24
   // paragraph-sm stays fixed: its only fluid pairing (--font-size-paragraph-sm-fluid,
   // a tiny 14→16 opt-in) shares this token with the FIXED paragraph-sm font and
   // with line-clamp max-height/height truncation across ~10 consumers — making it
@@ -251,7 +253,7 @@
   }
 
   &--md {
-    height: var(--line-height-paragraph-md);
+    height: calc(var(--font-size-paragraph-md) * 1.5); // paragraph-md line box (token is now a unitless ratio)
     width: 50%;
   }
 

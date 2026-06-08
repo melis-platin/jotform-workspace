@@ -89,7 +89,7 @@
   justify-content: center;
   color: var(--fg-secondary);
   // Nudge the indicator to optically center on the first line of the question.
-  height: var(--line-height-paragraph-md);
+  height: calc(var(--font-size-paragraph-md) * 1.5); // one line box of the question text
 
   .jf-faq--pm & {
     color: var(--fg-brand);

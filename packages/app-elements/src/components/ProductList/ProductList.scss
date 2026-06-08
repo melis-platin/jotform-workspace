@@ -302,7 +302,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  max-height: var(--line-height-paragraph-md);
+  max-height: 1lh;
   width: 100%;
   margin: 0;
   outline: none;
@@ -322,7 +322,7 @@
   color: var(--fg-primary);
   overflow: hidden;
   white-space: nowrap;
-  max-height: var(--line-height-paragraph-lg); // 28px (was hardcoded)
+  max-height: 1lh;
   width: 100%;
   display: flex;
   align-items: baseline;

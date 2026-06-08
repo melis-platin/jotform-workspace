@@ -156,7 +156,7 @@
 }
 
 .jf-app-header__title-skeleton {
-  height: var(--line-height-heading-md);
+  height: calc(var(--font-size-heading-md) * 1.2857); // one line box of the title
   border-radius: var(--radius-sm);
   background: rgba(255, 255, 255, 0.15);
 }
