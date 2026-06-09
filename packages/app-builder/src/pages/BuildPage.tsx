@@ -333,6 +333,13 @@ const APP_HEADER_DEFAULTS: AppHeaderState = {
   bgSource: 'color',
 }
 
+// App Header property-panel visibility flags. These controls are intentionally
+// hidden from the panel, but their state, handlers and render logic are fully
+// preserved — flip a flag to `true` to restore the control.
+const SHOW_APP_HEADER_SIZE = false
+const SHOW_APP_HEADER_HORIZONTAL_ALIGN = false
+const SHOW_APP_HEADER_TEXT_COLOR = false
+
 // Resolve the app header's custom background fill to a CSS value (solid color or
 // gradient), or undefined when unset so the AppHeader falls back to --bg-fill-brand.
 function resolveHeaderBackground(s: AppHeaderState): string | undefined {
@@ -3521,6 +3528,7 @@ export function BuildPage({
                   if (isAppHeader && propertyTab === 'layout') {
                     return (
                       <div className="property-panel__body">
+                        {SHOW_APP_HEADER_SIZE && (
                         <div className="property-panel__field">
                           <DSFormField title="Size" size="md" showDescription={false} showHelpText={false}>
                             <Segmented
@@ -3537,6 +3545,7 @@ export function BuildPage({
                             />
                           </DSFormField>
                         </div>
+                        )}
                         <div className="property-panel__field">
                           <DSFormField title="Height" size="md" showDescription={false} showHelpText={false}>
                             <DSSlider
@@ -3552,6 +3561,7 @@ export function BuildPage({
                             />
                           </DSFormField>
                         </div>
+                        {SHOW_APP_HEADER_HORIZONTAL_ALIGN && (
                         <div className="property-panel__field">
                           <DSFormField title="Horizontal Alignment" size="md" showDescription={false} showHelpText={false}>
                             <Segmented
@@ -3567,6 +3577,7 @@ export function BuildPage({
                             />
                           </DSFormField>
                         </div>
+                        )}
                         <div className="property-panel__field">
                           <DSFormField title="Vertical Alignment" size="md" showDescription={false} showHelpText={false}>
                             <Segmented
@@ -5787,6 +5798,7 @@ export function BuildPage({
                             </DSFormField>
                           </div>
                           )}
+                          {SHOW_APP_HEADER_TEXT_COLOR && (
                           <div className="property-panel__field">
                             <DSFormField title="Text Color" size="md" showDescription={false} showHelpText={false}>
                               <Segmented
@@ -5802,6 +5814,7 @@ export function BuildPage({
                               />
                             </DSFormField>
                           </div>
+                          )}
                           <div className="property-panel__field">
                             <DSFormField title="Image Style" size="md" showDescription={false} showHelpText={false}>
                               <Segmented
