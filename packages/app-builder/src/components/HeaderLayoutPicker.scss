@@ -1,0 +1,165 @@
+// Header Layout picker — a row of selectable archetype thumbnails shown at the
+// top of the App Header Style tab. Lives in the dark properties panel. Every
+// color is a DS token: card surfaces use --secondary-background-*, the selected
+// card uses --accent-default, mock shapes use --secondary-text-white (solid, or
+// color-mixed with transparent for the translucent chip/bar placeholders).
+//
+// The mock shapes mirror the Figma source geometry 1:1 (42x24 chip / 42px-wide
+// stages centered in a 66px box; per-shape px offsets taken from the design).
+
+.header-layout-picker {
+  display: flex;
+  gap: var(--spacing-xs);
+  width: 100%;
+
+  &__option {
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2xs);
+    padding: 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  &__box {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 66px;
+    border-radius: var(--radius-sm);
+    background: var(--secondary-background-light);
+    overflow: hidden;
+    transition: background 150ms ease;
+  }
+
+  &__option--selected &__box {
+    background: var(--accent-default);
+  }
+
+  &__label {
+    font-family: var(--font-family-circular);
+    font-size: 12px;
+    line-height: 16px;
+    text-align: center;
+    color: var(--secondary-text-white);
+  }
+
+  // ---- shared mock shapes ----
+  &__line {
+    height: 2px;
+    border-radius: 1px;
+    background: var(--secondary-text-white);
+
+    &--12 { width: 12px; }
+    &--16 { width: 16px; }
+    &--24 { width: 24px; }
+  }
+
+  &__pill {
+    width: 8px;
+    height: 4px;
+    border-radius: 1px;
+    background: var(--secondary-text-white);
+  }
+
+  &__square {
+    width: 10px;
+    height: 10px;
+    border-radius: 1px;
+    background: var(--secondary-text-white);
+  }
+
+  &__avatar {
+    position: absolute;
+    left: 16px;
+    top: 7px;
+    width: 10px;
+    height: 10px;
+    border-radius: var(--radius-rounded);
+    background: var(--secondary-text-white);
+    border: 2px solid var(--secondary-background-light);
+  }
+
+  // ---- chip (Default + Hero): a translucent 42x24 inner panel, centered ----
+  &__chip {
+    position: relative;
+    width: 42px;
+    height: 24px;
+    border-radius: 2px;
+    background: color-mix(in srgb, var(--secondary-text-white) 10%, transparent);
+  }
+
+  &__chip--hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    background: color-mix(in srgb, var(--secondary-text-white) 20%, transparent);
+  }
+
+  &__hero-lines {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+
+  // Default: icon square + two short lines, the group centered within the chip.
+  &__square--default {
+    position: absolute;
+    left: 17px;
+    top: 5px;
+    width: 8px;
+    height: 8px;
+  }
+  &__at--default-l1 { position: absolute; left: 13px; top: 15px; }
+  &__at--default-l2 { position: absolute; left: 15px; top: 18px; }
+
+  // ---- Cover + Profile: a fixed-size stage centered in the box ----
+  &__stage {
+    position: relative;
+
+    &--cover { width: 42px; height: 20px; }
+    &--profile { width: 42px; height: 24px; }
+  }
+
+  // Full-width cover strip pinned to the stage top.
+  &__bar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 42px;
+    height: 12px;
+    border-radius: 2px;
+
+    &--cover { background: color-mix(in srgb, var(--secondary-text-white) 10%, transparent); }
+    &--profile { background: color-mix(in srgb, var(--secondary-text-white) 20%, transparent); }
+  }
+
+  // Cover: image block (bordered to read as a cut-out) + two text lines.
+  &__square--cover {
+    position: absolute;
+    left: 6px;
+    top: 10px;
+    border: 2px solid var(--secondary-background-light);
+  }
+  &__at--cover-l1 { position: absolute; left: 18px; top: 14px; }
+  &__at--cover-l2 { position: absolute; left: 18px; top: 17px; }
+
+  // Profile: centered avatar overlapping the strip + two centered text lines.
+  &__at--profile-l1 { position: absolute; left: 13px; top: 19px; }
+  &__at--profile-l2 { position: absolute; left: 15px; top: 22px; }
+
+  // Bordered shapes track the (accent) box surface when their card is selected.
+  &__option--selected &__square--cover,
+  &__option--selected &__avatar {
+    border-color: var(--accent-default);
+  }
+}

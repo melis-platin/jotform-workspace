@@ -56,6 +56,7 @@ import { LivePreviewLoginPopover } from '../components/LivePreviewLoginPopover'
 import { QrPopover } from '../components/QrPopover'
 import { MobileBottomBar } from '../components/MobileBottomBar'
 import { AppPreviewScreen } from '../components/AppPreviewScreen'
+import { HeaderLayoutPicker, type AppHeaderLayout } from '../components/HeaderLayoutPicker'
 import {
   draggable,
   dropTargetForElements,
@@ -222,6 +223,7 @@ function buildInitialStateFromPreset(preset: AppPreset | undefined): {
       appSubtitle: stored.appSubtitle,
       appHeader: {
         layout: storedHeader.layout ?? APP_HEADER_DEFAULTS.layout,
+        headerLayout: storedHeader.headerLayout ?? APP_HEADER_DEFAULTS.headerLayout,
         contentAlign: storedHeader.contentAlign ?? APP_HEADER_DEFAULTS.contentAlign,
         size: storedHeader.size ?? APP_HEADER_DEFAULTS.size,
         // Normalise any legacy 'auto' (the removed Auto-height toggle) to the default.
@@ -275,6 +277,10 @@ type AppHeaderSize = 'XLarge' | 'Large' | 'Medium' | 'Small'
 type AppHeaderContentAlign = 'Center' | 'Bottom'
 interface AppHeaderState {
   layout: string
+  // Selected header layout archetype. 'Hero' carries the existing style controls;
+  // Default/Cover/Profile are placeholders whose bespoke content is added later.
+  // Optional so older snapshots fall back to 'Hero'.
+  headerLayout?: AppHeaderLayout
   // Vertical content alignment: 'Center' (default) or 'Bottom' (pins the content
   // to the bottom edge). Optional so older snapshots fall back to 'Center'.
   contentAlign?: AppHeaderContentAlign
@@ -316,6 +322,7 @@ interface AppHeaderState {
 }
 const APP_HEADER_DEFAULTS: AppHeaderState = {
   layout: 'Center',
+  headerLayout: 'Hero',
   contentAlign: 'Center',
   size: 'Large',
   icon: 'Leaf',
@@ -5640,6 +5647,18 @@ export function BuildPage({
                       )}
                       {isAppHeader && propertyTab === 'style' && (
                         <>
+                          <div className="property-panel__field">
+                            <DSFormField title="Header Layout" size="md" showDescription={false} showHelpText={false}>
+                              <HeaderLayoutPicker
+                                value={appHeaderState.headerLayout ?? 'Hero'}
+                                onChange={(value) => setAppHeaderState((s) => ({ ...s, headerLayout: value }))}
+                              />
+                            </DSFormField>
+                          </div>
+                          {/* The current style controls live under the Hero layout; the other
+                              archetypes (Default/Cover/Profile) get their own content later. */}
+                          {(appHeaderState.headerLayout ?? 'Hero') === 'Hero' && (
+                          <>
                           {/* Sizing & alignment — moved here from the former Layout tab */}
                           {SHOW_APP_HEADER_SIZE && (
                           <div className="property-panel__field">
@@ -5885,6 +5904,8 @@ export function BuildPage({
                               </>
                             )}
                           </div>
+                          </>
+                          )}
                         </>
                       )}
                       {visibleVariants.map(([group, config]) => (
