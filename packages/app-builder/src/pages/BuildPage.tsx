@@ -3409,7 +3409,6 @@ export function BuildPage({
                       selectedComponent.id === 'app-header'
                         ? [
                             { value: 'general', label: 'General' },
-                            { value: 'layout', label: 'Layout' },
                             { value: 'style', label: 'Style' },
                           ]
                         : selectedComponent.id === 'card'
@@ -3518,77 +3517,6 @@ export function BuildPage({
                               placeholder="Add description"
                               value={appHeaderState.subtitle ?? appSubtitle}
                               onChange={(e) => setAppHeaderState((s) => ({ ...s, subtitle: e.target.value }))}
-                            />
-                          </DSFormField>
-                        </div>
-                      </div>
-                    )
-                  }
-
-                  if (isAppHeader && propertyTab === 'layout') {
-                    return (
-                      <div className="property-panel__body">
-                        {SHOW_APP_HEADER_SIZE && (
-                        <div className="property-panel__field">
-                          <DSFormField title="Size" size="md" showDescription={false} showHelpText={false}>
-                            <Segmented
-                              accent="apps"
-                              variant="text"
-                              value={appHeaderState.size ?? 'Large'}
-                              onChange={(value) => setAppHeaderState((s) => ({ ...s, size: value as AppHeaderSize }))}
-                              items={[
-                                { value: 'XLarge', label: 'XLarge' },
-                                { value: 'Large', label: 'Large' },
-                                { value: 'Medium', label: 'Medium' },
-                                { value: 'Small', label: 'Small' },
-                              ]}
-                            />
-                          </DSFormField>
-                        </div>
-                        )}
-                        <div className="property-panel__field">
-                          <DSFormField title="Height" size="md" showDescription={false} showHelpText={false}>
-                            <DSSlider
-                              size="md"
-                              min={APP_HEADER_HEIGHT_MIN}
-                              max={APP_HEADER_HEIGHT_MAX}
-                              step={4}
-                              value={typeof appHeaderState.minHeight === 'number' ? appHeaderState.minHeight : APP_HEADER_HEIGHT_DEFAULT}
-                              onChange={(v) => setAppHeaderState((s) => ({ ...s, minHeight: v }))}
-                              showValue
-                              formatValue={(v) => `${v}px`}
-                              aria-label="App header height"
-                            />
-                          </DSFormField>
-                        </div>
-                        {SHOW_APP_HEADER_HORIZONTAL_ALIGN && (
-                        <div className="property-panel__field">
-                          <DSFormField title="Horizontal Alignment" size="md" showDescription={false} showHelpText={false}>
-                            <Segmented
-                              accent="apps"
-                              variant="text"
-                              value={appHeaderState.layout ?? 'Center'}
-                              onChange={(value) => setAppHeaderState((s) => ({ ...s, layout: value }))}
-                              items={[
-                                { value: 'Left', label: 'Left' },
-                                { value: 'Center', label: 'Center' },
-                                { value: 'Right', label: 'Right' },
-                              ]}
-                            />
-                          </DSFormField>
-                        </div>
-                        )}
-                        <div className="property-panel__field">
-                          <DSFormField title="Vertical Alignment" size="md" showDescription={false} showHelpText={false}>
-                            <Segmented
-                              accent="apps"
-                              variant="text"
-                              value={appHeaderState.contentAlign ?? 'Center'}
-                              onChange={(value) => setAppHeaderState((s) => ({ ...s, contentAlign: value as AppHeaderContentAlign }))}
-                              items={[
-                                { value: 'Center', label: 'Center' },
-                                { value: 'Bottom', label: 'Bottom' },
-                              ]}
                             />
                           </DSFormField>
                         </div>
@@ -5569,7 +5497,7 @@ export function BuildPage({
 
                   const showVariants =
                     isAppHeader
-                      ? false // Layout (the only variant) is a custom control in the Layout tab now
+                      ? false // Layout (the only variant) is a custom control in the Style tab now
                       : isCard
                         ? (propertyTab === 'layout' || propertyTab === 'action')
                         : isList
@@ -5712,6 +5640,71 @@ export function BuildPage({
                       )}
                       {isAppHeader && propertyTab === 'style' && (
                         <>
+                          {/* Sizing & alignment — moved here from the former Layout tab */}
+                          {SHOW_APP_HEADER_SIZE && (
+                          <div className="property-panel__field">
+                            <DSFormField title="Size" size="md" showDescription={false} showHelpText={false}>
+                              <Segmented
+                                accent="apps"
+                                variant="text"
+                                value={appHeaderState.size ?? 'Large'}
+                                onChange={(value) => setAppHeaderState((s) => ({ ...s, size: value as AppHeaderSize }))}
+                                items={[
+                                  { value: 'XLarge', label: 'XLarge' },
+                                  { value: 'Large', label: 'Large' },
+                                  { value: 'Medium', label: 'Medium' },
+                                  { value: 'Small', label: 'Small' },
+                                ]}
+                              />
+                            </DSFormField>
+                          </div>
+                          )}
+                          <div className="property-panel__field">
+                            <DSFormField title="Height" size="md" showDescription={false} showHelpText={false}>
+                              <DSSlider
+                                size="md"
+                                min={APP_HEADER_HEIGHT_MIN}
+                                max={APP_HEADER_HEIGHT_MAX}
+                                step={4}
+                                value={typeof appHeaderState.minHeight === 'number' ? appHeaderState.minHeight : APP_HEADER_HEIGHT_DEFAULT}
+                                onChange={(v) => setAppHeaderState((s) => ({ ...s, minHeight: v }))}
+                                showValue
+                                formatValue={(v) => `${v}px`}
+                                aria-label="App header height"
+                              />
+                            </DSFormField>
+                          </div>
+                          {SHOW_APP_HEADER_HORIZONTAL_ALIGN && (
+                          <div className="property-panel__field">
+                            <DSFormField title="Horizontal Alignment" size="md" showDescription={false} showHelpText={false}>
+                              <Segmented
+                                accent="apps"
+                                variant="text"
+                                value={appHeaderState.layout ?? 'Center'}
+                                onChange={(value) => setAppHeaderState((s) => ({ ...s, layout: value }))}
+                                items={[
+                                  { value: 'Left', label: 'Left' },
+                                  { value: 'Center', label: 'Center' },
+                                  { value: 'Right', label: 'Right' },
+                                ]}
+                              />
+                            </DSFormField>
+                          </div>
+                          )}
+                          <div className="property-panel__field">
+                            <DSFormField title="Vertical Alignment" size="md" showDescription={false} showHelpText={false}>
+                              <Segmented
+                                accent="apps"
+                                variant="text"
+                                value={appHeaderState.contentAlign ?? 'Center'}
+                                onChange={(value) => setAppHeaderState((s) => ({ ...s, contentAlign: value as AppHeaderContentAlign }))}
+                                items={[
+                                  { value: 'Center', label: 'Center' },
+                                  { value: 'Bottom', label: 'Bottom' },
+                                ]}
+                              />
+                            </DSFormField>
+                          </div>
                           <div className="property-panel__field">
                             <DSFormField title="Background" size="md" showDescription={false} showHelpText={false}>
                               <Segmented
