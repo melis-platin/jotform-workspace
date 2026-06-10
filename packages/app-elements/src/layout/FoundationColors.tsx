@@ -39,6 +39,15 @@ const primaryShades: PaletteShade[] = [
   { name: '950', variable: '--primary-950' },
 ];
 
+const STD_STEPS = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900', '950'];
+const makeShades = (prefix: string): PaletteShade[] =>
+  STD_STEPS.map((s) => ({ name: s, variable: `--${prefix}-${s}` }));
+
+const infoShades = makeShades('info');
+const successShades = makeShades('success');
+const warningShades = makeShades('warning');
+const errorShades = makeShades('error');
+
 interface TokenDef {
   name: string;
   variable: string;
@@ -58,6 +67,14 @@ const semanticCategories: TokenCategory[] = [
       { name: 'bg-surface', variable: '--bg-surface', usage: 5 },
       { name: 'bg-surface-brand', variable: '--bg-surface-brand', usage: 12 },
       { name: 'bg-surface-brand-hover', variable: '--bg-surface-brand-hover', usage: 2 },
+      { name: 'bg-surface-info', variable: '--bg-surface-info', usage: 1 },
+      { name: 'bg-surface-info-hover', variable: '--bg-surface-info-hover', usage: 0 },
+      { name: 'bg-surface-success', variable: '--bg-surface-success', usage: 0 },
+      { name: 'bg-surface-success-hover', variable: '--bg-surface-success-hover', usage: 0 },
+      { name: 'bg-surface-warning', variable: '--bg-surface-warning', usage: 0 },
+      { name: 'bg-surface-warning-hover', variable: '--bg-surface-warning-hover', usage: 0 },
+      { name: 'bg-surface-error', variable: '--bg-surface-error', usage: 0 },
+      { name: 'bg-surface-error-hover', variable: '--bg-surface-error-hover', usage: 0 },
     ],
   },
   {
@@ -68,6 +85,18 @@ const semanticCategories: TokenCategory[] = [
       { name: 'bg-fill-brand', variable: '--bg-fill-brand', usage: 37 },
       { name: 'bg-fill-brand-hover', variable: '--bg-fill-brand-hover', usage: 5 },
       { name: 'bg-fill-brand-disabled', variable: '--bg-fill-brand-disabled', usage: 2 },
+      { name: 'bg-fill-info', variable: '--bg-fill-info', usage: 0 },
+      { name: 'bg-fill-info-hover', variable: '--bg-fill-info-hover', usage: 0 },
+      { name: 'bg-fill-info-active', variable: '--bg-fill-info-active', usage: 0 },
+      { name: 'bg-fill-success', variable: '--bg-fill-success', usage: 1 },
+      { name: 'bg-fill-success-hover', variable: '--bg-fill-success-hover', usage: 0 },
+      { name: 'bg-fill-success-active', variable: '--bg-fill-success-active', usage: 0 },
+      { name: 'bg-fill-warning', variable: '--bg-fill-warning', usage: 0 },
+      { name: 'bg-fill-warning-hover', variable: '--bg-fill-warning-hover', usage: 0 },
+      { name: 'bg-fill-warning-active', variable: '--bg-fill-warning-active', usage: 0 },
+      { name: 'bg-fill-error', variable: '--bg-fill-error', usage: 0 },
+      { name: 'bg-fill-error-hover', variable: '--bg-fill-error-hover', usage: 0 },
+      { name: 'bg-fill-error-active', variable: '--bg-fill-error-active', usage: 0 },
     ],
   },
   {
@@ -78,12 +107,25 @@ const semanticCategories: TokenCategory[] = [
       { name: 'fg-secondary', variable: '--fg-secondary', usage: 11 },
       { name: 'fg-disabled', variable: '--fg-disabled', usage: 12 },
       { name: 'fg-brand', variable: '--fg-brand', usage: 15 },
+      { name: 'fg-link', variable: '--fg-link', usage: 0 },
+      { name: 'fg-info', variable: '--fg-info', usage: 1 },
+      { name: 'fg-info-hover', variable: '--fg-info-hover', usage: 0 },
+      { name: 'fg-success', variable: '--fg-success', usage: 0 },
+      { name: 'fg-success-hover', variable: '--fg-success-hover', usage: 0 },
+      { name: 'fg-warning', variable: '--fg-warning', usage: 1 },
+      { name: 'fg-warning-hover', variable: '--fg-warning-hover', usage: 0 },
+      { name: 'fg-error', variable: '--fg-error', usage: 3 },
+      { name: 'fg-error-hover', variable: '--fg-error-hover', usage: 0 },
     ],
   },
   {
     title: 'Border',
     tokens: [
       { name: 'border', variable: '--border', usage: 29 },
+      { name: 'border-info', variable: '--border-info', usage: 29 },
+      { name: 'border-success', variable: '--border-success', usage: 0 },
+      { name: 'border-warning', variable: '--border-warning', usage: 0 },
+      { name: 'border-error', variable: '--border-error', usage: 0 },
     ],
   },
 ];
@@ -240,6 +282,10 @@ function resolveAllColors(): Map<string, ResolvedColor> {
   const allVars = [
     ...neutralShades,
     ...primaryShades,
+    ...infoShades,
+    ...successShades,
+    ...warningShades,
+    ...errorShades,
     ...allSemantic,
   ];
 
@@ -316,6 +362,10 @@ export function FoundationColors() {
           </div>
           <PaletteTable title="Neutral" shades={neutralShades} resolved={resolved} />
           <PaletteTable title="Primary" shades={primaryShades} resolved={resolved} />
+          <PaletteTable title="Info" shades={infoShades} resolved={resolved} />
+          <PaletteTable title="Success" shades={successShades} resolved={resolved} />
+          <PaletteTable title="Warning" shades={warningShades} resolved={resolved} />
+          <PaletteTable title="Error" shades={errorShades} resolved={resolved} />
           {semanticCategories.map((cat) => (
             <SemanticTable key={cat.title} title={cat.title} tokens={cat.tokens} resolved={resolved} />
           ))}

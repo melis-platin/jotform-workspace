@@ -1,14 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 
 interface FontToken {
   name: string;
   variable: string;
-}
-
-interface FontCategory {
-  title: string;
-  tokens: FontToken[];
-  preview?: string;
 }
 
 const fontFamilies: FontToken[] = [
@@ -22,58 +16,77 @@ const fontWeights: FontToken[] = [
   { name: 'Bold (600)', variable: '--font-weight-bold' },
 ];
 
-const typographyCategories: FontCategory[] = [
+interface ScaleRow {
+  name: string;
+  variable: string;
+  size: string;       // fluid range ("32 → 48px") or fixed ("14px")
+  fluid: boolean;
+  lh: string;         // "1.2" (ratio) or "20px"
+  lhRatio: boolean;   // unitless ratio that scales with the font
+}
+
+interface ScaleCategory {
+  title: string;
+  preview: string;
+  tracking: string;   // letter-spacing applied to this category
+  trackingVar: string;
+  fontVar: string;    // family used for the preview
+  bold: boolean;
+  rows: ScaleRow[];
+  note?: string;
+}
+
+// Mirrors the fluid type scale defined in app.scss (:root). Headings and body
+// lg/md are fluid — clamp() driven by `cqi` (the page card's width) with rem
+// bounds; body sm/xs and labels are fixed. Line heights are unitless ratios
+// where the font is fluid, so leading scales WITH the font.
+const scaleCategories: ScaleCategory[] = [
   {
     title: 'Heading',
     preview: 'The quick brown fox',
-    tokens: [
-      { name: 'XXL — 40px / 48px', variable: '--font-size-heading-xxl' },
-      { name: 'XL — 36px / 44px', variable: '--font-size-heading-xl' },
-      { name: 'LG — 32px / 40px', variable: '--font-size-heading-lg' },
-      { name: 'MD — 28px / 36px', variable: '--font-size-heading-md' },
-      { name: 'SM — 24px / 32px', variable: '--font-size-heading-sm' },
-      { name: 'XS — 20px / 28px', variable: '--font-size-heading-xs' },
+    tracking: '−0.02em',
+    trackingVar: '--letter-spacing-heading',
+    fontVar: '--font-family-heading',
+    bold: true,
+    rows: [
+      { name: 'XXL', variable: '--font-size-heading-xxl', size: '32 → 48px', fluid: true, lh: '1.2', lhRatio: true },
+      { name: 'XL', variable: '--font-size-heading-xl', size: '30 → 44px', fluid: true, lh: '1.222', lhRatio: true },
+      { name: 'LG', variable: '--font-size-heading-lg', size: '26 → 38px', fluid: true, lh: '1.25', lhRatio: true },
+      { name: 'MD', variable: '--font-size-heading-md', size: '24 → 32px', fluid: true, lh: '1.286', lhRatio: true },
+      { name: 'SM', variable: '--font-size-heading-sm', size: '20 → 28px', fluid: true, lh: '1.333', lhRatio: true },
+      { name: 'XS', variable: '--font-size-heading-xs', size: '18 → 22px', fluid: true, lh: '1.4', lhRatio: true },
     ],
   },
   {
     title: 'Paragraph',
     preview: 'The quick brown fox jumps over the lazy dog',
-    tokens: [
-      { name: 'LG — 18px / 28px', variable: '--font-size-paragraph-lg' },
-      { name: 'MD — 16px / 24px', variable: '--font-size-paragraph-md' },
-      { name: 'SM — 14px / 20px', variable: '--font-size-paragraph-sm' },
-      { name: 'XS — 12px / 20px', variable: '--font-size-paragraph-xs' },
+    tracking: 'normal',
+    trackingVar: '--letter-spacing-paragraph',
+    fontVar: '--font-family',
+    bold: false,
+    rows: [
+      { name: 'LG', variable: '--font-size-paragraph-lg', size: '18 → 20px', fluid: true, lh: '1.556', lhRatio: true },
+      { name: 'MD', variable: '--font-size-paragraph-md', size: '16 → 18px', fluid: true, lh: '1.5', lhRatio: true },
+      { name: 'SM', variable: '--font-size-paragraph-sm', size: '14px', fluid: false, lh: '20px', lhRatio: false },
+      { name: 'XS', variable: '--font-size-paragraph-xs', size: '12px', fluid: false, lh: '20px', lhRatio: false },
     ],
+    note: 'Opt-in fluid variant --font-size-paragraph-sm-fluid scales 14 → 16px for card / list-item descriptions; paragraph-sm itself stays fixed (≈13 compact contexts depend on it).',
   },
   {
     title: 'Label',
     preview: 'Label text',
-    tokens: [
-      { name: 'LG — 16px / 24px', variable: '--font-size-label-lg' },
-      { name: 'MD — 14px / 20px', variable: '--font-size-label-md' },
-      { name: 'SM — 12px / 16px', variable: '--font-size-label-sm' },
-      { name: 'XS — 10px / 14px', variable: '--font-size-label-xs' },
+    tracking: 'normal',
+    trackingVar: '--letter-spacing-label',
+    fontVar: '--font-family',
+    bold: false,
+    rows: [
+      { name: 'LG', variable: '--font-size-label-lg', size: '16px', fluid: false, lh: '24px', lhRatio: false },
+      { name: 'MD', variable: '--font-size-label-md', size: '14px', fluid: false, lh: '20px', lhRatio: false },
+      { name: 'SM', variable: '--font-size-label-sm', size: '12px', fluid: false, lh: '16px', lhRatio: false },
+      { name: 'XS', variable: '--font-size-label-xs', size: '10px', fluid: false, lh: '14px', lhRatio: false },
     ],
   },
 ];
-
-function resolveLineHeight(variable: string): string {
-  const temp = document.createElement('div');
-  temp.style.lineHeight = `var(${variable})`;
-  document.documentElement.appendChild(temp);
-  const value = getComputedStyle(temp).lineHeight;
-  document.documentElement.removeChild(temp);
-  return value;
-}
-
-function resolveValue(variable: string): string {
-  const temp = document.createElement('div');
-  temp.style.setProperty('font-size', `var(${variable})`);
-  document.documentElement.appendChild(temp);
-  const value = getComputedStyle(temp).fontSize;
-  document.documentElement.removeChild(temp);
-  return value;
-}
 
 function resolveFontFamily(variable: string): string {
   const temp = document.createElement('div');
@@ -84,20 +97,21 @@ function resolveFontFamily(variable: string): string {
   return value;
 }
 
-const TypeColGroup = () => (
-  <colgroup>
-    <col style={{ width: '30%' }} />
-    <col style={{ width: '10%' }} />
-    <col style={{ width: '60%' }} />
-  </colgroup>
-);
+function Badge({ fluid }: { fluid: boolean }) {
+  return (
+    <span className={`foundation-tokens__badge foundation-tokens__badge--${fluid ? 'fluid' : 'fixed'}`}>
+      {fluid ? 'Fluid' : 'Fixed'}
+    </span>
+  );
+}
 
-const TypeScaleColGroup = () => (
+const ScaleColGroup = () => (
   <colgroup>
-    <col style={{ width: '25%' }} />
-    <col style={{ width: '10%' }} />
-    <col style={{ width: '10%' }} />
-    <col style={{ width: '55%' }} />
+    <col style={{ width: '22%' }} />
+    <col style={{ width: '20%' }} />
+    <col style={{ width: '13%' }} />
+    <col style={{ width: '12%' }} />
+    <col style={{ width: '33%' }} />
   </colgroup>
 );
 
@@ -116,13 +130,6 @@ export function FoundationTypography() {
       map.set(token.variable, getComputedStyle(temp).fontWeight);
       document.documentElement.removeChild(temp);
     }
-    for (const cat of typographyCategories) {
-      for (const token of cat.tokens) {
-        map.set(token.variable, resolveValue(token.variable));
-        const lhVar = token.variable.replace('font-size', 'line-height');
-        map.set(lhVar, resolveLineHeight(lhVar));
-      }
-    }
     setResolved(map);
   }, []);
 
@@ -136,11 +143,49 @@ export function FoundationTypography() {
           </div>
         </div>
         <div className="foundation-tokens">
+          {/* Responsive system legend */}
+          <div className="foundation-tokens__legend">
+            <h3 className="foundation-tokens__legend-title">Responsive type scale</h3>
+            <ul className="foundation-tokens__legend-list">
+              <li><strong>Headings &amp; body LG/MD are fluid</strong> — sized with <code>clamp()</code> driven by <code>cqi</code> (1% of the page card&apos;s width), so type scales to the device/page, not the browser viewport. Bounds are in <code>rem</code> (zoom-safe, WCAG 1.4.4).</li>
+              <li><strong>Body SM/XS and all labels are fixed</strong> — a legibility floor (body stays ≥ 16px).</li>
+              <li><strong>Line heights are unitless ratios</strong> for fluid sizes, so leading scales with the font; fixed <code>px</code> elsewhere. One-line height reservation uses the <code>lh</code> unit.</li>
+              <li><strong>Headings track −0.02em</strong> (em-based, scales with size); body &amp; labels use normal tracking.</li>
+              <li><strong>Text wrap:</strong> titles use <code>text-wrap: balance</code>; descriptions use <code>pretty</code>.</li>
+            </ul>
+          </div>
+
+          {/* Live responsive demo — drag the handle to watch headings scale */}
+          <div className="foundation-tokens__section">
+            <h3 className="foundation-tokens__section-title">Live scaling</h3>
+            <p className="foundation-tokens__hint">Drag the bottom-right handle to resize the container — the heading scales fluidly between its min and max (this box is the <code>cqi</code> container).</p>
+            <div className="foundation-tokens__resize-demo">
+              <span
+                className="jf-heading__title"
+                style={{
+                  fontSize: 'var(--font-size-heading-xl)',
+                  lineHeight: 'var(--line-height-heading-xl)',
+                  letterSpacing: 'var(--letter-spacing-heading)',
+                  fontFamily: 'var(--font-family-heading)',
+                  fontWeight: 'var(--font-weight-bold)' as unknown as number,
+                  color: 'var(--color-text)',
+                  display: 'block',
+                }}
+              >
+                The quick brown fox
+              </span>
+            </div>
+          </div>
+
           {/* Font Families */}
           <div className="foundation-tokens__section">
             <h3 className="foundation-tokens__section-title">Font Family</h3>
             <table className="foundation-tokens__table">
-              <TypeColGroup />
+              <colgroup>
+                <col style={{ width: '30%' }} />
+                <col style={{ width: '25%' }} />
+                <col style={{ width: '45%' }} />
+              </colgroup>
               <thead>
                 <tr>
                   <th>Token</th>
@@ -172,7 +217,11 @@ export function FoundationTypography() {
           <div className="foundation-tokens__section">
             <h3 className="foundation-tokens__section-title">Font Weight</h3>
             <table className="foundation-tokens__table">
-              <TypeColGroup />
+              <colgroup>
+                <col style={{ width: '30%' }} />
+                <col style={{ width: '25%' }} />
+                <col style={{ width: '45%' }} />
+              </colgroup>
               <thead>
                 <tr>
                   <th>Token</th>
@@ -197,42 +246,56 @@ export function FoundationTypography() {
           </div>
 
           {/* Type Scale */}
-          {typographyCategories.map((cat) => (
+          {scaleCategories.map((cat) => (
             <div key={cat.title} className="foundation-tokens__section">
               <h3 className="foundation-tokens__section-title">{cat.title}</h3>
               <table className="foundation-tokens__table">
-                <TypeScaleColGroup />
+                <ScaleColGroup />
                 <thead>
                   <tr>
                     <th>Token</th>
                     <th>Size</th>
-                    <th>Line Height</th>
+                    <th>Line height</th>
+                    <th>Tracking</th>
                     <th>Preview</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {cat.tokens.map((token) => {
-                    const lineHeightVar = token.variable.replace('font-size', 'line-height');
+                  {cat.rows.map((row) => {
+                    const lineHeightVar = row.variable.replace('font-size', 'line-height');
+                    const previewStyle: CSSProperties = {
+                      fontSize: `var(${row.variable})`,
+                      lineHeight: `var(${lineHeightVar})`,
+                      letterSpacing: `var(${cat.trackingVar})`,
+                      fontFamily: `var(${cat.fontVar})`,
+                      fontWeight: cat.bold ? ('var(--font-weight-bold)' as unknown as number) : undefined,
+                      display: 'block',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                    };
                     return (
-                      <tr key={token.variable}>
-                        <td className="foundation-tokens__table-token"><code>{token.variable}</code></td>
-                        <td className="foundation-tokens__table-value">{resolved.get(token.variable) ?? ''}</td>
-                        <td className="foundation-tokens__table-value">{resolved.get(lineHeightVar) ?? ''}</td>
-                        <td>
-                          <span style={{
-                            fontSize: `var(${token.variable})`,
-                            lineHeight: `var(${lineHeightVar})`,
-                            fontFamily: cat.title === 'Heading' ? 'var(--font-family-heading)' : 'var(--font-family)',
-                            fontWeight: cat.title === 'Heading' ? 'var(--font-weight-bold)' as unknown as number : undefined,
-                          }}>
-                            {cat.preview}
+                      <tr key={row.variable}>
+                        <td className="foundation-tokens__table-token"><code>{row.variable}</code></td>
+                        <td className="foundation-tokens__table-value">
+                          <span className="foundation-tokens__size-cell">
+                            {row.size}
+                            <Badge fluid={row.fluid} />
                           </span>
+                        </td>
+                        <td className="foundation-tokens__table-value">
+                          {row.lh}{row.lhRatio && <span className="foundation-tokens__lh-hint"> ×</span>}
+                        </td>
+                        <td className="foundation-tokens__table-value">{cat.tracking}</td>
+                        <td>
+                          <span style={previewStyle}>{cat.preview}</span>
                         </td>
                       </tr>
                     );
                   })}
                 </tbody>
               </table>
+              {cat.note && <p className="foundation-tokens__hint foundation-tokens__hint--note">{cat.note}</p>}
             </div>
           ))}
         </div>

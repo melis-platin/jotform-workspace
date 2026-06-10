@@ -42,6 +42,47 @@ const semanticToPrimitiveMap: Record<string, string> = {
   '--border-secondary': 'neutral-200',
   '--border-tertiary': 'neutral-50',
   '--border-brand': 'primary-200',
+
+  // Status — Surface
+  '--bg-surface-info': 'info-100',
+  '--bg-surface-info-hover': 'info-200',
+  '--bg-surface-success': 'success-100',
+  '--bg-surface-success-hover': 'success-200',
+  '--bg-surface-warning': 'warning-100',
+  '--bg-surface-warning-hover': 'warning-200',
+  '--bg-surface-error': 'error-100',
+  '--bg-surface-error-hover': 'error-200',
+
+  // Status — Fill
+  '--bg-fill-info': 'info-600',
+  '--bg-fill-info-hover': 'info-700',
+  '--bg-fill-info-active': 'info-700',
+  '--bg-fill-success': 'success-600',
+  '--bg-fill-success-hover': 'success-700',
+  '--bg-fill-success-active': 'success-700',
+  '--bg-fill-warning': 'warning-600',
+  '--bg-fill-warning-hover': 'warning-700',
+  '--bg-fill-warning-active': 'warning-700',
+  '--bg-fill-error': 'error-600',
+  '--bg-fill-error-hover': 'error-700',
+  '--bg-fill-error-active': 'error-700',
+
+  // Status — Foreground
+  '--fg-link': 'info-600',
+  '--fg-info': 'info-600',
+  '--fg-info-hover': 'info-700',
+  '--fg-success': 'success-600',
+  '--fg-success-hover': 'success-700',
+  '--fg-warning': 'warning-600',
+  '--fg-warning-hover': 'warning-700',
+  '--fg-error': 'error-600',
+  '--fg-error-hover': 'error-700',
+
+  // Status — Border
+  '--border-info': 'info-500',
+  '--border-success': 'success-500',
+  '--border-warning': 'warning-500',
+  '--border-error': 'error-500',
 };
 
 /**
@@ -88,6 +129,41 @@ const darkSemanticToPrimitiveMap: Record<string, string> = {
   '--border': 'neutral-100',
   '--border-hover': 'neutral-200',
   '--border-active': 'neutral-200',
+
+  // Status — same ramp steps as light; the dark ramp redefinition handles inversion
+  '--bg-surface-info': 'info-100',
+  '--bg-surface-info-hover': 'info-200',
+  '--bg-surface-success': 'success-100',
+  '--bg-surface-success-hover': 'success-200',
+  '--bg-surface-warning': 'warning-100',
+  '--bg-surface-warning-hover': 'warning-200',
+  '--bg-surface-error': 'error-100',
+  '--bg-surface-error-hover': 'error-200',
+  '--bg-fill-info': 'info-600',
+  '--bg-fill-info-hover': 'info-700',
+  '--bg-fill-info-active': 'info-700',
+  '--bg-fill-success': 'success-600',
+  '--bg-fill-success-hover': 'success-700',
+  '--bg-fill-success-active': 'success-700',
+  '--bg-fill-warning': 'warning-600',
+  '--bg-fill-warning-hover': 'warning-700',
+  '--bg-fill-warning-active': 'warning-700',
+  '--bg-fill-error': 'error-600',
+  '--bg-fill-error-hover': 'error-700',
+  '--bg-fill-error-active': 'error-700',
+  '--fg-link': 'info-600',
+  '--fg-info': 'info-600',
+  '--fg-info-hover': 'info-700',
+  '--fg-success': 'success-600',
+  '--fg-success-hover': 'success-700',
+  '--fg-warning': 'warning-600',
+  '--fg-warning-hover': 'warning-700',
+  '--fg-error': 'error-600',
+  '--fg-error-hover': 'error-700',
+  '--border-info': 'info-500',
+  '--border-success': 'success-500',
+  '--border-warning': 'warning-500',
+  '--border-error': 'error-500',
 };
 
 export function resolvePrimitiveDark(variable: string): string {
