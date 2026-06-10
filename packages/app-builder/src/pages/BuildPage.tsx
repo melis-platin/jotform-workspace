@@ -445,10 +445,14 @@ function HeroCtaButton({
   cta,
   interactive,
   onNavigate,
+  onSelect,
 }: {
   cta: HeroCtaConfig
   interactive: boolean
   onNavigate?: (pageId: string) => void
+  // Builder canvas only: clicking the CTA selects the app header (and opens the tab
+  // where the CTA settings live) instead of dispatching the runtime action.
+  onSelect?: () => void
 }) {
   // null when there's no CollectionsProvider above (e.g. the builder canvas).
   const collections = useCollections()
@@ -482,7 +486,16 @@ function HeroCtaButton({
   }
   const clickable = interactive && cta.action !== 'Do Nothing'
   return (
-    <div className="live-preview__header-action">
+    <div
+      className="live-preview__header-action"
+      onClick={onSelect ? (e) => {
+        e.stopPropagation()
+        onSelect()
+        // Focus the label for inline editing (a contentEditable inside a <button>
+        // isn't reliably focused by the native click, so do it explicitly).
+        e.currentTarget.querySelector<HTMLElement>('.jf-btn__label')?.focus()
+      } : undefined}
+    >
       <AppButton
         variant="Default"
         size="Default"
@@ -2159,8 +2172,31 @@ export function BuildPage({
       })
     }
 
+    // CTA button label — inline-editable on the canvas (single line). Inside a
+    // <button> so we force user-select:text; commit to ctaLabel on blur / Enter.
+    const ctaLabelEl = container.querySelector('.jf-app-header__actions .jf-btn__label') as HTMLElement | null
+    if (ctaLabelEl) {
+      ctaLabelEl.contentEditable = 'true'
+      ctaLabelEl.style.outline = 'none'
+      ctaLabelEl.style.cursor = 'text'
+      ctaLabelEl.style.userSelect = 'text'
+      const onCtaKeyDown = (e: KeyboardEvent) => {
+        if (e.key === 'Enter') { e.preventDefault(); ctaLabelEl.blur() }
+      }
+      const onCtaBlur = () => {
+        const newText = ctaLabelEl.innerText.replace(/\s+/g, ' ').trim()
+        setAppHeaderState((s) => ({ ...s, ctaLabel: newText || 'Button' }))
+      }
+      ctaLabelEl.addEventListener('keydown', onCtaKeyDown)
+      ctaLabelEl.addEventListener('blur', onCtaBlur)
+      cleanups.push(() => {
+        ctaLabelEl.removeEventListener('keydown', onCtaKeyDown)
+        ctaLabelEl.removeEventListener('blur', onCtaBlur)
+      })
+    }
+
     return () => cleanups.forEach((fn) => fn())
-  }, [appTitle, appSubtitle, appHeaderState.title, appHeaderState.subtitle])
+  }, [appTitle, appSubtitle, appHeaderState.title, appHeaderState.subtitle, appHeaderState.ctaLabel, appHeaderState.ctaEnabled, appHeaderState.headerLayout])
 
   const [activeTab, setActiveTab] = useState<'basic' | 'widgets'>('basic')
   const [widgetSearch, setWidgetSearch] = useState('')
@@ -3358,7 +3394,7 @@ export function BuildPage({
                   actionsSlotRef={headerActionsSlotRef}
                   actions={
                     appHeaderIsHero ? (
-                      heroCtaActive ? <HeroCtaButton cta={heroCtaConfig} interactive={false} /> : null
+                      heroCtaActive ? <HeroCtaButton cta={heroCtaConfig} interactive={false} onSelect={() => { setSelectedElementId(APP_HEADER_ID); setRightPanel('properties'); setPropertyTab('style') }} /> : null
                     ) : (
                     <DropEdgeContext.Provider value={handleHeaderDropEdgeChange}>
                       {headerActions.map((element, idx) => {
