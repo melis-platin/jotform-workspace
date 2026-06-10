@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, Fragment } from 'react'
 import { createPortal } from 'react-dom'
 import {
   Icon,
@@ -34,6 +34,10 @@ export type NavAlignment = 'left' | 'center' | 'right'
 // content capped to the page width (760px); 'compact' = app-page-width floating
 // bar with a centred menu; 'left' = sidebar.
 export type DesktopNavVariant = 'top' | 'contained' | 'compact' | 'left'
+
+// Bottom nav shows this many tabs before the rest collapse into the "More" menu —
+// must match the live bottom-nav overflow in BuildPage (slice(0, 4) / length >= 5).
+const BOTTOM_NAV_MAX_TABS = 4
 
 export interface NavMenuPage {
   id: string
@@ -74,7 +78,8 @@ interface NavigationMenuPanelProps {
   /** Add a hidden page back into the nav (un-hides it). */
   onAddToNav: (pageId: string) => void
   onClose: () => void
-  /** Active platform tab — controlled so the builder canvas preview can mirror it. */
+  /** Active tab — Desktop / Mobile. Controlled so the builder canvas preview can
+   *  mirror the platform. */
   tab: 'mobile' | 'desktop'
   onTabChange: (tab: 'mobile' | 'desktop') => void
 }
@@ -240,8 +245,8 @@ export function NavigationMenuPanel({
           value={tab}
           onChange={(v) => onTabChange(v as 'mobile' | 'desktop')}
           items={[
-            { value: 'mobile', label: 'Mobile' },
             { value: 'desktop', label: 'Desktop' },
+            { value: 'mobile', label: 'Mobile' },
           ]}
         />
       </div>
@@ -293,14 +298,22 @@ export function NavigationMenuPanel({
                       strategy={verticalListSortingStrategy}
                     >
                       <div className="nav-menu-list">
-                        {navPages.map((page) => (
-                          <NavMenuItem
-                            key={page.id}
-                            page={page}
-                            onChangeIcon={(icon) => onChangeIcon(page.id, icon)}
-                            onRemove={() => onRemoveFromNav(page.id)}
-                            canRemove={navPages.length > 2}
-                          />
+                        {navPages.map((page, i) => (
+                          <Fragment key={page.id}>
+                            {/* "More" threshold — pages past the bottom-bar limit fall
+                                into the overflow "More" menu (matches the live bottom nav). */}
+                            {navPages.length > BOTTOM_NAV_MAX_TABS && i === BOTTOM_NAV_MAX_TABS && (
+                              <div className="nav-menu-divider" aria-hidden="true">
+                                <span>More menu</span>
+                              </div>
+                            )}
+                            <NavMenuItem
+                              page={page}
+                              onChangeIcon={(icon) => onChangeIcon(page.id, icon)}
+                              onRemove={() => onRemoveFromNav(page.id)}
+                              canRemove={navPages.length > 2}
+                            />
+                          </Fragment>
                         ))}
                       </div>
                     </SortableContext>

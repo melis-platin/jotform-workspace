@@ -1515,9 +1515,10 @@ export function BuildPage({
   // Bottom-navigation menu settings (mobile), edited via the Navigation Menu panel.
   const [bottomNavEnabled, setBottomNavEnabled] = useState(true)
   const [bottomNavDisplayStyle, setBottomNavDisplayStyle] = useState<'iconText' | 'icon'>('iconText')
-  // Mobile/Desktop tab of the Navigation Properties panel — lifted here so the
-  // builder canvas can mirror it as a live preview while the panel is open.
-  const [navMenuTab, setNavMenuTab] = useState<'mobile' | 'desktop'>('mobile')
+  // Desktop/Mobile tab of the Navigation Properties panel — lifted here so the builder
+  // canvas can mirror the platform as a live preview while the panel is open. Defaults
+  // to desktop (the panel opens on the Desktop tab → desktop preview).
+  const [navMenuTab, setNavMenuTab] = useState<'mobile' | 'desktop'>('desktop')
   const [topNavEnabled, setTopNavEnabled] = useState(true)
   // Mobile only: the top nav bar drops its background and overlays the first-page
   // hero (content goes light to match the hero text). See live-preview__top-header--transparent.
@@ -1829,11 +1830,11 @@ export function BuildPage({
     return () => previewContentScalerEl.removeEventListener('scroll', onScroll)
   }, [previewContentScalerEl, previewDevice, desktopNavVariant, desktopNavSticky, pages, isPreviewLoggedIn])
 
-  // While the Navigation Properties panel is open, mirror its Mobile/Desktop tab
-  // onto the canvas preview device so the left builder area previews the choice.
+  // While the Navigation Properties panel is open, mirror its tab onto the canvas
+  // preview device. Pages + Desktop preview on desktop (the default), Mobile on phone.
   useEffect(() => {
     if (rightPanel === 'navigation') {
-      setPreviewDevice(navMenuTab === 'desktop' ? 'desktop' : 'phone')
+      setPreviewDevice(navMenuTab === 'mobile' ? 'phone' : 'desktop')
     }
   }, [rightPanel, navMenuTab])
 

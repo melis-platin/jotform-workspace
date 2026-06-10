@@ -6124,6 +6124,25 @@ body {
   width: 100%;
 }
 
+// "More" threshold inside the bottom-nav Menu Items list — pages below it collapse
+// into the overflow "More" menu. Reordering across it moves a page in/out of the bar.
+.nav-menu-divider {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-book);
+  color: var(--gray-400);
+  user-select: none;
+}
+.nav-menu-divider::before,
+.nav-menu-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--gray-700);
+}
+
 .nav-menu-item {
   display: flex;
   align-items: center;
