@@ -13,6 +13,9 @@ import {
   BottomSheet,
   AppIcon,
   CollectionsProvider,
+  useCollections,
+  type FormSchema,
+  type FormField,
   CartProvider,
   FavoritesProvider,
   ProductDetailProvider,
@@ -245,6 +248,24 @@ function buildInitialStateFromPreset(preset: AppPreset | undefined): {
         gradientEnd: storedHeader.gradientEnd,
         title: storedHeader.title,
         subtitle: storedHeader.subtitle,
+        ctaEnabled: typeof storedHeader.ctaEnabled === 'boolean' ? storedHeader.ctaEnabled : APP_HEADER_DEFAULTS.ctaEnabled,
+        ctaLabel: storedHeader.ctaLabel ?? APP_HEADER_DEFAULTS.ctaLabel,
+        // Normalise legacy CTA action values from earlier iterations.
+        ctaAction: ((): AppHeaderCtaAction => {
+          const a = storedHeader.ctaAction as string | undefined
+          if (a === 'Open Link') return 'Open URL'
+          if (!a || a === 'None' || a === 'Sign up' || a === 'Login') return APP_HEADER_DEFAULTS.ctaAction ?? 'Do Nothing'
+          return a as AppHeaderCtaAction
+        })(),
+        ctaPageId: storedHeader.ctaPageId,
+        ctaUrl: storedHeader.ctaUrl,
+        ctaEmail: storedHeader.ctaEmail,
+        ctaPhone: storedHeader.ctaPhone,
+        ctaFormTitle: storedHeader.ctaFormTitle,
+        ctaFormDescription: storedHeader.ctaFormDescription,
+        ctaFormSubmitLabel: storedHeader.ctaFormSubmitLabel,
+        ctaFormFields: storedHeader.ctaFormFields,
+        ctaSubmitsTo: storedHeader.ctaSubmitsTo,
       },
     }
   }
@@ -275,6 +296,7 @@ const APP_HEADER_ID = 'app-header'
 type AppHeaderImageStyle = 'Image' | 'Icon' | 'None'
 type AppHeaderSize = 'XLarge' | 'Large' | 'Medium' | 'Small'
 type AppHeaderContentAlign = 'Center' | 'Bottom'
+type AppHeaderCtaAction = 'Do Nothing' | 'Navigate to Page' | 'Open Form' | 'Open URL' | 'Send Email' | 'Make Call'
 interface AppHeaderState {
   layout: string
   // Selected header layout archetype. 'Hero' carries the existing style controls;
@@ -319,6 +341,21 @@ interface AppHeaderState {
   // the chrome-level app name.
   title?: string
   subtitle?: string
+  // Hero-only CTA button, configured purely by props (replaces the drag-and-drop
+  // header actions for the Hero layout). Disabled by default; when enabled, the
+  // action drives the click behaviour and each action reads its own sub-fields.
+  ctaEnabled?: boolean
+  ctaLabel?: string
+  ctaAction?: AppHeaderCtaAction
+  ctaPageId?: string // 'Navigate to Page'
+  ctaUrl?: string // 'Open URL'
+  ctaEmail?: string // 'Send Email'
+  ctaPhone?: string // 'Make Call'
+  ctaFormTitle?: string // 'Open Form' ↓
+  ctaFormDescription?: string
+  ctaFormSubmitLabel?: string
+  ctaFormFields?: string
+  ctaSubmitsTo?: string
 }
 const APP_HEADER_DEFAULTS: AppHeaderState = {
   layout: 'Center',
@@ -338,6 +375,9 @@ const APP_HEADER_DEFAULTS: AppHeaderState = {
   backgroundMode: 'solid',
   textColorMode: 'auto',
   bgSource: 'color',
+  ctaEnabled: false,
+  ctaLabel: 'Get Started',
+  ctaAction: 'Do Nothing',
 }
 
 // App Header property-panel visibility flags. These controls are intentionally
@@ -346,6 +386,115 @@ const APP_HEADER_DEFAULTS: AppHeaderState = {
 const SHOW_APP_HEADER_SIZE = false
 const SHOW_APP_HEADER_HORIZONTAL_ALIGN = false
 const SHOW_APP_HEADER_TEXT_COLOR = false
+const SHOW_APP_HEADER_VERTICAL_ALIGN = false
+const SHOW_APP_HEADER_IMAGE_STYLE = false
+
+// Available actions for the Hero CTA button's "Button Action" dropdown — mirrors
+// the List/Card "Card Actions" set (same values + icons) for consistency.
+const APP_HEADER_CTA_ACTION_OPTIONS: { value: AppHeaderCtaAction; label: string; icon: string; iconCategory: string }[] = [
+  { value: 'Do Nothing', label: 'Do Nothing', icon: 'minus-sm', iconCategory: 'general' },
+  { value: 'Navigate to Page', label: 'Navigate to Page', icon: 'form-title-filled', iconCategory: 'general' },
+  { value: 'Open Form', label: 'Open Form', icon: 'form-filled', iconCategory: 'forms-files' },
+  { value: 'Open URL', label: 'Open URL', icon: 'link-horizontal', iconCategory: 'general' },
+  { value: 'Send Email', label: 'Send Email', icon: 'envelope-closed-filled', iconCategory: 'communication' },
+  { value: 'Make Call', label: 'Make Call', icon: 'phone-filled', iconCategory: 'communication' },
+]
+
+// Parse the Open Form "Form Fields" string into FormField[] — mirrors the Button
+// element's own parser so the hero CTA opens an identical form.
+function parseCtaFields(raw?: string): FormField[] {
+  if (!raw) return []
+  const trimmed = raw.trim()
+  if (!trimmed) return []
+  if (trimmed.startsWith('[')) {
+    try {
+      const parsed = JSON.parse(trimmed)
+      if (Array.isArray(parsed)) return parsed as FormField[]
+    } catch {
+      /* fall through to CSV */
+    }
+  }
+  return trimmed
+    .split(',')
+    .map((part) => {
+      const name = part.trim()
+      return { name, label: name, type: 'text' as const }
+    })
+    .filter((f) => f.name)
+}
+
+interface HeroCtaConfig {
+  label: string
+  action: AppHeaderCtaAction
+  pageId?: string
+  url?: string
+  email?: string
+  phone?: string
+  formTitle?: string
+  formDescription?: string
+  formSubmitLabel?: string
+  formFields?: string
+  submitsTo?: string
+}
+
+// The Hero header's prop-based CTA button — replaces the drag-and-drop header
+// actions for the Hero layout. In the live preview it dispatches its configured
+// action; in the builder canvas it renders non-interactively (interactive=false)
+// so clicks fall through to select the header.
+function HeroCtaButton({
+  cta,
+  interactive,
+  onNavigate,
+}: {
+  cta: HeroCtaConfig
+  interactive: boolean
+  onNavigate?: (pageId: string) => void
+}) {
+  // null when there's no CollectionsProvider above (e.g. the builder canvas).
+  const collections = useCollections()
+  const handleClick = () => {
+    switch (cta.action) {
+      case 'Navigate to Page':
+        if (cta.pageId) onNavigate?.(cta.pageId)
+        break
+      case 'Open URL':
+        if (cta.url) window.open(cta.url, '_blank', 'noopener,noreferrer')
+        break
+      case 'Send Email':
+        if (cta.email) window.open(`mailto:${cta.email}`, '_self')
+        break
+      case 'Make Call':
+        if (cta.phone) window.open(`tel:${cta.phone}`, '_self')
+        break
+      case 'Open Form':
+        if (collections) {
+          const schema: FormSchema = {
+            title: cta.formTitle || 'Add new item',
+            description: cta.formDescription || undefined,
+            submitButtonLabel: cta.formSubmitLabel || 'Submit',
+            submitsTo: cta.submitsTo || '',
+            fields: parseCtaFields(cta.formFields),
+          }
+          collections.openForm(schema)
+        }
+        break
+    }
+  }
+  const clickable = interactive && cta.action !== 'Do Nothing'
+  return (
+    <div className="live-preview__header-action">
+      <AppButton
+        variant="Default"
+        size="Default"
+        width="Auto"
+        leftIcon="none"
+        rightIcon="none"
+        label={cta.label || 'Button'}
+        onClick={clickable ? handleClick : undefined}
+      />
+    </div>
+  )
+}
 
 // Resolve the app header's custom background fill to a CSS value (solid color or
 // gradient), or undefined when unset so the AppHeader falls back to --bg-fill-brand.
@@ -1369,7 +1518,10 @@ export function BuildPage({
   // Mobile/Desktop tab of the Navigation Properties panel — lifted here so the
   // builder canvas can mirror it as a live preview while the panel is open.
   const [navMenuTab, setNavMenuTab] = useState<'mobile' | 'desktop'>('mobile')
-  const [topNavEnabled, setTopNavEnabled] = useState(false)
+  const [topNavEnabled, setTopNavEnabled] = useState(true)
+  // Mobile only: the top nav bar drops its background and overlays the first-page
+  // hero (content goes light to match the hero text). See live-preview__top-header--transparent.
+  const [topNavTransparent, setTopNavTransparent] = useState(false)
   // Desktop navigation — independent from the mobile settings above.
   const [desktopNavVariant, setDesktopNavVariant] = useState<'top' | 'contained' | 'compact' | 'left'>('top')
   const [desktopNavEnabled, setDesktopNavEnabled] = useState(true)
@@ -1604,6 +1756,9 @@ export function BuildPage({
   // starts scrolling.
   const [previewContentScalerEl, setPreviewContentScalerEl] = useState<HTMLDivElement | null>(null)
   const [isPreviewContentScrolled, setIsPreviewContentScrolled] = useState(false)
+  // Transparent top nav: true while the hero is still behind the bar (→ transparent
+  // overlay); false once the bar sits over the page content below it (→ solid bar).
+  const [topNavOverHero, setTopNavOverHero] = useState(true)
   // Non-sticky desktop top nav: the bar scrolls away with the content on
   // scroll-down (transform tied to scroll, no animation) and slides back in on
   // scroll-up (CSS transition). Driven imperatively to avoid per-frame renders.
@@ -1612,6 +1767,7 @@ export function BuildPage({
   useEffect(() => {
     if (!previewContentScalerEl) {
       setIsPreviewContentScrolled(false)
+      setTopNavOverHero(true)
       return
     }
     const autoHide =
@@ -1641,6 +1797,14 @@ export function BuildPage({
     const onScroll = () => {
       const st = previewContentScalerEl.scrollTop
       setIsPreviewContentScrolled(st > 0)
+      // Transparent top nav stays transparent only while the hero is still behind the
+      // bar; once the hero's bottom rises above the bar's bottom, page content is behind
+      // it → switch to a solid bar. Rects are post-transform, so the 0.9 scale is handled.
+      const navEl = previewTopHeaderRef.current
+      const heroEl = previewContentScalerEl.querySelector('.jf-app-header') as HTMLElement | null
+      setTopNavOverHero(
+        !!navEl && !!heroEl && heroEl.getBoundingClientRect().bottom > navEl.getBoundingClientRect().bottom
+      )
       if (!autoHide) return
       const header = previewTopHeaderRef.current
       if (!header) return
@@ -1774,7 +1938,39 @@ export function BuildPage({
     dragSession?.type === 'canvas' &&
     headerActions.some((a) => a.id === dragSession.elementId)
 
+  // Hero layout uses a prop-based CTA (HeroCtaButton) instead of drag-and-drop
+  // header actions, so the whole DnD add/drop path is gated off for it. Other
+  // layouts (Default/Cover/Profile) keep the header-actions DnD.
+  const appHeaderIsHero = (appHeaderState.headerLayout ?? 'Hero') === 'Hero'
+  const heroCtaConfig: HeroCtaConfig = {
+    label: appHeaderState.ctaLabel ?? 'Get Started',
+    action: appHeaderState.ctaAction ?? 'Do Nothing',
+    pageId: appHeaderState.ctaPageId,
+    url: appHeaderState.ctaUrl,
+    email: appHeaderState.ctaEmail,
+    phone: appHeaderState.ctaPhone,
+    formTitle: appHeaderState.ctaFormTitle,
+    formDescription: appHeaderState.ctaFormDescription,
+    formSubmitLabel: appHeaderState.ctaFormSubmitLabel,
+    formFields: appHeaderState.ctaFormFields,
+    submitsTo: appHeaderState.ctaSubmitsTo,
+  }
+  const heroCtaActive = appHeaderIsHero && (appHeaderState.ctaEnabled ?? false)
+  // Transparent (overlay) mobile top nav — only on the first page while the hero is
+  // shown, and only on the phone shell (the 54px status-bar offset is phone-specific).
+  // Content follows the hero's resolved text color so it stays legible over the scrim.
+  const activeIsFirstPage = (pages.find((p) => p.id === activePageId) ?? pages[0])?.id === pages[0]?.id
+  // Not while the hamburger menu is open — the menu covers the hero with a solid
+  // panel, so the nav reverts to its normal (opaque) bar there (close icon visible,
+  // content no longer tucked under the bar).
+  const topNavOverlay = topNavEnabled && topNavTransparent && activeIsFirstPage && appHeaderState.show && previewDevice === 'phone' && !isMorePageOpen
+  const topNavOverlayFg = resolveHeaderTextColor(appHeaderState)
+  // Mobile top header is shown unless Top Navigation is toggled off (desktop has its
+  // own nav controls). When hidden, the content/hero starts below the status bar.
+  const mobileTopHeaderHidden = previewDevice !== 'desktop' && !topNavEnabled
+
   const canDropInHeader = (() => {
+    if (appHeaderIsHero) return false
     if (!dragSession) return false
     if (!HEADER_ACTION_ALLOWED.includes(dragSession.componentId)) return false
     if (dragSession.type === 'canvas') {
@@ -1795,6 +1991,9 @@ export function BuildPage({
   useEffect(() => {
     const el = headerActionsSlotRef.current
     if (!el) return
+    // Hero layout has no header-actions DnD — don't register the slot as a drop
+    // target (re-runs when the layout toggles).
+    if (appHeaderIsHero) return
     return dropTargetForElements({
       element: el,
       canDrop: ({ source }) => {
@@ -1826,7 +2025,7 @@ export function BuildPage({
         setHeaderDropTarget(null)
       },
     })
-  }, [])
+  }, [appHeaderIsHero])
 
   const handleCloseDesigner = useCallback(() => {
     setRightPanel('preview')
@@ -2609,7 +2808,7 @@ export function BuildPage({
           }}
         />
       )}
-      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${desktopNavVariant === 'compact' ? ' live-preview__top-header--compact' : ''}${desktopNavVariant === 'contained' ? ' live-preview__top-header--contained' : ''}`} data-nav-align={desktopNavAlignment}>
+      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${desktopNavVariant === 'compact' ? ' live-preview__top-header--compact' : ''}${desktopNavVariant === 'contained' ? ' live-preview__top-header--contained' : ''}${topNavOverlay ? ' live-preview__top-header--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__top-header--over-content' : ''}${mobileTopHeaderHidden ? ' live-preview__top-header--hidden' : ''}`} style={topNavOverlay && topNavOverHero ? { color: topNavOverlayFg } : undefined} data-nav-align={desktopNavAlignment}>
         {(() => {
           // Profile system page: a back affordance + "Profile" title (mobile/tablet
           // only — desktop keeps its branded nav). Desktop exits via the nav links.
@@ -2851,7 +3050,7 @@ export function BuildPage({
           </div>
         </aside>
       )}
-      <div ref={setPreviewContentScalerEl} className="live-preview__content-scaler app-scope">
+      <div ref={setPreviewContentScalerEl} className={`live-preview__content-scaler app-scope${mobileTopHeaderHidden ? ' live-preview__content-scaler--no-top-nav' : ''}`}>
         <div className="live-preview__content app-scope">
           {isPreviewProfileOpen ? (
             <>
@@ -2878,8 +3077,8 @@ export function BuildPage({
               onPageSelect={handleMorePageSelect}
               isLoggedIn={isPreviewLoggedIn}
               large={showLandingNav}
-              onLoginClick={() => setPreviewAuthView('login')}
-              onSignUpClick={() => setPreviewAuthView('signup')}
+              onLoginClick={() => { setIsMorePageOpen(false); setPreviewAuthView('login') }}
+              onSignUpClick={() => { setIsMorePageOpen(false); setPreviewAuthView('signup') }}
             />
           ) : (() => {
             const activePage = pages.find((p) => p.id === activePageId) || pages[0]
@@ -2902,7 +3101,9 @@ export function BuildPage({
                   skeleton={appHeaderState.skeleton}
                   title={appHeaderState.title ?? appTitle}
                   subtitle={appHeaderState.subtitle ?? appSubtitle}
-                  actions={headerActions.map((el) => {
+                  actions={appHeaderIsHero ? (
+                    heroCtaActive ? <HeroCtaButton cta={heroCtaConfig} interactive onNavigate={navigateToPage} /> : null
+                  ) : headerActions.map((el) => {
                     const comp = ComponentRegistry.get(el.componentId)
                     if (!comp) return null
                     const isShrinked = el.componentId === 'button' && el.properties['Shrinked'] === true
@@ -3156,6 +3357,9 @@ export function BuildPage({
                   }}
                   actionsSlotRef={headerActionsSlotRef}
                   actions={
+                    appHeaderIsHero ? (
+                      heroCtaActive ? <HeroCtaButton cta={heroCtaConfig} interactive={false} /> : null
+                    ) : (
                     <DropEdgeContext.Provider value={handleHeaderDropEdgeChange}>
                       {headerActions.map((element, idx) => {
                         const partnerIdx = headerPairPartnerIndex(headerActions, idx)
@@ -3194,6 +3398,7 @@ export function BuildPage({
                       })()}
                       <CanvasDropLine target={headerDropTarget} containerRef={headerActionsSlotRef} />
                     </DropEdgeContext.Provider>
+                    )
                   }
                 />}
                 {!appHeaderState.show && (
@@ -3354,6 +3559,7 @@ export function BuildPage({
                 enabled={bottomNavEnabled}
                 displayStyle={bottomNavDisplayStyle}
                 topNavEnabled={topNavEnabled}
+                topNavTransparent={topNavTransparent}
                 desktopVariant={desktopNavVariant}
                 desktopEnabled={desktopNavEnabled}
                 desktopDisplayStyle={desktopNavDisplayStyle}
@@ -3363,6 +3569,7 @@ export function BuildPage({
                 onToggleEnabled={setBottomNavEnabled}
                 onChangeDisplayStyle={setBottomNavDisplayStyle}
                 onToggleTopNavEnabled={setTopNavEnabled}
+                onToggleTopNavTransparent={setTopNavTransparent}
                 onToggleDesktopEnabled={setDesktopNavEnabled}
                 onChangeDesktopDisplayStyle={setDesktopNavDisplayStyle}
                 onChangeDesktopAlignment={setDesktopNavAlignment}
@@ -5759,6 +5966,7 @@ export function BuildPage({
                             </DSFormField>
                           </div>
                           )}
+                          {SHOW_APP_HEADER_VERTICAL_ALIGN && (
                           <div className="property-panel__field">
                             <DSFormField title="Vertical Alignment" size="md" showDescription={false} showHelpText={false}>
                               <Segmented
@@ -5773,6 +5981,7 @@ export function BuildPage({
                               />
                             </DSFormField>
                           </div>
+                          )}
                           <div className="property-panel__field">
                             <DSFormField title="Background" size="md" showDescription={false} showHelpText={false}>
                               <Segmented
@@ -5876,6 +6085,7 @@ export function BuildPage({
                             </DSFormField>
                           </div>
                           )}
+                          {SHOW_APP_HEADER_IMAGE_STYLE && (
                           <div className="property-panel__field">
                             <DSFormField title="Image Style" size="md" showDescription={false} showHelpText={false}>
                               <Segmented
@@ -5953,6 +6163,129 @@ export function BuildPage({
                               </>
                             )}
                           </div>
+                          )}
+                          {/* CTA Button — Hero-only, prop-based replacement for the
+                              drag-and-drop header actions. Toggle to enable, then set a
+                              label + action (each action reveals its own sub-field). */}
+                          <div className="property-panel__field property-panel__field--inline">
+                            <DSFormField title="CTA Button" size="md" showDescription={false} showHelpText={false}>
+                              <DSToggle
+                                size="md"
+                                checked={appHeaderState.ctaEnabled ?? false}
+                                onChange={(e) => setAppHeaderState((s) => ({ ...s, ctaEnabled: e.target.checked }))}
+                              />
+                            </DSFormField>
+                          </div>
+                          {(appHeaderState.ctaEnabled ?? false) && (
+                          <>
+                          <div className="property-panel__field">
+                            <DSFormField title="Button Text" size="md" showDescription={false} showHelpText={false}>
+                              <DSInput
+                                value={appHeaderState.ctaLabel ?? ''}
+                                placeholder="Get Started"
+                                onChange={(e) => setAppHeaderState((s) => ({ ...s, ctaLabel: e.target.value }))}
+                              />
+                            </DSFormField>
+                          </div>
+                          <div className="property-panel__field">
+                            <DSFormField title="Button Action" size="md" showDescription={false} showHelpText={false}>
+                              <DSDropdownSingle
+                                value={appHeaderState.ctaAction ?? 'None'}
+                                onChange={(val) => setAppHeaderState((s) => ({ ...s, ctaAction: val as AppHeaderCtaAction }))}
+                                options={APP_HEADER_CTA_ACTION_OPTIONS.map((o) => ({
+                                  value: o.value,
+                                  label: o.label,
+                                  leading: <Icon name={o.icon} category={o.iconCategory} size={20} />,
+                                }))}
+                              />
+                            </DSFormField>
+                          </div>
+                          {appHeaderState.ctaAction === 'Navigate to Page' && (
+                          <div className="property-panel__field">
+                            <DSFormField title="Target Page" size="md" showDescription={false} showHelpText={false}>
+                              <DSDropdownSingle
+                                value={appHeaderState.ctaPageId ?? (pages[0]?.id ?? '')}
+                                onChange={(val) => setAppHeaderState((s) => ({ ...s, ctaPageId: val }))}
+                                options={pages.map((p) => ({ value: p.id, label: p.name }))}
+                              />
+                            </DSFormField>
+                          </div>
+                          )}
+                          {appHeaderState.ctaAction === 'Open URL' && (
+                          <div className="property-panel__field">
+                            <DSFormField title="URL" size="md" showDescription={false} showHelpText={false}>
+                              <DSInput
+                                value={appHeaderState.ctaUrl ?? ''}
+                                placeholder="https://example.com"
+                                onChange={(e) => setAppHeaderState((s) => ({ ...s, ctaUrl: e.target.value }))}
+                              />
+                            </DSFormField>
+                          </div>
+                          )}
+                          {appHeaderState.ctaAction === 'Send Email' && (
+                          <div className="property-panel__field">
+                            <DSFormField title="Email Address" size="md" showDescription={false} showHelpText={false}>
+                              <DSInput
+                                value={appHeaderState.ctaEmail ?? ''}
+                                placeholder="hello@example.com"
+                                onChange={(e) => setAppHeaderState((s) => ({ ...s, ctaEmail: e.target.value }))}
+                              />
+                            </DSFormField>
+                          </div>
+                          )}
+                          {appHeaderState.ctaAction === 'Make Call' && (
+                          <div className="property-panel__field">
+                            <DSFormField title="Phone Number" size="md" showDescription={false} showHelpText={false}>
+                              <DSInput
+                                value={appHeaderState.ctaPhone ?? ''}
+                                placeholder="+1 555 000 0000"
+                                onChange={(e) => setAppHeaderState((s) => ({ ...s, ctaPhone: e.target.value }))}
+                              />
+                            </DSFormField>
+                          </div>
+                          )}
+                          {appHeaderState.ctaAction === 'Open Form' && (
+                          <>
+                          <div className="property-panel__field">
+                            <DSFormField title="Form Title" size="md" showDescription={false} showHelpText={false}>
+                              <DSInput
+                                value={appHeaderState.ctaFormTitle ?? ''}
+                                placeholder="Add new item"
+                                onChange={(e) => setAppHeaderState((s) => ({ ...s, ctaFormTitle: e.target.value }))}
+                              />
+                            </DSFormField>
+                          </div>
+                          <div className="property-panel__field">
+                            <DSFormField title="Form Fields" size="md" description="Comma-separated field names, or a JSON array of fields." showDescription showHelpText={false}>
+                              <DSInput
+                                value={appHeaderState.ctaFormFields ?? ''}
+                                placeholder="Name, Email, Message"
+                                onChange={(e) => setAppHeaderState((s) => ({ ...s, ctaFormFields: e.target.value }))}
+                              />
+                            </DSFormField>
+                          </div>
+                          <div className="property-panel__field">
+                            <DSFormField title="Submit Label" size="md" showDescription={false} showHelpText={false}>
+                              <DSInput
+                                value={appHeaderState.ctaFormSubmitLabel ?? ''}
+                                placeholder="Submit"
+                                onChange={(e) => setAppHeaderState((s) => ({ ...s, ctaFormSubmitLabel: e.target.value }))}
+                              />
+                            </DSFormField>
+                          </div>
+                          <div className="property-panel__field">
+                            <DSFormField title="Submits To" size="md" showDescription={false} showHelpText={false}>
+                              <DSInput
+                                value={appHeaderState.ctaSubmitsTo ?? ''}
+                                placeholder="Collection or endpoint"
+                                onChange={(e) => setAppHeaderState((s) => ({ ...s, ctaSubmitsTo: e.target.value }))}
+                              />
+                            </DSFormField>
+                          </div>
+                          </>
+                          )}
+                          </>
+                          )}
                           </>
                           )}
                         </>
@@ -6130,7 +6463,7 @@ export function BuildPage({
                           }}
                         />
                       )}
-                      <div className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}`} data-nav-align={desktopNavAlignment}>
+                      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${topNavOverlay ? ' live-preview__top-header--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__top-header--over-content' : ''}${mobileTopHeaderHidden ? ' live-preview__top-header--hidden' : ''}`} style={topNavOverlay && topNavOverHero ? { color: topNavOverlayFg } : undefined} data-nav-align={desktopNavAlignment}>
                         {(() => {
                           // Profile system page: a back affordance + "Profile" title
                           // (mobile/tablet only — desktop keeps its branded nav).
@@ -6251,7 +6584,7 @@ export function BuildPage({
                           onLoggedIn={handlePreviewLogin}
                         />
                       )}
-                      <div ref={setPreviewContentScalerEl} className="live-preview__content-scaler app-scope">
+                      <div ref={setPreviewContentScalerEl} className={`live-preview__content-scaler app-scope${mobileTopHeaderHidden ? ' live-preview__content-scaler--no-top-nav' : ''}`}>
                         <div className="live-preview__content app-scope">
                           {isPreviewProfileOpen ? (
                             <>
@@ -6278,8 +6611,8 @@ export function BuildPage({
                               onPageSelect={handleMorePageSelect}
                               isLoggedIn={isPreviewLoggedIn}
                               large={showLandingNav}
-                              onLoginClick={() => setPreviewAuthView('login')}
-                              onSignUpClick={() => setPreviewAuthView('signup')}
+                              onLoginClick={() => { setIsMorePageOpen(false); setPreviewAuthView('login') }}
+                              onSignUpClick={() => { setIsMorePageOpen(false); setPreviewAuthView('signup') }}
                             />
                           ) : (() => {
                             const activePage = pages.find((p) => p.id === activePageId) || pages[0]
@@ -6302,7 +6635,9 @@ export function BuildPage({
                                   skeleton={appHeaderState.skeleton}
                                   title={appHeaderState.title ?? appTitle}
                                   subtitle={appHeaderState.subtitle ?? appSubtitle}
-                                  actions={headerActions.map((el) => {
+                                  actions={appHeaderIsHero ? (
+                                    heroCtaActive ? <HeroCtaButton cta={heroCtaConfig} interactive onNavigate={navigateToPage} /> : null
+                                  ) : headerActions.map((el) => {
                                     const comp = ComponentRegistry.get(el.componentId)
                                     if (!comp) return null
                                     const isShrinked = el.componentId === 'button' && el.properties['Shrinked'] === true

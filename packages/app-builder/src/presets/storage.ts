@@ -34,6 +34,19 @@ export interface PresetSnapshot {
     backgroundImageName?: string | null
     title?: string
     subtitle?: string
+    // Hero-only prop-based CTA button.
+    ctaEnabled?: boolean
+    ctaLabel?: string
+    ctaAction?: string
+    ctaPageId?: string
+    ctaUrl?: string
+    ctaEmail?: string
+    ctaPhone?: string
+    ctaFormTitle?: string
+    ctaFormDescription?: string
+    ctaFormSubmitLabel?: string
+    ctaFormFields?: string
+    ctaSubmitsTo?: string
   }
 }
 

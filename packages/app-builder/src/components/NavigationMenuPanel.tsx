@@ -49,6 +49,8 @@ interface NavigationMenuPanelProps {
   enabled: boolean
   displayStyle: NavDisplayStyle
   topNavEnabled: boolean
+  /** Mobile only: the top nav bar has no background and overlays the first-page hero. */
+  topNavTransparent: boolean
   desktopVariant: DesktopNavVariant
   desktopEnabled: boolean
   desktopDisplayStyle: DesktopDisplayStyle
@@ -59,6 +61,7 @@ interface NavigationMenuPanelProps {
   onToggleEnabled: (enabled: boolean) => void
   onChangeDisplayStyle: (style: NavDisplayStyle) => void
   onToggleTopNavEnabled: (enabled: boolean) => void
+  onToggleTopNavTransparent: (transparent: boolean) => void
   onToggleDesktopEnabled: (enabled: boolean) => void
   onChangeDesktopDisplayStyle: (style: DesktopDisplayStyle) => void
   onChangeDesktopAlignment: (align: NavAlignment) => void
@@ -162,6 +165,7 @@ export function NavigationMenuPanel({
   enabled,
   displayStyle,
   topNavEnabled,
+  topNavTransparent,
   desktopVariant,
   desktopEnabled,
   desktopDisplayStyle,
@@ -171,6 +175,7 @@ export function NavigationMenuPanel({
   onToggleEnabled,
   onChangeDisplayStyle,
   onToggleTopNavEnabled,
+  onToggleTopNavTransparent,
   onToggleDesktopEnabled,
   onChangeDesktopDisplayStyle,
   onChangeDesktopAlignment,
@@ -338,6 +343,23 @@ export function NavigationMenuPanel({
               />
             </DSFormField>
           </div>
+
+          {topNavEnabled && (
+            <div className="property-panel__field property-panel__field--inline">
+              <DSFormField
+                title="Transparent"
+                size="md"
+                showDescription={false}
+                showHelpText={false}
+              >
+                <DSToggle
+                  size="md"
+                  checked={topNavTransparent}
+                  onChange={(e) => onToggleTopNavTransparent(e.target.checked)}
+                />
+              </DSFormField>
+            </div>
+          )}
 
         </div>
       )}

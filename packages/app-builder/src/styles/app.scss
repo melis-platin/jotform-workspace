@@ -1107,6 +1107,12 @@ body {
 .build-page__nav-preview--mobile .live-preview__content-scaler {
   padding-top: 68px;
 }
+// Transparent top nav: no status bar in this preview, so the hero runs to the very
+// top of the card behind the (top:0) transparent bar — overrides the global 54px
+// rule (which assumes the phone shell's 54px status bar).
+.build-page__nav-preview--mobile .live-preview__top-header--transparent ~ .live-preview__content-scaler {
+  padding-top: 0;
+}
 
 // Desktop: a wide framed surface; the desktop nav layout renders inside.
 // Desktop: a framed card, but with tighter surrounding padding than the default
@@ -1682,7 +1688,9 @@ body {
   left: 0;
   right: 0;
   height: 32px;
-  z-index: 1;
+  // Above the top-header (z-index 4) so the nav bar tucks UNDER the safe-area
+  // status bar as it scroll-hides (mirrors the phone shell).
+  z-index: 5;
   background: var(--bg-surface);
 
   [data-theme='dark'] & {
@@ -1695,7 +1703,8 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 3;
+  // Above both the tablet status-bar-bg (z-index 5) and the top-header (z-index 4).
+  z-index: 6;
   display: block;
   width: 100%;
   height: 32px;
@@ -1709,7 +1718,9 @@ body {
   left: 0;
   right: 0;
   height: 54px;
-  z-index: 1;
+  // Above the top-header (z-index 4) so the nav bar tucks UNDER the safe-area
+  // status bar as it scroll-hides, instead of sliding over the clock/battery.
+  z-index: 5;
   background: var(--bg-surface);
 
   [data-theme='dark'] & {
@@ -1722,7 +1733,9 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 3;
+  // Above both the status-bar-bg (z-index 5) and the top-header (z-index 4) so
+  // the clock/battery stay painted over the nav bar as it tucks under.
+  z-index: 6;
   display: block;
   width: 100%;
   height: auto;
@@ -1745,7 +1758,11 @@ body {
   color: var(--fg-primary);
   border-bottom: 1px solid transparent;
   box-shadow: none;
-  transition: border-bottom-color 0.15s ease, box-shadow 0.15s ease;
+  // Match the desktop top nav's slide-in: the scroll-up reappearance animates
+  // the transform (scroll-down hiding sets transition:none for lockstep tracking).
+  // background-color + color animate the transparent⇄solid swap at the very top
+  // (children using `color: inherit` follow the parent's animated color).
+  transition: transform 0.25s ease, background-color 0.2s ease, color 0.2s ease, border-bottom-color 0.15s ease, box-shadow 0.15s ease;
 
   [data-theme='dark'] & {
     background: var(--bg-surface-hover);
@@ -1755,6 +1772,54 @@ body {
     border-bottom-color: var(--border);
     box-shadow: var(--shadow-sm);
   }
+}
+
+// Transparent (overlay) variant — mobile top nav with no background, sitting over
+// the first-page hero. Content color is the inline hero text color (set in
+// BuildPage) so the title / menu glyph stay legible over the photo scrim.
+.live-preview__top-header--transparent,
+[data-theme='dark'] .live-preview__top-header--transparent {
+  background: transparent;
+  border-bottom-color: transparent;
+  box-shadow: none;
+}
+// Once the hero scrolls up past the bar (page content now behind it), revert to the
+// solid bar so the logo/title/menu stay legible — transparent only while the hero is
+// behind it. (BuildPage drops the inline light color in this state, so content falls
+// back to the base --fg-primary here.) Driven by the hero/bar overlap check, not raw
+// scroll position, so the bar stays transparent while the hero is still visible.
+.live-preview__top-header--transparent.live-preview__top-header--over-content {
+  background: var(--bg-surface);
+  border-bottom-color: var(--border);
+  box-shadow: var(--shadow-sm);
+}
+[data-theme='dark'] .live-preview__top-header--transparent.live-preview__top-header--over-content {
+  background: var(--bg-surface-hover);
+}
+// menu-btn pins --fg-primary; the title inherits — force both to follow the inline color.
+.live-preview__top-header--transparent .live-preview__top-header-menu-btn,
+.live-preview__top-header--transparent .live-preview__top-header-compact-title {
+  color: inherit;
+}
+// The first-page hero runs up behind the transparent nav: clear only the status
+// bar (54px) rather than status-bar + nav (102px), so the photo fills behind it.
+.live-preview__top-header--transparent ~ .live-preview__content-scaler {
+  padding-top: 54px;
+}
+
+// Top Navigation off — the mobile top bar is hidden and the content/hero starts just
+// below the status bar (phone 54px, tablet 32px; the nav preview has no status bar).
+.live-preview__top-header--hidden {
+  display: none;
+}
+.live-preview__content-scaler.live-preview__content-scaler--no-top-nav {
+  padding-top: 54px;
+}
+.live-preview__tablet-screen > .live-preview__content-scaler.live-preview__content-scaler--no-top-nav {
+  padding-top: 32px;
+}
+.build-page__nav-preview--mobile .live-preview__content-scaler.live-preview__content-scaler--no-top-nav {
+  padding-top: 0;
 }
 
 .live-preview__top-header-btn {
@@ -2611,6 +2676,15 @@ body {
 .live-preview__phone-screen:has(.live-preview__bottom-nav) > .live-preview__content-scaler,
 .live-preview__tablet-screen:has(.live-preview__bottom-nav) > .live-preview__content-scaler {
   padding-bottom: 0;
+}
+
+// Landing hamburger menu: a fixed, full-height panel (nav items + a bottom-pinned
+// Login/Sign up footer) sized to fit — it must never scroll. Lock the scaler so
+// the scale-compensation slack (.live-preview__content lays out at 1/0.9 height)
+// can't introduce a phantom scroll. Scoped to --lg so the bottom-nav "More"
+// overflow page keeps its scroll for long page lists.
+.live-preview__content-scaler:has(.live-preview__more-pages--lg) {
+  overflow: hidden;
 }
 
 .live-preview__content {
