@@ -1673,6 +1673,17 @@ export function BuildPage({
     }
   }, [rightPanel, navMenuTab])
 
+  // Esc closes the Navigation Properties panel (same as its ✕ button), returning
+  // the canvas to the editing view.
+  useEffect(() => {
+    if (rightPanel !== 'navigation') return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setRightPanel('preview')
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [rightPanel])
+
   // The hamburger / "More" menu reuses the page's scroll container, which also
   // carries a small scale-compensation overflow — so a page scrolled before
   // opening the menu would leave the menu scrolled too. Reset to the top when it

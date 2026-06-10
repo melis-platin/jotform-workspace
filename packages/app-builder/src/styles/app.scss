@@ -1063,6 +1063,10 @@ body {
   width: 100%;
   min-height: 100%;
   padding: var(--spacing-2xl, 40px) var(--spacing-lg, 24px);
+  // Fixed builder-canvas surround (NOT the app's --bg-page, which the app's dark
+  // theme turns dark and makes the preview blend into the canvas). Keeps the
+  // preview reading as a distinct surface on any app theme.
+  background: var(--ds-bg-page);
 }
 
 // Mobile: clean phone-aspect card (matches the live preview's screen, minus the
@@ -1090,13 +1094,35 @@ body {
   display: none;
 }
 
+// With the status bar gone, the top header sits flush at the very top (top: 0)
+// like desktop — not 54px down, where the full-bleed landing hero would peek
+// above it. An opaque safe-area inset keeps the phone radius (44px): the bar's
+// surface fills the top — including the rounded corners — while its content is
+// padded below the corner curve so the logo / menu button aren't clipped.
+.build-page__nav-preview--mobile .live-preview__top-header {
+  top: 0;
+  height: 68px; // 20px safe area + 48px bar
+  padding-top: 20px;
+}
+.build-page__nav-preview--mobile .live-preview__content-scaler {
+  padding-top: 68px;
+}
+
 // Desktop: a wide framed surface; the desktop nav layout renders inside.
+// Desktop: a framed card, but with tighter surrounding padding than the default
+// and no max-width cap so the preview fills more of the canvas (more minimal).
+.build-page__nav-preview--desktop {
+  padding: var(--spacing-md, 16px);
+}
 .build-page__nav-preview--desktop .build-page__nav-preview-frame {
   width: 100%;
-  max-width: 1200px;
-  min-height: 640px;
+  max-width: none;
+  min-height: 100%;
   border-radius: var(--radius-lg, 12px);
   overflow: hidden;
+  // Border + shadow give the frame a crisp edge even when its content shares the
+  // canvas surround's tone (e.g. a dark-themed app on a light builder canvas).
+  border: 1px solid var(--gray-100);
   box-shadow: var(--shadow-lg);
   background: var(--bg-page, #f3f3fe);
 }
@@ -3802,9 +3828,10 @@ body {
   font-size: var(--font-size-heading-xs);
 }
 
-// Divider between landing-menu page items — app-elements --border token (matches
-// the rest of the live-preview chrome separators). Not after the last item.
-.live-preview__more-pages--lg .live-preview__more-pages-list li:not(:last-child) {
+// Divider between menu page items — app-elements --border token (matches the
+// rest of the live-preview chrome separators). Not after the last item. Applies
+// to both the landing hamburger menu (--lg) and the bottom-nav "More" overflow.
+.live-preview__more-pages-list li:not(:last-child) {
   border-bottom: 1px solid var(--border);
 }
 
