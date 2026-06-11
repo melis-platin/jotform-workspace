@@ -112,3 +112,8 @@
 .jf-banner__cta {
   margin-top: var(--space-2);
 }
+
+// Unconfigured CTA (no action wired to the button) reads as not-yet-set.
+.jf-banner__cta--inactive {
+  opacity: 0.5;
+}

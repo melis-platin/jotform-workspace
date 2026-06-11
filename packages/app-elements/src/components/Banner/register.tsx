@@ -1,5 +1,5 @@
 import { ComponentRegistry } from '../../types/registry';
-import { Banner, type BannerAlignment, type BannerBgSource, type BannerBgMode, type BannerTextMode } from './Banner';
+import { Banner, BANNER_TITLE_PLACEHOLDER, BANNER_DESCRIPTION_PLACEHOLDER, type BannerAlignment, type BannerBgSource, type BannerBgMode, type BannerTextMode } from './Banner';
 import type { VariantValues, PropertyValues, StateValues } from '../../types/component';
 import bannerScss from './Banner.scss?raw';
 
@@ -18,8 +18,10 @@ ComponentRegistry.register({
 
   properties: [
     // Content
-    { name: 'Title', type: 'text', default: 'Ready to grow your business?' },
-    { name: 'Description', type: 'text', default: 'Join thousands of teams already building with us — it only takes a minute to start.' },
+    // Empty by default so the panel inputs read as placeholders (no text to delete);
+    // the canvas + inline editor show the placeholder copy until the user types.
+    { name: 'Title', type: 'text', default: '', placeholder: BANNER_TITLE_PLACEHOLDER },
+    { name: 'Description', type: 'text', default: '', placeholder: BANNER_DESCRIPTION_PLACEHOLDER },
     { name: 'Button Label', type: 'text', default: 'Get started free' },
     { name: 'Show Button', type: 'boolean', default: true },
     // Button action (stored intent — mirrors the Card/Button action model)
@@ -111,6 +113,7 @@ ComponentRegistry.register({
         title={props['Title'] as string}
         description={props['Description'] as string}
         buttonLabel={props['Button Label'] as string}
+        buttonAction={props['Button Action'] as string}
         showButton={props['Show Button'] as boolean}
         alignment={(variants['Alignment'] as BannerAlignment) ?? 'Center'}
         bgSource={(props['Background Source'] as BannerBgSource) || 'theme'}

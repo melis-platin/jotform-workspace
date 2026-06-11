@@ -7,10 +7,17 @@ export type BannerBgSource = 'theme' | 'color' | 'image';
 export type BannerBgMode = 'solid' | 'gradient';
 export type BannerTextMode = 'auto' | 'light' | 'dark';
 
+// Placeholder copy for a freshly-added banner — shown muted until the user edits
+// the title/description (the inline editor seeds these as its default/placeholder).
+export const BANNER_TITLE_PLACEHOLDER = 'Banner title';
+export const BANNER_DESCRIPTION_PLACEHOLDER = 'Add description';
+
 export interface BannerProps {
   title?: string;
   description?: string;
   buttonLabel?: string;
+  /** Button action intent — when 'Do Nothing' (unset), the CTA renders muted. */
+  buttonAction?: string;
   showButton?: boolean;
   alignment?: BannerAlignment;
   bgSource?: BannerBgSource;
@@ -41,9 +48,10 @@ function bgIsDark(hex: string): boolean {
 }
 
 export const Banner: FC<BannerProps> = ({
-  title = 'Ready to grow your business?',
-  description = 'Join thousands of teams already building with us — it only takes a minute to start.',
+  title = BANNER_TITLE_PLACEHOLDER,
+  description = BANNER_DESCRIPTION_PLACEHOLDER,
   buttonLabel = 'Get started free',
+  buttonAction = 'Do Nothing',
   showButton = true,
   alignment = 'Center',
   bgSource = 'theme',
@@ -111,13 +119,19 @@ export const Banner: FC<BannerProps> = ({
     );
   }
 
+  // No action wired to the CTA → render it muted so it reads as not-yet-configured.
+  const buttonInactive = !buttonAction || buttonAction === 'Do Nothing';
+
   return (
     <div className={rootClass} style={style}>
       <div className="jf-banner__content">
-        <h2 className="jf-banner__title">{title}</h2>
-        <p className="jf-banner__description">{description}</p>
+        {/* Always render the placeholder copy at FULL opacity (like the app-header
+            title). The inline editor clears it to a dimmed placeholder on FOCUS — so it
+            reads as real default copy until you actually click in to edit (no deleting). */}
+        <h2 className="jf-banner__title">{title || BANNER_TITLE_PLACEHOLDER}</h2>
+        <p className="jf-banner__description">{description || BANNER_DESCRIPTION_PLACEHOLDER}</p>
         {showButton && (
-          <div className="jf-banner__cta">
+          <div className={`jf-banner__cta${buttonInactive ? ' jf-banner__cta--inactive' : ''}`}>
             <Button label={buttonLabel} variant="Default" leftIcon="none" rightIcon="none" />
           </div>
         )}

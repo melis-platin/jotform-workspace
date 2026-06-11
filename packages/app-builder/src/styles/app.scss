@@ -4456,7 +4456,10 @@ body {
 .build-page__inline-placeholder {
   &::before {
     content: attr(data-placeholder);
-    color: var(--fg-disabled);
+    // Same colour as the field's own text, just dimmed — not a separate grey, so
+    // the placeholder reads as a faded version of what you're about to type.
+    color: inherit;
+    opacity: 0.5;
     pointer-events: none;
   }
 }

@@ -1186,7 +1186,7 @@ const SortableElement = memo(function SortableElement({
         el.style.cursor = 'text'
         const propDef = ComponentRegistry.get(element.componentId)?.properties.find((p) => p.name === field.property)
         const defaultValue = String(propDef?.default || '')
-        const placeholderText = defaultValue || field.property
+        const placeholderText = defaultValue || propDef?.placeholder || field.property
         el.dataset.placeholder = placeholderText
 
         if (!el.textContent) {
@@ -1194,7 +1194,10 @@ const SortableElement = memo(function SortableElement({
         }
 
         const handleFocus = () => {
-          if (defaultValue && el.textContent === defaultValue) {
+          // Clear the rendered placeholder copy on focus so there's nothing to delete —
+          // matches when the value is the registered default OR the field's placeholder
+          // (components render `value || placeholder`, e.g. the Banner's empty default).
+          if ((defaultValue && el.textContent === defaultValue) || (propDef?.placeholder && el.textContent === propDef.placeholder)) {
             el.textContent = ''
             el.classList.add('build-page__inline-placeholder')
           }
@@ -1218,7 +1221,10 @@ const SortableElement = memo(function SortableElement({
             onPropertyChange(element.id, field.property, newText)
           } else {
             onPropertyChange(element.id, field.property, defaultValue)
-            el.textContent = defaultValue
+            // Restore the rendered placeholder copy at full opacity. With an empty
+            // default (e.g. Banner) the property stays empty (so the panel input shows
+            // its placeholder), but the canvas must still show `value || placeholder`.
+            el.textContent = defaultValue || propDef?.placeholder || ''
           }
         }
 
@@ -4214,12 +4220,12 @@ export function BuildPage({
                       <div className="property-panel__body">
                         <div className="property-panel__field">
                           <DSFormField title="Title" size="md" showDescription={false} showHelpText={false}>
-                            <DSInput value={str('Title')} placeholder="Title" onChange={(e) => set('Title', e.target.value)} />
+                            <DSInput value={str('Title')} placeholder="Banner title" onChange={(e) => set('Title', e.target.value)} />
                           </DSFormField>
                         </div>
                         <div className="property-panel__field">
                           <DSFormField title="Description" size="md" showDescription={false} showHelpText={false}>
-                            <DSTextArea size="md" rows={3} value={str('Description')} placeholder="Description" onChange={(e) => set('Description', e.target.value)} />
+                            <DSTextArea size="md" rows={3} value={str('Description')} placeholder="Add description" onChange={(e) => set('Description', e.target.value)} />
                           </DSFormField>
                         </div>
                         <div className="property-panel__field property-panel__field--inline">
