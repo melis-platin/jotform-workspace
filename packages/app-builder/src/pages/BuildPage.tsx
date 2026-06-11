@@ -542,6 +542,7 @@ function HeroCtaButton({
 // the Cover layout is selected.
 function CoverHeader({
   title,
+  subtitle,
   appIcon,
   background,
   backgroundImage,
@@ -549,6 +550,7 @@ function CoverHeader({
   onClick,
 }: {
   title: string
+  subtitle?: string
   appIcon: { variant: 'Icon' | 'Image'; icon: string; imageUrl: string | null }
   background?: string
   backgroundImage?: string | null
@@ -583,7 +585,10 @@ function CoverHeader({
             <AppIcon name={appIcon.icon} size={56} />
           )}
         </span>
-        <h1 className="app-cover-header__name">{title}</h1>
+        <div className="app-cover-header__text">
+          <h1 className="app-cover-header__name">{title}</h1>
+          {subtitle && <p className="app-cover-header__subtitle">{subtitle}</p>}
+        </div>
       </div>
     </div>
   )
@@ -2138,7 +2143,10 @@ export function BuildPage({
   // panel, so the nav reverts to its normal (opaque) bar there (close icon visible,
   // content no longer tucked under the bar).
   const topNavOverlay = topNavEnabled && topNavTransparent && activeIsFirstPage && appHeaderState.show && previewDevice === 'phone' && !isMorePageOpen
-  const topNavOverlayFg = resolveHeaderTextColor(appHeaderState)
+  // When the hero uses the theme brand bg (no custom colour/image), resolveHeaderTextColor
+  // is undefined and the AppHeader text falls back to --fg-inverse — so the overlay nav
+  // (icon already uses --fg-inverse) must too, or the title/menu read dark on the brand.
+  const topNavOverlayFg = resolveHeaderTextColor(appHeaderState) ?? 'var(--fg-inverse)'
   // Mobile top header is shown unless Top Navigation is toggled off (desktop has its
   // own nav controls). When hidden, the content/hero starts below the status bar.
   const mobileTopHeaderHidden = previewDevice !== 'desktop' && !topNavEnabled
@@ -3000,8 +3008,8 @@ export function BuildPage({
     <FavoritesProvider>
     <ProductDetailProvider onOpenChange={setIsPreviewDetailOpen}>
     <>
-      <div className="live-preview__status-bar-bg app-scope" />
-      <PhoneStatusBar className="live-preview__status-bar app-scope" style={{ color: 'var(--fg-primary, #000)' }} />
+      <div className={`live-preview__status-bar-bg app-scope${topNavOverlay && topNavOverHero ? ' live-preview__status-bar-bg--transparent' : ''}`} />
+      <PhoneStatusBar className="live-preview__status-bar app-scope" style={{ color: topNavOverlay && topNavOverHero ? topNavOverlayFg : 'var(--fg-primary, #000)' }} />
       {(isLoginPopoverOpen || isAvatarPopoverOpen) && (
         <div
           className="live-preview__popover-scrim"
@@ -3292,6 +3300,7 @@ export function BuildPage({
                 <div className="live-preview__app-header-slot">
                   <CoverHeader
                     title={resolveHeaderTitle(appHeaderState, appTitle)}
+                    subtitle={resolveHeaderSubtitle(appHeaderState, appSubtitle)}
                     appIcon={appIcon}
                     background={resolveHeaderBackground(appHeaderState)}
                     backgroundImage={resolveHeaderImage(appHeaderState)}
@@ -3551,6 +3560,7 @@ export function BuildPage({
                 {appHeaderState.show && appHeaderIsCover && (
                   <CoverHeader
                     title={resolveHeaderTitle(appHeaderState, appTitle)}
+                    subtitle={resolveHeaderSubtitle(appHeaderState, appSubtitle)}
                     appIcon={appIcon}
                     background={resolveHeaderBackground(appHeaderState)}
                     backgroundImage={resolveHeaderImage(appHeaderState)}
@@ -6991,8 +7001,8 @@ export function BuildPage({
                     <div className="live-preview__phone-screen">
                       {!previewMode && (
                       <>
-                      <div className="live-preview__status-bar-bg app-scope" />
-                      <PhoneStatusBar className="live-preview__status-bar app-scope" style={{ color: 'var(--fg-primary, #000)' }} />
+                      <div className={`live-preview__status-bar-bg app-scope${topNavOverlay && topNavOverHero ? ' live-preview__status-bar-bg--transparent' : ''}`} />
+                      <PhoneStatusBar className="live-preview__status-bar app-scope" style={{ color: topNavOverlay && topNavOverHero ? topNavOverlayFg : 'var(--fg-primary, #000)' }} />
                       {(isLoginPopoverOpen || isAvatarPopoverOpen) && (
                         <div
                           className="live-preview__popover-scrim"
@@ -7162,6 +7172,7 @@ export function BuildPage({
                                 <div>
                                   <CoverHeader
                                     title={resolveHeaderTitle(appHeaderState, appTitle)}
+                                    subtitle={resolveHeaderSubtitle(appHeaderState, appSubtitle)}
                                     appIcon={appIcon}
                                     background={resolveHeaderBackground(appHeaderState)}
                                     backgroundImage={resolveHeaderImage(appHeaderState)}

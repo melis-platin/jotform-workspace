@@ -1717,7 +1717,7 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 54px;
+  height: 59px;
   // Above the top-header (z-index 4) so the nav bar tucks UNDER the safe-area
   // status bar as it scroll-hides, instead of sliding over the clock/battery.
   z-index: 5;
@@ -1745,7 +1745,7 @@ body {
 // ---- Top Header (iOS nav bar) ----
 .live-preview__top-header {
   position: absolute;
-  top: 54px;
+  top: 59px;
   left: 0;
   right: 0;
   height: 48px;
@@ -1802,9 +1802,17 @@ body {
   color: inherit;
 }
 // The first-page hero runs up behind the transparent nav: clear only the status
-// bar (54px) rather than status-bar + nav (102px), so the photo fills behind it.
+// status bar + nav (102px), so the hero's colour/photo fills the WHOLE top —
+// including the safe area — behind the (transparent) status bar and nav.
 .live-preview__top-header--transparent ~ .live-preview__content-scaler {
-  padding-top: 54px;
+  padding-top: 0;
+}
+// Safe-area background goes transparent so the hero behind it shows through (the
+// status-bar glyphs are recoloured to the hero text colour inline). Reverts to the
+// solid surface once scrolled past the hero (the class is dropped in BuildPage).
+.live-preview__status-bar-bg--transparent,
+[data-theme='dark'] .live-preview__status-bar-bg--transparent {
+  background: transparent;
 }
 
 // Top Navigation off — the mobile top bar is hidden and the content/hero starts just
@@ -1813,7 +1821,7 @@ body {
   display: none;
 }
 .live-preview__content-scaler.live-preview__content-scaler--no-top-nav {
-  padding-top: 54px;
+  padding-top: 59px;
 }
 .live-preview__tablet-screen > .live-preview__content-scaler.live-preview__content-scaler--no-top-nav {
   padding-top: 32px;
@@ -2064,7 +2072,7 @@ body {
 
 .live-preview__popover-scrim {
   position: absolute;
-  top: 54px;
+  top: 59px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -2080,10 +2088,10 @@ body {
 
 .live-preview__login-popover {
   position: absolute;
-  top: calc(54px + 48px + 10px);
+  top: calc(59px + 48px + 10px);
   left: var(--space-2);
   right: var(--space-2);
-  max-height: calc(100% - 54px - 48px - 10px - var(--space-10));
+  max-height: calc(100% - 59px - 48px - 10px - var(--space-10));
   z-index: 4;
   display: flex;
   flex-direction: column;
@@ -2131,7 +2139,7 @@ body {
 // Full-screen auth page (login/sign-up opened from the landing menu, not a popover).
 .live-preview__auth-page {
   position: absolute;
-  top: 54px;
+  top: 59px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -2649,7 +2657,7 @@ body {
   overflow-x: hidden;
   scrollbar-width: none;
   background: var(--bg-surface);
-  padding-top: 102px;
+  padding-top: 107px;
   // Default reserves the home-indicator strip (21px) when no bottom-nav
   // sits below the scaler. The bottom-nav variant (in flow on phone /
   // tablet shells) takes over that clearance via its own padding-bottom.
@@ -2831,7 +2839,7 @@ body {
 // ---- Checkout Page ----
 .live-preview__checkout-page {
   position: absolute;
-  top: 54px;
+  top: 59px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -3028,13 +3036,26 @@ body {
     object-fit: cover;
   }
 }
+.app-cover-header__text {
+  // Push the title/description down so the title sits at the cover bottom edge (the
+  // avatar straddles it). min-width:0 lets a long description wrap, not overflow.
+  margin-top: 18px;
+  min-width: 0;
+}
 .app-cover-header__name {
-  margin: 18px 0 0;
+  margin: 0;
   font-family: var(--font-family-heading);
   font-size: var(--font-size-heading-md);
   font-weight: 700;
   line-height: 1.1;
   color: var(--fg-primary);
+}
+.app-cover-header__subtitle {
+  margin: var(--space-2) 0 0;
+  font-size: var(--font-size-paragraph-md);
+  line-height: var(--line-height-paragraph-md);
+  color: var(--fg-secondary);
+  text-wrap: pretty;
 }
 
 .live-preview__profile-header-identity {
@@ -3100,7 +3121,7 @@ body {
 // ---- Cart Page ----
 .live-preview__cart-page {
   position: absolute;
-  top: 54px;
+  top: 59px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -3397,7 +3418,7 @@ body {
 // ---- Product Detail Page ----
 .live-preview__detail-page {
   position: absolute;
-  top: 54px;
+  top: 59px;
   left: 0;
   right: 0;
   bottom: 0;
@@ -3807,7 +3828,7 @@ body {
 // ---- Side Menu Drawer ----
 .live-preview__menu {
   position: absolute;
-  top: 54px;
+  top: 59px;
   left: 0;
   right: 0;
   bottom: 0;
