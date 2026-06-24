@@ -1,8 +1,10 @@
 import { Icon, useDropdown, DropdownMenuShell } from '@jf/design-system'
 import jotformLogo from '@jf/design-system/src/assets/jotform-logo.svg'
 import jotformLogomark from '@jf/design-system/src/assets/jotform-logomark.svg'
+import melisAvatar from '../assets/app-users/melis-platin.png'
 
 type Page = 'build' | 'settings' | 'publish'
+type NavPage = Page | 'data'
 
 interface PresetOption {
   id: string
@@ -19,10 +21,18 @@ interface TopBarProps {
   presets: PresetOption[]
   activePresetId: string
   onPresetChange: (id: string) => void
+  showDataTab?: boolean
 }
 
 const PAGES: { id: Page; label: string }[] = [
   { id: 'build', label: 'BUILD' },
+  { id: 'settings', label: 'SETTINGS' },
+  { id: 'publish', label: 'PUBLISH' },
+]
+
+const PAGES_WITH_DATA: { id: NavPage; label: string }[] = [
+  { id: 'build', label: 'BUILD' },
+  { id: 'data', label: 'DATA' },
   { id: 'settings', label: 'SETTINGS' },
   { id: 'publish', label: 'PUBLISH' },
 ]
@@ -37,6 +47,7 @@ export function TopBar({
   presets,
   activePresetId,
   onPresetChange,
+  showDataTab = false,
 }: TopBarProps) {
   const {
     open,
@@ -55,9 +66,10 @@ export function TopBar({
     onSelect: (i) => onPresetChange(presets[i].id),
     menuPlacement: 'bottom',
   })
+  const navPages = showDataTab ? PAGES_WITH_DATA : PAGES
 
   return (
-    <header className="topbar">
+    <header className={`topbar ${activePage === 'settings' ? 'topbar--settings' : ''}`}>
       <div className="topbar__main">
         <div className="topbar__left">
           <img src={jotformLogo} alt="Jotform" className="topbar__logo topbar__logo--full" />
@@ -143,7 +155,7 @@ export function TopBar({
               )}
             </div>
           </div>
-          <span className="topbar__timestamp">Last edited at 12:21 pm.</span>
+          <span className="topbar__timestamp">Last edited at 9:39 am.</span>
         </div>
 
         <div className="topbar__right">
@@ -153,28 +165,35 @@ export function TopBar({
           </button>
           <div className="topbar__avatar-wrapper">
             <div className="topbar__avatar">
-              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=88&h=88&fit=crop&crop=face" alt="User avatar" width="44" height="44" />
+              <img src={melisAvatar} alt="User avatar" width="44" height="44" />
             </div>
           </div>
         </div>
       </div>
 
       <nav className="topbar__nav">
-        <div className="topbar__nav-tabs">
-          {PAGES.map((page) => (
+        <div className={`topbar__nav-tabs ${showDataTab ? 'topbar__nav-tabs--with-data' : ''}`}>
+          {navPages.map((page) => (
             <button
               key={page.id}
               className={`topbar__nav-item ${activePage === page.id ? 'topbar__nav-item--active' : ''}`}
-              onClick={() => onPageChange(page.id)}
+              onClick={() => {
+                if (page.id === 'data') return
+                onPageChange(page.id)
+              }}
             >
               {page.label}
             </button>
           ))}
         </div>
         <div className="topbar__nav-right">
-          <span className="topbar__preview-label">Preview App</span>
+          <span className="topbar__preview-label">
+            {activePage === 'settings' ? 'Preview App' : 'Live Preview'}
+          </span>
           <button
+            type="button"
             className={`topbar__toggle ${previewMode ? 'topbar__toggle--active' : ''}`}
+            aria-pressed={previewMode}
             onClick={onPreviewToggle}
           >
             <span className="topbar__toggle-track" />

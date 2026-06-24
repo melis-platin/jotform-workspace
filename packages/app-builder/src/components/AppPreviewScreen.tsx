@@ -1,10 +1,11 @@
 import type { ReactNode } from 'react'
-import { Icon } from '@jf/design-system'
+import { Icon, DropdownSingle as DSDropdownSingle } from '@jf/design-system'
 import { QrPlaceholder } from './QrPlaceholder'
 import { TabletStatusBar } from './TabletStatusBar'
+import { DEFAULT_ROLE_OPTIONS, getRoleColorStyle, type AppRoleOption } from '../state/appUserRoles'
 
 export type PreviewDevice = 'phone' | 'tablet' | 'desktop'
-export type PreviewRole = 'anyone' | 'admin' | 'user'
+export type PreviewRole = string
 
 interface AppPreviewScreenProps {
   device: PreviewDevice
@@ -13,13 +14,8 @@ interface AppPreviewScreenProps {
   appScreen?: ReactNode
   role?: PreviewRole
   onRoleChange?: (role: PreviewRole) => void
+  roleOptions?: AppRoleOption[]
 }
-
-const ROLE_OPTIONS = [
-  { value: 'admin', label: 'Admin' },
-  { value: 'user', label: 'User' },
-  { value: 'anyone', label: 'Public' },
-]
 
 const DEVICE_TABS: { id: PreviewDevice; label: string; icon: string }[] = [
   { id: 'phone', label: 'Phone', icon: 'mobile' },
@@ -27,25 +23,48 @@ const DEVICE_TABS: { id: PreviewDevice; label: string; icon: string }[] = [
   { id: 'desktop', label: 'Desktop', icon: 'desktop' },
 ]
 
-export function AppPreviewScreen({ device, onDeviceChange, onBack, appScreen, role = 'admin', onRoleChange }: AppPreviewScreenProps) {
+export function AppPreviewScreen({
+  device,
+  onDeviceChange,
+  onBack,
+  appScreen,
+  role = 'admin',
+  onRoleChange,
+  roleOptions = DEFAULT_ROLE_OPTIONS,
+}: AppPreviewScreenProps) {
+  const dropdownRoleOptions = [
+    {
+      value: 'anyone',
+      label: 'Public',
+      leading: (
+        <span
+          className="app-preview-screen__role-dot"
+          style={{ background: 'var(--green-200)' }}
+        />
+      ),
+    },
+    ...roleOptions.map((roleOption) => ({
+      value: roleOption.id,
+      label: roleOption.label,
+      leading: (
+        <span
+          className="app-preview-screen__role-dot"
+          style={getRoleColorStyle(roleOption.color)}
+        />
+      ),
+    })),
+  ]
+
   return (
     <div className="app-preview-screen" role="dialog" aria-label="App preview">
       <header className="app-preview-screen__bar">
-        <div className="app-preview-screen__role-segment" role="group" aria-label="Preview as role">
-          {ROLE_OPTIONS.map((o) => {
-            const isActive = o.value === role
-            return (
-              <button
-                key={o.value}
-                type="button"
-                aria-pressed={isActive}
-                className={`app-preview-screen__role-option${isActive ? ' app-preview-screen__role-option--active' : ''}`}
-                onClick={() => onRoleChange?.(o.value as PreviewRole)}
-              >
-                {o.label}
-              </button>
-            )
-          })}
+        <div className="app-preview-screen__role-dropdown">
+          <DSDropdownSingle
+            size="md"
+            value={role}
+            onChange={(value) => onRoleChange?.(value)}
+            options={dropdownRoleOptions}
+          />
         </div>
         <div className="app-preview-screen__tabs" role="tablist">
           {DEVICE_TABS.map((tab) => {

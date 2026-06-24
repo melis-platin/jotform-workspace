@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useCallback, useRef, useContext, createContext, memo, type CSSProperties, type RefObject } from 'react'
+import { useState, useEffect, useLayoutEffect, useCallback, useMemo, useRef, useContext, createContext, memo, type CSSProperties, type RefObject } from 'react'
 import { createPortal } from 'react-dom'
 import { createRoot } from 'react-dom/client'
 import {
@@ -84,6 +84,9 @@ import { ProductModifierModal } from '../components/ProductModifierModal'
 import { ProductSubscriptionModal } from '../components/ProductSubscriptionModal'
 import { loadSnapshot, saveSnapshot } from '../presets/storage'
 import { syncAppToRemote } from '../presets/remoteStore'
+import { createDeepLinkTargetsFromPages, type DeepLinkTarget } from '../state/deepLinkTargets'
+import { DEFAULT_ROLE_OPTIONS, getRoleColorStyle, type AppRoleOption } from '../state/appUserRoles'
+import { ALL_USERS_AUDIENCE_ID } from '../state/pushNotifications'
 
 interface CanvasElement {
   id: string
@@ -1974,6 +1977,155 @@ interface BuildPageProps {
   openAttributionSheet?: boolean
   previewMode?: boolean
   onPreviewClose?: () => void
+  onDeepLinkTargetsChange?: (targets: DeepLinkTarget[]) => void
+  searchBarEnabled?: boolean
+  pushNotificationsEnabled?: boolean
+  pushNotifications?: LivePreviewPushNotification[]
+  onPushNotificationRead?: (notificationId: string, roleId: string) => void
+  appUserRoles?: AppRoleOption[]
+}
+
+interface LivePreviewPushNotification {
+  id: string
+  title: string
+  content: string
+  image?: {
+    url: string
+    name: string
+  } | null
+  audience: string[]
+  deepLink?: string
+  sentAtLabel: string
+  readByRoleIds: string[]
+  unread?: boolean
+}
+
+function isLivePreviewNotificationVisibleForRole(notification: LivePreviewPushNotification, roleId: string) {
+  return notification.audience.includes(ALL_USERS_AUDIENCE_ID) || notification.audience.includes(roleId)
+}
+
+function LivePreviewNotificationButton({
+  unreadCount,
+  onClick,
+}: {
+  unreadCount: number
+  onClick?: () => void
+}) {
+  const hasUnreadBadge = unreadCount > 0
+  const visibleUnreadCount = unreadCount > 99 ? '99+' : String(unreadCount)
+
+  return (
+    <button
+      type="button"
+      className="live-preview__top-header-notification-btn"
+      aria-label={hasUnreadBadge ? `${unreadCount} unread notifications` : 'Notifications'}
+      onClick={onClick}
+    >
+      <Icon name="bell-diagonal-filled" category="alerts-feedback" size={20} />
+      {hasUnreadBadge && (
+        <span className="live-preview__top-header-notification-badge">{visibleUnreadCount}</span>
+      )}
+    </button>
+  )
+}
+
+function getLivePreviewNotificationTimeLabel(sentAtLabel: string) {
+  const timeMatch = sentAtLabel.match(/(\d{1,2}:\d{2}\s?[AP]M)$/i)
+  if (timeMatch?.[1]) return timeMatch[1].replace(/\s+/, ' ')
+  return sentAtLabel
+}
+
+function getLivePreviewDeepLinkTarget(deepLink?: string) {
+  if (!deepLink) return null
+
+  const separatorIndex = deepLink.indexOf(':')
+  if (separatorIndex === -1) return null
+
+  const type = deepLink.slice(0, separatorIndex)
+  const id = deepLink.slice(separatorIndex + 1)
+
+  if ((type !== 'page' && type !== 'form') || !id) return null
+
+  return { type, id }
+}
+
+function LivePreviewNotificationsPage({
+  notifications,
+  appHeader,
+  onNotificationRead,
+  onNotificationOpen,
+}: {
+  notifications: LivePreviewPushNotification[]
+  appHeader: AppHeaderState
+  onNotificationRead?: (notificationId: string) => void
+  onNotificationOpen?: (notification: LivePreviewPushNotification) => void
+}) {
+  const hasCustomImage = appHeader.imageStyle === 'Image' && Boolean(appHeader.imageUrl)
+
+  if (notifications.length === 0) {
+    return (
+      <div className="live-preview__notifications-page">
+        <div className="live-preview__notifications-empty-card">
+          <span className="live-preview__notifications-card-icon">
+            <AppIcon name={appHeader.icon} size={20} />
+          </span>
+          <strong>No notifications yet</strong>
+          <span>Sent notifications will appear here.</span>
+        </div>
+      </div>
+    )
+  }
+
+  return (
+    <div className="live-preview__notifications-page">
+      <div className="live-preview__notifications-list" role="list" aria-label="Notifications">
+        {notifications.map((notification) => {
+          const hasNotificationImage = Boolean(notification.image?.url)
+
+          return (
+            <button
+              key={notification.id}
+              type="button"
+              className={`live-preview__notifications-card${notification.unread ? ' live-preview__notifications-card--unread' : ''}${hasNotificationImage ? ' live-preview__notifications-card--with-image' : ''}`}
+              onClick={() => {
+                if (notification.unread) onNotificationRead?.(notification.id)
+                onNotificationOpen?.(notification)
+              }}
+            >
+              {notification.unread && (
+                <span className="live-preview__notifications-unread-dot" aria-hidden="true" />
+              )}
+              <span className={`live-preview__notifications-card-icon${hasCustomImage ? ' live-preview__notifications-card-icon--image' : ''}`} aria-hidden="true">
+                {hasCustomImage && appHeader.imageUrl ? (
+                  <img src={appHeader.imageUrl} alt="" />
+                ) : (
+                  <AppIcon name={appHeader.icon} size={20} />
+                )}
+              </span>
+              <span className="live-preview__notifications-card-copy">
+                <span className="live-preview__notifications-card-header">
+                  <strong>{notification.title || 'Notification'}</strong>
+                  <time>{getLivePreviewNotificationTimeLabel(notification.sentAtLabel)}</time>
+                </span>
+                <span className="live-preview__notifications-card-body">
+                  <span className="live-preview__notifications-card-text">
+                    {notification.content || 'Notification content'}
+                  </span>
+                  {hasNotificationImage && (
+                    <img
+                      className="live-preview__notifications-card-media"
+                      src={notification.image?.url}
+                      alt=""
+                    />
+                  )}
+                </span>
+              </span>
+            </button>
+          )
+        })}
+      </div>
+    </div>
+  )
 }
 
 export function BuildPage({
@@ -1986,6 +2138,11 @@ export function BuildPage({
   openAttributionSheet = false,
   previewMode = false,
   onPreviewClose,
+  onDeepLinkTargetsChange,
+  pushNotificationsEnabled = false,
+  pushNotifications = [],
+  onPushNotificationRead,
+  appUserRoles = DEFAULT_ROLE_OPTIONS,
 }: BuildPageProps) {
   const [rightPanel, setRightPanel] = useState<RightPanelMode>('preview')
   const [pagePropertiesId, setPagePropertiesId] = useState<string | null>(null)
@@ -2158,6 +2315,9 @@ export function BuildPage({
 
   const pagesRef = useRef<AppPage[]>([])
   useEffect(() => { pagesRef.current = pages }, [pages])
+  useEffect(() => {
+    onDeepLinkTargetsChange?.(createDeepLinkTargetsFromPages(pages))
+  }, [onDeepLinkTargetsChange, pages])
 
   // Safety net: if the active page disappears (e.g. a dynamic detail page is
   // parked when its List's action is turned off, or its host page is deleted),
@@ -2182,6 +2342,7 @@ export function BuildPage({
   const appSubtitle = initial.appSubtitle
   const [appHeaderState, setAppHeaderState] = useState<AppHeaderState>(initial.appHeader)
   const [isMorePageOpen, setIsMorePageOpen] = useState(false)
+  const [isNotificationsPageOpen, setIsNotificationsPageOpen] = useState(false)
   const [isPreviewCartOpen, setIsPreviewCartOpen] = useState(false)
   const [isPreviewDetailOpen, setIsPreviewDetailOpen] = useState(false)
   const [isPreviewCheckoutOpen, setIsPreviewCheckoutOpen] = useState(false)
@@ -2197,7 +2358,38 @@ export function BuildPage({
   // The preview role doubles as the auth state: 'anyone' (Public) views the app logged
   // out; Admin/User view it logged in. Defaults to Public so the preview opens on the
   // public/landing view, consistent with isPreviewLoggedIn starting false.
-  const [viewingAsRole, setViewingAsRole] = useState<'anyone' | 'admin' | 'user'>('anyone')
+  const [viewingAsRole, setViewingAsRole] = useState('anyone')
+  const livePreviewRoleOptions = useMemo(() => ([
+    {
+      value: 'anyone',
+      label: 'Public',
+      leading: <span className="live-preview__role-dot" style={{ background: 'var(--green-200)' }} />,
+    },
+    ...appUserRoles.map((role) => ({
+      value: role.id,
+      label: role.label,
+      leading: (
+        <span
+          className="live-preview__role-dot"
+          style={getRoleColorStyle(role.color)}
+        />
+      ),
+    })),
+  ]), [appUserRoles])
+  const roleScopedPushNotifications = useMemo(() => (
+    pushNotifications
+      .filter((notification) => isLivePreviewNotificationVisibleForRole(notification, viewingAsRole))
+      .map((notification) => ({
+        ...notification,
+        unread: !notification.readByRoleIds.includes(viewingAsRole),
+      }))
+  ), [pushNotifications, viewingAsRole])
+  const roleScopedUnreadPushNotificationCount = useMemo(() => (
+    roleScopedPushNotifications.filter((notification) => notification.unread).length
+  ), [roleScopedPushNotifications])
+  const markRoleScopedPushNotificationRead = useCallback((notificationId: string) => {
+    onPushNotificationRead?.(notificationId, viewingAsRole)
+  }, [onPushNotificationRead, viewingAsRole])
   const [previewDevice, setPreviewDevice] = useState<'phone' | 'tablet' | 'desktop'>('phone')
   const [isLivePreviewVisible, setIsLivePreviewVisible] = useState(true)
   // Slider position is "sticky": only updated when its target slot is visible.
@@ -2407,17 +2599,20 @@ export function BuildPage({
     if (page?.requireLogin && !isPreviewLoggedIn) {
       pendingAuthRedirectRef.current = pageId
       setIsMorePageOpen(false)
+      setIsNotificationsPageOpen(false)
       setPreviewAuthView('login')
       return
     }
     setIsPreviewProfileOpen(false)
     setIsAvatarPopoverOpen(false)
+    setIsNotificationsPageOpen(false)
     setActivePageId(pageId)
   }, [isPreviewLoggedIn])
 
   const handleBottomNavClick = (index: number) => {
     if (hasNavOverflow && index === visibleNavPages.length) {
       setIsMorePageOpen(true)
+      setIsNotificationsPageOpen(false)
       return
     }
     setIsMorePageOpen(false)
@@ -2426,6 +2621,41 @@ export function BuildPage({
   const handleMorePageSelect = (pageId: string) => {
     setIsMorePageOpen(false)
     navigateToPage(pageId)
+  }
+
+  useEffect(() => {
+    if (pushNotificationsEnabled) return
+    setIsNotificationsPageOpen(false)
+  }, [pushNotificationsEnabled])
+
+  const openNotificationsPage = () => {
+    setIsNotificationsPageOpen(true)
+    setIsMorePageOpen(false)
+    setIsPreviewCartOpen(false)
+    setIsPreviewCheckoutOpen(false)
+    setIsPreviewProfileOpen(false)
+  }
+
+  const closeNotificationsPage = () => {
+    setIsNotificationsPageOpen(false)
+  }
+
+  const handleLivePreviewNotificationOpen = (notification: LivePreviewPushNotification) => {
+    const target = getLivePreviewDeepLinkTarget(notification.deepLink)
+    if (!target) return
+
+    const targetPageId = target.type === 'page'
+      ? target.id
+      : pages.find((page) => page.elements.some((element) => element.id === target.id))?.id
+
+    if (!targetPageId || !pages.some((page) => page.id === targetPageId)) return
+
+    setActivePageId(targetPageId)
+    setIsNotificationsPageOpen(false)
+    setIsMorePageOpen(false)
+    setIsPreviewCartOpen(false)
+    setIsPreviewCheckoutOpen(false)
+    setIsPreviewProfileOpen(false)
   }
 
   // Live-preview: clicking a list row whose action is "Open Dynamic Page" opens
@@ -2455,6 +2685,22 @@ export function BuildPage({
   // surfaces (the full-screen AppPreviewScreen and the right-panel preview) call
   // this so the back button never diverges between them.
   const renderTopHeaderBack = (device: 'phone' | 'tablet' | 'desktop'): React.ReactNode => {
+    if (isNotificationsPageOpen) {
+      return (
+        <div className="live-preview__top-header-page">
+          <button
+            type="button"
+            className={`live-preview__top-header-back${device === 'desktop' ? ' live-preview__top-header-back--labeled' : ''}`}
+            aria-label="Back"
+            onClick={closeNotificationsPage}
+          >
+            <AppIcon name="ChevronLeft" size={24} />
+            {device === 'desktop' && <span className="live-preview__top-header-back-label">Back</span>}
+          </button>
+          {device !== 'desktop' && <span className="live-preview__top-header-page-name">Notifications</span>}
+        </div>
+      )
+    }
     if (isPreviewProfileOpen && device !== 'desktop') {
       return (
         <div className="live-preview__top-header-page">
@@ -3081,6 +3327,7 @@ export function BuildPage({
     setViewingAsRole((r) => (r === 'anyone' ? 'admin' : r))
     setIsLoginPopoverOpen(false)
     setIsMorePageOpen(false)
+    setIsNotificationsPageOpen(false)
     const arr = pagesRef.current
     const redirect = pendingAuthRedirectRef.current
     pendingAuthRedirectRef.current = null
@@ -3099,6 +3346,7 @@ export function BuildPage({
     setViewingAsRole('anyone')
     setIsAvatarPopoverOpen(false)
     setIsMorePageOpen(false)
+    setIsNotificationsPageOpen(false)
     setIsPreviewProfileOpen(false)
     const arr = pagesRef.current
     if (arr[0]?.landing) setActivePageId(arr[0].id)
@@ -3107,7 +3355,7 @@ export function BuildPage({
   // Switching the preview role drives the auth state: Admin/User → logged in, Public →
   // logged out. Crossing that boundary runs the same login/logout transition (landing ↔
   // home) as the in-app auth actions; switching between Admin and User just re-tags the role.
-  const handleViewingRoleChange = (role: 'anyone' | 'admin' | 'user') => {
+  const handleViewingRoleChange = (role: string) => {
     const wasLoggedIn = viewingAsRole !== 'anyone'
     const nowLoggedIn = role !== 'anyone'
     setViewingAsRole(role)
@@ -3662,7 +3910,13 @@ export function BuildPage({
         )}
         <div className="live-preview__top-header-right">
           {!activePageIsDynamic && pages.some((p) => p.elements.some((el) => el.componentId === 'product-list')) && (
-            <LivePreviewCartButton onClick={() => setIsPreviewCartOpen(true)} />
+            <LivePreviewCartButton onClick={() => { setIsNotificationsPageOpen(false); setIsPreviewCartOpen(true) }} />
+          )}
+          {pushNotificationsEnabled && (
+            <LivePreviewNotificationButton
+              unreadCount={roleScopedUnreadPushNotificationCount}
+              onClick={openNotificationsPage}
+            />
           )}
           {isPreviewLoggedIn ? (
             <>
@@ -3850,6 +4104,13 @@ export function BuildPage({
               onLoginClick={() => { setIsMorePageOpen(false); setPreviewAuthView('login') }}
               onSignUpClick={() => { setIsMorePageOpen(false); setPreviewAuthView('signup') }}
             />
+          ) : isNotificationsPageOpen ? (
+            <LivePreviewNotificationsPage
+              notifications={roleScopedPushNotifications}
+              appHeader={appHeaderState}
+              onNotificationRead={markRoleScopedPushNotificationRead}
+              onNotificationOpen={handleLivePreviewNotificationOpen}
+            />
           ) : (() => {
             const activePage = pages.find((p) => p.id === activePageId) || pages[0]
             const isFirstPage = activePage?.id === pages[0]?.id
@@ -3947,7 +4208,7 @@ export function BuildPage({
           })()}
         </div>
       </div>
-      {pages.length > 1 && bottomNavEnabled && !isPreviewCartOpen && !isPreviewCheckoutOpen && !isPreviewDetailOpen && !isPreviewProfileOpen && !showLandingNav && !activePageIsDynamic && (
+      {pages.length > 1 && bottomNavEnabled && !isNotificationsPageOpen && !isPreviewCartOpen && !isPreviewCheckoutOpen && !isPreviewDetailOpen && !isPreviewProfileOpen && !showLandingNav && !activePageIsDynamic && (
         <div className="live-preview__bottom-nav app-scope">
           <BottomNavigation
             items={bottomNavItems}
@@ -3979,7 +4240,7 @@ export function BuildPage({
         onLoggedIn={handlePreviewLogin}
       />
       <LivePreviewOrderBar
-        hidden={isPreviewCartOpen || isPreviewCheckoutOpen || isPreviewDetailOpen || isPreviewProfileOpen}
+        hidden={isNotificationsPageOpen || isPreviewCartOpen || isPreviewCheckoutOpen || isPreviewDetailOpen || isPreviewProfileOpen}
         hasBottomNav={pages.length > 1}
         onClick={() => setIsPreviewCheckoutOpen(true)}
       />
@@ -4000,6 +4261,7 @@ export function BuildPage({
         appScreen={phoneScreenContent}
         role={viewingAsRole}
         onRoleChange={handleViewingRoleChange}
+        roleOptions={appUserRoles}
       />
     )}
     <div className="build-page">
@@ -7783,12 +8045,8 @@ export function BuildPage({
                       <DSDropdownSingle
                         size="sm"
                         value={viewingAsRole}
-                        onChange={(v) => handleViewingRoleChange(v as 'anyone' | 'admin' | 'user')}
-                        options={[
-                          { value: 'admin', label: 'Admin', leading: <span className="live-preview__role-dot" style={{ background: 'var(--purple-200)' }} /> },
-                          { value: 'user', label: 'User', leading: <span className="live-preview__role-dot" style={{ background: 'var(--blue-200)' }} /> },
-                          { value: 'anyone', label: 'Public', leading: <span className="live-preview__role-dot" style={{ background: 'var(--green-200)' }} /> },
-                        ]}
+                        onChange={handleViewingRoleChange}
+                        options={livePreviewRoleOptions}
                       />
                     </div>
                     <div className="live-preview__device-dropdown">
@@ -7923,7 +8181,13 @@ export function BuildPage({
                         })()}
                         <div className="live-preview__top-header-right">
                           {!activePageIsDynamic && pages.some((p) => p.elements.some((el) => el.componentId === 'product-list')) && (
-                            <LivePreviewCartButton onClick={() => setIsPreviewCartOpen(true)} />
+                            <LivePreviewCartButton onClick={() => { setIsNotificationsPageOpen(false); setIsPreviewCartOpen(true) }} />
+                          )}
+                          {pushNotificationsEnabled && (
+                            <LivePreviewNotificationButton
+                              unreadCount={roleScopedUnreadPushNotificationCount}
+                              onClick={openNotificationsPage}
+                            />
                           )}
                           {isPreviewLoggedIn ? (
                             <>
@@ -8007,6 +8271,13 @@ export function BuildPage({
                               large={showLandingNav}
                               onLoginClick={() => { setIsMorePageOpen(false); setPreviewAuthView('login') }}
                               onSignUpClick={() => { setIsMorePageOpen(false); setPreviewAuthView('signup') }}
+                            />
+                          ) : isNotificationsPageOpen ? (
+                            <LivePreviewNotificationsPage
+                              notifications={roleScopedPushNotifications}
+                              appHeader={appHeaderState}
+                              onNotificationRead={markRoleScopedPushNotificationRead}
+                              onNotificationOpen={handleLivePreviewNotificationOpen}
                             />
                           ) : (() => {
                             const activePage = pages.find((p) => p.id === activePageId) || pages[0]
@@ -8105,7 +8376,7 @@ export function BuildPage({
                           })()}
                         </div>
                       </div>
-                      {pages.length > 1 && bottomNavEnabled && !isPreviewCartOpen && !isPreviewCheckoutOpen && !isPreviewDetailOpen && !isPreviewProfileOpen && !showLandingNav && !activePageIsDynamic && (
+                      {pages.length > 1 && bottomNavEnabled && !isNotificationsPageOpen && !isPreviewCartOpen && !isPreviewCheckoutOpen && !isPreviewDetailOpen && !isPreviewProfileOpen && !showLandingNav && !activePageIsDynamic && (
                         <div className="live-preview__bottom-nav app-scope">
                           <BottomNavigation
                             items={bottomNavItems}
@@ -8137,7 +8408,7 @@ export function BuildPage({
                         onLoggedIn={handlePreviewLogin}
                       />
                       <LivePreviewOrderBar
-                        hidden={isPreviewCartOpen || isPreviewCheckoutOpen || isPreviewDetailOpen || isPreviewProfileOpen}
+                        hidden={isNotificationsPageOpen || isPreviewCartOpen || isPreviewCheckoutOpen || isPreviewDetailOpen || isPreviewProfileOpen}
                         hasBottomNav={pages.length > 1}
                         onClick={() => setIsPreviewCheckoutOpen(true)}
                       />

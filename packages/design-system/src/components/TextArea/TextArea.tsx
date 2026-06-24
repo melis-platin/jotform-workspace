@@ -4,18 +4,22 @@ import './TextArea.scss';
 
 export interface TextAreaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'size'> {
   size?: 'md' | 'lg';
+  height?: 'default' | 'compact' | 'tall';
   status?: 'default' | 'error' | 'readonly';
   showCount?: boolean;
   showDrag?: boolean;
+  countValue?: number;
 }
 
 export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
   (
     {
       size = 'lg',
+      height = 'default',
       status = 'default',
       showCount = true,
       showDrag = true,
+      countValue,
       disabled,
       readOnly,
       maxLength = 300,
@@ -29,15 +33,18 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
   ) => {
     const resolvedStatus = readOnly ? 'readonly' : status;
 
-    const charCount = typeof value === 'string'
-      ? value.length
-      : typeof defaultValue === 'string'
-        ? defaultValue.length
-        : 0;
+    const charCount = countValue ?? (
+      typeof value === 'string'
+        ? value.length
+        : typeof defaultValue === 'string'
+          ? defaultValue.length
+          : 0
+    );
 
     const rootClass = [
       'jf-textarea',
       `jf-textarea--${size}`,
+      height !== 'default' && `jf-textarea--height-${height}`,
       `jf-textarea--${resolvedStatus}`,
       disabled && 'jf-textarea--disabled',
       className,

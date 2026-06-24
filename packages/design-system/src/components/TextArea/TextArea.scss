@@ -177,6 +177,14 @@
     }
   }
 
+  &--height-compact {
+    height: 92px;
+  }
+
+  &--height-tall {
+    height: 156px;
+  }
+
   // ============================================
   // Status: Error
   // Figma: border error-default, shadow on default

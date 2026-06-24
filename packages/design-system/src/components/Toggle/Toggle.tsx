@@ -17,11 +17,12 @@ function ToggleThumb({ loading }: { loading?: boolean }) {
     return <span className="jf-toggle__spinner" aria-hidden />;
   }
   return (
-    <span className="jf-toggle__grip" aria-hidden>
-      <span className="jf-toggle__grip-line" />
-      <span className="jf-toggle__grip-line" />
-      <span className="jf-toggle__grip-line" />
-    </span>
+      <span className="jf-toggle__grip" aria-hidden>
+        <span className="jf-toggle__grip-line" />
+        <span className="jf-toggle__grip-line" />
+        <span className="jf-toggle__grip-line" />
+        <span className="jf-toggle__grip-line" />
+      </span>
   );
 }
 

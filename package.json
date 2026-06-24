@@ -5,6 +5,7 @@
     "dev": "pnpm --filter @jf/app-builder dev",
     "dev:elements": "pnpm --filter @jf/app-elements dev",
     "dev:design": "pnpm --filter @jf/design-system dev",
+    "figma:capture": "pnpm --filter @jf/app-builder figma:capture",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint"
   },

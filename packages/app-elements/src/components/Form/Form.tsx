@@ -11,6 +11,11 @@ export interface FormProps {
   size?: FormSize;
   label?: string;
   description?: string;
+  formTitle?: string;
+  formDescription?: string;
+  submitLabel?: string;
+  formFields?: string;
+  defaultValues?: string;
   showIcon?: boolean;
   icon?: string;
   required?: boolean;
@@ -22,11 +27,84 @@ export interface FormProps {
   skeletonAnimation?: 'pulse' | 'shimmer';
 }
 
+type OpenFormFieldType = 'text' | 'email' | 'tel' | 'textarea' | 'radio';
+type OpenFormFieldWidth = 'half' | 'full';
+
+interface OpenFormField {
+  name: string;
+  label: string;
+  type?: OpenFormFieldType;
+  placeholder?: string;
+  helpText?: string;
+  required?: boolean;
+  labelHidden?: boolean;
+  width?: OpenFormFieldWidth;
+  options?: string[];
+}
+
+type OpenFormDefaultValues = Record<string, string>;
+
+function parseOpenFormDefaultValues(raw?: string): OpenFormDefaultValues {
+  if (!raw) return {};
+  const trimmed = raw.trim();
+  if (!trimmed) return {};
+
+  try {
+    const parsed = JSON.parse(trimmed);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
+
+    return Object.fromEntries(
+      Object.entries(parsed)
+        .filter((entry): entry is [string, string] => (
+          typeof entry[0] === 'string' && typeof entry[1] === 'string'
+        ))
+    );
+  } catch {
+    return {};
+  }
+}
+
+function parseOpenFormFields(raw?: string): OpenFormField[] | null {
+  if (!raw) return null;
+  const trimmed = raw.trim();
+  if (!trimmed) return null;
+
+  try {
+    const parsed = JSON.parse(trimmed);
+    if (!Array.isArray(parsed)) return null;
+    return parsed
+      .map((field): OpenFormField | null => {
+        if (!field || typeof field !== 'object') return null;
+        const value = field as Partial<OpenFormField>;
+        if (typeof value.name !== 'string' || typeof value.label !== 'string') return null;
+        return {
+          name: value.name,
+          label: value.label,
+          type: value.type ?? 'text',
+          placeholder: value.placeholder,
+          helpText: value.helpText,
+          required: Boolean(value.required),
+          labelHidden: Boolean(value.labelHidden),
+          width: value.width === 'full' ? 'full' : 'half',
+          options: Array.isArray(value.options) ? value.options.filter((option): option is string => typeof option === 'string') : undefined,
+        };
+      })
+      .filter((field): field is OpenFormField => Boolean(field));
+  } catch {
+    return null;
+  }
+}
+
 export const Form: FC<FormProps> = ({
   alignment = 'Left',
   size = 'Normal',
   label = 'Form',
   description = 'Type a description',
+  formTitle = '',
+  formDescription = '',
+  submitLabel = 'Submit',
+  formFields = '',
+  defaultValues = '',
   showIcon = true,
   icon = 'ClipboardList',
   required = true,
@@ -38,6 +116,8 @@ export const Form: FC<FormProps> = ({
   skeletonAnimation = 'pulse',
 }) => {
   const animClass = skeletonAnimation === 'shimmer' ? 'animate-shimmer' : 'animate-pulse';
+  const configuredFields = parseOpenFormFields(formFields);
+  const openFormDefaultValues = parseOpenFormDefaultValues(defaultValues);
 
   if (skeleton && showForm) {
     const openClasses = [
@@ -101,6 +181,84 @@ export const Form: FC<FormProps> = ({
   }
 
   if (showForm) {
+    if (configuredFields) {
+      const openClasses = [
+        'jf-form-open',
+        'jf-form-open--designed',
+        !showBorder && 'jf-form-open--frameless',
+        selected && 'jf-form-open--selected',
+      ].filter(Boolean).join(' ');
+
+      return (
+        <form className={openClasses} onSubmit={(e) => e.preventDefault()}>
+          <header className="jf-form-open__header">
+            <h2 className="jf-form-open__title">{formTitle || label}</h2>
+            {(formDescription || description) && (
+              <p className="jf-form-open__description">{formDescription || description}</p>
+            )}
+          </header>
+
+          <div className="jf-form-open__grid">
+            {configuredFields.map((field) => {
+              const fieldClasses = [
+                'jf-form-open__field',
+                `jf-form-open__field--${field.width ?? 'half'}`,
+                field.type === 'radio' && 'jf-form-open__field--radio-group',
+              ].filter(Boolean).join(' ');
+              const labelClasses = [
+                'jf-form-open__label',
+                field.labelHidden && 'jf-form-open__label--hidden',
+              ].filter(Boolean).join(' ');
+
+              if (field.type === 'radio') {
+                return (
+                  <fieldset key={field.name} className={fieldClasses}>
+                    <legend className="jf-form-open__label">
+                      {field.label}
+                      {field.required && <span className="jf-form-open__required">*</span>}
+                    </legend>
+                    <div className="jf-form-open__options">
+                      {(field.options ?? []).map((option) => (
+                        <label key={option} className="jf-form-open__option">
+                          <input type="radio" name={field.name} className="jf-form-open__radio" />
+                          <span className="jf-form-open__option-label">{option}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </fieldset>
+                );
+              }
+
+              return (
+                <label key={field.name} className={fieldClasses}>
+                  <span className={labelClasses}>{field.label}</span>
+                  {field.type === 'textarea' ? (
+                    <textarea
+                      className="jf-form-open__input jf-form-open__input--textarea"
+                      placeholder={field.placeholder}
+                      defaultValue={openFormDefaultValues[field.name] ?? ''}
+                    />
+                  ) : (
+                    <input
+                      className="jf-form-open__input"
+                      type={field.type ?? 'text'}
+                      placeholder={field.placeholder}
+                      defaultValue={openFormDefaultValues[field.name] ?? ''}
+                    />
+                  )}
+                  {field.helpText && <span className="jf-form-open__hint">{field.helpText}</span>}
+                </label>
+              );
+            })}
+          </div>
+
+          <button type="submit" className="jf-form-open__submit">
+            {submitLabel}
+          </button>
+        </form>
+      );
+    }
+
     const openClasses = [
       'jf-form-open',
       !showBorder && 'jf-form-open--no-border',

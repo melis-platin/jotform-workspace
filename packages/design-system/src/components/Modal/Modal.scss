@@ -65,9 +65,16 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  background: var(--accent-default);
   border-radius: var(--radius-sm);
   color: var(--background-white);
+
+  &--primary {
+    background: var(--accent-default);
+  }
+
+  &--apps {
+    background: var(--purple-400);
+  }
 }
 
 .jf-modal__heading {

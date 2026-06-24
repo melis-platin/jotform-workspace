@@ -6,6 +6,7 @@ import './Modal.scss';
 
 export type ModalSize = 'sm' | 'md' | 'lg';
 export type ModalIntent = 'primary' | 'constructive' | 'destructive';
+export type ModalIconTone = 'primary' | 'apps';
 
 export interface ModalProps {
   open: boolean;
@@ -15,8 +16,10 @@ export interface ModalProps {
   title: string;
   description?: string;
   icon?: ReactNode;
+  iconTone?: ModalIconTone;
   confirmLabel?: string;
   cancelLabel?: string;
+  showCancel?: boolean;
   onConfirm?: () => void;
   confirmLoading?: boolean;
   confirmDisabled?: boolean;
@@ -38,8 +41,10 @@ export function Modal({
   title,
   description,
   icon,
+  iconTone = 'primary',
   confirmLabel = 'Confirm',
   cancelLabel = 'Cancel',
+  showCancel = true,
   onConfirm,
   confirmLoading = false,
   confirmDisabled = false,
@@ -97,6 +102,7 @@ export function Modal({
   if (!open) return null;
 
   const rootClass = ['jf-modal', `jf-modal--${size}`, className].filter(Boolean).join(' ');
+  const iconClass = ['jf-modal__icon', `jf-modal__icon--${iconTone}`].join(' ');
 
   const handleBackdrop = (e: React.MouseEvent<HTMLDivElement>) => {
     if (dismissOnBackdrop && e.target === e.currentTarget) {
@@ -115,7 +121,7 @@ export function Modal({
       >
         <header className="jf-modal__header">
           <div className="jf-modal__header-main">
-            {icon && <span className="jf-modal__icon">{icon}</span>}
+            {icon && <span className={iconClass}>{icon}</span>}
             <div className="jf-modal__heading">
               <h2 id="jf-modal-title" className="jf-modal__title">
                 {title}
@@ -146,9 +152,11 @@ export function Modal({
             )}
           </div>
           <div className="jf-modal__footer-actions">
-            <Button variant="ghost" colorScheme="secondary" onClick={onClose}>
-              {cancelLabel}
-            </Button>
+            {showCancel && (
+              <Button variant="ghost" colorScheme="secondary" onClick={onClose}>
+                {cancelLabel}
+              </Button>
+            )}
             <Button
               colorScheme={intent}
               onClick={onConfirm}

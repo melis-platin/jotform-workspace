@@ -35,6 +35,10 @@ ComponentRegistry.register({
     { name: 'Required', type: 'boolean', default: true, showWhen: { 'Layout Type': 'Card' } },
     { name: 'Selected', type: 'boolean', default: false, showWhen: { 'Layout Type': 'Card' } },
     { name: 'Shrinked', type: 'boolean', default: false, showWhen: { 'Layout Type': 'Card' } },
+    { name: 'Form Title', type: 'text', default: 'Form', showWhen: { 'Layout Type': 'Form' } },
+    { name: 'Form Description', type: 'text', default: '', showWhen: { 'Layout Type': 'Form' } },
+    { name: 'Submit Label', type: 'text', default: 'Submit', showWhen: { 'Layout Type': 'Form' } },
+    { name: 'Form Fields', type: 'text', default: '', showWhen: { 'Layout Type': 'Form' } },
     { name: 'Show Border', type: 'boolean', default: true, showWhen: { 'Layout Type': 'Form' } },
     { name: 'Skeleton', type: 'boolean', default: false },
   ],
@@ -136,6 +140,11 @@ ComponentRegistry.register({
         size={variants['Size'] as FormSize}
         label={props['Label'] as string}
         description={props['Description'] as string}
+        formTitle={props['Form Title'] as string}
+        formDescription={props['Form Description'] as string}
+        submitLabel={props['Submit Label'] as string}
+        formFields={props['Form Fields'] as string}
+        defaultValues={props['Default Values'] as string}
         showIcon={props['Show Icon'] as boolean}
         icon={props['Icon'] as string}
         required={props['Required'] as boolean}

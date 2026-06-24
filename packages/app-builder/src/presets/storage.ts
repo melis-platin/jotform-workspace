@@ -26,9 +26,18 @@ export interface PresetSnapshot {
     icon: string
     skeleton: boolean
     show?: boolean
+    headerStyleLayout?: 'Default' | 'Cover' | 'Profile'
+    headerSize?: 'Compact' | 'Default' | 'Maximum'
+    contentDirection?: 'Vertical' | 'Horizontal'
+    titleFont?: string
+    titleSize?: number
+    backgroundColor?: string
     imageStyle?: 'Image' | 'Icon' | 'None'
     imageUrl?: string | null
     imageName?: string | null
+    imageWidth?: number | null
+    imageHeight?: number | null
+    imageAspectLocked?: boolean
     textColor?: string
     backgroundImageUrl?: string | null
     backgroundImageName?: string | null

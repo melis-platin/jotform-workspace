@@ -59,7 +59,7 @@ export const APP_PRESETS: AppPreset[] = [
   {
     id: EMPTY_PRESET_ID,
     name: 'Empty App',
-    appTitle: 'App Title',
+    appTitle: 'New App',
     appSubtitle: '',
     pages: [{ id: 'page-1', name: 'Home', icon: 'House', elements: [] }],
     headerActions: [],
