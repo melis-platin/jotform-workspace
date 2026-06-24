@@ -55,6 +55,7 @@ import { LivePreviewCheckoutPage } from '../components/LivePreviewCheckoutPage'
 import { LivePreviewOrderBar } from '../components/LivePreviewOrderBar'
 import { LivePreviewAvatarPopover } from '../components/LivePreviewAvatarPopover'
 import { LivePreviewProfilePage } from '../components/LivePreviewProfilePage'
+import { LivePreviewSearchPage } from '../components/LivePreviewSearchPage'
 import { LivePreviewLoginPopover } from '../components/LivePreviewLoginPopover'
 import { QrPopover } from '../components/QrPopover'
 import { MobileBottomBar } from '../components/MobileBottomBar'
@@ -2139,6 +2140,7 @@ export function BuildPage({
   previewMode = false,
   onPreviewClose,
   onDeepLinkTargetsChange,
+  searchBarEnabled = true,
   pushNotificationsEnabled = false,
   pushNotifications = [],
   onPushNotificationRead,
@@ -2343,6 +2345,7 @@ export function BuildPage({
   const [appHeaderState, setAppHeaderState] = useState<AppHeaderState>(initial.appHeader)
   const [isMorePageOpen, setIsMorePageOpen] = useState(false)
   const [isNotificationsPageOpen, setIsNotificationsPageOpen] = useState(false)
+  const [isPreviewSearchOpen, setIsPreviewSearchOpen] = useState(false)
   const [isPreviewCartOpen, setIsPreviewCartOpen] = useState(false)
   const [isPreviewDetailOpen, setIsPreviewDetailOpen] = useState(false)
   const [isPreviewCheckoutOpen, setIsPreviewCheckoutOpen] = useState(false)
@@ -2600,12 +2603,14 @@ export function BuildPage({
       pendingAuthRedirectRef.current = pageId
       setIsMorePageOpen(false)
       setIsNotificationsPageOpen(false)
+      setIsPreviewSearchOpen(false)
       setPreviewAuthView('login')
       return
     }
     setIsPreviewProfileOpen(false)
     setIsAvatarPopoverOpen(false)
     setIsNotificationsPageOpen(false)
+    setIsPreviewSearchOpen(false)
     setActivePageId(pageId)
   }, [isPreviewLoggedIn])
 
@@ -2613,6 +2618,7 @@ export function BuildPage({
     if (hasNavOverflow && index === visibleNavPages.length) {
       setIsMorePageOpen(true)
       setIsNotificationsPageOpen(false)
+      setIsPreviewSearchOpen(false)
       return
     }
     setIsMorePageOpen(false)
@@ -2628,8 +2634,14 @@ export function BuildPage({
     setIsNotificationsPageOpen(false)
   }, [pushNotificationsEnabled])
 
+  useEffect(() => {
+    if (searchBarEnabled) return
+    setIsPreviewSearchOpen(false)
+  }, [searchBarEnabled])
+
   const openNotificationsPage = () => {
     setIsNotificationsPageOpen(true)
+    setIsPreviewSearchOpen(false)
     setIsMorePageOpen(false)
     setIsPreviewCartOpen(false)
     setIsPreviewCheckoutOpen(false)
@@ -2652,6 +2664,7 @@ export function BuildPage({
 
     setActivePageId(targetPageId)
     setIsNotificationsPageOpen(false)
+    setIsPreviewSearchOpen(false)
     setIsMorePageOpen(false)
     setIsPreviewCartOpen(false)
     setIsPreviewCheckoutOpen(false)
@@ -2735,6 +2748,31 @@ export function BuildPage({
     return null
   }
 
+  const renderTopHeaderSearchButton = () => {
+    if (!searchBarEnabled) return null
+
+    return (
+      <button
+        type="button"
+        className="live-preview__top-header-search-btn"
+        aria-label="Search"
+        aria-expanded={isPreviewSearchOpen}
+        onClick={() => {
+          setIsPreviewSearchOpen(true)
+          setIsNotificationsPageOpen(false)
+          setIsMorePageOpen(false)
+          setIsPreviewCartOpen(false)
+          setIsPreviewCheckoutOpen(false)
+          setIsPreviewProfileOpen(false)
+          setIsLoginPopoverOpen(false)
+          setIsAvatarPopoverOpen(false)
+        }}
+      >
+        <AppIcon name="Search" size={20} />
+      </button>
+    )
+  }
+
   // Top-header compact (app icon + title) shown the moment scrolling starts.
   // On mobile/tablet it's first-page only (AppHeader lives there). Desktop
   // preview promotes every page so the chrome reads "app branding" consistently
@@ -2803,14 +2841,14 @@ export function BuildPage({
   // Not while the hamburger menu is open — the menu covers the hero with a solid
   // panel, so the nav reverts to its normal (opaque) bar there (close icon visible,
   // content no longer tucked under the bar).
-  const topNavOverlay = topNavEnabled && topNavTransparent && activeIsFirstPage && appHeaderState.show && previewDevice === 'phone' && !isMorePageOpen
+  const topNavOverlay = topNavEnabled && topNavTransparent && activeIsFirstPage && appHeaderState.show && previewDevice === 'phone' && !isMorePageOpen && !isPreviewSearchOpen
   // When the hero uses the theme brand bg (no custom colour/image), resolveHeaderTextColor
   // is undefined and the AppHeader text falls back to --fg-inverse — so the overlay nav
   // (icon already uses --fg-inverse) must too, or the title/menu read dark on the brand.
   const topNavOverlayFg = resolveHeaderTextColor(appHeaderState) ?? 'var(--fg-inverse)'
   // Mobile top header is shown unless Top Navigation is toggled off (desktop has its
   // own nav controls). When hidden, the content/hero starts below the status bar.
-  const mobileTopHeaderHidden = previewDevice !== 'desktop' && !topNavEnabled
+  const mobileTopHeaderHidden = previewDevice !== 'desktop' && (!topNavEnabled || isPreviewSearchOpen)
 
   const canDropInHeader = (() => {
     if (appHeaderIsHero || appHeaderIsDefault) return false
@@ -3328,6 +3366,7 @@ export function BuildPage({
     setIsLoginPopoverOpen(false)
     setIsMorePageOpen(false)
     setIsNotificationsPageOpen(false)
+    setIsPreviewSearchOpen(false)
     const arr = pagesRef.current
     const redirect = pendingAuthRedirectRef.current
     pendingAuthRedirectRef.current = null
@@ -3347,6 +3386,7 @@ export function BuildPage({
     setIsAvatarPopoverOpen(false)
     setIsMorePageOpen(false)
     setIsNotificationsPageOpen(false)
+    setIsPreviewSearchOpen(false)
     setIsPreviewProfileOpen(false)
     const arr = pagesRef.current
     if (arr[0]?.landing) setActivePageId(arr[0].id)
@@ -3910,7 +3950,7 @@ export function BuildPage({
         )}
         <div className="live-preview__top-header-right">
           {!activePageIsDynamic && pages.some((p) => p.elements.some((el) => el.componentId === 'product-list')) && (
-            <LivePreviewCartButton onClick={() => { setIsNotificationsPageOpen(false); setIsPreviewCartOpen(true) }} />
+            <LivePreviewCartButton onClick={() => { setIsNotificationsPageOpen(false); setIsPreviewSearchOpen(false); setIsPreviewCartOpen(true) }} />
           )}
           {pushNotificationsEnabled && (
             <LivePreviewNotificationButton
@@ -3923,16 +3963,19 @@ export function BuildPage({
               {/* The profile page (mobile/tablet) drops the account avatar from the
                   top header — the back affordance handles the exit there. */}
               {!(isPreviewProfileOpen && previewDevice !== 'desktop') && (
-                <button
-                  type="button"
-                  className="live-preview__top-header-avatar-btn"
-                  aria-label="Account menu"
-                  onClick={() => setIsAvatarPopoverOpen((v) => !v)}
-                >
-                  <span className="live-preview__top-header-avatar" aria-hidden="true">
-                    {PROFILE_INITIALS}
-                  </span>
-                </button>
+                <>
+                  {renderTopHeaderSearchButton()}
+                  <button
+                    type="button"
+                    className="live-preview__top-header-avatar-btn"
+                    aria-label="Account menu"
+                    onClick={() => setIsAvatarPopoverOpen((v) => !v)}
+                  >
+                    <span className="live-preview__top-header-avatar" aria-hidden="true">
+                      {PROFILE_INITIALS}
+                    </span>
+                  </button>
+                </>
               )}
               {/* On desktop + left variant the account menu lives in the sidebar
                   footer instead — avoid a duplicate popover (and its outside-click
@@ -3965,6 +4008,7 @@ export function BuildPage({
             )
           ) : (
             <>
+              {renderTopHeaderSearchButton()}
               <button
                 type="button"
                 className="live-preview__top-header-login-btn"
@@ -3981,6 +4025,9 @@ export function BuildPage({
           )}
         </div>
       </div>
+      {isPreviewSearchOpen && (
+        <LivePreviewSearchPage onClose={() => setIsPreviewSearchOpen(false)} />
+      )}
       {!isPreviewLoggedIn && (
         <LivePreviewLoginPopover
           variant={previewDevice === 'desktop' ? 'modal' : 'popover'}
@@ -4198,7 +4245,7 @@ export function BuildPage({
                   })}
                 </div>
               </div>
-              {isFirstPage && !isPreviewCartOpen && !isPreviewCheckoutOpen && !isPreviewDetailOpen && (
+              {isFirstPage && !isPreviewCartOpen && !isPreviewCheckoutOpen && !isPreviewDetailOpen && !isPreviewSearchOpen && (
                 <div className="themes-view__attribution-footer">
                   <AttributionBar openAiSheetOnMount={openAttributionSheet} />
                 </div>
@@ -4208,7 +4255,7 @@ export function BuildPage({
           })()}
         </div>
       </div>
-      {pages.length > 1 && bottomNavEnabled && !isNotificationsPageOpen && !isPreviewCartOpen && !isPreviewCheckoutOpen && !isPreviewDetailOpen && !isPreviewProfileOpen && !showLandingNav && !activePageIsDynamic && (
+      {pages.length > 1 && bottomNavEnabled && !isNotificationsPageOpen && !isPreviewSearchOpen && !isPreviewCartOpen && !isPreviewCheckoutOpen && !isPreviewDetailOpen && !isPreviewProfileOpen && !showLandingNav && !activePageIsDynamic && (
         <div className="live-preview__bottom-nav app-scope">
           <BottomNavigation
             items={bottomNavItems}
@@ -4218,7 +4265,7 @@ export function BuildPage({
           />
         </div>
       )}
-      <img src={phoneHomeIndicator} alt="" className="live-preview__home-indicator" />
+      {!isPreviewSearchOpen && <img src={phoneHomeIndicator} alt="" className="live-preview__home-indicator" />}
       <FormSheet />
       <LivePreviewCartPage
         open={isPreviewCartOpen}
@@ -4240,7 +4287,7 @@ export function BuildPage({
         onLoggedIn={handlePreviewLogin}
       />
       <LivePreviewOrderBar
-        hidden={isNotificationsPageOpen || isPreviewCartOpen || isPreviewCheckoutOpen || isPreviewDetailOpen || isPreviewProfileOpen}
+        hidden={isNotificationsPageOpen || isPreviewSearchOpen || isPreviewCartOpen || isPreviewCheckoutOpen || isPreviewDetailOpen || isPreviewProfileOpen}
         hasBottomNav={pages.length > 1}
         onClick={() => setIsPreviewCheckoutOpen(true)}
       />
@@ -8181,7 +8228,7 @@ export function BuildPage({
                         })()}
                         <div className="live-preview__top-header-right">
                           {!activePageIsDynamic && pages.some((p) => p.elements.some((el) => el.componentId === 'product-list')) && (
-                            <LivePreviewCartButton onClick={() => { setIsNotificationsPageOpen(false); setIsPreviewCartOpen(true) }} />
+                            <LivePreviewCartButton onClick={() => { setIsNotificationsPageOpen(false); setIsPreviewSearchOpen(false); setIsPreviewCartOpen(true) }} />
                           )}
                           {pushNotificationsEnabled && (
                             <LivePreviewNotificationButton
@@ -8194,16 +8241,19 @@ export function BuildPage({
                               {/* Profile page (mobile/tablet): drop the account avatar
                                   from the top header — back affordance handles exit. */}
                               {!(isPreviewProfileOpen && previewDevice !== 'desktop') && (
-                                <button
-                                  type="button"
-                                  className="live-preview__top-header-avatar-btn"
-                                  aria-label="Account menu"
-                                  onClick={() => setIsAvatarPopoverOpen((v) => !v)}
-                                >
-                                  <span className="live-preview__top-header-avatar" aria-hidden="true">
-                                    {PROFILE_INITIALS}
-                                  </span>
-                                </button>
+                                <>
+                                  {renderTopHeaderSearchButton()}
+                                  <button
+                                    type="button"
+                                    className="live-preview__top-header-avatar-btn"
+                                    aria-label="Account menu"
+                                    onClick={() => setIsAvatarPopoverOpen((v) => !v)}
+                                  >
+                                    <span className="live-preview__top-header-avatar" aria-hidden="true">
+                                      {PROFILE_INITIALS}
+                                    </span>
+                                  </button>
+                                </>
                               )}
                               <LivePreviewAvatarPopover
                                 open={isAvatarPopoverOpen}
@@ -8223,17 +8273,23 @@ export function BuildPage({
                               <AppIcon name={isMorePageOpen ? 'X' : 'Menu'} size={20} />
                             </button>
                           ) : (
-                            <button
-                              type="button"
-                              className="live-preview__top-header-login-btn"
-                              aria-label="Login"
-                              onClick={() => setIsLoginPopoverOpen((v) => !v)}
-                            >
-                              <Icon name="circle-user-filled" category="users" size={20} />
-                            </button>
+                            <>
+                              {renderTopHeaderSearchButton()}
+                              <button
+                                type="button"
+                                className="live-preview__top-header-login-btn"
+                                aria-label="Login"
+                                onClick={() => setIsLoginPopoverOpen((v) => !v)}
+                              >
+                                <Icon name="circle-user-filled" category="users" size={20} />
+                              </button>
+                            </>
                           )}
                         </div>
                       </div>
+                      {isPreviewSearchOpen && (
+                        <LivePreviewSearchPage onClose={() => setIsPreviewSearchOpen(false)} />
+                      )}
                       {!isPreviewLoggedIn && (
                         <LivePreviewLoginPopover
                           variant={previewDevice === 'desktop' ? 'modal' : 'popover'}
@@ -8366,7 +8422,7 @@ export function BuildPage({
                                   })}
                                 </div>
                               </div>
-                              {isFirstPage && !isPreviewCartOpen && !isPreviewCheckoutOpen && !isPreviewDetailOpen && (
+                              {isFirstPage && !isPreviewCartOpen && !isPreviewCheckoutOpen && !isPreviewDetailOpen && !isPreviewSearchOpen && (
                                 <div className="themes-view__attribution-footer">
                                   <AttributionBar openAiSheetOnMount={openAttributionSheet} />
                                 </div>
@@ -8376,7 +8432,7 @@ export function BuildPage({
                           })()}
                         </div>
                       </div>
-                      {pages.length > 1 && bottomNavEnabled && !isNotificationsPageOpen && !isPreviewCartOpen && !isPreviewCheckoutOpen && !isPreviewDetailOpen && !isPreviewProfileOpen && !showLandingNav && !activePageIsDynamic && (
+                      {pages.length > 1 && bottomNavEnabled && !isNotificationsPageOpen && !isPreviewSearchOpen && !isPreviewCartOpen && !isPreviewCheckoutOpen && !isPreviewDetailOpen && !isPreviewProfileOpen && !showLandingNav && !activePageIsDynamic && (
                         <div className="live-preview__bottom-nav app-scope">
                           <BottomNavigation
                             items={bottomNavItems}
@@ -8386,7 +8442,7 @@ export function BuildPage({
                           />
                         </div>
                       )}
-                      <img src={phoneHomeIndicator} alt="" className="live-preview__home-indicator" />
+                      {!isPreviewSearchOpen && <img src={phoneHomeIndicator} alt="" className="live-preview__home-indicator" />}
                       <FormSheet />
                       <LivePreviewCartPage
                         open={isPreviewCartOpen}
@@ -8408,7 +8464,7 @@ export function BuildPage({
                         onLoggedIn={handlePreviewLogin}
                       />
                       <LivePreviewOrderBar
-                        hidden={isNotificationsPageOpen || isPreviewCartOpen || isPreviewCheckoutOpen || isPreviewDetailOpen || isPreviewProfileOpen}
+                        hidden={isNotificationsPageOpen || isPreviewSearchOpen || isPreviewCartOpen || isPreviewCheckoutOpen || isPreviewDetailOpen || isPreviewProfileOpen}
                         hasBottomNav={pages.length > 1}
                         onClick={() => setIsPreviewCheckoutOpen(true)}
                       />
