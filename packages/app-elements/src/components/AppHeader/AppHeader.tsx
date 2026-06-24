@@ -42,6 +42,8 @@ export interface AppHeaderProps {
   onClick?: (e: React.MouseEvent) => void;
   /** Whole-header selected state (builder). */
   selected?: boolean;
+  /** Center content against the full header bounds, ignoring page-card tuck compensation. */
+  centerContentInBounds?: boolean;
 }
 
 export const AppHeader: React.FC<AppHeaderProps> = ({
@@ -67,6 +69,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
   iconSelected,
   onClick,
   selected,
+  centerContentInBounds = false,
 }) => {
   const animClass = skeletonAnimation === 'shimmer' ? 'animate-shimmer' : 'animate-pulse';
 
@@ -121,6 +124,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
     `jf-app-header--size-${size.toLowerCase()}`,
     contentAlign === 'Bottom' && 'jf-app-header--valign-bottom',
     backgroundImageUrl && 'jf-app-header--has-bg',
+    centerContentInBounds && 'jf-app-header--center-content-in-bounds',
     onClick && 'jf-app-header--interactive',
     selected && 'jf-app-header--selected',
   ].filter(Boolean).join(' ');

@@ -42,6 +42,7 @@ import {
 import { Icon, Button as DSButton, Tabs as DSTabs, Segmented, Input as DSInput, Toggle as DSToggle, Slider as DSSlider, NumberInput as DSNumberInput, FormField as DSFormField, TextArea as DSTextArea, DropdownSingle as DSDropdownSingle, FieldMapper as DSFieldMapper, FieldComposer as DSFieldComposer, type FieldToken, Link as DSLink, Modal as DSModal, SearchInput as DSSearchInput, ColorInput as DSColorInput } from '@jf/design-system'
 import phoneHomeIndicator from '@jf/design-system/src/assets/phone-home-indicator.svg'
 import previewUserAvatar from '../assets/preview-user-avatar.jpg'
+import previewHeaderAvatar from '../assets/app-users/melis-platin.png'
 import { PhoneStatusBar } from '../components/PhoneStatusBar'
 import { PageNavigationBar, getPageIconName } from '../components/PageNavigationBar'
 import { CanvasPageLabel } from '../components/CanvasPageLabel'
@@ -899,6 +900,24 @@ function resolveHeaderSubtitle(s: AppHeaderState, appDesc: string): string {
 const APP_HEADER_HEIGHT_MIN = 280
 const APP_HEADER_HEIGHT_MAX = 600
 const APP_HEADER_HEIGHT_DEFAULT = 272
+const HOME_APP_HEADER_HEIGHT = 424
+const APP_HEADER_BACKGROUND_IMAGE_WIDTH = 1000
+
+function resizeHeaderImageUrl(url: string | null, targetHeight: number): string | null {
+  if (!url) return null
+
+  try {
+    const parsed = new URL(url)
+    if (parsed.hostname !== 'images.unsplash.com') return url
+
+    parsed.searchParams.set('w', String(APP_HEADER_BACKGROUND_IMAGE_WIDTH))
+    parsed.searchParams.set('h', String(targetHeight))
+    parsed.searchParams.set('fit', 'crop')
+    return parsed.toString()
+  } catch {
+    return url
+  }
+}
 
 // Cover/Profile cover-band height slider bounds (px) — the coloured/image strip behind
 // the avatar+title. Smaller range than the Hero banner since it's only the background band.
@@ -959,13 +978,6 @@ const PROFILE_USER = {
   username: 'okandungel',
   email: 'okandungel@jotform.com',
 }
-// First + last initials for the profile header avatar (e.g. "Okan Düngel" → "OD").
-const PROFILE_INITIALS = (() => {
-  const words = PROFILE_USER.name.trim().split(/\s+/)
-  const first = words[0]?.charAt(0) ?? ''
-  const last = words.length > 1 ? (words[words.length - 1]?.charAt(0) ?? '') : ''
-  return (first + last).toUpperCase()
-})()
 
 // Elements droppable into the app header. Button / Social Follow are the
 // interactive actions; Image (e.g. a hero graphic/badge) and Spacer (vertical
@@ -2158,7 +2170,7 @@ export function BuildPage({
   const [topNavEnabled, setTopNavEnabled] = useState(true)
   // Mobile only: the top nav bar drops its background and overlays the first-page
   // hero (content goes light to match the hero text). See live-preview__top-header--transparent.
-  const [topNavTransparent, setTopNavTransparent] = useState(false)
+  const [topNavTransparent, setTopNavTransparent] = useState(true)
   // Desktop navigation — independent from the mobile settings above.
   const [desktopNavVariant, setDesktopNavVariant] = useState<'top' | 'contained' | 'compact' | 'left'>('top')
   const [desktopNavEnabled, setDesktopNavEnabled] = useState(true)
@@ -2445,8 +2457,8 @@ export function BuildPage({
   const [designBtnOnHeader, setDesignBtnOnHeader] = useState(true)
 
   // Live preview: track scroll so the top-header chrome can collapse to show
-  // its icon + title (iOS large-title pattern) the moment the first page
-  // starts scrolling.
+  // its icon + title (iOS large-title pattern). On mobile hero headers, delay
+  // that chrome swap until the app header image has fully cleared the top bar.
   const [previewContentScalerEl, setPreviewContentScalerEl] = useState<HTMLDivElement | null>(null)
   const [isPreviewContentScrolled, setIsPreviewContentScrolled] = useState(false)
   // Transparent top nav: true while the hero is still behind the bar (→ transparent
@@ -2489,14 +2501,29 @@ export function BuildPage({
     let offset = 0
     const onScroll = () => {
       const st = previewContentScalerEl.scrollTop
-      setIsPreviewContentScrolled(st > 0)
-      // Transparent top nav stays transparent only while the hero is still behind the
-      // bar; once the hero's bottom rises above the bar's bottom, page content is behind
-      // it → switch to a solid bar. Rects are post-transform, so the 0.9 scale is handled.
       const navEl = previewTopHeaderRef.current
       const heroEl = previewContentScalerEl.querySelector('.jf-app-header') as HTMLElement | null
+      const activeIsFirstPageForTopHeader = (pages.find((p) => p.id === activePageId) ?? pages[0])?.id === pages[0]?.id
+      const waitsForAppHeaderImage =
+        previewDevice === 'phone' &&
+        topNavEnabled &&
+        topNavTransparent &&
+        activeIsFirstPageForTopHeader &&
+        appHeaderState.show &&
+        !isMorePageOpen &&
+        !isPreviewSearchOpen &&
+        !!navEl &&
+        !!heroEl
+      const appHeaderImageClearedTopBar = waitsForAppHeaderImage
+        ? heroEl.getBoundingClientRect().bottom <= navEl.getBoundingClientRect().top
+        : false
+      setIsPreviewContentScrolled(waitsForAppHeaderImage ? appHeaderImageClearedTopBar : st > 0)
+      // Transparent top nav stays transparent only while the hero is still behind the
+      // bar; once the hero's bottom rises above the bar's top, the app header image has
+      // ended behind the chrome → switch to a solid bar. Rects are post-transform, so
+      // the 0.9 scale is handled.
       setTopNavOverHero(
-        !!navEl && !!heroEl && heroEl.getBoundingClientRect().bottom > navEl.getBoundingClientRect().bottom
+        !!navEl && !!heroEl && heroEl.getBoundingClientRect().bottom > navEl.getBoundingClientRect().top
       )
       if (!autoHide) return
       const header = previewTopHeaderRef.current
@@ -2520,7 +2547,7 @@ export function BuildPage({
     onScroll()
     previewContentScalerEl.addEventListener('scroll', onScroll, { passive: true })
     return () => previewContentScalerEl.removeEventListener('scroll', onScroll)
-  }, [previewContentScalerEl, previewDevice, desktopNavVariant, desktopNavSticky, pages, isPreviewLoggedIn])
+  }, [previewContentScalerEl, previewDevice, desktopNavVariant, desktopNavSticky, pages, activePageId, isPreviewLoggedIn, topNavEnabled, topNavTransparent, appHeaderState.show, isMorePageOpen, isPreviewSearchOpen])
 
   // While the Navigation Properties panel is open, mirror its tab onto the canvas
   // preview device. Pages + Desktop preview on desktop (the default), Mobile on phone.
@@ -2811,6 +2838,13 @@ export function BuildPage({
   // Archetype-driven visual props (alignment/size/height/text colour), shared by
   // all three AppHeader render sites so they never drift.
   const appHeaderArchetypeProps = resolveAppHeaderArchetypeProps(appHeaderState)
+  const appHeaderBackgroundImage = resolveHeaderImage(appHeaderState)
+  const homeAppHeaderBackgroundImage = resizeHeaderImageUrl(appHeaderBackgroundImage, HOME_APP_HEADER_HEIGHT)
+  const canvasAppHeaderBackgroundImage = resizeHeaderImageUrl(appHeaderBackgroundImage, appHeaderArchetypeProps.minHeight)
+  const coverHeaderBackgroundImage = resizeHeaderImageUrl(
+    appHeaderBackgroundImage,
+    appHeaderState.coverHeight ?? COVER_HEADER_HEIGHT_DEFAULT,
+  )
   // The Cover/Profile avatar (and the Default icon) read the header's OWN icon state so
   // it's editable from the App Icon control in the General tab — distinct from the
   // Settings-managed nav-logo `appIcon` prop. 'None' falls back to an icon for these
@@ -3972,7 +4006,7 @@ export function BuildPage({
                     onClick={() => setIsAvatarPopoverOpen((v) => !v)}
                   >
                     <span className="live-preview__top-header-avatar" aria-hidden="true">
-                      {PROFILE_INITIALS}
+                      <img src={previewHeaderAvatar} alt="" width="36" height="36" />
                     </span>
                   </button>
                 </>
@@ -4015,7 +4049,9 @@ export function BuildPage({
                 aria-label="Login"
                 onClick={() => setIsLoginPopoverOpen((v) => !v)}
               >
-                <Icon name="circle-user-filled" category="users" size={20} />
+                <span className="live-preview__top-header-avatar" aria-hidden="true">
+                  <img src={previewHeaderAvatar} alt="" width="36" height="36" />
+                </span>
               </button>
               <div className="live-preview__top-header-auth">
                 <AppButton variant="Outlined" size="Small" leftIcon="none" rightIcon="none" label="Login" onClick={() => { setLoginPopoverView('login'); setIsLoginPopoverOpen(true) }} />
@@ -4026,7 +4062,12 @@ export function BuildPage({
         </div>
       </div>
       {isPreviewSearchOpen && (
-        <LivePreviewSearchPage onClose={() => setIsPreviewSearchOpen(false)} />
+        <LivePreviewSearchPage
+          appTitle={appTitle}
+          appSubtitle={appSubtitle}
+          pages={pages}
+          onClose={() => setIsPreviewSearchOpen(false)}
+        />
       )}
       {!isPreviewLoggedIn && (
         <LivePreviewLoginPopover
@@ -4174,7 +4215,7 @@ export function BuildPage({
                     subtitle={resolveHeaderSubtitle(appHeaderState, appSubtitle)}
                     appIcon={appHeaderIcon}
                     background={resolveHeaderBackground(appHeaderState)}
-                    backgroundImage={resolveHeaderImage(appHeaderState)}
+                    backgroundImage={coverHeaderBackgroundImage}
                   />
                 </div>
               )}
@@ -4184,14 +4225,15 @@ export function BuildPage({
                   layout={appHeaderArchetypeProps.layout}
                   contentAlign={appHeaderArchetypeProps.contentAlign}
                   size={appHeaderArchetypeProps.size}
-                  minHeight={appHeaderArchetypeProps.minHeight}
+                  minHeight={HOME_APP_HEADER_HEIGHT}
+                  centerContentInBounds
                   icon={appHeaderState.icon}
                   iconColor={appHeaderState.iconColor}
                   iconBgColor={appHeaderState.iconBgColor}
                   imageStyle={appHeaderArchetypeProps.imageStyle}
                   imageUrl={appHeaderState.imageUrl}
                   textColor={appHeaderArchetypeProps.textColor}
-                  backgroundImageUrl={resolveHeaderImage(appHeaderState)}
+                  backgroundImageUrl={homeAppHeaderBackgroundImage}
                   backgroundColor={resolveHeaderBackground(appHeaderState)}
                   skeleton={appHeaderState.skeleton}
                   title={resolveHeaderTitle(appHeaderState, appTitle)}
@@ -4449,7 +4491,7 @@ export function BuildPage({
                     subtitle={resolveHeaderSubtitle(appHeaderState, appSubtitle)}
                     appIcon={appHeaderIcon}
                     background={resolveHeaderBackground(appHeaderState)}
-                    backgroundImage={resolveHeaderImage(appHeaderState)}
+                    backgroundImage={coverHeaderBackgroundImage}
                     selected={selectedElementId === APP_HEADER_ID}
                     onClick={(e) => { e.stopPropagation(); setSelectedElementId(APP_HEADER_ID); setRightPanel('properties') }}
                   />
@@ -4465,7 +4507,7 @@ export function BuildPage({
                   imageStyle={appHeaderArchetypeProps.imageStyle}
                   imageUrl={appHeaderState.imageUrl}
                   textColor={appHeaderArchetypeProps.textColor}
-                  backgroundImageUrl={resolveHeaderImage(appHeaderState)}
+                  backgroundImageUrl={canvasAppHeaderBackgroundImage}
                   backgroundColor={resolveHeaderBackground(appHeaderState)}
                   skeleton={appHeaderState.skeleton}
                   title={resolveHeaderTitle(appHeaderState, appTitle)}
@@ -8250,7 +8292,7 @@ export function BuildPage({
                                     onClick={() => setIsAvatarPopoverOpen((v) => !v)}
                                   >
                                     <span className="live-preview__top-header-avatar" aria-hidden="true">
-                                      {PROFILE_INITIALS}
+                                      <img src={previewHeaderAvatar} alt="" width="36" height="36" />
                                     </span>
                                   </button>
                                 </>
@@ -8281,14 +8323,21 @@ export function BuildPage({
                                 aria-label="Login"
                                 onClick={() => setIsLoginPopoverOpen((v) => !v)}
                               >
-                                <Icon name="circle-user-filled" category="users" size={20} />
+                                <span className="live-preview__top-header-avatar" aria-hidden="true">
+                                  <img src={previewHeaderAvatar} alt="" width="36" height="36" />
+                                </span>
                               </button>
                             </>
                           )}
                         </div>
                       </div>
                       {isPreviewSearchOpen && (
-                        <LivePreviewSearchPage onClose={() => setIsPreviewSearchOpen(false)} />
+                        <LivePreviewSearchPage
+                          appTitle={appTitle}
+                          appSubtitle={appSubtitle}
+                          pages={pages}
+                          onClose={() => setIsPreviewSearchOpen(false)}
+                        />
                       )}
                       {!isPreviewLoggedIn && (
                         <LivePreviewLoginPopover
@@ -8351,7 +8400,7 @@ export function BuildPage({
                                     subtitle={resolveHeaderSubtitle(appHeaderState, appSubtitle)}
                                     appIcon={appHeaderIcon}
                                     background={resolveHeaderBackground(appHeaderState)}
-                                    backgroundImage={resolveHeaderImage(appHeaderState)}
+                                    backgroundImage={coverHeaderBackgroundImage}
                                   />
                                 </div>
                               )}
@@ -8361,14 +8410,15 @@ export function BuildPage({
                                   layout={appHeaderArchetypeProps.layout}
                                   contentAlign={appHeaderArchetypeProps.contentAlign}
                                   size={appHeaderArchetypeProps.size}
-                                  minHeight={appHeaderArchetypeProps.minHeight}
+                                  minHeight={HOME_APP_HEADER_HEIGHT}
+                                  centerContentInBounds
                                   icon={appHeaderState.icon}
                                   iconColor={appHeaderState.iconColor}
                                   iconBgColor={appHeaderState.iconBgColor}
                                   imageStyle={appHeaderArchetypeProps.imageStyle}
                                   imageUrl={appHeaderState.imageUrl}
                                   textColor={appHeaderArchetypeProps.textColor}
-                                  backgroundImageUrl={resolveHeaderImage(appHeaderState)}
+                                  backgroundImageUrl={homeAppHeaderBackgroundImage}
                                   backgroundColor={resolveHeaderBackground(appHeaderState)}
                                   skeleton={appHeaderState.skeleton}
                                   title={resolveHeaderTitle(appHeaderState, appTitle)}

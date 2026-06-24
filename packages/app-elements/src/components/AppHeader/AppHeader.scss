@@ -74,6 +74,10 @@
   padding-bottom: var(--space-12);
 }
 
+.jf-app-header--center-content-in-bounds:not(.jf-app-header--valign-bottom) {
+  padding-bottom: var(--space-12);
+}
+
 .jf-app-header__inner {
   display: flex;
   flex-direction: column;
