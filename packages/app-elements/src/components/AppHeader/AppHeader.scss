@@ -6,6 +6,8 @@
   // Capture originals here (parent scope) so children can swap without circular refs
   --_jf-ahdr-brand: var(--bg-fill-brand);
   --_jf-ahdr-inverse: var(--fg-inverse);
+  --app-header-content-y: calc(var(--space-12) + var(--space-3));
+  --app-header-min-floor: 280px;
 
   display: flex;
   flex-direction: column;
@@ -16,11 +18,11 @@
   // container here so they scale with the header's OWN width (like the Heading
   // element / page card) rather than the browser viewport.
   container-type: inline-size;
-  // icon(80) + gap(16) + title(~36) + gap(4) + subtitle(~24) + padding(48+64)
+  // icon(80) + gap(16) + title(~36) + gap(4) + subtitle(~24) + vertical content padding
   // Customizable banner height (builder Height property). min-height (not height)
   // so content never clips — a tall title/description grows the header past the
   // floor. 'auto' (fit content) and px presets/custom are published via the var.
-  min-height: var(--app-header-min-height, 272px);
+  min-height: var(--app-header-min-height, var(--app-header-min-floor));
   // No horizontal padding here: the __inner / __actions columns own the full
   // horizontal inset (var(--app-header-inset)) so their content box matches the
   // page card's .themes-view__app exactly. A gutter on the full-bleed header
@@ -29,11 +31,10 @@
   // Asymmetric vertical padding: bottom = top + 16px to compensate the first
   // page's -16px tuck (see .themes-view__canvas--first / page-wrapper--first).
   // The page card overlaps the header's bottom by 16px, so without this the
-  // visible bottom gap reads 16px tighter than the top. Adding the tuck amount
-  // back to padding-bottom makes the visible top/bottom gaps symmetric in every
-  // shell (the tuck is a uniform -16px across builder canvas, phone, tablet and
-  // desktop — measured). --valign-bottom overrides this below for its own math.
-  padding: var(--space-12) 0 calc(var(--space-12) + var(--space-4));
+  // visible bottom gap reads 16px tighter than the top. The content rule is 60px
+  // above/below; adding the tuck amount back to padding-bottom keeps that visible
+  // spacing symmetric in every shell. --valign-bottom overrides this below.
+  padding: var(--app-header-content-y) 0 calc(var(--app-header-content-y) + var(--space-4));
   background: var(--bg-fill-brand);
   font-family: var(--font-family);
 
@@ -65,17 +66,17 @@
 // above it.
 .jf-app-header--valign-bottom {
   justify-content: flex-end;
-  // A comfortable bottom gap — the SAME --space-12 the centered layout uses, NOT
+  // A comfortable bottom gap — the SAME 60px content inset the centered layout uses, NOT
   // the tight left/right inset. The bottom-most element (text or a button) sits
   // right above the first page, which tucks up -16px under the header (live
   // preview AND builder canvas). The inset alone (~16px) gets fully swallowed by
-  // that tuck and the content reads as glued to the page; --space-12 leaves a
+  // that tuck and the content reads as glued to the page; the content inset leaves a
   // ~32px gap after the tuck, consistently with or without a button.
-  padding-bottom: var(--space-12);
+  padding-bottom: var(--app-header-content-y);
 }
 
 .jf-app-header--center-content-in-bounds:not(.jf-app-header--valign-bottom) {
-  padding-bottom: var(--space-12);
+  padding-bottom: var(--app-header-content-y);
 }
 
 .jf-app-header__inner {

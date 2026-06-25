@@ -56,7 +56,7 @@ import { LivePreviewCheckoutPage } from '../components/LivePreviewCheckoutPage'
 import { LivePreviewOrderBar } from '../components/LivePreviewOrderBar'
 import { LivePreviewAvatarPopover } from '../components/LivePreviewAvatarPopover'
 import { LivePreviewProfilePage } from '../components/LivePreviewProfilePage'
-import { LivePreviewSearchPage } from '../components/LivePreviewSearchPage'
+import { LivePreviewSearchPage, deriveFeaturedSearches } from '../components/LivePreviewSearchPage'
 import { LivePreviewLoginPopover } from '../components/LivePreviewLoginPopover'
 import { QrPopover } from '../components/QrPopover'
 import { MobileBottomBar } from '../components/MobileBottomBar'
@@ -76,7 +76,7 @@ import {
 import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview'
 import { pointerOutsideOfPreview } from '@atlaskit/pragmatic-drag-and-drop/element/pointer-outside-of-preview'
 import { autoScrollForElements } from '@atlaskit/pragmatic-drag-and-drop-auto-scroll/element'
-import type { AppPreset, PresetElement } from '../presets/appPresets'
+import { EMPTY_PRESET_ID, GYM_TRAINER_ITEMS, type AppPreset, type PresetElement } from '../presets/appPresets'
 import { IconPropertyField } from '../components/IconPropertyField'
 import { ColorInputWithPicker } from '../components/ColorInputWithPicker'
 import { TitleFontDropdown } from '../components/TitleFontDropdown'
@@ -362,6 +362,61 @@ const WIDGETS_GROUPS: PanelGroup[] = [
 ]
 
 const HIDDEN_ELEMENTS = ['empty-state', 'app-header', 'bottom-navigation', 'color-picker']
+const LEGACY_PRESET_HEADER_IMAGES: Record<string, string[]> = {
+  'gym-club': ['https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=1000&h=600&fit=crop'],
+}
+const LEGACY_PRESET_HEADER_TITLES: Record<string, string[]> = {
+  'gym-club': ['Iron Pulse'],
+}
+const LEGACY_PRESET_HEADER_SUBTITLES: Record<string, string[]> = {
+  'gym-club': ['Train with the best in the city'],
+}
+
+function resolveStoredAppHeaderForPreset(
+  preset: AppPreset,
+  storedHeader: Partial<AppHeaderState>,
+): Partial<AppHeaderState> {
+  const presetHeader = preset.appHeader
+  if (!presetHeader) return storedHeader
+
+  const legacyImages = LEGACY_PRESET_HEADER_IMAGES[preset.id]
+  const legacyTitles = LEGACY_PRESET_HEADER_TITLES[preset.id]
+  const legacySubtitles = LEGACY_PRESET_HEADER_SUBTITLES[preset.id]
+  let nextHeader = storedHeader
+
+  if (
+    presetHeader.backgroundImageUrl &&
+    legacyImages?.includes(storedHeader.backgroundImageUrl ?? '')
+  ) {
+    nextHeader = {
+      ...nextHeader,
+      backgroundImageUrl: presetHeader.backgroundImageUrl,
+      backgroundImageName: presetHeader.backgroundImageName ?? nextHeader.backgroundImageName,
+    }
+  }
+
+  if (
+    presetHeader.title &&
+    legacyTitles?.includes(storedHeader.title ?? '')
+  ) {
+    nextHeader = {
+      ...nextHeader,
+      title: presetHeader.title,
+    }
+  }
+
+  if (
+    presetHeader.subtitle &&
+    legacySubtitles?.includes(storedHeader.subtitle ?? '')
+  ) {
+    nextHeader = {
+      ...nextHeader,
+      subtitle: presetHeader.subtitle,
+    }
+  }
+
+  return nextHeader
+}
 
 function createCanvasElement(comp: RegisteredComponent, id: string): CanvasElement {
   const variants: VariantValues = {}
@@ -402,6 +457,106 @@ function buildCanvasElementsFromPreset(presetElements: PresetElement[], startId:
   return { elements, nextId: id }
 }
 
+function createConfiguredCanvasElement(
+  componentId: string,
+  id: string,
+  variants: Partial<VariantValues>,
+  properties: Partial<PropertyValues>,
+): CanvasElement | null {
+  const comp = ComponentRegistry.get(componentId)
+  if (!comp) return null
+  const el = createCanvasElement(comp, id)
+  Object.assign(el.variants, variants)
+  Object.assign(el.properties, properties)
+  return el
+}
+
+function createGymTrainerRosterElements(existingElements: CanvasElement[], usedElementIds: string[]): { elements: CanvasElement[]; listId: string } {
+  const usedIds = [...usedElementIds]
+  const reserveId = () => {
+    const id = nextNumericId('element', usedIds)
+    usedIds.push(id)
+    return id
+  }
+  const existingDynamicList = existingElements.find((el) =>
+    el.componentId === 'list' && String(el.properties['Click Action'] ?? '') === 'Open Dynamic Page'
+  )
+  const headingId = existingElements[0]?.id ?? reserveId()
+  const listId = existingDynamicList?.id ?? existingElements[1]?.id ?? reserveId()
+  const heading = createConfiguredCanvasElement('heading', headingId, { Size: 'Large', Alignment: 'Left' }, {
+    Heading: 'Explore Trainers',
+    Subheading: 'Choose a coach and open their profile.',
+  })
+  const list = createConfiguredCanvasElement('list', listId, {
+    Layout: 'Card',
+    'Card Image Style': 'Square',
+    'Card Layout': 'Vertical',
+    'Card Size': 'Medium',
+    'Card Action': 'Button',
+  }, {
+    Title: 'Trainers',
+    'Show Header': false,
+    'Button Label': 'View Profile',
+    'Click Action': 'Open Dynamic Page',
+    Items: JSON.stringify(GYM_TRAINER_ITEMS),
+  })
+
+  return {
+    elements: [heading, list].filter(Boolean) as CanvasElement[],
+    listId,
+  }
+}
+
+function normalizeGymTrainerDynamicPages(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {
+  if (preset?.id !== 'gym-club') return pages
+  const trainerPageIndex = pages.findIndex((p) => !p.dynamic && p.name.trim().toLowerCase() === 'trainer')
+  if (trainerPageIndex === -1) return pages
+
+  const trainerPage = pages[trainerPageIndex]
+  const originalTrainerElementIds = new Set(trainerPage.elements.map((el) => el.id))
+  const { elements, listId } = createGymTrainerRosterElements(
+    trainerPage.elements,
+    pages.flatMap((p) => p.elements.map((el) => el.id)),
+  )
+  const trainerPageNext: AppPage = {
+    ...trainerPage,
+    icon: trainerPage.icon ?? 'User',
+    elements,
+  }
+  const pagesWithoutStaleTrainerDynamics = pages.filter((page, index) => {
+    if (index === trainerPageIndex) return true
+    if (!page.dynamic) return true
+    if (page.dynamicSourceElementId === listId) return true
+    return !page.dynamicSourceElementId || !originalTrainerElementIds.has(page.dynamicSourceElementId)
+  })
+  const updatedPages = pagesWithoutStaleTrainerDynamics.map((page) =>
+    page.id === trainerPage.id ? trainerPageNext : page,
+  )
+
+  const existingDynamic = updatedPages.find((page) => page.dynamic && page.dynamicSourceElementId === listId)
+  const dynamicPage = existingDynamic
+    ? { ...existingDynamic, name: existingDynamic.name || 'Trainer Detail', dynamic: true, dynamicSourceElementId: listId }
+    : {
+      ...createDynamicDetailPage(
+        listId,
+        nextNumericId('page', updatedPages.map((p) => p.id)),
+        nextNumericIds('element', updatedPages.flatMap((p) => p.elements.map((el) => el.id)), 3),
+      ),
+      name: 'Trainer Detail',
+    }
+
+  const withoutDynamic = updatedPages.filter((page) => page.id !== dynamicPage.id)
+  const insertIndex = withoutDynamic.findIndex((page) => page.id === trainerPage.id)
+  if (insertIndex === -1) return withoutDynamic
+  const next = [...withoutDynamic]
+  next.splice(insertIndex + 1, 0, dynamicPage)
+  return next
+}
+
+function arePagesEqual(a: AppPage[], b: AppPage[]): boolean {
+  return JSON.stringify(a) === JSON.stringify(b)
+}
+
 function buildInitialStateFromPreset(preset: AppPreset | undefined): {
   pages: AppPage[]
   headerActions: CanvasElement[]
@@ -421,14 +576,17 @@ function buildInitialStateFromPreset(preset: AppPreset | undefined): {
   // Empty App always starts from defaults — skip stored snapshot.
   const stored = preset.id === 'empty' ? null : loadSnapshot(preset.id)
   if (stored) {
-    const pages = stored.pages as AppPage[]
-    const storedHeader = (stored.appHeader ?? {}) as Partial<AppHeaderState>
+    const pages = normalizeGymTrainerDynamicPages(stored.pages as AppPage[], preset)
+    const storedHeader = resolveStoredAppHeaderForPreset(
+      preset,
+      (stored.appHeader ?? {}) as Partial<AppHeaderState>,
+    )
     return {
       pages,
       headerActions: stored.headerActions as CanvasElement[],
       activePageId: pages[0]?.id ?? 'page-1',
       appSubtitle: stored.appSubtitle,
-      appHeader: {
+      appHeader: applyPresetHomeAppHeaderRules({
         layout: storedHeader.layout ?? APP_HEADER_DEFAULTS.layout,
         headerLayout: storedHeader.headerLayout ?? APP_HEADER_DEFAULTS.headerLayout,
         contentAlign: storedHeader.contentAlign ?? APP_HEADER_DEFAULTS.contentAlign,
@@ -477,22 +635,23 @@ function buildInitialStateFromPreset(preset: AppPreset | undefined): {
         ctaFormSubmitLabel: storedHeader.ctaFormSubmitLabel,
         ctaFormFields: storedHeader.ctaFormFields,
         ctaSubmitsTo: storedHeader.ctaSubmitsTo,
-      },
+      }, preset, pages),
     }
   }
   let nextId = 1
-  const pages: AppPage[] = preset.pages.map((p) => {
+  let pages: AppPage[] = preset.pages.map((p) => {
     const built = buildCanvasElementsFromPreset(p.elements, nextId)
     nextId = built.nextId
     return { id: p.id, name: p.name, icon: p.icon, landing: p.landing, requireLogin: p.requireLogin, elements: built.elements }
   })
+  pages = normalizeGymTrainerDynamicPages(pages, preset)
   const headerBuilt = buildCanvasElementsFromPreset(preset.headerActions, nextId)
   return {
     pages,
     headerActions: headerBuilt.elements,
     activePageId: pages[0].id,
     appSubtitle: preset.appSubtitle,
-    appHeader: { ...APP_HEADER_DEFAULTS, ...(preset.appHeader ?? {}) },
+    appHeader: applyPresetHomeAppHeaderRules({ ...APP_HEADER_DEFAULTS, ...(preset.appHeader ?? {}) }, preset, pages),
   }
 }
 
@@ -526,7 +685,7 @@ interface AppHeaderState {
   size?: AppHeaderSize
   // Banner height in px — drives min-height (content never clips; a tall
   // title/description grows past it). Optional so older snapshots fall back to
-  // the default (272px). Edited via the Height slider in the properties panel.
+  // the default (280px). Edited via the Height slider in the properties panel.
   minHeight?: number
   // Cover/Profile cover-band (the coloured/image background strip) height in px.
   // Optional so older snapshots fall back to the default (200px). Edited via the
@@ -899,8 +1058,8 @@ function resolveHeaderSubtitle(s: AppHeaderState, appDesc: string): string {
 // grow past the chosen value — a low value just means a more compact banner.
 const APP_HEADER_HEIGHT_MIN = 280
 const APP_HEADER_HEIGHT_MAX = 600
-const APP_HEADER_HEIGHT_DEFAULT = 272
-const HOME_APP_HEADER_HEIGHT = 424
+const APP_HEADER_HEIGHT_DEFAULT = APP_HEADER_HEIGHT_MIN
+const HOME_APP_HEADER_HEIGHT = 496
 const APP_HEADER_BACKGROUND_IMAGE_WIDTH = 1000
 
 function resizeHeaderImageUrl(url: string | null, targetHeight: number): string | null {
@@ -928,7 +1087,7 @@ const COVER_HEADER_HEIGHT_DEFAULT = 200
 // Header size presets (Default archetype) → banner min-height in px.
 const DEFAULT_HEADER_SIZE_HEIGHT: Record<AppHeaderSizePreset, number> = {
   Compact: 200,
-  Default: 272,
+  Default: APP_HEADER_HEIGHT_DEFAULT,
   Maximum: 400,
 }
 
@@ -969,6 +1128,49 @@ function resolveAppHeaderArchetypeProps(s: AppHeaderState): {
     // Hero is the text-forward banner — no icon, just the title/subtitle (+ CTA).
     // A preset that ships a logo image keeps it; everything else drops the icon.
     imageStyle: s.imageStyle === 'Image' ? 'Image' : 'None',
+  }
+}
+
+function getPresetHeroCtaTargetPageId(pages: AppPage[], preset?: AppPreset): string | undefined {
+  const firstPageId = pages[0]?.id
+  if (preset?.id === 'gym-club') {
+    const trainerPage = pages.find((p) => p.name.trim().toLowerCase() === 'trainer' && !p.hidden && !p.dynamic)
+    if (trainerPage) return trainerPage.id
+  }
+  return pages.find((p) => p.id !== firstPageId && !p.hidden && !p.dynamic)?.id ?? firstPageId
+}
+
+function getPresetHeroCtaLabel(header: AppHeaderState, preset?: AppPreset): string | undefined {
+  if (preset?.id === 'gym-club') return 'Explore'
+  return header.ctaLabel
+}
+
+// Preset apps should all open with the same home-page hero header rules. The
+// preset still owns its brand content (title, subtitle, image/logo, theme), but
+// the home header structure stays consistent across every shipped preset.
+function applyPresetHomeAppHeaderRules(
+  header: AppHeaderState,
+  preset: AppPreset | undefined,
+  pages: AppPage[] = [],
+): AppHeaderState {
+  if (!preset || preset.id === EMPTY_PRESET_ID) return header
+
+  const ctaPageId = getPresetHeroCtaTargetPageId(pages, preset)
+
+  return {
+    ...header,
+    headerLayout: 'Hero',
+    layout: 'Center',
+    contentAlign: 'Center',
+    size: 'Large',
+    minHeight: HOME_APP_HEADER_HEIGHT,
+    textColor: '#FFFFFF',
+    textColorMode: 'auto',
+    show: true,
+    ctaEnabled: true,
+    ctaLabel: getPresetHeroCtaLabel(header, preset),
+    ctaAction: ctaPageId ? 'Navigate to Page' : header.ctaAction,
+    ctaPageId: ctaPageId ?? header.ctaPageId,
   }
 }
 
@@ -2288,6 +2490,13 @@ export function BuildPage({
   const [components, setComponents] = useState<RegisteredComponent[]>(ComponentRegistry.getAll())
   const initial = useRef(buildInitialStateFromPreset(preset)).current
   const [pages, setPages] = useState<AppPage[]>(initial.pages)
+  useEffect(() => {
+    if (!preset) return
+    setPages((current) => {
+      const next = normalizeGymTrainerDynamicPages(current, preset)
+      return arePagesEqual(current, next) ? current : next
+    })
+  }, [preset])
   const [headerActions, setHeaderActions] = useState<CanvasElement[]>(initial.headerActions)
   const headerActionsRef = useRef<CanvasElement[]>([])
   useEffect(() => { headerActionsRef.current = headerActions }, [headerActions])
@@ -2355,9 +2564,39 @@ export function BuildPage({
   // only seed the header's default title/subtitle when its own are unset.
   const appSubtitle = initial.appSubtitle
   const [appHeaderState, setAppHeaderState] = useState<AppHeaderState>(initial.appHeader)
+  useEffect(() => {
+    if (!preset || preset.id === EMPTY_PRESET_ID) return
+    setAppHeaderState((current) => {
+      const next = applyPresetHomeAppHeaderRules(current, preset, pages)
+      if (
+        current.headerLayout === next.headerLayout &&
+        current.layout === next.layout &&
+        current.contentAlign === next.contentAlign &&
+        current.size === next.size &&
+        current.minHeight === next.minHeight &&
+        current.textColor === next.textColor &&
+        current.textColorMode === next.textColorMode &&
+        current.show === next.show &&
+        current.ctaEnabled === next.ctaEnabled &&
+        current.ctaLabel === next.ctaLabel &&
+        current.ctaAction === next.ctaAction &&
+        current.ctaPageId === next.ctaPageId
+      ) {
+        return current
+      }
+      return next
+    })
+  }, [pages, preset])
   const [isMorePageOpen, setIsMorePageOpen] = useState(false)
   const [isNotificationsPageOpen, setIsNotificationsPageOpen] = useState(false)
   const [isPreviewSearchOpen, setIsPreviewSearchOpen] = useState(false)
+  const [isDesktopPreviewSearchOpen, setIsDesktopPreviewSearchOpen] = useState(false)
+  const [desktopPreviewSearchQuery, setDesktopPreviewSearchQuery] = useState('')
+  const desktopPreviewSearchInputRef = useRef<HTMLInputElement>(null)
+  const desktopPreviewFeaturedSearches = useMemo(
+    () => deriveFeaturedSearches({ appTitle, appSubtitle, pages }),
+    [appTitle, appSubtitle, pages],
+  )
   const [isPreviewCartOpen, setIsPreviewCartOpen] = useState(false)
   const [isPreviewDetailOpen, setIsPreviewDetailOpen] = useState(false)
   const [isPreviewCheckoutOpen, setIsPreviewCheckoutOpen] = useState(false)
@@ -2369,11 +2608,11 @@ export function BuildPage({
   const [previewAuthView, setPreviewAuthView] = useState<'login' | 'signup' | null>(null)
   // Page to land on after signing in (set when a logged-out user opens a protected page).
   const pendingAuthRedirectRef = useRef<string | null>(null)
-  const [isPreviewLoggedIn, setIsPreviewLoggedIn] = useState(false)
+  const [isPreviewLoggedIn, setIsPreviewLoggedIn] = useState(true)
   // The preview role doubles as the auth state: 'anyone' (Public) views the app logged
-  // out; Admin/User view it logged in. Defaults to Public so the preview opens on the
-  // public/landing view, consistent with isPreviewLoggedIn starting false.
-  const [viewingAsRole, setViewingAsRole] = useState('anyone')
+  // out; Admin/User view it logged in. Defaults to Admin so the App Preview role
+  // control opens in the Figma active state.
+  const [viewingAsRole, setViewingAsRole] = useState('admin')
   const livePreviewRoleOptions = useMemo(() => ([
     {
       value: 'anyone',
@@ -2631,6 +2870,7 @@ export function BuildPage({
       setIsMorePageOpen(false)
       setIsNotificationsPageOpen(false)
       setIsPreviewSearchOpen(false)
+      setIsDesktopPreviewSearchOpen(false)
       setPreviewAuthView('login')
       return
     }
@@ -2638,6 +2878,7 @@ export function BuildPage({
     setIsAvatarPopoverOpen(false)
     setIsNotificationsPageOpen(false)
     setIsPreviewSearchOpen(false)
+    setIsDesktopPreviewSearchOpen(false)
     setActivePageId(pageId)
   }, [isPreviewLoggedIn])
 
@@ -2646,6 +2887,7 @@ export function BuildPage({
       setIsMorePageOpen(true)
       setIsNotificationsPageOpen(false)
       setIsPreviewSearchOpen(false)
+      setIsDesktopPreviewSearchOpen(false)
       return
     }
     setIsMorePageOpen(false)
@@ -2664,11 +2906,29 @@ export function BuildPage({
   useEffect(() => {
     if (searchBarEnabled) return
     setIsPreviewSearchOpen(false)
+    setIsDesktopPreviewSearchOpen(false)
   }, [searchBarEnabled])
+
+  useEffect(() => {
+    if (previewDevice === 'desktop') {
+      setIsPreviewSearchOpen(false)
+      return
+    }
+    setIsDesktopPreviewSearchOpen(false)
+  }, [previewDevice])
+
+  useEffect(() => {
+    if (!isDesktopPreviewSearchOpen) return
+    const frame = window.requestAnimationFrame(() => {
+      desktopPreviewSearchInputRef.current?.focus()
+    })
+    return () => window.cancelAnimationFrame(frame)
+  }, [isDesktopPreviewSearchOpen])
 
   const openNotificationsPage = () => {
     setIsNotificationsPageOpen(true)
     setIsPreviewSearchOpen(false)
+    setIsDesktopPreviewSearchOpen(false)
     setIsMorePageOpen(false)
     setIsPreviewCartOpen(false)
     setIsPreviewCheckoutOpen(false)
@@ -2775,8 +3035,96 @@ export function BuildPage({
     return null
   }
 
-  const renderTopHeaderSearchButton = () => {
+  const renderTopHeaderSearchButton = (device: 'phone' | 'tablet' | 'desktop' = previewDevice) => {
     if (!searchBarEnabled) return null
+
+    if (device === 'desktop') {
+      return (
+        <div className={`live-preview__top-header-search${isDesktopPreviewSearchOpen ? ' live-preview__top-header-search--open' : ''}`}>
+          <form
+            className="live-preview__top-header-search-form"
+            role="search"
+            onSubmit={(event) => event.preventDefault()}
+          >
+            <AppIcon name="Search" size={20} className="live-preview__top-header-search-icon" />
+            <input
+              ref={desktopPreviewSearchInputRef}
+              className="live-preview__top-header-search-input"
+              type="search"
+              aria-label="Search"
+              placeholder=""
+              value={desktopPreviewSearchQuery}
+              tabIndex={isDesktopPreviewSearchOpen ? 0 : -1}
+              onChange={(event) => setDesktopPreviewSearchQuery(event.currentTarget.value)}
+              onKeyDown={(event) => {
+                if (event.key !== 'Escape') return
+                if (desktopPreviewSearchQuery) {
+                  setDesktopPreviewSearchQuery('')
+                  return
+                }
+                setIsDesktopPreviewSearchOpen(false)
+              }}
+            />
+            <button
+              type="button"
+              className="live-preview__top-header-search-close"
+              aria-label="Close search"
+              tabIndex={isDesktopPreviewSearchOpen ? 0 : -1}
+              onClick={() => {
+                setDesktopPreviewSearchQuery('')
+                setIsDesktopPreviewSearchOpen(false)
+              }}
+            >
+              <AppIcon name="X" size={16} />
+            </button>
+          </form>
+          {isDesktopPreviewSearchOpen && desktopPreviewFeaturedSearches.length > 0 && (
+            <section className="live-preview__desktop-search-featured" aria-label="Featured searches">
+              <h2 className="live-preview__desktop-search-featured-title">Featured searches</h2>
+              <div className="live-preview__desktop-search-featured-list">
+                {desktopPreviewFeaturedSearches.map((keyword) => (
+                  <button
+                    key={keyword}
+                    type="button"
+                    className="live-preview__desktop-search-featured-chip"
+                    onClick={() => {
+                      setDesktopPreviewSearchQuery(keyword)
+                      desktopPreviewSearchInputRef.current?.focus()
+                    }}
+                  >
+                    {keyword}
+                  </button>
+                ))}
+              </div>
+            </section>
+          )}
+          {!isDesktopPreviewSearchOpen && (
+            <button
+              type="button"
+              className="live-preview__top-header-search-btn"
+              aria-label="Search"
+              aria-expanded={isDesktopPreviewSearchOpen}
+              onClick={() => {
+                setIsPreviewSearchOpen(false)
+                setIsDesktopPreviewSearchOpen(true)
+                setIsNotificationsPageOpen(false)
+                setIsMorePageOpen(false)
+                setIsPreviewCartOpen(false)
+                setIsPreviewCheckoutOpen(false)
+                setIsPreviewProfileOpen(false)
+                setIsLoginPopoverOpen(false)
+                setIsAvatarPopoverOpen(false)
+                window.requestAnimationFrame(() => {
+                  desktopPreviewSearchInputRef.current?.focus()
+                })
+              }}
+            >
+              <AppIcon name="Search" size={20} />
+            </button>
+          )}
+        </div>
+      )
+    }
 
     return (
       <button
@@ -2786,6 +3134,7 @@ export function BuildPage({
         aria-expanded={isPreviewSearchOpen}
         onClick={() => {
           setIsPreviewSearchOpen(true)
+          setIsDesktopPreviewSearchOpen(false)
           setIsNotificationsPageOpen(false)
           setIsMorePageOpen(false)
           setIsPreviewCartOpen(false)
@@ -2799,15 +3148,6 @@ export function BuildPage({
       </button>
     )
   }
-
-  // Top-header compact (app icon + title) shown the moment scrolling starts.
-  // On mobile/tablet it's first-page only (AppHeader lives there). Desktop
-  // preview promotes every page so the chrome reads "app branding" consistently
-  // across pages once you scroll.
-  // Keep the element in the DOM 250ms after dismissal so the exit animation runs.
-  const previewIsFirstPage = activePageId === pages[0]?.id
-  const isDesktopFullPreview = previewMode && previewDevice === 'desktop'
-  const showCompactTitle = appHeaderState.show && isPreviewContentScrolled && (previewIsFirstPage || isDesktopFullPreview)
 
   useEffect(() => {
     return ComponentRegistry.subscribe(() => {
@@ -2840,7 +3180,7 @@ export function BuildPage({
   const appHeaderArchetypeProps = resolveAppHeaderArchetypeProps(appHeaderState)
   const appHeaderBackgroundImage = resolveHeaderImage(appHeaderState)
   const homeAppHeaderBackgroundImage = resizeHeaderImageUrl(appHeaderBackgroundImage, HOME_APP_HEADER_HEIGHT)
-  const canvasAppHeaderBackgroundImage = resizeHeaderImageUrl(appHeaderBackgroundImage, appHeaderArchetypeProps.minHeight)
+  const canvasAppHeaderBackgroundImage = resizeHeaderImageUrl(appHeaderBackgroundImage, HOME_APP_HEADER_HEIGHT)
   const coverHeaderBackgroundImage = resizeHeaderImageUrl(
     appHeaderBackgroundImage,
     appHeaderState.coverHeight ?? COVER_HEADER_HEIGHT_DEFAULT,
@@ -2854,10 +3194,36 @@ export function BuildPage({
     icon: appHeaderState.icon,
     imageUrl: appHeaderState.imageUrl,
   }
+  const activePageForTopHeader = pages.find((p) => p.id === activePageId) ?? pages[0]
+  const activeIsFirstPage = activePageForTopHeader?.id === pages[0]?.id
+  const topHeaderUsesPageName = !!preset && preset.id !== EMPTY_PRESET_ID && !activeIsFirstPage
+  const renderTopHeaderBrand = () => {
+    if (topHeaderUsesPageName) {
+      return (
+        <div className="live-preview__top-header-page">
+          <span className="live-preview__top-header-page-name">{activePageForTopHeader?.name ?? appTitle}</span>
+        </div>
+      )
+    }
+
+    return (
+      <div className="live-preview__top-header-compact">
+        <div className={`live-preview__top-header-compact-icon${appIcon.variant === 'Image' && appIcon.imageUrl ? ' live-preview__top-header-compact-icon--image' : ''}`}>
+          {appIcon.variant === 'Image' && appIcon.imageUrl ? (
+            <img src={appIcon.imageUrl} alt="" />
+          ) : (
+            <AppIcon name={appIcon.icon} size={24} />
+          )}
+        </div>
+        <span className="live-preview__top-header-compact-title">{appTitle}</span>
+      </div>
+    )
+  }
+  const heroCtaLabel = getPresetHeroCtaLabel(appHeaderState, preset) ?? 'Get Started'
   const heroCtaConfig: HeroCtaConfig = {
-    label: appHeaderState.ctaLabel ?? 'Get Started',
+    label: heroCtaLabel,
     action: appHeaderState.ctaAction ?? 'Do Nothing',
-    pageId: appHeaderState.ctaPageId,
+    pageId: appHeaderState.ctaPageId ?? getPresetHeroCtaTargetPageId(pages, preset),
     url: appHeaderState.ctaUrl,
     email: appHeaderState.ctaEmail,
     phone: appHeaderState.ctaPhone,
@@ -2871,7 +3237,6 @@ export function BuildPage({
   // Transparent (overlay) mobile top nav — only on the first page while the hero is
   // shown, and only on the phone shell (the 54px status-bar offset is phone-specific).
   // Content follows the hero's resolved text color so it stays legible over the scrim.
-  const activeIsFirstPage = (pages.find((p) => p.id === activePageId) ?? pages[0])?.id === pages[0]?.id
   // Not while the hamburger menu is open — the menu covers the hero with a solid
   // panel, so the nav reverts to its normal (opaque) bar there (close icon visible,
   // content no longer tucked under the bar).
@@ -3902,7 +4267,7 @@ export function BuildPage({
     <FavoritesProvider>
     <ProductDetailProvider onOpenChange={setIsPreviewDetailOpen}>
     <>
-      <div className={`live-preview__status-bar-bg app-scope${topNavOverlay && topNavOverHero ? ' live-preview__status-bar-bg--transparent' : ''}`} />
+      <div className={`live-preview__status-bar-bg app-scope${topNavOverlay && topNavOverHero ? ' live-preview__status-bar-bg--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__status-bar-bg--over-content' : ''}`} />
       <PhoneStatusBar className="live-preview__status-bar app-scope" style={{ color: topNavOverlay && topNavOverHero ? topNavOverlayFg : 'var(--fg-primary, #000)' }} />
       {(isLoginPopoverOpen || isAvatarPopoverOpen) && (
         <div
@@ -3913,57 +4278,13 @@ export function BuildPage({
           }}
         />
       )}
-      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${desktopNavVariant === 'compact' ? ' live-preview__top-header--compact' : ''}${desktopNavVariant === 'contained' ? ' live-preview__top-header--contained' : ''}${topNavOverlay ? ' live-preview__top-header--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__top-header--over-content' : ''}${mobileTopHeaderHidden ? ' live-preview__top-header--hidden' : ''}`} style={topNavOverlay && topNavOverHero ? { color: topNavOverlayFg } : undefined} data-nav-align={desktopNavAlignment}>
+      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${topHeaderUsesPageName && isPreviewContentScrolled ? ' live-preview__top-header--page-scrolled' : ''}${desktopNavVariant === 'compact' ? ' live-preview__top-header--compact' : ''}${desktopNavVariant === 'contained' ? ' live-preview__top-header--contained' : ''}${topNavOverlay ? ' live-preview__top-header--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__top-header--over-content' : ''}${mobileTopHeaderHidden ? ' live-preview__top-header--hidden' : ''}`} style={topNavOverlay && topNavOverHero ? { color: topNavOverlayFg } : undefined} data-nav-align={desktopNavAlignment}>
         {(() => {
           // Profile / dynamic-detail back affordance — shared with the right-panel
           // preview via renderTopHeaderBack so the two never diverge.
           const back = renderTopHeaderBack(previewDevice)
           if (back) return back
-          const isFirstPage = activePageId === pages[0]?.id
-          // Always brand the top header on the landing, and on the first page when
-          // the app header is closed — otherwise keep the scroll-driven behavior.
-          const brandingAlways = showLandingNav || (isFirstPage && !appHeaderState.show)
-          const compactPersistent = previewDevice === 'desktop' || brandingAlways
-          const compactDomReady = !isMorePageOpen && (showCompactTitle || compactPersistent)
-          if (compactDomReady) {
-            return (
-              <div className="live-preview__top-header-compact">
-                {/* Nav logo is the app identity — always shown, independent of the hero's
-                  imageStyle. Falls back to the icon glyph when the hero icon is removed. */ (
-                  <div className={`live-preview__top-header-compact-icon${appIcon.variant === 'Image' && appIcon.imageUrl ? ' live-preview__top-header-compact-icon--image' : ''}`}>
-                    {appIcon.variant === 'Image' && appIcon.imageUrl ? (
-                      <img src={appIcon.imageUrl} alt="" />
-                    ) : (
-                      <AppIcon name={appIcon.icon} size={24} />
-                    )}
-                  </div>
-                )}
-                <span className="live-preview__top-header-compact-title">{appTitle}</span>
-              </div>
-            )
-          }
-          const activePage = pages.find((p) => p.id === activePageId)
-          return isMorePageOpen ? (
-            <div className="live-preview__top-header-compact">
-              {/* Nav logo is the app identity — always shown, independent of the hero's
-                  imageStyle. Falls back to the icon glyph when the hero icon is removed. */ (
-                <div className={`live-preview__top-header-compact-icon${appIcon.variant === 'Image' && appIcon.imageUrl ? ' live-preview__top-header-compact-icon--image' : ''}`}>
-                  {appIcon.variant === 'Image' && appIcon.imageUrl ? (
-                    <img src={appIcon.imageUrl} alt="" />
-                  ) : (
-                    <AppIcon name={appIcon.icon} size={24} />
-                  )}
-                </div>
-              )}
-              <span className="live-preview__top-header-compact-title">{appTitle}</span>
-            </div>
-          ) : activePage ? (
-            <div className="live-preview__top-header-page">
-              <span className="live-preview__top-header-page-name">{activePage.name}</span>
-            </div>
-          ) : (
-            <span className="live-preview__top-header-btn" aria-hidden="true" />
-          )
+          return renderTopHeaderBrand()
         })()}
         {desktopNavEnabled && desktopNavVariant !== 'left' && !activePageIsDynamic && (
           <nav className="live-preview__top-header-nav">
@@ -3984,7 +4305,7 @@ export function BuildPage({
         )}
         <div className="live-preview__top-header-right">
           {!activePageIsDynamic && pages.some((p) => p.elements.some((el) => el.componentId === 'product-list')) && (
-            <LivePreviewCartButton onClick={() => { setIsNotificationsPageOpen(false); setIsPreviewSearchOpen(false); setIsPreviewCartOpen(true) }} />
+            <LivePreviewCartButton onClick={() => { setIsNotificationsPageOpen(false); setIsPreviewSearchOpen(false); setIsDesktopPreviewSearchOpen(false); setIsPreviewCartOpen(true) }} />
           )}
           {pushNotificationsEnabled && (
             <LivePreviewNotificationButton
@@ -3998,12 +4319,12 @@ export function BuildPage({
                   top header — the back affordance handles the exit there. */}
               {!(isPreviewProfileOpen && previewDevice !== 'desktop') && (
                 <>
-                  {renderTopHeaderSearchButton()}
+                  {renderTopHeaderSearchButton(previewDevice)}
                   <button
                     type="button"
                     className="live-preview__top-header-avatar-btn"
                     aria-label="Account menu"
-                    onClick={() => setIsAvatarPopoverOpen((v) => !v)}
+                    onClick={() => { setIsDesktopPreviewSearchOpen(false); setIsAvatarPopoverOpen((v) => !v) }}
                   >
                     <span className="live-preview__top-header-avatar" aria-hidden="true">
                       <img src={previewHeaderAvatar} alt="" width="36" height="36" />
@@ -4026,8 +4347,8 @@ export function BuildPage({
           ) : activePageIsDynamic ? null : showLandingNav ? (
             previewDevice === 'desktop' ? (
               <div className="live-preview__top-header-auth">
-                <AppButton variant="Outlined" size="Small" leftIcon="none" rightIcon="none" label="Login" onClick={() => { setLoginPopoverView('login'); setIsLoginPopoverOpen(true) }} />
-                <AppButton variant="Default" size="Small" leftIcon="none" rightIcon="none" label="Sign up" onClick={() => { setLoginPopoverView('signup'); setIsLoginPopoverOpen(true) }} />
+                <AppButton variant="Outlined" size="Small" leftIcon="none" rightIcon="none" label="Login" onClick={() => { setIsDesktopPreviewSearchOpen(false); setLoginPopoverView('login'); setIsLoginPopoverOpen(true) }} />
+                <AppButton variant="Default" size="Small" leftIcon="none" rightIcon="none" label="Sign up" onClick={() => { setIsDesktopPreviewSearchOpen(false); setLoginPopoverView('signup'); setIsLoginPopoverOpen(true) }} />
               </div>
             ) : (
               <button
@@ -4042,25 +4363,36 @@ export function BuildPage({
             )
           ) : (
             <>
-              {renderTopHeaderSearchButton()}
+              {renderTopHeaderSearchButton(previewDevice)}
               <button
                 type="button"
                 className="live-preview__top-header-login-btn"
                 aria-label="Login"
-                onClick={() => setIsLoginPopoverOpen((v) => !v)}
+                onClick={() => { setIsDesktopPreviewSearchOpen(false); setIsLoginPopoverOpen((v) => !v) }}
               >
                 <span className="live-preview__top-header-avatar" aria-hidden="true">
                   <img src={previewHeaderAvatar} alt="" width="36" height="36" />
                 </span>
               </button>
               <div className="live-preview__top-header-auth">
-                <AppButton variant="Outlined" size="Small" leftIcon="none" rightIcon="none" label="Login" onClick={() => { setLoginPopoverView('login'); setIsLoginPopoverOpen(true) }} />
-                <AppButton variant="Default" size="Small" leftIcon="none" rightIcon="none" label="Sign up" onClick={() => { setLoginPopoverView('signup'); setIsLoginPopoverOpen(true) }} />
+                <AppButton variant="Outlined" size="Small" leftIcon="none" rightIcon="none" label="Login" onClick={() => { setIsDesktopPreviewSearchOpen(false); setLoginPopoverView('login'); setIsLoginPopoverOpen(true) }} />
+                <AppButton variant="Default" size="Small" leftIcon="none" rightIcon="none" label="Sign up" onClick={() => { setIsDesktopPreviewSearchOpen(false); setLoginPopoverView('signup'); setIsLoginPopoverOpen(true) }} />
               </div>
             </>
           )}
         </div>
       </div>
+      {previewDevice === 'desktop' && isDesktopPreviewSearchOpen && (
+        <button
+          type="button"
+          className="live-preview__desktop-search-scrim"
+          aria-label="Close search"
+          onClick={() => {
+            setDesktopPreviewSearchQuery('')
+            setIsDesktopPreviewSearchOpen(false)
+          }}
+        />
+      )}
       {isPreviewSearchOpen && (
         <LivePreviewSearchPage
           appTitle={appTitle}
@@ -4500,7 +4832,8 @@ export function BuildPage({
                   layout={appHeaderArchetypeProps.layout}
                   contentAlign={appHeaderArchetypeProps.contentAlign}
                   size={appHeaderArchetypeProps.size}
-                  minHeight={appHeaderArchetypeProps.minHeight}
+                  minHeight={HOME_APP_HEADER_HEIGHT}
+                  centerContentInBounds
                   icon={appHeaderState.icon}
                   iconColor={appHeaderState.iconColor}
                   iconBgColor={appHeaderState.iconBgColor}
@@ -7563,7 +7896,7 @@ export function BuildPage({
                           <div className="property-panel__field">
                             <DSFormField title="Button Text" size="md" showDescription={false} showHelpText={false}>
                               <DSInput
-                                value={appHeaderState.ctaLabel ?? ''}
+                                value={heroCtaLabel}
                                 placeholder="Get Started"
                                 onChange={(e) => setAppHeaderState((s) => ({ ...s, ctaLabel: e.target.value }))}
                               />
@@ -7586,7 +7919,7 @@ export function BuildPage({
                           <div className="property-panel__field">
                             <DSFormField title="Target Page" size="md" showDescription={false} showHelpText={false}>
                               <DSDropdownSingle
-                                value={appHeaderState.ctaPageId ?? (pages[1]?.id ?? '')}
+                                value={appHeaderState.ctaPageId ?? getPresetHeroCtaTargetPageId(pages, preset) ?? ''}
                                 onChange={(val) => setAppHeaderState((s) => ({ ...s, ctaPageId: val }))}
                                 // The hero lives on the first page, so navigating to it is a no-op —
                                 // drop it from the options (keep original index for the icon fallback).
@@ -8205,7 +8538,7 @@ export function BuildPage({
                     <div className="live-preview__phone-screen">
                       {!previewMode && (
                       <>
-                      <div className={`live-preview__status-bar-bg app-scope${topNavOverlay && topNavOverHero ? ' live-preview__status-bar-bg--transparent' : ''}`} />
+                      <div className={`live-preview__status-bar-bg app-scope${topNavOverlay && topNavOverHero ? ' live-preview__status-bar-bg--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__status-bar-bg--over-content' : ''}`} />
                       <PhoneStatusBar className="live-preview__status-bar app-scope" style={{ color: topNavOverlay && topNavOverHero ? topNavOverlayFg : 'var(--fg-primary, #000)' }} />
                       {(isLoginPopoverOpen || isAvatarPopoverOpen) && (
                         <div
@@ -8216,61 +8549,18 @@ export function BuildPage({
                           }}
                         />
                       )}
-                      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${topNavOverlay ? ' live-preview__top-header--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__top-header--over-content' : ''}${mobileTopHeaderHidden ? ' live-preview__top-header--hidden' : ''}`} style={topNavOverlay && topNavOverHero ? { color: topNavOverlayFg } : undefined} data-nav-align={desktopNavAlignment}>
+                      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${topHeaderUsesPageName && isPreviewContentScrolled ? ' live-preview__top-header--page-scrolled' : ''}${topNavOverlay ? ' live-preview__top-header--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__top-header--over-content' : ''}${mobileTopHeaderHidden ? ' live-preview__top-header--hidden' : ''}`} style={topNavOverlay && topNavOverHero ? { color: topNavOverlayFg } : undefined} data-nav-align={desktopNavAlignment}>
                         {(() => {
                           // Profile / dynamic-detail back affordance — shared with the
                           // full-screen preview. The right-panel preview always renders a
                           // phone shell, so it reads as 'phone' (chevron-only back).
                           const back = renderTopHeaderBack('phone')
                           if (back) return back
-                          const isFirstPage = activePageId === pages[0]?.id
-                          // Show the app icon + title in the top header: always on the
-                          // landing, and on the first page whenever the app header is
-                          // closed or the user has scrolled. (Hidden while the menu is open.)
-                          const showCompact = !isMorePageOpen && (showLandingNav || (isFirstPage && (!appHeaderState.show || isPreviewContentScrolled)))
-                          if (showCompact) {
-                            return (
-                              <div className="live-preview__top-header-compact">
-                                {/* Nav logo is the app identity — always shown, independent of the hero's
-                  imageStyle. Falls back to the icon glyph when the hero icon is removed. */ (
-                                  <div className={`live-preview__top-header-compact-icon${appIcon.variant === 'Image' && appIcon.imageUrl ? ' live-preview__top-header-compact-icon--image' : ''}`}>
-                                    {appIcon.variant === 'Image' && appIcon.imageUrl ? (
-                                      <img src={appIcon.imageUrl} alt="" />
-                                    ) : (
-                                      <AppIcon name={appIcon.icon} size={24} />
-                                    )}
-                                  </div>
-                                )}
-                                <span className="live-preview__top-header-compact-title">{appTitle}</span>
-                              </div>
-                            )
-                          }
-                          const activePage = pages.find((p) => p.id === activePageId)
-                          return isMorePageOpen ? (
-                            <div className="live-preview__top-header-compact">
-                              {/* Nav logo is the app identity — always shown, independent of the hero's
-                  imageStyle. Falls back to the icon glyph when the hero icon is removed. */ (
-                                <div className={`live-preview__top-header-compact-icon${appIcon.variant === 'Image' && appIcon.imageUrl ? ' live-preview__top-header-compact-icon--image' : ''}`}>
-                                  {appIcon.variant === 'Image' && appIcon.imageUrl ? (
-                                    <img src={appIcon.imageUrl} alt="" />
-                                  ) : (
-                                    <AppIcon name={appIcon.icon} size={24} />
-                                  )}
-                                </div>
-                              )}
-                              <span className="live-preview__top-header-compact-title">{appTitle}</span>
-                            </div>
-                          ) : activePage ? (
-                            <div className="live-preview__top-header-page">
-                              <span className="live-preview__top-header-page-name">{activePage.name}</span>
-                            </div>
-                          ) : (
-                            <span className="live-preview__top-header-btn" aria-hidden="true" />
-                          )
+                          return renderTopHeaderBrand()
                         })()}
                         <div className="live-preview__top-header-right">
                           {!activePageIsDynamic && pages.some((p) => p.elements.some((el) => el.componentId === 'product-list')) && (
-                            <LivePreviewCartButton onClick={() => { setIsNotificationsPageOpen(false); setIsPreviewSearchOpen(false); setIsPreviewCartOpen(true) }} />
+                            <LivePreviewCartButton onClick={() => { setIsNotificationsPageOpen(false); setIsPreviewSearchOpen(false); setIsDesktopPreviewSearchOpen(false); setIsPreviewCartOpen(true) }} />
                           )}
                           {pushNotificationsEnabled && (
                             <LivePreviewNotificationButton
@@ -8284,7 +8574,7 @@ export function BuildPage({
                                   from the top header — back affordance handles exit. */}
                               {!(isPreviewProfileOpen && previewDevice !== 'desktop') && (
                                 <>
-                                  {renderTopHeaderSearchButton()}
+                                  {renderTopHeaderSearchButton('phone')}
                                   <button
                                     type="button"
                                     className="live-preview__top-header-avatar-btn"
@@ -8316,7 +8606,7 @@ export function BuildPage({
                             </button>
                           ) : (
                             <>
-                              {renderTopHeaderSearchButton()}
+                              {renderTopHeaderSearchButton('phone')}
                               <button
                                 type="button"
                                 className="live-preview__top-header-login-btn"
@@ -8390,7 +8680,7 @@ export function BuildPage({
                             return activePage ? (
                               <>
                               {isFirstPage && appHeaderState.show && appHeaderIsCoverLike && (
-                                <div>
+                                <div className="live-preview__app-header-slot">
                                   <CoverHeader
                                     kind={appHeaderIsProfile ? 'profile' : 'cover'}
                                     coverHeight={appHeaderState.coverHeight ?? COVER_HEADER_HEIGHT_DEFAULT}
@@ -8405,7 +8695,7 @@ export function BuildPage({
                                 </div>
                               )}
                               {isFirstPage && appHeaderState.show && !appHeaderIsCoverLike && (
-                                <div>
+                                <div className="live-preview__app-header-slot">
                                 <AppHeader
                                   layout={appHeaderArchetypeProps.layout}
                                   contentAlign={appHeaderArchetypeProps.contentAlign}
@@ -8539,6 +8829,7 @@ export function BuildPage({
               isMobile={isMobileView}
               visible={rightPanel === 'designer'}
               namespace={preset?.id === 'empty' ? undefined : preset?.id}
+              fallbackSnapshot={preset?.theme}
               onThemeColorChange={() =>
                 setAppHeaderState((s) => {
                   // Theme color is global; drop the header's custom (fixed-hex) fill so

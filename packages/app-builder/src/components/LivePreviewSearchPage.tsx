@@ -2,12 +2,12 @@ import { type FormEvent, type KeyboardEvent, type PointerEvent, useEffect, useMe
 import { AppIcon } from '@jf/app-elements'
 import { Icon as DSIcon } from '@jf/design-system'
 
-interface SearchSourceElement {
+export interface SearchSourceElement {
   componentId?: string
   properties?: Record<string, unknown>
 }
 
-interface SearchSourcePage {
+export interface SearchSourcePage {
   name: string
   hidden?: boolean
   dynamic?: boolean
@@ -271,7 +271,7 @@ const collectItemSearchCandidates = (keywords: string[], seen: Set<string>, valu
   }
 }
 
-const deriveFeaturedSearches = ({
+export const deriveFeaturedSearches = ({
   appTitle,
   appSubtitle,
   pages = [],

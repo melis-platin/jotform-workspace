@@ -287,6 +287,30 @@ export interface AppDesignerSnapshot {
   tokenOverrides: Record<string, string>;
 }
 
+function isLegacyDefaultSnapshot(snapshot: AppDesignerSnapshot): boolean {
+  const color = snapshot.color.toUpperCase();
+  const headingFont = snapshot.headingFont || snapshot.font;
+  return (
+    color === '#0385C8' &&
+    snapshot.tint === 30 &&
+    snapshot.font === 'DM Sans' &&
+    headingFont === 'DM Sans' &&
+    snapshot.radius === 'Large' &&
+    snapshot.harmonyOffset === 150 &&
+    snapshot.colorMode === 'light' &&
+    (snapshot.activePreset === 'Default' || snapshot.activePreset === 'Sky') &&
+    Object.keys(snapshot.tokenOverrides).length === 0
+  );
+}
+
+function resolveAppDesignerSnapshot(
+  stored: AppDesignerSnapshot | null,
+  fallback?: AppDesignerSnapshot,
+): AppDesignerSnapshot | null {
+  if (stored && !(fallback && isLegacyDefaultSnapshot(stored))) return stored;
+  return fallback ?? stored;
+}
+
 function appDesignerKey(namespace: string) {
   return `${APP_DESIGNER_STORAGE_PREFIX}${namespace}`;
 }
@@ -356,7 +380,8 @@ export function applyStoredOrDefaultTheme(
   fallback?: AppDesignerSnapshot,
 ) {
   const stored = namespace ? loadAppDesignerSnapshot(namespace) : null;
-  if (stored) applyThemeSnapshot(stored, targetSelector);
+  const effectiveStored = resolveAppDesignerSnapshot(stored, fallback);
+  if (effectiveStored) applyThemeSnapshot(effectiveStored, targetSelector);
   else if (fallback) applyThemeSnapshot(fallback, targetSelector);
   else applyDefaultTheme();
 }
@@ -437,13 +462,18 @@ interface AppDesignerProps {
   doneButton?: React.ReactNode;
   /** Optional storage namespace for persisting theme state across sessions. */
   namespace?: string;
+  /** Optional preset theme used before the user has made real designer changes. */
+  fallbackSnapshot?: AppDesignerSnapshot;
   /** Fired when the brand color changes by user action (main picker or a preset),
    *  so the host can re-sync per-element custom colors to the new global theme. */
   onThemeColorChange?: (color: string) => void;
 }
 
-export function AppDesigner({ onClose, targetSelector = '.app-scope', isMobile, renderIcon, doneButton, visible = true, namespace, onThemeColorChange }: AppDesignerProps) {
-  const storedSnapshot = namespace ? loadAppDesignerSnapshot(namespace) : null;
+export function AppDesigner({ onClose, targetSelector = '.app-scope', isMobile, renderIcon, doneButton, visible = true, namespace, fallbackSnapshot, onThemeColorChange }: AppDesignerProps) {
+  const storedSnapshot = resolveAppDesignerSnapshot(
+    namespace ? loadAppDesignerSnapshot(namespace) : null,
+    fallbackSnapshot,
+  );
 
   // Theme state
   const [color, setColor] = useState(storedSnapshot?.color ?? DEFAULT_COLOR);

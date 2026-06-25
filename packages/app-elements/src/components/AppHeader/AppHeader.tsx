@@ -17,7 +17,7 @@ export interface AppHeaderProps {
   contentAlign?: AppHeaderContentAlign;
   size?: AppHeaderSize;
   /** Banner min-height: a px number (content can still grow past it) or 'auto'
-   *  to fit content. When unset, falls back to the CSS default (272px). */
+   *  to fit content. When unset, falls back to the CSS default (280px). */
   minHeight?: number | 'auto';
   icon?: string;
   imageStyle?: AppHeaderImageStyle;
@@ -85,15 +85,22 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
 
   // Merge the optional background image with the optional min-height override.
   // The height is published as a CSS var the SCSS reads:
-  // `min-height: var(--app-header-min-height, 272px)`.
+  // `min-height: var(--app-header-min-height, var(--app-header-min-floor))`.
+  const minHeightValue =
+    minHeight == null
+      ? undefined
+      : minHeight === 'auto'
+        ? 'auto'
+        : `${minHeight}px`;
+
   const headerStyle = {
     ...(backgroundImageUrl
       ? { background: `${bgScrim}, url(${backgroundImageUrl}) center/cover no-repeat` }
       : backgroundColor
         ? { background: backgroundColor }
         : {}),
-    ...(minHeight != null
-      ? { '--app-header-min-height': minHeight === 'auto' ? 'auto' : `${minHeight}px` }
+    ...(minHeightValue
+      ? { '--app-header-min-height': minHeightValue }
       : {}),
   } as React.CSSProperties;
 

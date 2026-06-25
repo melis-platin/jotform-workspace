@@ -55,6 +55,15 @@ export interface AppPreset {
 
 export const EMPTY_PRESET_ID = 'empty'
 
+export const GYM_TRAINER_ITEMS = [
+  { title: 'Marcus Reid', description: 'Strength & Conditioning', image: 'https://images.unsplash.com/photo-1567013127542-490d757e51fc?w=400&h=400&fit=crop' },
+  { title: 'Elena Vasquez', description: 'HIIT & Cardio', image: 'https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=400&fit=crop' },
+  { title: 'Jordan Lee', description: 'Yoga & Mobility', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop' },
+  { title: 'David Okafor', description: 'Powerlifting', image: 'https://images.unsplash.com/photo-1549476464-37392f717541?w=400&h=400&fit=crop' },
+  { title: 'Mia Thompson', description: 'Functional Training', image: 'https://images.unsplash.com/photo-1597452485677-d661670d9640?w=400&h=400&fit=crop' },
+  { title: 'Sara Kim', description: 'Pilates & Recovery', image: 'https://images.unsplash.com/photo-1550345332-09e3ac987658?w=400&h=400&fit=crop' },
+]
+
 export const APP_PRESETS: AppPreset[] = [
   {
     id: EMPTY_PRESET_ID,
@@ -71,13 +80,36 @@ export const APP_PRESETS: AppPreset[] = [
     appSubtitle: 'Strength · Conditioning · Community',
     appHeader: {
       show: true,
-      title: 'Iron Pulse',
-      subtitle: 'Train with the best in the city',
+      title: 'Train stronger with every session',
+      subtitle: 'Classes, coaches, plans, and support in one place',
       icon: 'Dumbbell',
-      backgroundImageUrl: 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=1000&h=600&fit=crop',
+      backgroundImageUrl: 'https://images.unsplash.com/photo-1623874514711-0f321325f318?w=1000&h=600&fit=crop',
       backgroundImageName: 'gym',
     },
     headerActions: [],
+    theme: {
+      color: '#B8E600',
+      tint: 0,
+      font: 'Geist',
+      headingFont: 'Geist',
+      radius: 'Small',
+      harmonyOffset: 150,
+      activePreset: '',
+      colorMode: 'light',
+      tokenOverrides: {
+        '--bg-page': 'oklch(0.965 0 0)',
+        '--bg-surface': 'oklch(1 0 0)',
+        '--bg-fill': 'oklch(1 0 0)',
+        '--bg-fill-brand': '#B8E600',
+        '--fg-brand': '#B8E600',
+        '--fg-inverse': 'oklch(0.2022 0.05 127.52)',
+        '--fg-primary': 'oklch(0.18 0 0)',
+        '--fg-secondary': 'oklch(0.42 0 0)',
+        '--fg-tertiary': 'oklch(0.545 0 0)',
+        '--border': 'oklch(0.845 0 0)',
+        '--border-hover': 'oklch(0.695 0 0)',
+      },
+    },
     pages: [
       {
         id: 'page-1',
@@ -104,14 +136,7 @@ export const APP_PRESETS: AppPreset[] = [
             properties: {
               'Show Header': false,
               'Button Label': 'View Profile',
-              Items: JSON.stringify([
-                { title: 'Marcus Reid', description: 'Strength & Conditioning', image: 'https://images.unsplash.com/photo-1567013127542-490d757e51fc?w=400&h=400&fit=crop' },
-                { title: 'Elena Vasquez', description: 'HIIT & Cardio', image: 'https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=400&fit=crop' },
-                { title: 'Jordan Lee', description: 'Yoga & Mobility', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop' },
-                { title: 'David Okafor', description: 'Powerlifting', image: 'https://images.unsplash.com/photo-1549476464-37392f717541?w=400&h=400&fit=crop' },
-                { title: 'Mia Thompson', description: 'Functional Training', image: 'https://images.unsplash.com/photo-1597452485677-d661670d9640?w=400&h=400&fit=crop' },
-                { title: 'Sara Kim', description: 'Pilates & Recovery', image: 'https://images.unsplash.com/photo-1550345332-09e3ac987658?w=400&h=400&fit=crop' },
-              ]),
+              Items: JSON.stringify(GYM_TRAINER_ITEMS),
             },
           },
           { componentId: 'spacer', properties: { Height: 24 } },
@@ -133,79 +158,25 @@ export const APP_PRESETS: AppPreset[] = [
         elements: [
           {
             componentId: 'heading',
-            variants: { Size: 'Large', Alignment: 'Center' },
-            properties: { Heading: 'Elena Vasquez', Subheading: 'HIIT & Cardio Coach' },
+            variants: { Size: 'Large', Alignment: 'Left' },
+            properties: { Heading: 'Explore Trainers', Subheading: 'Choose a coach and open their profile.' },
           },
-          {
-            componentId: 'image',
-            variants: { 'Has Image': 'Yes', Alignment: 'Center', Size: 'Large' },
-            properties: {
-              'Image URL': 'https://images.unsplash.com/photo-1594381898411-846e7d193883?w=600&h=400&fit=crop',
-              'Alt Text': 'Elena Vasquez',
-            },
-          },
-          { componentId: 'spacer', properties: { Height: 16 } },
-          {
-            componentId: 'button',
-            variants: { Type: 'Standard', Variant: 'Default', Corner: 'Rounded' },
-            properties: {
-              Label: 'Book a Session',
-              'Left Icon': 'Calendar',
-              'Right Icon': 'none',
-              'Full Width': true,
-              Action: 'Open Form',
-              'Form Title': 'Book a Session with Elena',
-              'Form Description': 'Pick a time that works for you and we’ll confirm by email.',
-              'Form Submit Label': 'Confirm Booking',
-              'Form Fields': JSON.stringify([
-                { name: 'date', label: 'Preferred Date', type: 'text', placeholder: 'e.g. Mon, Jul 14' },
-                { name: 'time', label: 'Preferred Time', type: 'text', placeholder: 'e.g. 7:00 AM' },
-                { name: 'focus', label: 'Training Focus', type: 'text', placeholder: 'e.g. Strength, fat loss, mobility' },
-                { name: 'notes', label: 'Notes', type: 'textarea', placeholder: 'Injuries, goals, anything we should know?' },
-              ]),
-              'Submits To': 'bookings',
-            },
-          },
-          { componentId: 'spacer', properties: { Height: 16 } },
-          { componentId: 'heading', variants: { Size: 'Small', Alignment: 'Left' }, properties: { Heading: 'At a Glance', Subheading: '' } },
-          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: '6 yrs', Description: 'Experience', Icon: 'Calendar', Shrinked: true } },
-          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: '900+', Description: 'Classes Led', Icon: 'Flame', Shrinked: true } },
-          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: '4.9', Description: 'Avg. Rating', Icon: 'Star', Shrinked: true } },
-          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'ACE', Description: 'Certified', Icon: 'Medal', Shrinked: true } },
-          { componentId: 'spacer', properties: { Height: 16 } },
-          { componentId: 'heading', variants: { Size: 'Small', Alignment: 'Left' }, properties: { Heading: 'About', Subheading: '' } },
-          {
-            componentId: 'paragraph',
-            variants: { Size: 'Medium', Alignment: 'Left' },
-            properties: { Text: 'Elena is a HIIT and cardio coach who turns tough workouts into the best part of your day. With six years of coaching, she designs high-energy sessions that torch calories, build endurance, and keep you coming back for more.' },
-          },
-          { componentId: 'spacer', properties: { Height: 16 } },
-          { componentId: 'heading', variants: { Size: 'Small', Alignment: 'Left' }, properties: { Heading: 'Specialties', Subheading: '' } },
-          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'HIIT', Description: 'High-intensity interval circuits.', Icon: 'Flame', Shrinked: true } },
-          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Cardio Conditioning', Description: 'Build stamina and endurance.', Icon: 'Activity', Shrinked: true } },
-          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Fat Loss', Description: 'Sustainable, results-driven plans.', Icon: 'Target', Shrinked: true } },
-          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Nutrition', Description: 'Fuel your performance.', Icon: 'Apple', Shrinked: true } },
-          { componentId: 'spacer', properties: { Height: 16 } },
-          { componentId: 'heading', variants: { Size: 'Small', Alignment: 'Left' }, properties: { Heading: 'Weekly Availability', Subheading: '' } },
           {
             componentId: 'list',
-            variants: { Layout: 'Basic', 'Image Style': 'None', Size: 'Regular', Action: 'None' },
-            properties: {
-              'Show Header': false,
-              Items: JSON.stringify([
-                { title: 'Monday', description: '6:00 AM – 11:00 AM · 4:00 PM – 8:00 PM' },
-                { title: 'Wednesday', description: '6:00 AM – 12:00 PM' },
-                { title: 'Friday', description: '7:00 AM – 11:00 AM · 5:00 PM – 9:00 PM' },
-                { title: 'Saturday', description: '8:00 AM – 1:00 PM' },
-              ]),
+            variants: {
+              Layout: 'Card',
+              'Card Image Style': 'Square',
+              'Card Layout': 'Vertical',
+              'Card Size': 'Medium',
+              'Card Action': 'Button',
             },
-          },
-          { componentId: 'spacer', properties: { Height: 16 } },
-          { componentId: 'heading', variants: { Size: 'Small', Alignment: 'Left' }, properties: { Heading: 'What Clients Say', Subheading: '' } },
-          {
-            componentId: 'card',
-            variants: { 'Image Style': 'Icon', Layout: 'Horizontal', Action: 'None' },
-            properties: { Title: '“I’ve never had so much fun sweating.”', Description: 'Down 18 lbs and my endurance is through the roof. — Priya S.', Icon: 'Quote' },
+            properties: {
+              Title: 'Trainers',
+              'Show Header': false,
+              'Button Label': 'View Profile',
+              'Click Action': 'Open Dynamic Page',
+              Items: JSON.stringify(GYM_TRAINER_ITEMS),
+            },
           },
         ],
       },

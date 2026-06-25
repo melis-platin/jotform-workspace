@@ -1780,21 +1780,74 @@ body {
 .live-preview__top-header--transparent,
 [data-theme='dark'] .live-preview__top-header--transparent {
   background: transparent;
-  border-bottom-color: transparent;
+  border-bottom: 0;
   box-shadow: none;
 }
-// Once the hero scrolls up past the bar (page content now behind it), revert to the
-// solid bar so the logo/title/menu stay legible — transparent only while the hero is
-// behind it. (BuildPage drops the inline light color in this state, so content falls
-// back to the base --fg-primary here.) Driven by the hero/bar overlap check, not raw
-// scroll position, so the bar stays transparent while the hero is still visible.
-.live-preview__top-header--transparent.live-preview__top-header--over-content {
-  background: var(--bg-surface);
-  border-bottom-color: var(--border);
-  box-shadow: var(--shadow-sm);
+
+.live-preview__top-header--transparent::before,
+.live-preview__top-header--page-scrolled::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 calc(var(--space-6) * -1) 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bg-surface) 100%, transparent) 0%,
+    color-mix(in srgb, var(--bg-surface) 20%, transparent) calc(100% - var(--space-6)),
+    transparent 100%
+  );
+  backdrop-filter: blur(var(--space-4));
+  -webkit-backdrop-filter: blur(var(--space-4));
+  mask-image: linear-gradient(180deg, #000 0%, #000 calc(100% - var(--space-6)), transparent 100%);
+  -webkit-mask-image: linear-gradient(180deg, #000 0%, #000 calc(100% - var(--space-6)), transparent 100%);
+  transition: opacity 0.28s ease;
 }
-[data-theme='dark'] .live-preview__top-header--transparent.live-preview__top-header--over-content {
-  background: var(--bg-surface-hover);
+
+.live-preview__top-header--transparent > *,
+.live-preview__top-header--page-scrolled > * {
+  position: relative;
+  z-index: 1;
+}
+
+[data-theme='dark'] .live-preview__top-header--transparent::before,
+[data-theme='dark'] .live-preview__top-header--page-scrolled::before {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bg-surface-hover) 100%, transparent) 0%,
+    color-mix(in srgb, var(--bg-surface-hover) 20%, transparent) calc(100% - var(--space-6)),
+    transparent 100%
+  );
+}
+
+// Once the hero scrolls up past the bar (page content now behind it), fade in the
+// blurred gradient layer so the logo/title/menu stay legible. Driven by the hero/bar
+// overlap check, not raw scroll position, so the bar stays transparent while the hero
+// is still visible.
+.live-preview__top-header--transparent.live-preview__top-header--over-content {
+  background: transparent;
+  border-bottom: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.live-preview__top-header--transparent.live-preview__top-header--over-content::before {
+  opacity: 1;
+}
+
+.live-preview__top-header--page-scrolled,
+[data-theme='dark'] .live-preview__top-header--page-scrolled {
+  background: transparent;
+  border-bottom: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.live-preview__top-header--page-scrolled::before {
+  opacity: 1;
 }
 // menu-btn pins --fg-primary; the title inherits — force both to follow the inline color.
 .live-preview__top-header--transparent .live-preview__top-header-menu-btn,
@@ -1814,12 +1867,31 @@ body {
 .live-preview__top-header--transparent ~ .live-preview__content-scaler {
   padding-top: 0;
 }
+
+// Phone live preview: when the transparent top header overlays the hero, center
+// the hero copy + CTA in the remaining visible image area below that chrome.
+// The top header covers 59px safe-area offset + 48px nav visually; app content is
+// scaled to 0.9, so the AppHeader needs ~119px of unscaled top compensation.
+.live-preview__phone-screen > .live-preview__top-header--transparent:not(.live-preview__top-header--over-content) ~ .live-preview__content-scaler .live-preview__app-header-slot .jf-app-header--center-content-in-bounds {
+  padding-top: calc(var(--app-header-content-y) + 119px);
+}
+
 // Safe-area background goes transparent so the hero behind it shows through (the
 // status-bar glyphs are recoloured to the hero text colour inline). Reverts to the
 // solid surface once scrolled past the hero (the class is dropped in BuildPage).
 .live-preview__status-bar-bg--transparent,
 [data-theme='dark'] .live-preview__status-bar-bg--transparent {
   background: transparent;
+}
+
+.live-preview__status-bar-bg--over-content {
+  background: color-mix(in srgb, var(--bg-surface) 100%, transparent);
+  backdrop-filter: blur(var(--space-4));
+  -webkit-backdrop-filter: blur(var(--space-4));
+}
+
+[data-theme='dark'] .live-preview__status-bar-bg--over-content {
+  background: color-mix(in srgb, var(--bg-surface-hover) 100%, transparent);
 }
 
 // Top Navigation off — the mobile top bar is hidden and the content/hero starts just
@@ -1933,8 +2005,8 @@ body {
   border-radius: 8px;
   overflow: hidden;
   flex-shrink: 0;
-  background: var(--bg-fill-brand);
-  color: var(--fg-inverse);
+  background: var(--bg-surface);
+  color: var(--fg-brand);
 
   &--image {
     width: auto;
@@ -2758,10 +2830,10 @@ body {
 
 
   .jf-app-header {
-    // Symmetric vertical padding: top + bottom both var(--space-12) (48px). Bottom
-    // comes from the base `padding: var(--space-12) 0`; we no longer shrink it to
-    // --space-4 when a button is present (that asymmetric 48/16 looked off).
-    padding-top: var(--space-12);
+    // Symmetric vertical padding: top + bottom both follow AppHeader's 60px
+    // content inset. Bottom comes from the component; keep the live-preview
+    // phone/tablet/desktop top edge on the same tokenized rule.
+    padding-top: var(--app-header-content-y);
   }
 
   .themes-view__canvas {
@@ -9084,63 +9156,67 @@ body.builder--phone-only {
 
 .app-preview-screen__role-segment {
   display: inline-flex;
-  align-items: stretch; // full-height segments so the active fill is flush top/bottom
-  overflow: visible; // let the active segment's solid white outline render past the track ring
-  background: color-mix(in srgb, var(--fg-inverse) 16%, transparent);
+  align-items: stretch;
+  width: 284px;
+  height: 38px;
+  overflow: hidden;
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.5);
   border-radius: 4px;
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--fg-inverse) 45%, transparent);
 }
 
 .app-preview-screen__role-option {
   display: inline-flex;
+  flex: 1 0 0;
   align-items: center;
-  padding: var(--ds-space-xs) var(--ds-space-md);
-  background: transparent;
+  justify-content: center;
+  gap: 8px;
+  min-width: 0;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.12);
   border: none;
-  color: var(--fg-inverse);
+  color: #fff;
   font-family: var(--ds-font-family);
-  font-size: var(--ds-font-size-sm);
-  font-weight: var(--ds-font-weight-medium);
-  line-height: var(--ds-line-height-sm);
+  font-size: 14px;
+  font-weight: var(--ds-font-weight-book);
+  line-height: 16px;
+  letter-spacing: -0.084px;
   white-space: nowrap;
   cursor: pointer;
-  opacity: 0.9;
+  opacity: 1;
   transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
 
-  // round the outer ends so the active fill + its white outline match the pill corners
+  svg {
+    flex-shrink: 0;
+  }
+
   &:first-child {
-    border-top-left-radius: 4px;
-    border-bottom-left-radius: 4px;
+    border-top-left-radius: 3px;
+    border-bottom-left-radius: 3px;
   }
 
   &:last-child {
-    border-top-right-radius: 4px;
-    border-bottom-right-radius: 4px;
+    border-top-right-radius: 3px;
+    border-bottom-right-radius: 3px;
   }
 
-  // thin divider between adjacent segments (hidden next to the active fill)
   & + & {
-    border-left: 1px solid color-mix(in srgb, var(--fg-inverse) 30%, transparent);
+    border-left: 1px solid rgba(255, 255, 255, 0.5);
   }
 
   &:hover {
-    opacity: 1;
-    background: color-mix(in srgb, var(--fg-inverse) 14%, transparent);
+    background: rgba(255, 255, 255, 0.18);
   }
 
   &--active {
-    opacity: 1;
-    color: #AD4EDE;
-    background: var(--fg-inverse);
+    color: #ad4ede;
+    background: #fff;
     border-left-color: transparent;
     position: relative;
-    z-index: 1; // paint the white outline above the track ring and neighbours
-    // solid 100% white border around the selected segment — overrides the
-    // translucent track ring on its outer (left/top/bottom) edges
-    box-shadow: 0 0 0 1px var(--fg-inverse);
+    z-index: 1;
 
     &:hover {
-      background: var(--fg-inverse);
+      background: #fff;
     }
   }
 }
@@ -9282,7 +9358,7 @@ body.builder--phone-only {
   // top of its own padding, so its vertically-centred content sits in the visible
   // area BELOW the bar (centred between the bar and the first page), not behind it.
   .live-preview__top-header--compact ~ .live-preview__content-scaler .live-preview__app-header-slot .jf-app-header {
-    padding-top: calc(var(--space-12) + var(--space-4) + 64px);
+    padding-top: calc(var(--app-header-content-y) + var(--space-4) + 64px);
   }
 
   .live-preview__content-scaler {
@@ -9808,6 +9884,193 @@ body.builder--phone-only {
   flex-shrink: 0;
 }
 
+.live-preview__top-header-search {
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  width: var(--spacing-3xl);
+  height: var(--spacing-3xl);
+  flex: 0 0 var(--spacing-3xl);
+  transition: width 0.18s ease, flex-basis 0.18s ease;
+}
+
+.live-preview__top-header-search--open {
+  width: 0;
+  flex-basis: 0;
+}
+
+.live-preview__top-header-search-form {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 450px;
+  height: 40px;
+  box-sizing: border-box;
+  padding: 0 var(--space-3);
+  overflow: hidden;
+  opacity: 0;
+  transform: translate(24px, -50%);
+  transform-origin: right center;
+  clip-path: inset(0 0 0 100%);
+  pointer-events: none;
+  border: 1px solid var(--border-medium);
+  border-radius: 4px;
+  background: var(--background-white);
+  transition:
+    clip-path 0.24s ease,
+    opacity 0.16s ease,
+    transform 0.24s ease;
+}
+
+.live-preview__top-header-search--open .live-preview__top-header-search-btn {
+  display: none;
+}
+
+.live-preview__top-header-search--open .live-preview__top-header-search-form {
+  opacity: 1;
+  transform: translate(0, -50%);
+  clip-path: inset(0);
+  pointer-events: auto;
+}
+
+.live-preview__top-header-search-icon {
+  flex: 0 0 20px;
+  color: var(--navy-500);
+}
+
+.live-preview__top-header-search-input {
+  flex: 1 1 0;
+  width: 100%;
+  min-width: 0;
+  height: 20px;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  outline: none;
+  background: transparent;
+  color: var(--navy-500);
+  box-shadow: none;
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: var(--font-weight-book);
+  line-height: 20px;
+  letter-spacing: -0.084px;
+  caret-color: var(--navy-500);
+  appearance: none;
+
+  &::placeholder {
+    color: var(--navy-200);
+  }
+
+  &:focus {
+    box-shadow: none;
+  }
+
+  &::-webkit-search-cancel-button {
+    display: none;
+  }
+}
+
+.live-preview__top-header-search-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 20px;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-rounded);
+  background: transparent;
+  color: var(--navy-500);
+  cursor: pointer;
+  line-height: 0;
+
+  &:hover,
+  &:focus-visible {
+    background: color-mix(in srgb, var(--navy-100) 35%, transparent);
+    outline: none;
+  }
+}
+
+.live-preview__desktop-search-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: rgba(8, 9, 11, 0.2);
+  cursor: default;
+}
+
+.live-preview__desktop-search-featured {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 3;
+  display: flex;
+  width: 450px;
+  box-sizing: border-box;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: var(--space-6);
+  border-radius: 4px;
+  background: var(--background-white);
+  color: #1b2232;
+}
+
+.live-preview__desktop-search-featured-title {
+  margin: 0;
+  color: #1b2232;
+  font-family: var(--font-family);
+  font-size: 28px;
+  font-weight: var(--font-weight-bold);
+  line-height: 40px;
+  letter-spacing: -0.588px;
+}
+
+.live-preview__desktop-search-featured-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.live-preview__desktop-search-featured-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  box-sizing: border-box;
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--navy-50);
+  border-radius: 4px;
+  background: var(--background-white);
+  color: var(--navy-500);
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: var(--font-weight-book);
+  line-height: 20px;
+  letter-spacing: -0.084px;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    border-color: var(--navy-100);
+    outline: none;
+  }
+}
+
 .live-preview__top-header-notification-btn,
 .live-preview__top-header-search-btn {
   position: relative;
@@ -9834,7 +10097,19 @@ body.builder--phone-only {
 }
 
 .live-preview__top-header-search-btn {
-  border-color: transparent;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
+}
+
+.live-preview__top-header-search-btn:hover,
+.live-preview__top-header-search-btn:active,
+.live-preview__top-header-search-btn:focus-visible {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 .live-preview__top-header-notification-badge {
@@ -12632,34 +12907,4 @@ body.builder--phone-only {
   &:hover {
     background: var(--purple-500);
   }
-}
-
-.app-preview-screen__role-dropdown {
-  min-width: 140px;
-
-  .jf-dropdown {
-    background: color-mix(in srgb, var(--fg-inverse) 16%, transparent);
-    border-color: color-mix(in srgb, var(--fg-inverse) 45%, transparent);
-    border-radius: 4px;
-    color: var(--fg-inverse);
-
-    &:hover {
-      background: color-mix(in srgb, var(--fg-inverse) 24%, transparent);
-      border-color: color-mix(in srgb, var(--fg-inverse) 60%, transparent);
-    }
-  }
-
-  .jf-dropdown__value,
-  .jf-dropdown__trailing {
-    color: var(--fg-inverse);
-  }
-}
-
-.app-preview-screen__role-dot {
-  display: inline-block;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: var(--app-users-role-color, var(--app-users-role-admin-bg));
-  flex-shrink: 0;
 }
