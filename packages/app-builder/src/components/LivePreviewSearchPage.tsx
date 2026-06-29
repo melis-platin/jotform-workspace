@@ -3,16 +3,25 @@ import { AppIcon } from '@jf/app-elements'
 import { Icon as DSIcon } from '@jf/design-system'
 
 export interface SearchSourceElement {
+  id?: string
   componentId?: string
   properties?: Record<string, unknown>
 }
 
 export interface SearchSourcePage {
+  id?: string
   name: string
   hidden?: boolean
   dynamic?: boolean
+  dynamicSourceElementId?: string
   elements?: SearchSourceElement[]
 }
+
+export type SearchResultTarget =
+  | { type: 'page', pageId: string }
+  | { type: 'element', pageId: string, elementId: string }
+  | { type: 'dynamic-item', pageId: string, elementId: string, itemIndex: number }
+  | { type: 'form', pageId: string, elementId: string }
 
 interface SearchMatchResult {
   id: string
@@ -20,10 +29,12 @@ interface SearchMatchResult {
   description: string
   category: SearchResultCategory
   visual: SearchMatchVisual
+  target: SearchResultTarget
 }
 
 interface LivePreviewSearchPageProps {
   onClose: () => void
+  onResultSelect?: (target: SearchResultTarget) => void
   appTitle?: string
   appSubtitle?: string
   pages?: SearchSourcePage[]
@@ -437,6 +448,17 @@ const getElementSearchCategory = (componentId: string | undefined, hasFormConfig
   return 'contents'
 }
 
+const hasDynamicPageForElement = (pages: SearchSourcePage[], elementId: string) => (
+  pages.some((page) => page.dynamic && page.dynamicSourceElementId === elementId)
+)
+
+const getSearchResultTargetPriority = (target: SearchResultTarget) => {
+  if (target.type === 'dynamic-item') return 4
+  if (target.type === 'form') return 3
+  if (target.type === 'element') return 2
+  return 1
+}
+
 const textMatchesSearch = (value: string, normalizedSearchText: string) => {
   if (!normalizedSearchText) return false
   const normalizedValue = normalizeSearchPhrase(value)
@@ -474,6 +496,7 @@ const pushSearchResult = (
     description,
     category,
     visual,
+    target,
     searchText: extraSearchText = '',
   }: {
     id: string
@@ -481,6 +504,7 @@ const pushSearchResult = (
     description?: unknown
     category: SearchResultCategory
     visual: SearchMatchVisual
+    target: SearchResultTarget
     searchText?: string
   },
 ) => {
@@ -495,7 +519,23 @@ const pushSearchResult = (
   if (!textMatchesSearch(searchCorpus, normalizedSearchText)) return
 
   const normalizedKey = `${normalizeSearchPhrase(resultTitle)}:${normalizeSearchPhrase(resultDescription)}`
-  if (seen.has(normalizedKey)) return
+  if (seen.has(normalizedKey)) {
+    const existingIndex = results.findIndex((result) => (
+      `${normalizeSearchPhrase(result.title)}:${normalizeSearchPhrase(result.description)}` === normalizedKey
+    ))
+    const existingResult = existingIndex >= 0 ? results[existingIndex] : undefined
+    if (existingResult && getSearchResultTargetPriority(target) > getSearchResultTargetPriority(existingResult.target)) {
+      results[existingIndex] = {
+        id,
+        title: resultTitle,
+        description: resultDescription ? truncateSearchDescription(resultDescription, searchText) : 'Open result',
+        category,
+        visual,
+        target,
+      }
+    }
+    return
+  }
 
   seen.add(normalizedKey)
   results.push({
@@ -504,6 +544,7 @@ const pushSearchResult = (
     description: resultDescription ? truncateSearchDescription(resultDescription, searchText) : 'Open result',
     category,
     visual,
+    target,
   })
 }
 
@@ -520,28 +561,35 @@ const getPreviewSearchResults = (
   const seen = new Set<string>()
   const visiblePages = pages.filter((page) => !page.hidden && !page.dynamic)
 
-  pushSearchResult(results, seen, searchText, {
-    id: 'app-overview',
-    title: appTitle,
-    description: appSubtitle || 'Open app',
-    category: 'contents',
-    visual: { type: 'icon', name: 'Home' },
-  })
+  const overviewPageId = visiblePages[0]?.id
+  if (overviewPageId) {
+    pushSearchResult(results, seen, searchText, {
+      id: 'app-overview',
+      title: appTitle,
+      description: appSubtitle || 'Open app',
+      category: 'contents',
+      visual: { type: 'icon', name: 'Home' },
+      target: { type: 'page', pageId: overviewPageId },
+    })
+  }
 
   visiblePages.forEach((page, pageIndex) => {
-    if (textMatchesSearch(page.name, normalizedSearchText)) {
+    if (page.id && textMatchesSearch(page.name, normalizedSearchText)) {
       pushSearchResult(results, seen, searchText, {
         id: `page-${pageIndex}-${page.name}`,
         title: page.name,
         description: 'Go to page',
         category: 'pages',
         visual: { type: 'icon', name: 'FileText' },
+        target: { type: 'page', pageId: page.id },
       })
     }
   })
 
   visiblePages.forEach((page, pageIndex) => {
     page.elements?.forEach((element, elementIndex) => {
+      if (!page.id || !element.id) return
+
       const componentLabel = COMPONENT_RESULT_LABELS[element.componentId || ''] || 'Element'
       const properties = element.properties ?? {}
       const formTitle = getCleanSearchResultText(properties['Form Title'])
@@ -561,6 +609,11 @@ const getPreviewSearchResults = (
         || getCleanSearchResultText(properties.Subheading)
         || getCleanSearchResultText(properties.Text)
         || componentLabel
+      const elementTarget: SearchResultTarget = {
+        type: 'element',
+        pageId: page.id,
+        elementId: element.id,
+      }
 
       if (!hasFormConfig) {
         pushSearchResult(results, seen, searchText, {
@@ -569,6 +622,7 @@ const getPreviewSearchResults = (
           description: elementDescription,
           category: getElementSearchCategory(element.componentId, hasFormConfig),
           visual: getElementVisual(element.componentId, properties),
+          target: elementTarget,
           searchText: [
             componentLabel,
             ...SEARCH_RESULT_PROPERTY_KEYS.map((key) => String(properties[key] ?? '')),
@@ -580,6 +634,9 @@ const getPreviewSearchResults = (
         ...parseSearchJsonItems(properties.Items),
         ...parseSearchJsonItems(properties.Products),
       ]
+      const hasDynamicDetailTarget = element.componentId === 'list'
+        && String(properties['Click Action'] ?? '') === 'Open Dynamic Page'
+        && hasDynamicPageForElement(pages, element.id)
 
       listItems.forEach((item, itemIndex) => {
         const itemTitle = getItemText(item, ['title', 'name', 'label', 'question'])
@@ -590,6 +647,9 @@ const getPreviewSearchResults = (
           description: itemDescription || `${componentLabel} item in ${page.name}`,
           category: 'contents',
           visual: getItemVisual(item, COMPONENT_RESULT_ICONS[element.componentId || ''] || 'List'),
+          target: hasDynamicDetailTarget
+            ? { type: 'dynamic-item', pageId: page.id, elementId: element.id, itemIndex }
+            : elementTarget,
           searchText: getItemSearchCorpus(item),
         })
       })
@@ -601,6 +661,7 @@ const getPreviewSearchResults = (
           description: formDescription || 'Fill out the form',
           category: 'forms',
           visual: { type: 'icon', name: 'ClipboardList' },
+          target: { type: 'form', pageId: page.id, elementId: element.id },
           searchText: [
             componentLabel,
             String(properties.Action ?? ''),
@@ -619,6 +680,7 @@ const getPreviewSearchResults = (
           description: fieldDescription || `Field in ${formTitle || 'form'}`,
           category: 'forms',
           visual: { type: 'icon', name: 'ClipboardList' },
+          target: { type: 'form', pageId: page.id, elementId: element.id },
           searchText: getItemSearchCorpus(field),
         })
       })
@@ -631,6 +693,7 @@ const getPreviewSearchResults = (
           description: `Data collection for ${formTitle || page.name}`,
           category: 'forms',
           visual: { type: 'icon', name: 'Database' },
+          target: { type: 'form', pageId: page.id, elementId: element.id },
           searchText: `${componentLabel} data form submissions ${formTitle}`,
         })
       }
@@ -745,6 +808,7 @@ const renderSearchResultVisual = (visual: SearchMatchVisual) => (
 
 export function LivePreviewSearchPage({
   onClose,
+  onResultSelect,
   appTitle,
   appSubtitle,
   pages,
@@ -990,6 +1054,10 @@ export function LivePreviewSearchPage({
                     key={result.id}
                     type="button"
                     className="live-preview__search-match-item"
+                    onClick={() => {
+                      recordRecentSearch(resultQuery)
+                      onResultSelect?.(result.target)
+                    }}
                   >
                     {renderSearchResultVisual(result.visual)}
                     <span className="live-preview__search-match-copy">

@@ -56,7 +56,7 @@ import { LivePreviewCheckoutPage } from '../components/LivePreviewCheckoutPage'
 import { LivePreviewOrderBar } from '../components/LivePreviewOrderBar'
 import { LivePreviewAvatarPopover } from '../components/LivePreviewAvatarPopover'
 import { LivePreviewProfilePage } from '../components/LivePreviewProfilePage'
-import { LivePreviewSearchPage, deriveFeaturedSearches } from '../components/LivePreviewSearchPage'
+import { LivePreviewSearchPage, deriveFeaturedSearches, type SearchResultTarget } from '../components/LivePreviewSearchPage'
 import { LivePreviewLoginPopover } from '../components/LivePreviewLoginPopover'
 import { QrPopover } from '../components/QrPopover'
 import { MobileBottomBar } from '../components/MobileBottomBar'
@@ -821,6 +821,64 @@ function parseCtaFields(raw?: string): FormField[] {
       return { name, label: name, type: 'text' as const }
     })
     .filter((f) => f.name)
+}
+
+const getPropertyString = (properties: PropertyValues, key: string) => {
+  const value = properties[key]
+  return typeof value === 'string' ? value.trim() : ''
+}
+
+const getLivePreviewElementSelector = (elementId: string) => (
+  `[data-live-preview-element-id="${elementId.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"]`
+)
+
+function createSearchResultFormSchema(element: CanvasElement, pageName: string): FormSchema {
+  const properties = element.properties
+  return {
+    title: getPropertyString(properties, 'Form Title')
+      || getPropertyString(properties, 'Label')
+      || getPropertyString(properties, 'Button Label')
+      || pageName
+      || 'Form',
+    description: getPropertyString(properties, 'Form Description')
+      || getPropertyString(properties, 'Description')
+      || undefined,
+    submitButtonLabel: getPropertyString(properties, 'Form Submit Label')
+      || getPropertyString(properties, 'Submit Label')
+      || 'Submit',
+    submitsTo: getPropertyString(properties, 'Submits To')
+      || getPropertyString(properties, 'Data Source')
+      || '',
+    fields: parseCtaFields(getPropertyString(properties, 'Form Fields')),
+  }
+}
+
+type CollectionsRuntime = ReturnType<typeof useCollections>
+
+function LivePreviewSearchPageWithCollections({
+  appTitle,
+  appSubtitle,
+  pages,
+  onClose,
+  onResultSelect,
+}: {
+  appTitle: string
+  appSubtitle: string
+  pages: AppPage[]
+  onClose: () => void
+  onResultSelect: (target: SearchResultTarget, collections: CollectionsRuntime) => void
+}) {
+  const collections = useCollections()
+
+  return (
+    <LivePreviewSearchPage
+      appTitle={appTitle}
+      appSubtitle={appSubtitle}
+      pages={pages}
+      onClose={onClose}
+      onResultSelect={(target) => onResultSelect(target, collections)}
+    />
+  )
 }
 
 interface HeroCtaConfig {
@@ -2981,6 +3039,94 @@ export function BuildPage({
     if (idx >= 0) openDynamicDetailFor(listId, idx)
   }, [openDynamicDetailFor])
 
+  const closeLivePreviewTransientViews = useCallback(() => {
+    setIsPreviewSearchOpen(false)
+    setIsDesktopPreviewSearchOpen(false)
+    setDesktopPreviewSearchQuery('')
+    setIsMorePageOpen(false)
+    setIsNotificationsPageOpen(false)
+    setIsPreviewCartOpen(false)
+    setIsPreviewCheckoutOpen(false)
+    setIsPreviewProfileOpen(false)
+    setIsLoginPopoverOpen(false)
+    setIsAvatarPopoverOpen(false)
+  }, [])
+
+  const highlightLivePreviewTarget = useCallback((selector?: string) => {
+    const scrollContainer = previewContentScalerEl
+    if (!scrollContainer) return
+
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        const target = selector
+          ? scrollContainer.querySelector<HTMLElement>(selector)
+          : scrollContainer.querySelector<HTMLElement>('.live-preview__app-header-slot, .themes-view__section')
+        if (!target) return
+
+        const containerRect = scrollContainer.getBoundingClientRect()
+        const targetRect = target.getBoundingClientRect()
+        const targetTop = scrollContainer.scrollTop + targetRect.top - containerRect.top
+        const targetY = Math.max(
+          0,
+          targetTop - (containerRect.height / 2) + (targetRect.height / 2),
+        )
+
+        scrollContainer.scrollTo({ top: targetY, behavior: 'smooth' })
+        target.classList.remove('themes-view__section--search-highlight')
+        void target.offsetWidth
+        target.classList.add('themes-view__section--search-highlight')
+        window.setTimeout(() => {
+          target.classList.remove('themes-view__section--search-highlight')
+        }, 1800)
+      })
+    })
+  }, [previewContentScalerEl])
+
+  const handleLivePreviewSearchResultSelect = useCallback((
+    target: SearchResultTarget,
+    collections: CollectionsRuntime,
+  ) => {
+    const targetPage = pagesRef.current.find((page) => page.id === target.pageId)
+    const needsLogin = Boolean(targetPage?.requireLogin && !isPreviewLoggedIn)
+
+    closeLivePreviewTransientViews()
+
+    if (target.type === 'dynamic-item') {
+      openDynamicDetailFor(target.elementId, target.itemIndex)
+      if (!needsLogin) highlightLivePreviewTarget()
+      return
+    }
+
+    navigateToPage(target.pageId)
+    if (needsLogin) return
+
+    if (target.type === 'page') {
+      highlightLivePreviewTarget()
+      return
+    }
+
+    const selector = getLivePreviewElementSelector(target.elementId)
+    highlightLivePreviewTarget(selector)
+
+    if (target.type === 'form' && targetPage) {
+      const element = targetPage.elements.find((item) => item.id === target.elementId)
+      if (!element) return
+
+      const schema = createSearchResultFormSchema(element, targetPage.name)
+      window.requestAnimationFrame(() => {
+        window.requestAnimationFrame(() => {
+          collections?.openForm(schema)
+        })
+      })
+    }
+  }, [
+    closeLivePreviewTransientViews,
+    highlightLivePreviewTarget,
+    isPreviewLoggedIn,
+    navigateToPage,
+    openDynamicDetailFor,
+  ])
+
   // True when the live preview is currently showing a dynamic detail page.
   const activePageIsDynamic = !!pages.find((p) => p.id === activePageId)?.dynamic
 
@@ -4400,11 +4546,12 @@ export function BuildPage({
         />
       )}
       {isPreviewSearchOpen && (
-        <LivePreviewSearchPage
+        <LivePreviewSearchPageWithCollections
           appTitle={appTitle}
           appSubtitle={appSubtitle}
           pages={pages}
           onClose={() => setIsPreviewSearchOpen(false)}
+          onResultSelect={handleLivePreviewSearchResultSelect}
         />
       )}
       {!isPreviewLoggedIn && (
@@ -4616,6 +4763,7 @@ export function BuildPage({
                     return (
                       <section
                         key={activePage.dynamic ? `${element.id}:${dynPreview?.index ?? 0}` : element.id}
+                        data-live-preview-element-id={element.id}
                         className={`themes-view__section${isShrinked ? ' themes-view__section--shrinked' : ''}${isFlow ? ' themes-view__section--flow' : ''}${isListLink ? ' themes-view__section--list-link' : ''}`}
                         onClick={isListLink ? (e) => handlePreviewListClick(e, element.id) : undefined}
                       >
@@ -8628,11 +8776,12 @@ export function BuildPage({
                         </div>
                       </div>
                       {isPreviewSearchOpen && (
-                        <LivePreviewSearchPage
+                        <LivePreviewSearchPageWithCollections
                           appTitle={appTitle}
                           appSubtitle={appSubtitle}
                           pages={pages}
                           onClose={() => setIsPreviewSearchOpen(false)}
+                          onResultSelect={handleLivePreviewSearchResultSelect}
                         />
                       )}
                       {!isPreviewLoggedIn && (
@@ -8759,6 +8908,7 @@ export function BuildPage({
                                     return (
                                       <section
                                         key={activePage.dynamic ? `${element.id}:${dynPreview?.index ?? 0}` : element.id}
+                                        data-live-preview-element-id={element.id}
                                         className={`themes-view__section${isShrinked ? ' themes-view__section--shrinked' : ''}${isFlow ? ' themes-view__section--flow' : ''}${isListLink ? ' themes-view__section--list-link' : ''}`}
                                         onClick={isListLink ? (e) => handlePreviewListClick(e, element.id) : undefined}
                                       >
