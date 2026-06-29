@@ -18,6 +18,8 @@ interface SearchMatchResult {
   id: string
   title: string
   description: string
+  category: SearchResultCategory
+  visual: SearchMatchVisual
 }
 
 interface LivePreviewSearchPageProps {
@@ -35,6 +37,26 @@ const RECENT_SEARCH_LIMIT = 10
 const RECENT_SEARCH_STORAGE_PREFIX = 'jf-live-preview-search-recent'
 const SEARCH_RESULT_LIMIT = 10
 const SEARCH_DESCRIPTION_MAX_LENGTH = 96
+const SEARCH_RESULT_IMAGE_KEYS = ['image', 'Image', 'Image URL', 'photo', 'Photo', 'avatar', 'Avatar', 'thumbnail', 'Thumbnail']
+
+type SearchResultCategory = 'pages' | 'forms' | 'contents'
+type SearchResultFilter = 'all' | SearchResultCategory
+type SearchMatchVisual =
+  | { type: 'icon', name: string }
+  | { type: 'image', src: string }
+
+const SEARCH_RESULT_CATEGORY_ORDER: SearchResultCategory[] = ['pages', 'forms', 'contents']
+const SEARCH_RESULT_CATEGORY_LABELS: Record<SearchResultCategory, string> = {
+  pages: 'PAGES',
+  forms: 'FORMS',
+  contents: 'CONTENTS',
+}
+const SEARCH_RESULT_FILTERS: Array<{ id: SearchResultFilter, label: string }> = [
+  { id: 'all', label: 'All' },
+  { id: 'pages', label: 'Pages' },
+  { id: 'forms', label: 'Forms' },
+  { id: 'contents', label: 'Contents' },
+]
 
 const GENERIC_SEARCH_PHRASES = new Set([
   'new app',
@@ -129,6 +151,23 @@ const COMPONENT_RESULT_LABELS: Record<string, string> = {
   'product-list': 'Product',
   table: 'Table',
   testimonial: 'Testimonial',
+}
+
+const COMPONENT_RESULT_ICONS: Record<string, string> = {
+  button: 'Pointer',
+  card: 'Layout',
+  chart: 'Table2',
+  document: 'FileText',
+  faq: 'HelpCircle',
+  form: 'ClipboardList',
+  heading: 'Type',
+  image: 'Image',
+  'image-gallery': 'Grid2x2',
+  list: 'List',
+  paragraph: 'Type',
+  'product-list': 'Package',
+  table: 'Table2',
+  testimonial: 'MessageCircle',
 }
 
 const SEARCH_PROPERTY_KEYS = ['Heading', 'Title', 'Label', 'Text', 'Description', 'Subheading', 'Button Text']
@@ -347,6 +386,48 @@ const getItemSearchCorpus = (item: Record<string, unknown>) => (
     .join(' ')
 )
 
+const getStringValue = (value: unknown) => (
+  typeof value === 'string' ? value.trim() : ''
+)
+
+const getImageValue = (value: unknown) => {
+  const imageValue = getStringValue(value)
+  if (!imageValue) return ''
+  if (/^(https?:\/\/|data:image\/|blob:)/i.test(imageValue)) return imageValue
+  return ''
+}
+
+const getImageFromRecord = (record: Record<string, unknown>) => {
+  for (const key of SEARCH_RESULT_IMAGE_KEYS) {
+    const imageValue = getImageValue(record[key])
+    if (imageValue) return imageValue
+  }
+
+  return ''
+}
+
+const getElementVisual = (componentId: string | undefined, properties: Record<string, unknown>): SearchMatchVisual => {
+  const imageValue = getImageFromRecord(properties)
+  if (imageValue) return { type: 'image', src: imageValue }
+
+  const iconName = getStringValue(properties.Icon)
+  if (iconName && iconName !== 'none') {
+    return { type: 'icon', name: iconName }
+  }
+
+  return { type: 'icon', name: COMPONENT_RESULT_ICONS[componentId || ''] || 'Layers' }
+}
+
+const getItemVisual = (item: Record<string, unknown>, fallbackIcon = 'List'): SearchMatchVisual => {
+  const imageValue = getImageFromRecord(item)
+  if (imageValue) return { type: 'image', src: imageValue }
+
+  const iconName = getStringValue(item.icon) || getStringValue(item.Icon)
+  if (iconName && iconName !== 'none') return { type: 'icon', name: iconName }
+
+  return { type: 'icon', name: fallbackIcon }
+}
+
 const textMatchesSearch = (value: string, normalizedSearchText: string) => {
   if (!normalizedSearchText) return false
   const normalizedValue = normalizeSearchPhrase(value)
@@ -382,11 +463,15 @@ const pushSearchResult = (
     id,
     title,
     description,
+    category,
+    visual,
     searchText: extraSearchText = '',
   }: {
     id: string
     title: unknown
     description?: unknown
+    category: SearchResultCategory
+    visual: SearchMatchVisual
     searchText?: string
   },
 ) => {
@@ -407,6 +492,8 @@ const pushSearchResult = (
     id,
     title: resultTitle,
     description: resultDescription ? truncateSearchDescription(resultDescription, searchText) : 'Open result',
+    category,
+    visual,
   })
 }
 
@@ -426,7 +513,9 @@ const getPreviewSearchResults = (
   pushSearchResult(results, seen, searchText, {
     id: 'app-overview',
     title: appTitle,
-    description: appSubtitle,
+    description: appSubtitle || 'Open app',
+    category: 'pages',
+    visual: { type: 'icon', name: 'FileText' },
   })
 
   visiblePages.forEach((page, pageIndex) => {
@@ -435,6 +524,8 @@ const getPreviewSearchResults = (
         id: `page-${pageIndex}-${page.name}`,
         title: page.name,
         description: 'Go to page',
+        category: 'pages',
+        visual: { type: 'icon', name: 'FileText' },
       })
     }
   })
@@ -443,6 +534,16 @@ const getPreviewSearchResults = (
     page.elements?.forEach((element, elementIndex) => {
       const componentLabel = COMPONENT_RESULT_LABELS[element.componentId || ''] || 'Element'
       const properties = element.properties ?? {}
+      const formTitle = getCleanSearchResultText(properties['Form Title'])
+        || getCleanSearchResultText(properties.Label)
+        || getCleanSearchResultText(properties['Button Label'])
+      const formDescription = getCleanSearchResultText(properties['Form Description'])
+        || getCleanSearchResultText(properties.Description)
+      const formFields = parseSearchJsonItems(properties['Form Fields'])
+      const hasFormConfig = element.componentId === 'form'
+        || properties.Action === 'Open Form'
+        || Boolean(getCleanSearchResultText(properties['Form Title']))
+        || formFields.length > 0
       const elementTitle = SEARCH_RESULT_PROPERTY_KEYS
         .map((key) => getCleanSearchResultText(properties[key]))
         .find(Boolean)
@@ -451,15 +552,19 @@ const getPreviewSearchResults = (
         || getCleanSearchResultText(properties.Text)
         || componentLabel
 
-      pushSearchResult(results, seen, searchText, {
-        id: `element-${pageIndex}-${elementIndex}`,
-        title: elementTitle || componentLabel,
-        description: elementDescription,
-        searchText: [
-          componentLabel,
-          ...SEARCH_RESULT_PROPERTY_KEYS.map((key) => String(properties[key] ?? '')),
-        ].join(' '),
-      })
+      if (!hasFormConfig) {
+        pushSearchResult(results, seen, searchText, {
+          id: `element-${pageIndex}-${elementIndex}`,
+          title: elementTitle || componentLabel,
+          description: elementDescription,
+          category: 'contents',
+          visual: getElementVisual(element.componentId, properties),
+          searchText: [
+            componentLabel,
+            ...SEARCH_RESULT_PROPERTY_KEYS.map((key) => String(properties[key] ?? '')),
+          ].join(' '),
+        })
+      }
 
       const listItems = [
         ...parseSearchJsonItems(properties.Items),
@@ -473,26 +578,19 @@ const getPreviewSearchResults = (
           id: `item-${pageIndex}-${elementIndex}-${itemIndex}`,
           title: itemTitle || elementTitle || componentLabel,
           description: itemDescription || `${componentLabel} item in ${page.name}`,
+          category: 'contents',
+          visual: getItemVisual(item, COMPONENT_RESULT_ICONS[element.componentId || ''] || 'List'),
           searchText: getItemSearchCorpus(item),
         })
       })
-
-      const formTitle = getCleanSearchResultText(properties['Form Title'])
-        || getCleanSearchResultText(properties.Label)
-        || getCleanSearchResultText(properties['Button Label'])
-      const formDescription = getCleanSearchResultText(properties['Form Description'])
-        || getCleanSearchResultText(properties.Description)
-      const formFields = parseSearchJsonItems(properties['Form Fields'])
-      const hasFormConfig = element.componentId === 'form'
-        || properties.Action === 'Open Form'
-        || Boolean(getCleanSearchResultText(properties['Form Title']))
-        || formFields.length > 0
 
       if (hasFormConfig && (formTitle || formFields.length > 0)) {
         pushSearchResult(results, seen, searchText, {
           id: `form-${pageIndex}-${elementIndex}`,
           title: formTitle || 'Form',
-          description: formDescription || `Open form from ${page.name}`,
+          description: formDescription || 'Fill out the form',
+          category: 'forms',
+          visual: { type: 'icon', name: 'ClipboardList' },
           searchText: [
             componentLabel,
             String(properties.Action ?? ''),
@@ -509,6 +607,8 @@ const getPreviewSearchResults = (
           id: `form-field-${pageIndex}-${elementIndex}-${fieldIndex}`,
           title: fieldTitle,
           description: fieldDescription || `Field in ${formTitle || 'form'}`,
+          category: 'forms',
+          visual: { type: 'icon', name: 'ClipboardList' },
           searchText: getItemSearchCorpus(field),
         })
       })
@@ -519,6 +619,8 @@ const getPreviewSearchResults = (
           id: `collection-${pageIndex}-${elementIndex}`,
           title: submitsTo,
           description: `Data collection for ${formTitle || page.name}`,
+          category: 'forms',
+          visual: { type: 'icon', name: 'Database' },
           searchText: `${componentLabel} data form submissions ${formTitle}`,
         })
       }
@@ -620,6 +722,17 @@ const renderHighlightedText = (text: string, searchText: string) => (
   ))
 )
 
+const renderSearchResultVisual = (visual: SearchMatchVisual) => (
+  <span
+    className={`live-preview__search-match-visual live-preview__search-match-visual--${visual.type}`}
+    aria-hidden="true"
+  >
+    {visual.type === 'image'
+      ? <img src={visual.src} alt="" loading="lazy" />
+      : <AppIcon name={visual.name} size={24} />}
+  </span>
+)
+
 export function LivePreviewSearchPage({
   onClose,
   appTitle,
@@ -634,6 +747,7 @@ export function LivePreviewSearchPage({
   )
   const [noResultsQuery, setNoResultsQuery] = useState('')
   const [resultQuery, setResultQuery] = useState('')
+  const [activeResultFilter, setActiveResultFilter] = useState<SearchResultFilter>('all')
   const inputRef = useRef<HTMLInputElement>(null)
   const featuredSearches = useMemo(
     () => deriveFeaturedSearches({ appTitle, appSubtitle, pages }),
@@ -643,9 +757,25 @@ export function LivePreviewSearchPage({
   const hasNoResults = noResultsQuery.length > 0
   const hasSearchResults = resultQuery.length > 0
   const hasRecentSearches = recentSearches.length > 0
-  const matchingSearchResults = hasSearchResults
-    ? getPreviewSearchResults(resultQuery, pages, appTitle, appSubtitle)
-    : []
+  const matchingSearchResults = useMemo(
+    () => (
+      hasSearchResults
+        ? getPreviewSearchResults(resultQuery, pages, appTitle, appSubtitle)
+        : []
+    ),
+    [appSubtitle, appTitle, hasSearchResults, pages, resultQuery],
+  )
+  const searchResultGroups = useMemo(() => (
+    SEARCH_RESULT_CATEGORY_ORDER.map((category) => ({
+      category,
+      label: SEARCH_RESULT_CATEGORY_LABELS[category],
+      results: matchingSearchResults.filter((result) => result.category === category),
+    }))
+  ), [matchingSearchResults])
+  const visibleSearchResultGroups = searchResultGroups.filter((group) => (
+    group.results.length > 0
+    && (activeResultFilter === 'all' || group.category === activeResultFilter)
+  ))
   const showRecentSearches = !hasQuery && !hasNoResults && !hasSearchResults && hasRecentSearches
   const showSearchWelcome = !hasQuery && !hasNoResults && !hasSearchResults && !hasRecentSearches
   const showNoResultsFeaturedSearches = hasNoResults && featuredSearches.length > 0
@@ -687,11 +817,13 @@ export function LivePreviewSearchPage({
       if (syncQuery) setQuery('')
       setNoResultsQuery('')
       setResultQuery('')
+      setActiveResultFilter('all')
       inputRef.current?.focus()
       return
     }
 
     if (syncQuery) setQuery(nextQuery)
+    setActiveResultFilter('all')
     if (recordRecent) recordRecentSearch(nextQuery)
     applySearchState(nextQuery)
     inputRef.current?.focus()
@@ -701,6 +833,7 @@ export function LivePreviewSearchPage({
     setQuery('')
     setNoResultsQuery('')
     setResultQuery('')
+    setActiveResultFilter('all')
     inputRef.current?.focus()
   }
 
@@ -735,6 +868,7 @@ export function LivePreviewSearchPage({
     setQuery(nextQuery)
     setNoResultsQuery('')
     setResultQuery('')
+    setActiveResultFilter('all')
 
     if (!nextQuery.trim()) {
       return
@@ -803,21 +937,48 @@ export function LivePreviewSearchPage({
 
       {hasSearchResults && (
         <section className="live-preview__search-match-results" aria-label={`Search results for ${resultQuery}`}>
-          {matchingSearchResults.map((result) => (
-            <button
-              key={result.id}
-              type="button"
-              className="live-preview__search-match-item"
+          <div className="live-preview__search-filter-row" role="tablist" aria-label="Search result categories">
+            {SEARCH_RESULT_FILTERS.map((filter) => (
+              <button
+                key={filter.id}
+                type="button"
+                role="tab"
+                aria-selected={activeResultFilter === filter.id}
+                className={`live-preview__search-filter-chip${activeResultFilter === filter.id ? ' live-preview__search-filter-chip--active' : ''}`}
+                onClick={() => setActiveResultFilter(filter.id)}
+              >
+                {filter.label}
+              </button>
+            ))}
+          </div>
+
+          {visibleSearchResultGroups.map((group) => (
+            <section
+              key={group.category}
+              className="live-preview__search-match-section"
+              aria-label={group.label}
             >
-              <span className="live-preview__search-match-copy">
-                <span className="live-preview__search-match-title">
-                  {renderHighlightedText(result.title, resultQuery)}
-                </span>
-                <span className="live-preview__search-match-description">
-                  {renderHighlightedText(result.description, resultQuery)}
-                </span>
-              </span>
-            </button>
+              <h2 className="live-preview__search-match-section-title">{group.label}</h2>
+              <div className="live-preview__search-match-section-list">
+                {group.results.map((result) => (
+                  <button
+                    key={result.id}
+                    type="button"
+                    className="live-preview__search-match-item"
+                  >
+                    {renderSearchResultVisual(result.visual)}
+                    <span className="live-preview__search-match-copy">
+                      <span className="live-preview__search-match-title">
+                        {renderHighlightedText(result.title, resultQuery)}
+                      </span>
+                      <span className="live-preview__search-match-description">
+                        {renderHighlightedText(result.description, resultQuery)}
+                      </span>
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </section>
           ))}
         </section>
       )}
