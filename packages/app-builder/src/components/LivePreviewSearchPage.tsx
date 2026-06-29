@@ -24,6 +24,19 @@ export type SearchResultTarget =
   | { type: 'dynamic-item', pageId: string, elementId: string, itemIndex: number }
   | { type: 'form', pageId: string, elementId: string, fieldName?: string, openForm?: boolean }
 
+export type SearchMatchVisual =
+  | { type: 'icon', name: string }
+  | { type: 'image', src: string }
+
+export interface SearchSourceAction {
+  id: string
+  title: string
+  description?: string
+  target: SearchResultTarget
+  visual?: SearchMatchVisual
+  searchText?: string
+}
+
 interface SearchMatchResult {
   id: string
   title: string
@@ -39,6 +52,7 @@ interface LivePreviewSearchPageProps {
   appTitle?: string
   appSubtitle?: string
   pages?: SearchSourcePage[]
+  searchActions?: SearchSourceAction[]
 }
 
 const APP_TITLE_PLACEHOLDER = 'New App'
@@ -53,9 +67,6 @@ const SEARCH_RESULT_IMAGE_KEYS = ['image', 'Image', 'Image URL', 'photo', 'Photo
 
 type SearchResultCategory = 'pages' | 'forms' | 'sign' | 'contents'
 type SearchResultFilter = 'all' | SearchResultCategory
-type SearchMatchVisual =
-  | { type: 'icon', name: string }
-  | { type: 'image', src: string }
 
 const SEARCH_RESULT_CATEGORY_ORDER: SearchResultCategory[] = ['pages', 'forms', 'sign', 'contents']
 const SEARCH_RESULT_CATEGORY_LABELS: Record<SearchResultCategory, string> = {
@@ -327,10 +338,12 @@ export const deriveFeaturedSearches = ({
   appTitle,
   appSubtitle,
   pages = [],
+  searchActions = [],
 }: {
   appTitle?: string
   appSubtitle?: string
   pages?: SearchSourcePage[]
+  searchActions?: SearchSourceAction[]
 }) => {
   const keywords: string[] = []
   const seen = new Set<string>()
@@ -354,6 +367,12 @@ export const deriveFeaturedSearches = ({
       })
       collectItemSearchCandidates(keywords, seen, properties.Items)
     })
+  })
+
+  searchActions.forEach((action) => {
+    pushTextSearchCandidates(keywords, seen, action.title)
+    pushTextSearchCandidates(keywords, seen, action.description)
+    pushTextSearchCandidates(keywords, seen, action.searchText)
   })
 
   if (keywords.length === 0) {
@@ -565,6 +584,7 @@ const getPreviewSearchResults = (
   pages: SearchSourcePage[] = [],
   appTitle = APP_TITLE_PLACEHOLDER,
   appSubtitle = '',
+  searchActions: SearchSourceAction[] = [],
 ) => {
   const normalizedSearchText = normalizeSearchPhrase(searchText)
   if (!normalizedSearchText) return []
@@ -584,6 +604,18 @@ const getPreviewSearchResults = (
       target: { type: 'page', pageId: overviewPageId },
     })
   }
+
+  searchActions.forEach((action) => {
+    pushSearchResult(results, seen, searchText, {
+      id: `action-${action.id}`,
+      title: action.title,
+      description: action.description || 'Open result',
+      category: 'contents',
+      visual: action.visual ?? { type: 'icon', name: 'MousePointerClick' },
+      target: action.target,
+      searchText: action.searchText,
+    })
+  })
 
   visiblePages.forEach((page, pageIndex) => {
     if (page.id && textMatchesSearch(page.name, normalizedSearchText)) {
@@ -838,6 +870,7 @@ export function LivePreviewSearchPage({
   appTitle,
   appSubtitle,
   pages,
+  searchActions = [],
 }: LivePreviewSearchPageProps) {
   const [query, setQuery] = useState('')
   const [isSearchFocused, setIsSearchFocused] = useState(false)
@@ -850,8 +883,8 @@ export function LivePreviewSearchPage({
   const [activeResultFilter, setActiveResultFilter] = useState<SearchResultFilter>('all')
   const inputRef = useRef<HTMLInputElement>(null)
   const featuredSearches = useMemo(
-    () => deriveFeaturedSearches({ appTitle, appSubtitle, pages }),
-    [appTitle, appSubtitle, pages],
+    () => deriveFeaturedSearches({ appTitle, appSubtitle, pages, searchActions }),
+    [appTitle, appSubtitle, pages, searchActions],
   )
   const hasQuery = query.length > 0
   const hasNoResults = noResultsQuery.length > 0
@@ -860,10 +893,10 @@ export function LivePreviewSearchPage({
   const matchingSearchResults = useMemo(
     () => (
       hasSearchResults
-        ? getPreviewSearchResults(resultQuery, pages, appTitle, appSubtitle)
+        ? getPreviewSearchResults(resultQuery, pages, appTitle, appSubtitle, searchActions)
         : []
     ),
-    [appSubtitle, appTitle, hasSearchResults, pages, resultQuery],
+    [appSubtitle, appTitle, hasSearchResults, pages, resultQuery, searchActions],
   )
   const searchResultGroups = useMemo(() => (
     SEARCH_RESULT_CATEGORY_ORDER.map((category) => ({
@@ -915,7 +948,7 @@ export function LivePreviewSearchPage({
   }
 
   const applySearchState = (nextQuery: string) => {
-    if (getPreviewSearchResults(nextQuery, pages, appTitle, appSubtitle).length === 0) {
+    if (getPreviewSearchResults(nextQuery, pages, appTitle, appSubtitle, searchActions).length === 0) {
       setNoResultsQuery(nextQuery)
       setResultQuery('')
       return

@@ -56,7 +56,7 @@ import { LivePreviewCheckoutPage } from '../components/LivePreviewCheckoutPage'
 import { LivePreviewOrderBar } from '../components/LivePreviewOrderBar'
 import { LivePreviewAvatarPopover } from '../components/LivePreviewAvatarPopover'
 import { LivePreviewProfilePage } from '../components/LivePreviewProfilePage'
-import { LivePreviewSearchPage, deriveFeaturedSearches, type SearchResultTarget } from '../components/LivePreviewSearchPage'
+import { LivePreviewSearchPage, deriveFeaturedSearches, type SearchResultTarget, type SearchSourceAction } from '../components/LivePreviewSearchPage'
 import { LivePreviewLoginPopover } from '../components/LivePreviewLoginPopover'
 import { QrPopover } from '../components/QrPopover'
 import { MobileBottomBar } from '../components/MobileBottomBar'
@@ -957,12 +957,14 @@ function LivePreviewSearchPageWithCollections({
   appTitle,
   appSubtitle,
   pages,
+  searchActions,
   onClose,
   onResultSelect,
 }: {
   appTitle: string
   appSubtitle: string
   pages: AppPage[]
+  searchActions: SearchSourceAction[]
   onClose: () => void
   onResultSelect: (target: SearchResultTarget, collections: CollectionsRuntime) => void
 }) {
@@ -973,6 +975,7 @@ function LivePreviewSearchPageWithCollections({
       appTitle={appTitle}
       appSubtitle={appSubtitle}
       pages={pages}
+      searchActions={searchActions}
       onClose={onClose}
       onResultSelect={(target) => onResultSelect(target, collections)}
     />
@@ -1305,6 +1308,37 @@ function getPresetHeroCtaLabel(header: AppHeaderState, preset?: AppPreset): stri
   if (preset?.id === 'gym-club') return 'Explore'
   if (preset?.id === 'camp-registration') return 'Register for 2026'
   return header.ctaLabel
+}
+
+function buildAppHeaderSearchActions(
+  header: AppHeaderState,
+  pages: AppPage[],
+  preset?: AppPreset,
+): SearchSourceAction[] {
+  if (!header.ctaEnabled) return []
+
+  const label = getPresetHeroCtaLabel(header, preset)?.trim()
+  if (!label) return []
+
+  const ctaAction = header.ctaAction ?? 'Do Nothing'
+  if (ctaAction !== 'Navigate to Page') return []
+
+  const pageId = header.ctaPageId ?? getPresetHeroCtaTargetPageId(pages, preset)
+  if (!pageId) return []
+
+  const targetPage = pages.find((page) => page.id === pageId && !page.dynamic)
+  const targetPageName = targetPage?.name ?? 'page'
+  const title = header.title || preset?.appTitle || ''
+  const subtitle = header.subtitle || preset?.appSubtitle || ''
+
+  return [{
+    id: 'app-header-cta',
+    title: label,
+    description: `Open ${targetPageName}`,
+    target: { type: 'page', pageId },
+    visual: { type: 'icon', name: 'MousePointerClick' },
+    searchText: [label, targetPageName, title, subtitle].filter(Boolean).join(' '),
+  }]
 }
 
 // Preset apps should all open with the same home-page hero header rules. The
@@ -2760,9 +2794,22 @@ export function BuildPage({
   const [isDesktopPreviewSearchOpen, setIsDesktopPreviewSearchOpen] = useState(false)
   const [desktopPreviewSearchQuery, setDesktopPreviewSearchQuery] = useState('')
   const desktopPreviewSearchInputRef = useRef<HTMLInputElement>(null)
+  const previewSearchActions = useMemo(
+    () => buildAppHeaderSearchActions(appHeaderState, pages, preset),
+    [
+      appHeaderState.ctaAction,
+      appHeaderState.ctaEnabled,
+      appHeaderState.ctaLabel,
+      appHeaderState.ctaPageId,
+      appHeaderState.subtitle,
+      appHeaderState.title,
+      pages,
+      preset,
+    ],
+  )
   const desktopPreviewFeaturedSearches = useMemo(
-    () => deriveFeaturedSearches({ appTitle, appSubtitle, pages }),
-    [appTitle, appSubtitle, pages],
+    () => deriveFeaturedSearches({ appTitle, appSubtitle, pages, searchActions: previewSearchActions }),
+    [appTitle, appSubtitle, pages, previewSearchActions],
   )
   const [isPreviewCartOpen, setIsPreviewCartOpen] = useState(false)
   const [isPreviewDetailOpen, setIsPreviewDetailOpen] = useState(false)
@@ -4676,6 +4723,7 @@ export function BuildPage({
           appTitle={appTitle}
           appSubtitle={appSubtitle}
           pages={pages}
+          searchActions={previewSearchActions}
           onClose={() => setIsPreviewSearchOpen(false)}
           onResultSelect={handleLivePreviewSearchResultSelect}
         />
@@ -8906,6 +8954,7 @@ export function BuildPage({
                           appTitle={appTitle}
                           appSubtitle={appSubtitle}
                           pages={pages}
+                          searchActions={previewSearchActions}
                           onClose={() => setIsPreviewSearchOpen(false)}
                           onResultSelect={handleLivePreviewSearchResultSelect}
                         />
