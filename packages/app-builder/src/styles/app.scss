@@ -3537,6 +3537,7 @@ body {
 }
 
 .live-preview__search-empty-title {
+  width: 100%;
   max-width: calc(100% - var(--space-8));
   margin: 0;
   color: var(--live-preview-search-empty-title);
@@ -3545,9 +3546,9 @@ body {
   font-weight: 700;
   line-height: var(--line-height-label-lg);
   letter-spacing: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  text-align: center;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .live-preview__search-empty-description {
