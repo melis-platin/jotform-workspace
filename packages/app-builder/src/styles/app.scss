@@ -3282,7 +3282,7 @@ body {
   --live-preview-search-text: var(--fg-primary);
   --live-preview-search-value-border: var(--navy-100);
   --live-preview-search-value-text: var(--navy-700);
-  --live-preview-search-radius: var(--spacing-2xs);
+  --live-preview-search-radius: var(--radius-md);
   --live-preview-search-results-title: #1B2232;
   --live-preview-search-results-item: var(--navy-400);
   --live-preview-search-results-clear: var(--fg-brand);
@@ -3469,7 +3469,7 @@ body {
 .live-preview__search-skeleton-avatar {
   width: var(--space-10);
   height: var(--space-10);
-  border-radius: var(--space-2);
+  border-radius: var(--live-preview-search-radius);
 }
 
 .live-preview__search-skeleton-line {
@@ -3488,7 +3488,7 @@ body {
 .live-preview__search-skeleton-pill {
   width: 38px;
   height: var(--space-5);
-  border-radius: var(--radius-rounded);
+  border-radius: var(--live-preview-search-radius);
 }
 
 @keyframes live-preview-search-skeleton-shimmer {
@@ -3519,7 +3519,7 @@ body {
   justify-content: center;
   width: var(--space-16);
   height: var(--space-16);
-  border-radius: var(--radius-rounded);
+  border-radius: var(--radius-xl);
   background: var(--live-preview-search-empty-icon-bg);
   color: var(--live-preview-search-empty-icon);
   line-height: 0;
@@ -3593,7 +3593,7 @@ body {
   min-width: 0;
   padding: var(--space-2);
   border: 0;
-  border-radius: var(--radius-sm);
+  border-radius: var(--live-preview-search-radius);
   background: transparent;
   color: inherit;
   cursor: pointer;
@@ -9919,7 +9919,7 @@ body.builder--phone-only {
   clip-path: inset(0 0 0 100%);
   pointer-events: none;
   border: 1px solid var(--border-medium);
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   background: var(--background-white);
   transition:
     clip-path 0.24s ease,
@@ -9988,7 +9988,7 @@ body.builder--phone-only {
   margin: 0;
   padding: 0;
   border: 0;
-  border-radius: var(--radius-rounded);
+  border-radius: var(--radius-sm);
   background: transparent;
   color: var(--navy-500);
   cursor: pointer;
@@ -10024,7 +10024,7 @@ body.builder--phone-only {
   align-items: flex-start;
   gap: var(--space-4);
   padding: var(--space-6);
-  border-radius: 4px;
+  border-radius: var(--radius-lg);
   background: var(--background-white);
   color: #1b2232;
 }
@@ -10054,7 +10054,7 @@ body.builder--phone-only {
   box-sizing: border-box;
   padding: var(--space-2) var(--space-4);
   border: 1px solid var(--navy-50);
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   background: var(--background-white);
   color: var(--navy-500);
   font-family: var(--font-family);
