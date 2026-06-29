@@ -18,6 +18,7 @@ interface SearchMatchResult {
   id: string
   title: string
   description: string
+  group: SearchResultGroup
 }
 
 interface LivePreviewSearchPageProps {
@@ -26,6 +27,9 @@ interface LivePreviewSearchPageProps {
   appSubtitle?: string
   pages?: SearchSourcePage[]
 }
+
+type SearchResultGroup = 'pages' | 'forms' | 'content' | 'data'
+type SearchResultTabId = 'all' | SearchResultGroup
 
 const APP_TITLE_PLACEHOLDER = 'New App'
 const APP_DESCRIPTION_PLACEHOLDER = 'Add a short description to tell people what your app does.'
@@ -130,6 +134,15 @@ const COMPONENT_RESULT_LABELS: Record<string, string> = {
   table: 'Table',
   testimonial: 'Testimonial',
 }
+
+const DATA_SEARCH_COMPONENT_IDS = new Set(['report', 'sentbox', 'table'])
+
+const SEARCH_RESULT_TABS: Array<{ id: SearchResultGroup, label: string }> = [
+  { id: 'pages', label: 'Pages' },
+  { id: 'forms', label: 'Forms' },
+  { id: 'content', label: 'Content' },
+  { id: 'data', label: 'Data' },
+]
 
 const SEARCH_PROPERTY_KEYS = ['Heading', 'Title', 'Label', 'Text', 'Description', 'Subheading', 'Button Text']
 const SEARCH_RESULT_PROPERTY_KEYS = [
@@ -318,6 +331,43 @@ const getCleanSearchResultText = (value: unknown) => {
   return trimmed
 }
 
+const getSearchResultGroup = (
+  componentId = '',
+  properties: Record<string, unknown> = {},
+): SearchResultGroup => {
+  if (
+    componentId === 'form'
+    || properties.Action === 'Open Form'
+    || Boolean(getCleanSearchResultText(properties['Form Title']))
+    || Boolean(getCleanSearchResultText(properties['Form Description']))
+  ) {
+    return 'forms'
+  }
+
+  if (DATA_SEARCH_COMPONENT_IDS.has(componentId)) {
+    return 'data'
+  }
+
+  return 'content'
+}
+
+const getSearchPlaceholder = (featuredSearches: string[]) => {
+  const terms = featuredSearches.slice(0, 3)
+  if (terms.length === 0) return 'Search'
+  if (terms.length === 1) return terms[0]
+  if (terms.length === 2) return `${terms[0]} and ${terms[1]}`
+  return `${terms[0]}, ${terms[1]} and ${terms[2]}`
+}
+
+const getSearchWelcomeDescription = (appTitle?: string) => {
+  const title = getCleanSearchResultText(appTitle)
+  if (!title || normalizeSearchPhrase(title) === normalizeSearchPhrase(APP_TITLE_PLACEHOLDER)) {
+    return 'Search pages, forms, data, and app content.'
+  }
+
+  return `Search pages, forms, data, and content in ${title}.`
+}
+
 const parseSearchJsonItems = (value: unknown): Array<Record<string, unknown>> => {
   if (typeof value !== 'string' || !value.trim().startsWith('[')) return []
 
@@ -382,11 +432,13 @@ const pushSearchResult = (
     id,
     title,
     description,
+    group = 'content',
     searchText: extraSearchText = '',
   }: {
     id: string
     title: unknown
     description?: unknown
+    group?: SearchResultGroup
     searchText?: string
   },
 ) => {
@@ -407,6 +459,7 @@ const pushSearchResult = (
     id,
     title: resultTitle,
     description: resultDescription ? truncateSearchDescription(resultDescription, searchText) : 'Open result',
+    group,
   })
 }
 
@@ -427,6 +480,7 @@ const getPreviewSearchResults = (
     id: 'app-overview',
     title: appTitle,
     description: appSubtitle,
+    group: 'content',
   })
 
   visiblePages.forEach((page, pageIndex) => {
@@ -435,6 +489,7 @@ const getPreviewSearchResults = (
         id: `page-${pageIndex}-${page.name}`,
         title: page.name,
         description: 'Go to page',
+        group: 'pages',
       })
     }
   })
@@ -443,6 +498,7 @@ const getPreviewSearchResults = (
     page.elements?.forEach((element, elementIndex) => {
       const componentLabel = COMPONENT_RESULT_LABELS[element.componentId || ''] || 'Element'
       const properties = element.properties ?? {}
+      const elementGroup = getSearchResultGroup(element.componentId, properties)
       const elementTitle = SEARCH_RESULT_PROPERTY_KEYS
         .map((key) => getCleanSearchResultText(properties[key]))
         .find(Boolean)
@@ -455,6 +511,7 @@ const getPreviewSearchResults = (
         id: `element-${pageIndex}-${elementIndex}`,
         title: elementTitle || componentLabel,
         description: elementDescription,
+        group: elementGroup,
         searchText: [
           componentLabel,
           ...SEARCH_RESULT_PROPERTY_KEYS.map((key) => String(properties[key] ?? '')),
@@ -473,6 +530,7 @@ const getPreviewSearchResults = (
           id: `item-${pageIndex}-${elementIndex}-${itemIndex}`,
           title: itemTitle || elementTitle || componentLabel,
           description: itemDescription || `${componentLabel} item in ${page.name}`,
+          group: elementGroup,
           searchText: getItemSearchCorpus(item),
         })
       })
@@ -493,6 +551,7 @@ const getPreviewSearchResults = (
           id: `form-${pageIndex}-${elementIndex}`,
           title: formTitle || 'Form',
           description: formDescription || `Open form from ${page.name}`,
+          group: 'forms',
           searchText: [
             componentLabel,
             String(properties.Action ?? ''),
@@ -509,6 +568,7 @@ const getPreviewSearchResults = (
           id: `form-field-${pageIndex}-${elementIndex}-${fieldIndex}`,
           title: fieldTitle,
           description: fieldDescription || `Field in ${formTitle || 'form'}`,
+          group: 'forms',
           searchText: getItemSearchCorpus(field),
         })
       })
@@ -519,6 +579,7 @@ const getPreviewSearchResults = (
           id: `collection-${pageIndex}-${elementIndex}`,
           title: submitsTo,
           description: `Data collection for ${formTitle || page.name}`,
+          group: 'data',
           searchText: `${componentLabel} data form submissions ${formTitle}`,
         })
       }
@@ -547,13 +608,22 @@ const renderFeaturedSearchList = (
   </div>
 )
 
-const renderFeaturedSearches = (
+const renderSearchWelcome = (
   featuredSearches: string[],
   onSelect: (keyword: string) => void,
+  description: string,
 ) => (
-  <section className="live-preview__search-featured" aria-label="Featured searches">
-    <h2 className="live-preview__search-featured-title">Featured searches</h2>
-    {renderFeaturedSearchList(featuredSearches, onSelect)}
+  <section className="live-preview__search-welcome" aria-label="Search start">
+    <div className="live-preview__search-welcome-icon" aria-hidden="true">
+      <AppIcon name="Search" size={28} />
+    </div>
+    <div className="live-preview__search-welcome-copy">
+      <h2 className="live-preview__search-welcome-title">What are you looking for?</h2>
+      <p className="live-preview__search-welcome-description">{description}</p>
+    </div>
+    {featuredSearches.length > 0 && (
+      renderFeaturedSearchList(featuredSearches, onSelect, 'live-preview__search-welcome-chips')
+    )}
   </section>
 )
 
@@ -608,6 +678,26 @@ const renderHighlightedText = (text: string, searchText: string) => (
   ))
 )
 
+const renderSearchResultTabs = (
+  tabs: Array<{ id: SearchResultTabId, label: string }>,
+  activeTab: SearchResultTabId,
+  onSelect: (tabId: SearchResultTabId) => void,
+) => (
+  <nav className="live-preview__search-tabs" aria-label="Search result filters">
+    {tabs.map((tab) => (
+      <button
+        key={tab.id}
+        type="button"
+        className={`live-preview__search-tab${activeTab === tab.id ? ' live-preview__search-tab--active' : ''}`}
+        aria-current={activeTab === tab.id ? 'page' : undefined}
+        onClick={() => onSelect(tab.id)}
+      >
+        {tab.label}
+      </button>
+    ))}
+  </nav>
+)
+
 export function LivePreviewSearchPage({
   onClose,
   appTitle,
@@ -622,25 +712,48 @@ export function LivePreviewSearchPage({
   )
   const [noResultsQuery, setNoResultsQuery] = useState('')
   const [resultQuery, setResultQuery] = useState('')
+  const [activeSearchTab, setActiveSearchTab] = useState<SearchResultTabId>('all')
   const inputRef = useRef<HTMLInputElement>(null)
   const featuredSearches = useMemo(
     () => deriveFeaturedSearches({ appTitle, appSubtitle, pages }),
     [appTitle, appSubtitle, pages],
   )
+  const searchPlaceholder = useMemo(() => getSearchPlaceholder(featuredSearches), [featuredSearches])
+  const searchWelcomeDescription = useMemo(() => getSearchWelcomeDescription(appTitle), [appTitle])
   const hasQuery = query.length > 0
   const hasNoResults = noResultsQuery.length > 0
   const hasSearchResults = resultQuery.length > 0
   const hasRecentSearches = recentSearches.length > 0
-  const matchingSearchResults = hasSearchResults
-    ? getPreviewSearchResults(resultQuery, pages, appTitle, appSubtitle)
-    : []
-  const showRecentSearches = !hasQuery && !hasNoResults && !hasSearchResults && hasRecentSearches
-  const showDefaultSearches = !hasQuery && !hasNoResults && !hasSearchResults && featuredSearches.length > 0
+  const matchingSearchResults = useMemo(() => (
+    hasSearchResults
+      ? getPreviewSearchResults(resultQuery, pages, appTitle, appSubtitle)
+      : []
+  ), [appSubtitle, appTitle, hasSearchResults, pages, resultQuery])
+  const visibleSearchTabs = useMemo(() => {
+    const resultGroups = new Set(matchingSearchResults.map((result) => result.group))
+    return [
+      { id: 'all' as const, label: 'All' },
+      ...SEARCH_RESULT_TABS.filter((tab) => resultGroups.has(tab.id)),
+    ]
+  }, [matchingSearchResults])
+  const filteredSearchResults = activeSearchTab === 'all'
+    ? matchingSearchResults
+    : matchingSearchResults.filter((result) => result.group === activeSearchTab)
+  const showSearchHome = !hasQuery && !hasNoResults && !hasSearchResults
+  const showRecentSearches = showSearchHome && hasRecentSearches
+  const showSearchWelcome = showSearchHome
   const showNoResultsFeaturedSearches = hasNoResults && featuredSearches.length > 0
 
   useEffect(() => {
     setRecentSearches(readRecentSearches(recentSearchStorageKey))
   }, [recentSearchStorageKey])
+
+  useEffect(() => {
+    if (activeSearchTab === 'all') return
+    if (!matchingSearchResults.some((result) => result.group === activeSearchTab)) {
+      setActiveSearchTab('all')
+    }
+  }, [activeSearchTab, matchingSearchResults])
 
   const updateRecentSearches = (getNextSearches: (currentSearches: string[]) => string[]) => {
     setRecentSearches((currentSearches) => {
@@ -675,11 +788,13 @@ export function LivePreviewSearchPage({
       if (syncQuery) setQuery('')
       setNoResultsQuery('')
       setResultQuery('')
+      setActiveSearchTab('all')
       inputRef.current?.focus()
       return
     }
 
     if (syncQuery) setQuery(nextQuery)
+    setActiveSearchTab('all')
     if (recordRecent) recordRecentSearch(nextQuery)
     applySearchState(nextQuery)
     inputRef.current?.focus()
@@ -689,6 +804,7 @@ export function LivePreviewSearchPage({
     setQuery('')
     setNoResultsQuery('')
     setResultQuery('')
+    setActiveSearchTab('all')
     inputRef.current?.focus()
   }
 
@@ -723,6 +839,7 @@ export function LivePreviewSearchPage({
     setQuery(nextQuery)
     setNoResultsQuery('')
     setResultQuery('')
+    setActiveSearchTab('all')
 
     if (!nextQuery.trim()) {
       return
@@ -734,14 +851,6 @@ export function LivePreviewSearchPage({
   return (
     <section className="live-preview__search-page app-scope" aria-label="Search">
       <header className="live-preview__search-header">
-        <button
-          type="button"
-          className="live-preview__search-back"
-          aria-label="Back"
-          onClick={onClose}
-        >
-          <AppIcon name="ChevronLeft" size={20} />
-        </button>
         <form
           className={`live-preview__search-field${hasQuery ? ' live-preview__search-field--has-value' : ''}`}
           onSubmit={handleSubmit}
@@ -751,7 +860,7 @@ export function LivePreviewSearchPage({
             ref={inputRef}
             type="search"
             aria-label="Search"
-            placeholder={isSearchFocused ? '' : 'Search'}
+            placeholder={isSearchFocused ? '' : searchPlaceholder}
             value={query}
             onChange={(event) => handleQueryChange(event.target.value)}
             onPointerDown={() => setIsSearchFocused(true)}
@@ -771,6 +880,13 @@ export function LivePreviewSearchPage({
             </button>
           )}
         </form>
+        <button
+          type="button"
+          className="live-preview__search-cancel"
+          onClick={onClose}
+        >
+          Cancel
+        </button>
       </header>
 
       {hasNoResults && (
@@ -790,8 +906,12 @@ export function LivePreviewSearchPage({
       {showNoResultsFeaturedSearches && renderNoResultsFeaturedSearches(featuredSearches, submitSearch)}
 
       {hasSearchResults && (
+        renderSearchResultTabs(visibleSearchTabs, activeSearchTab, setActiveSearchTab)
+      )}
+
+      {hasSearchResults && (
         <section className="live-preview__search-match-results" aria-label={`Search results for ${resultQuery}`}>
-          {matchingSearchResults.map((result) => (
+          {filteredSearchResults.map((result) => (
             <button
               key={result.id}
               type="button"
@@ -846,7 +966,7 @@ export function LivePreviewSearchPage({
         </section>
       )}
 
-      {showDefaultSearches && renderFeaturedSearches(featuredSearches, submitSearch)}
+      {showSearchWelcome && renderSearchWelcome(featuredSearches, submitSearch, searchWelcomeDescription)}
     </section>
   )
 }
