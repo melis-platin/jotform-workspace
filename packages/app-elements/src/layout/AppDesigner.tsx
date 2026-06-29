@@ -99,6 +99,18 @@ const TOKEN_CATEGORIES: TokenCategory[] = [
   },
 ];
 
+const appliedTokenOverrideVariables = new Set<string>();
+
+function clearAppliedTokenOverrides() {
+  const root = document.documentElement;
+  for (const variable of appliedTokenOverrideVariables) {
+    root.style.removeProperty(variable);
+  }
+  appliedTokenOverrideVariables.clear();
+  root.style.removeProperty('--bg-page-gradient');
+  root.style.removeProperty('--fg-disabled');
+}
+
 // ── Utility Functions ──────────────────────────────────────────────────
 
 function loadGoogleFont(fontName: string) {
@@ -259,7 +271,9 @@ function applyRadius(scale: RadiusScale, targets: NodeListOf<HTMLElement> | null
  * Call this on app initialization so components are styled before AppDesigner opens.
  */
 export function applyDefaultTheme() {
-  const dark = isDarkMode();
+  clearAppliedTokenOverrides();
+  document.documentElement.removeAttribute('data-theme');
+  const dark = false;
   const palette = generatePalette(DEFAULT_COLOR, dark);
   const lightPalette = generatePalette(DEFAULT_COLOR, false);
   applyPaletteToDOM(palette, lightPalette);
@@ -347,6 +361,7 @@ export function saveAppDesignerSnapshot(namespace: string, snapshot: AppDesigner
 }
 
 function applyThemeSnapshot(s: AppDesignerSnapshot, targetSelector = '.app-scope') {
+  clearAppliedTokenOverrides();
   if (s.colorMode === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
   else document.documentElement.removeAttribute('data-theme');
 
@@ -367,6 +382,7 @@ function applyThemeSnapshot(s: AppDesignerSnapshot, targetSelector = '.app-scope
 
   for (const [variable, color] of Object.entries(s.tokenOverrides)) {
     document.documentElement.style.setProperty(variable, color);
+    appliedTokenOverrideVariables.add(variable);
   }
 }
 
@@ -702,6 +718,7 @@ export function AppDesigner({ onClose, targetSelector = '.app-scope', isMobile, 
 
   const handleTokenColorChange = useCallback((variable: string, newColor: string) => {
     document.documentElement.style.setProperty(variable, newColor);
+    appliedTokenOverrideVariables.add(variable);
     setTokenOverrides((prev) => ({ ...prev, [variable]: newColor }));
     setResolvedTokenColors((prev) => ({ ...prev, [variable]: newColor }));
     if (variable === '--bg-page') {
@@ -729,6 +746,7 @@ export function AppDesigner({ onClose, targetSelector = '.app-scope', isMobile, 
   const handleResetTokenOverrides = useCallback(() => {
     for (const variable of Object.keys(tokenOverrides)) {
       document.documentElement.style.removeProperty(variable);
+      appliedTokenOverrideVariables.delete(variable);
     }
     document.documentElement.style.removeProperty('--fg-disabled');
     setTokenOverrides({});

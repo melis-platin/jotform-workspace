@@ -112,6 +112,7 @@ export function App() {
   const [searchBarAutoEnablePaused, setSearchBarAutoEnablePaused] = useState(false)
   const previousSearchableElementCountRef = useRef(0)
   const previousUrlPresetRef = useRef(urlPreset)
+  const presetChangeRequestRef = useRef(0)
   const [pushNotificationHistoryItems, setPushNotificationHistoryItems] = useState<PushNotificationHistoryItem[]>([])
   const [readPushNotificationDeliveryIds, setReadPushNotificationDeliveryIds] = useState<Set<string>>(() => new Set())
   const preset = useMemo(() => getPresetById(activePresetId), [activePresetId])
@@ -161,6 +162,7 @@ export function App() {
     }
     const presetChanged = previousUrlPresetRef.current !== urlPreset
     previousUrlPresetRef.current = urlPreset
+    if (presetChanged) presetChangeRequestRef.current += 1
     setActivePresetId((prev) => (prev === urlPreset ? prev : urlPreset))
     setAppTitle(titleForPreset(urlPreset))
     setAppIcon(defaultAppIcon(urlPreset))
@@ -218,15 +220,19 @@ export function App() {
   }, [search])
 
   const handlePresetChange = async (id: string) => {
+    const requestId = presetChangeRequestRef.current + 1
+    presetChangeRequestRef.current = requestId
     // Pull the shared remote state for this preset and seed the cache before mounting,
     // so the picker shows whatever anyone last saved (not just local edits).
     if (id !== EMPTY_PRESET_ID) {
       const doc = await loadRemoteApp(id)
+      if (presetChangeRequestRef.current !== requestId) return
       if (doc) {
         saveSnapshot(id, doc.snapshot as PresetSnapshot)
         applyRemoteTheme(doc)
       }
     }
+    if (presetChangeRequestRef.current !== requestId) return
     setActivePresetId(id)
     setAppTitle(titleForPreset(id))
     setAppIcon(defaultAppIcon(id))
