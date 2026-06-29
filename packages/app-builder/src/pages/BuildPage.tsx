@@ -89,6 +89,7 @@ import { syncAppToRemote } from '../presets/remoteStore'
 import { createDeepLinkTargetsFromPages, type DeepLinkTarget } from '../state/deepLinkTargets'
 import { DEFAULT_ROLE_OPTIONS, getRoleColorStyle, type AppRoleOption } from '../state/appUserRoles'
 import { ALL_USERS_AUDIENCE_ID } from '../state/pushNotifications'
+import { countSearchableElements } from '../state/searchableElements'
 
 interface CanvasElement {
   id: string
@@ -2193,6 +2194,7 @@ interface BuildPageProps {
   previewMode?: boolean
   onPreviewClose?: () => void
   onDeepLinkTargetsChange?: (targets: DeepLinkTarget[]) => void
+  onSearchableElementCountChange?: (count: number) => void
   searchBarEnabled?: boolean
   pushNotificationsEnabled?: boolean
   pushNotifications?: LivePreviewPushNotification[]
@@ -2354,6 +2356,7 @@ export function BuildPage({
   previewMode = false,
   onPreviewClose,
   onDeepLinkTargetsChange,
+  onSearchableElementCountChange,
   searchBarEnabled = true,
   pushNotificationsEnabled = false,
   pushNotifications = [],
@@ -2541,6 +2544,9 @@ export function BuildPage({
   useEffect(() => {
     onDeepLinkTargetsChange?.(createDeepLinkTargetsFromPages(pages))
   }, [onDeepLinkTargetsChange, pages])
+  useEffect(() => {
+    onSearchableElementCountChange?.(countSearchableElements(pages))
+  }, [onSearchableElementCountChange, pages])
 
   // Safety net: if the active page disappears (e.g. a dynamic detail page is
   // parked when its List's action is turned off, or its host page is deleted),

@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useSyncExternalStore } from 'react'
+import { useState, useMemo, useEffect, useSyncExternalStore, useCallback, useRef } from 'react'
 import { IconLibraryProvider } from '@jf/app-elements'
 import { TopBar } from './shell/TopBar.tsx'
 import { BuildPage } from './pages/BuildPage.tsx'
@@ -10,6 +10,7 @@ import { loadRemoteApp, applyRemoteTheme } from './presets/remoteStore.ts'
 import { DEFAULT_ROLE_OPTIONS, type AppRoleOption } from './state/appUserRoles.ts'
 import { createDeepLinkTargetsFromPreset, type DeepLinkTarget } from './state/deepLinkTargets.ts'
 import { ALL_USERS_AUDIENCE_ID } from './state/pushNotifications.ts'
+import { SEARCH_BAR_AUTO_ENABLE_THRESHOLD } from './state/searchableElements.ts'
 
 type Page = 'build' | 'settings' | 'publish'
 
@@ -106,7 +107,11 @@ export function App() {
   const [appUserRoleOptions, setAppUserRoleOptions] = useState<AppRoleOption[]>(DEFAULT_ROLE_OPTIONS)
   const [appUserTableRoleIds, setAppUserTableRoleIds] = useState<string[]>(APP_USER_TABLE_ROLE_IDS)
   const [pushNotificationsEnabled, setPushNotificationsEnabled] = useState(false)
-  const [searchBarEnabled, setSearchBarEnabled] = useState(true)
+  const [searchBarEnabled, setSearchBarEnabledState] = useState(false)
+  const [searchableElementCount, setSearchableElementCount] = useState(0)
+  const [searchBarAutoEnablePaused, setSearchBarAutoEnablePaused] = useState(false)
+  const previousSearchableElementCountRef = useRef(0)
+  const previousUrlPresetRef = useRef(urlPreset)
   const [pushNotificationHistoryItems, setPushNotificationHistoryItems] = useState<PushNotificationHistoryItem[]>([])
   const [readPushNotificationDeliveryIds, setReadPushNotificationDeliveryIds] = useState<Set<string>>(() => new Set())
   const preset = useMemo(() => getPresetById(activePresetId), [activePresetId])
@@ -120,17 +125,50 @@ export function App() {
   const [appTitle, setAppTitle] = useState(() => titleForPreset(urlPreset ?? EMPTY_PRESET_ID))
   const [appIcon, setAppIcon] = useState<AppIconState>(() => defaultAppIcon(urlPreset ?? EMPTY_PRESET_ID))
 
+  const resetSearchBarAutomation = useCallback(() => {
+    previousSearchableElementCountRef.current = 0
+    setSearchableElementCount(0)
+    setSearchBarAutoEnablePaused(false)
+    setSearchBarEnabledState(false)
+  }, [])
+
+  const handleSearchBarEnabledChange = useCallback((enabled: boolean) => {
+    setSearchBarEnabledState(enabled)
+    setSearchBarAutoEnablePaused(!enabled && searchableElementCount >= SEARCH_BAR_AUTO_ENABLE_THRESHOLD)
+  }, [searchableElementCount])
+
+  const handleSearchableElementCountChange = useCallback((count: number) => {
+    const previousCount = previousSearchableElementCountRef.current
+    previousSearchableElementCountRef.current = count
+    setSearchableElementCount(count)
+
+    if (count < SEARCH_BAR_AUTO_ENABLE_THRESHOLD) {
+      setSearchBarAutoEnablePaused(false)
+      return
+    }
+
+    if (!searchBarAutoEnablePaused && previousCount < SEARCH_BAR_AUTO_ENABLE_THRESHOLD) {
+      setSearchBarEnabledState(true)
+    }
+  }, [searchBarAutoEnablePaused])
+
   // Sync activePresetId/appTitle whenever the URL preset changes (capture flow
   // opens different presets in the same tab without a full reload).
   useEffect(() => {
-    if (!urlPreset) return
+    if (!urlPreset) {
+      previousUrlPresetRef.current = urlPreset
+      return
+    }
+    const presetChanged = previousUrlPresetRef.current !== urlPreset
+    previousUrlPresetRef.current = urlPreset
     setActivePresetId((prev) => (prev === urlPreset ? prev : urlPreset))
     setAppTitle(titleForPreset(urlPreset))
     setAppIcon(defaultAppIcon(urlPreset))
     setDeepLinkTargets(createDeepLinkTargetsFromPreset(getPresetById(urlPreset)))
+    if (presetChanged) resetSearchBarAutomation()
     // titleForPreset is stable enough here; intentionally omitted from deps.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [urlPreset])
+  }, [resetSearchBarAutomation, urlPreset])
 
   useEffect(() => {
     if (urlFullscreen) {
@@ -193,6 +231,7 @@ export function App() {
     setAppTitle(titleForPreset(id))
     setAppIcon(defaultAppIcon(id))
     setDeepLinkTargets(createDeepLinkTargetsFromPreset(getPresetById(id)))
+    resetSearchBarAutomation()
   }
 
   const handlePageChange = (page: Page) => {
@@ -301,6 +340,7 @@ export function App() {
             previewMode={previewMode}
             onPreviewClose={() => setPreviewMode(false)}
             onDeepLinkTargetsChange={setDeepLinkTargets}
+            onSearchableElementCountChange={handleSearchableElementCountChange}
             pushNotificationsEnabled={pushNotificationsEnabled}
             searchBarEnabled={searchBarEnabled}
             pushNotifications={livePreviewPushNotifications}
@@ -319,7 +359,7 @@ export function App() {
             pushNotificationsEnabled={pushNotificationsEnabled}
             setPushNotificationsEnabled={setPushNotificationsEnabled}
             searchBarEnabled={searchBarEnabled}
-            setSearchBarEnabled={setSearchBarEnabled}
+            setSearchBarEnabled={handleSearchBarEnabledChange}
             pushNotificationHistoryItems={pushNotificationHistoryItems}
             onPushNotificationHistoryItemCreate={addPushNotificationHistoryItem}
             onPushNotificationHistoryItemUpdate={updatePushNotificationHistoryItem}
