@@ -547,13 +547,25 @@ const renderFeaturedSearchList = (
   </div>
 )
 
-const renderFeaturedSearches = (
+const renderSearchWelcome = (
   featuredSearches: string[],
   onSelect: (keyword: string) => void,
 ) => (
-  <section className="live-preview__search-featured" aria-label="Featured searches">
-    <h2 className="live-preview__search-featured-title">Featured searches</h2>
-    {renderFeaturedSearchList(featuredSearches, onSelect)}
+  <section className="live-preview__search-welcome" aria-label="Search suggestions">
+    <div className="live-preview__search-welcome-main">
+      <div className="live-preview__search-welcome-icon" aria-hidden="true">
+        <AppIcon name="Search" size={32} />
+      </div>
+      <div className="live-preview__search-welcome-copy">
+        <h2 className="live-preview__search-welcome-title">What are you looking for?</h2>
+        <p className="live-preview__search-welcome-description">
+          Enter a name to find what you&apos;re looking for.
+        </p>
+      </div>
+    </div>
+    {featuredSearches.length > 0 && (
+      renderFeaturedSearchList(featuredSearches, onSelect, 'live-preview__search-welcome-chips')
+    )}
   </section>
 )
 
@@ -635,7 +647,7 @@ export function LivePreviewSearchPage({
     ? getPreviewSearchResults(resultQuery, pages, appTitle, appSubtitle)
     : []
   const showRecentSearches = !hasQuery && !hasNoResults && !hasSearchResults && hasRecentSearches
-  const showDefaultSearches = !hasQuery && !hasNoResults && !hasSearchResults && featuredSearches.length > 0
+  const showSearchWelcome = !hasQuery && !hasNoResults && !hasSearchResults && !hasRecentSearches
   const showNoResultsFeaturedSearches = hasNoResults && featuredSearches.length > 0
 
   useEffect(() => {
@@ -846,7 +858,7 @@ export function LivePreviewSearchPage({
         </section>
       )}
 
-      {showDefaultSearches && renderFeaturedSearches(featuredSearches, submitSearch)}
+      {showSearchWelcome && renderSearchWelcome(featuredSearches, submitSearch)}
     </section>
   )
 }
