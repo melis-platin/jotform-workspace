@@ -5,6 +5,7 @@ import { Icon as DSIcon } from '@jf/design-system'
 export interface SearchSourceElement {
   id?: string
   componentId?: string
+  variants?: Record<string, unknown>
   properties?: Record<string, unknown>
 }
 
@@ -21,7 +22,7 @@ export type SearchResultTarget =
   | { type: 'page', pageId: string }
   | { type: 'element', pageId: string, elementId: string }
   | { type: 'dynamic-item', pageId: string, elementId: string, itemIndex: number }
-  | { type: 'form', pageId: string, elementId: string }
+  | { type: 'form', pageId: string, elementId: string, fieldName?: string, openForm?: boolean }
 
 interface SearchMatchResult {
   id: string
@@ -448,6 +449,17 @@ const getElementSearchCategory = (componentId: string | undefined, hasFormConfig
   return 'contents'
 }
 
+const hasOpenFormAction = (properties: Record<string, unknown>) => (
+  properties.Action === 'Open Form'
+  || properties['Button Action'] === 'Open Form'
+  || properties['Card Action'] === 'Open Form'
+)
+
+const shouldOpenFormTarget = (componentId: string | undefined, variants: Record<string, unknown> | undefined, properties: Record<string, unknown>) => {
+  if (componentId === 'form') return variants?.['Layout Type'] !== 'Form'
+  return hasOpenFormAction(properties)
+}
+
 const hasDynamicPageForElement = (pages: SearchSourcePage[], elementId: string) => (
   pages.some((page) => page.dynamic && page.dynamicSourceElementId === elementId)
 )
@@ -595,13 +607,16 @@ const getPreviewSearchResults = (
       const formTitle = getCleanSearchResultText(properties['Form Title'])
         || getCleanSearchResultText(properties.Label)
         || getCleanSearchResultText(properties['Button Label'])
+        || getCleanSearchResultText(properties.Title)
+        || getCleanSearchResultText(properties['Action Form'])
       const formDescription = getCleanSearchResultText(properties['Form Description'])
         || getCleanSearchResultText(properties.Description)
       const formFields = parseSearchJsonItems(properties['Form Fields'])
       const hasFormConfig = element.componentId === 'form'
-        || properties.Action === 'Open Form'
+        || hasOpenFormAction(properties)
         || Boolean(getCleanSearchResultText(properties['Form Title']))
         || formFields.length > 0
+      const openFormTarget = shouldOpenFormTarget(element.componentId, element.variants, properties)
       const elementTitle = SEARCH_RESULT_PROPERTY_KEYS
         .map((key) => getCleanSearchResultText(properties[key]))
         .find(Boolean)
@@ -654,17 +669,20 @@ const getPreviewSearchResults = (
         })
       })
 
-      if (hasFormConfig && (formTitle || formFields.length > 0)) {
+      if (hasFormConfig && (formTitle || formFields.length > 0 || openFormTarget)) {
         pushSearchResult(results, seen, searchText, {
           id: `form-${pageIndex}-${elementIndex}`,
           title: formTitle || 'Form',
           description: formDescription || 'Fill out the form',
           category: 'forms',
           visual: { type: 'icon', name: 'ClipboardList' },
-          target: { type: 'form', pageId: page.id, elementId: element.id },
+          target: { type: 'form', pageId: page.id, elementId: element.id, openForm: openFormTarget },
           searchText: [
             componentLabel,
             String(properties.Action ?? ''),
+            String(properties['Button Action'] ?? ''),
+            String(properties['Card Action'] ?? ''),
+            String(properties['Action Form'] ?? ''),
             String(properties['Submits To'] ?? ''),
             String(properties['Form Submit Label'] ?? ''),
           ].join(' '),
@@ -680,7 +698,13 @@ const getPreviewSearchResults = (
           description: fieldDescription || `Field in ${formTitle || 'form'}`,
           category: 'forms',
           visual: { type: 'icon', name: 'ClipboardList' },
-          target: { type: 'form', pageId: page.id, elementId: element.id },
+          target: {
+            type: 'form',
+            pageId: page.id,
+            elementId: element.id,
+            fieldName: getStringValue(field.name) || fieldTitle,
+            openForm: openFormTarget,
+          },
           searchText: getItemSearchCorpus(field),
         })
       })
@@ -693,7 +717,7 @@ const getPreviewSearchResults = (
           description: `Data collection for ${formTitle || page.name}`,
           category: 'forms',
           visual: { type: 'icon', name: 'Database' },
-          target: { type: 'form', pageId: page.id, elementId: element.id },
+          target: { type: 'form', pageId: page.id, elementId: element.id, openForm: openFormTarget },
           searchText: `${componentLabel} data form submissions ${formTitle}`,
         })
       }

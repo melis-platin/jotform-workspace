@@ -838,6 +838,8 @@ function createSearchResultFormSchema(element: CanvasElement, pageName: string):
     title: getPropertyString(properties, 'Form Title')
       || getPropertyString(properties, 'Label')
       || getPropertyString(properties, 'Button Label')
+      || getPropertyString(properties, 'Title')
+      || getPropertyString(properties, 'Action Form')
       || pageName
       || 'Form',
     description: getPropertyString(properties, 'Form Description')
@@ -852,6 +854,10 @@ function createSearchResultFormSchema(element: CanvasElement, pageName: string):
     fields: parseCtaFields(getPropertyString(properties, 'Form Fields')),
   }
 }
+
+const getFormSheetFieldSelector = (fieldName: string) => (
+  `[data-form-field-name="${fieldName.replace(/\\/g, '\\\\').replace(/"/g, '\\"')}"]`
+)
 
 type CollectionsRuntime = ReturnType<typeof useCollections>
 
@@ -3082,6 +3088,27 @@ export function BuildPage({
     })
   }, [previewContentScalerEl])
 
+  const highlightOpenFormSheetField = useCallback((fieldName?: string) => {
+    if (!fieldName) return
+
+    window.setTimeout(() => {
+      window.requestAnimationFrame(() => {
+        const previewRoot = previewContentScalerEl?.closest('.live-preview__phone-screen') ?? document
+        const target = previewRoot.querySelector<HTMLElement>(getFormSheetFieldSelector(fieldName))
+        if (!target) return
+
+        target.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        target.classList.remove('jf-form-sheet__field--search-highlight')
+        void target.offsetWidth
+        target.classList.add('jf-form-sheet__field--search-highlight')
+        target.querySelector<HTMLElement>('input, textarea')?.focus()
+        window.setTimeout(() => {
+          target.classList.remove('jf-form-sheet__field--search-highlight')
+        }, 1800)
+      })
+    }, 160)
+  }, [previewContentScalerEl])
+
   const handleLivePreviewSearchResultSelect = useCallback((
     target: SearchResultTarget,
     collections: CollectionsRuntime,
@@ -3109,18 +3136,20 @@ export function BuildPage({
     highlightLivePreviewTarget(selector)
 
     if (target.type === 'form' && targetPage) {
+      if (target.openForm === false) return
+
       const element = targetPage.elements.find((item) => item.id === target.elementId)
       if (!element) return
 
       const schema = createSearchResultFormSchema(element, targetPage.name)
-      window.requestAnimationFrame(() => {
-        window.requestAnimationFrame(() => {
-          collections?.openForm(schema)
-        })
-      })
+      window.setTimeout(() => {
+        collections?.openForm(schema)
+        highlightOpenFormSheetField(target.fieldName)
+      }, 420)
     }
   }, [
     closeLivePreviewTransientViews,
+    highlightOpenFormSheetField,
     highlightLivePreviewTarget,
     isPreviewLoggedIn,
     navigateToPage,

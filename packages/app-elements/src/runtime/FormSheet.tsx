@@ -55,7 +55,7 @@ export function FormSheet() {
         </header>
         <form className="jf-form-sheet__form" onSubmit={handleSubmit}>
           {schema.fields.map((field, i) => (
-            <label key={field.name} className="jf-form-sheet__field">
+            <label key={field.name} className="jf-form-sheet__field" data-form-field-name={field.name}>
               <span className="jf-form-sheet__label">{field.label}</span>
               {field.type === 'textarea' ? (
                 <textarea

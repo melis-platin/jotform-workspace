@@ -92,6 +92,11 @@
   gap: var(--space-2);
 }
 
+.jf-form-sheet__field--search-highlight {
+  animation: jf-form-sheet-field-search-highlight 1.4s ease-out;
+  border-radius: var(--radius-md);
+}
+
 .jf-form-sheet__label {
   font-size: var(--font-size-label-md);
   font-weight: var(--font-weight-medium);
@@ -179,4 +184,17 @@
 @keyframes jf-form-sheet-slide {
   from { transform: translateY(20px); opacity: 0; }
   to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes jf-form-sheet-field-search-highlight {
+  0%,
+  35% {
+    background: color-mix(in srgb, var(--fg-brand) 10%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--fg-brand) 28%, transparent);
+  }
+
+  100% {
+    background: transparent;
+    box-shadow: 0 0 0 12px transparent;
+  }
 }
