@@ -368,9 +368,11 @@ const LEGACY_PRESET_HEADER_IMAGES: Record<string, string[]> = {
 }
 const LEGACY_PRESET_HEADER_TITLES: Record<string, string[]> = {
   'gym-club': ['Iron Pulse'],
+  'camp-registration': ['Summer Camp'],
 }
 const LEGACY_PRESET_HEADER_SUBTITLES: Record<string, string[]> = {
   'gym-club': ['Train with the best in the city'],
+  'camp-registration': ['Sign up for the 2026 season'],
 }
 
 function resolveStoredAppHeaderForPreset(
@@ -456,6 +458,16 @@ function buildCanvasElementsFromPreset(presetElements: PresetElement[], startId:
     elements.push(el)
   }
   return { elements, nextId: id }
+}
+
+function buildAppPagesFromPresetPages(presetPages: AppPreset['pages'], startId: number): { pages: AppPage[]; nextId: number } {
+  let nextId = startId
+  const pages = presetPages.map((p) => {
+    const built = buildCanvasElementsFromPreset(p.elements, nextId)
+    nextId = built.nextId
+    return { id: p.id, name: p.name, icon: p.icon, landing: p.landing, requireLogin: p.requireLogin, elements: built.elements }
+  })
+  return { pages, nextId }
 }
 
 function createConfiguredCanvasElement(
@@ -554,6 +566,90 @@ function normalizeGymTrainerDynamicPages(pages: AppPage[], preset: AppPreset | u
   return next
 }
 
+const CAMP_PINECREST_REQUIRED_PAGES = ['Home', 'Programs', 'Sessions', 'Counselors', 'My Campers', 'Forms', 'Family Hub']
+
+function isDynamicListElement(element: CanvasElement): boolean {
+  return element.componentId === 'list' && String(element.properties['Click Action'] ?? '') === 'Open Dynamic Page'
+}
+
+function hasCampPinecrestStructure(pages: AppPage[]): boolean {
+  const pageNames = new Set(pages.filter((page) => !page.dynamic).map((page) => page.name.trim().toLowerCase()))
+  const hasAllPages = CAMP_PINECREST_REQUIRED_PAGES.every((name) => pageNames.has(name.toLowerCase()))
+  const dynamicListCount = pages.filter((page) => !page.dynamic).flatMap((page) => page.elements).filter(isDynamicListElement).length
+  return hasAllPages && dynamicListCount >= 5
+}
+
+function getDynamicDetailPageName(hostPageName: string): string {
+  const name = hostPageName.trim().toLowerCase()
+  if (name === 'home' || name === 'programs') return 'Program Detail'
+  if (name === 'sessions') return 'Session Detail'
+  if (name === 'counselors') return 'Counselor Detail'
+  if (name === 'family hub') return 'Schedule Detail'
+  return `${hostPageName} Detail`
+}
+
+function ensureDynamicPagesForOpenDynamicLists(pages: AppPage[]): AppPage[] {
+  const sourceListIds = new Set(
+    pages
+      .filter((page) => !page.dynamic)
+      .flatMap((page) => page.elements)
+      .filter(isDynamicListElement)
+      .map((element) => element.id),
+  )
+  const existingDynamicsBySource = new Map(
+    pages
+      .filter((page) => page.dynamic && page.dynamicSourceElementId && sourceListIds.has(page.dynamicSourceElementId))
+      .map((page) => [page.dynamicSourceElementId as string, page]),
+  )
+  const usedPageIds = pages.map((page) => page.id)
+  const usedElementIds = pages.flatMap((page) => page.elements.map((element) => element.id))
+  const result: AppPage[] = []
+
+  for (const page of pages.filter((candidate) => !candidate.dynamic)) {
+    result.push(page)
+
+    for (const element of page.elements.filter(isDynamicListElement)) {
+      const existingDynamic = existingDynamicsBySource.get(element.id)
+      const dynamicPage = existingDynamic
+        ? {
+          ...existingDynamic,
+          name: getDynamicDetailPageName(page.name),
+          dynamic: true,
+          dynamicSourceElementId: element.id,
+        }
+        : {
+          ...createDynamicDetailPage(
+            element.id,
+            nextNumericId('page', usedPageIds),
+            nextNumericIds('element', usedElementIds, 3),
+          ),
+          name: getDynamicDetailPageName(page.name),
+        }
+
+      usedPageIds.push(dynamicPage.id)
+      usedElementIds.push(...dynamicPage.elements.map((dynamicElement) => dynamicElement.id))
+      result.push(dynamicPage)
+    }
+  }
+
+  return result
+}
+
+function normalizeCampPinecrestPages(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {
+  if (preset?.id !== 'camp-registration') return pages
+  const basePages = hasCampPinecrestStructure(pages)
+    ? pages
+    : buildAppPagesFromPresetPages(preset.pages, 1).pages
+  return ensureDynamicPagesForOpenDynamicLists(basePages)
+}
+
+function normalizePresetPages(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {
+  return normalizeCampPinecrestPages(
+    normalizeGymTrainerDynamicPages(pages, preset),
+    preset,
+  )
+}
+
 function arePagesEqual(a: AppPage[], b: AppPage[]): boolean {
   return JSON.stringify(a) === JSON.stringify(b)
 }
@@ -577,7 +673,7 @@ function buildInitialStateFromPreset(preset: AppPreset | undefined): {
   // Empty App always starts from defaults — skip stored snapshot.
   const stored = preset.id === 'empty' ? null : loadSnapshot(preset.id)
   if (stored) {
-    const pages = normalizeGymTrainerDynamicPages(stored.pages as AppPage[], preset)
+    const pages = normalizePresetPages(stored.pages as AppPage[], preset)
     const storedHeader = resolveStoredAppHeaderForPreset(
       preset,
       (stored.appHeader ?? {}) as Partial<AppHeaderState>,
@@ -639,13 +735,9 @@ function buildInitialStateFromPreset(preset: AppPreset | undefined): {
       }, preset, pages),
     }
   }
-  let nextId = 1
-  let pages: AppPage[] = preset.pages.map((p) => {
-    const built = buildCanvasElementsFromPreset(p.elements, nextId)
-    nextId = built.nextId
-    return { id: p.id, name: p.name, icon: p.icon, landing: p.landing, requireLogin: p.requireLogin, elements: built.elements }
-  })
-  pages = normalizeGymTrainerDynamicPages(pages, preset)
+  const builtPages = buildAppPagesFromPresetPages(preset.pages, 1)
+  let pages = normalizePresetPages(builtPages.pages, preset)
+  const nextId = builtPages.nextId
   const headerBuilt = buildCanvasElementsFromPreset(preset.headerActions, nextId)
   return {
     pages,
@@ -1202,11 +1294,16 @@ function getPresetHeroCtaTargetPageId(pages: AppPage[], preset?: AppPreset): str
     const trainerPage = pages.find((p) => p.name.trim().toLowerCase() === 'trainer' && !p.hidden && !p.dynamic)
     if (trainerPage) return trainerPage.id
   }
+  if (preset?.id === 'camp-registration') {
+    const formsPage = pages.find((p) => p.name.trim().toLowerCase() === 'forms' && !p.hidden && !p.dynamic)
+    if (formsPage) return formsPage.id
+  }
   return pages.find((p) => p.id !== firstPageId && !p.hidden && !p.dynamic)?.id ?? firstPageId
 }
 
 function getPresetHeroCtaLabel(header: AppHeaderState, preset?: AppPreset): string | undefined {
   if (preset?.id === 'gym-club') return 'Explore'
+  if (preset?.id === 'camp-registration') return 'Register for 2026'
   return header.ctaLabel
 }
 
@@ -2560,7 +2657,7 @@ export function BuildPage({
   useEffect(() => {
     if (!preset) return
     setPages((current) => {
-      const next = normalizeGymTrainerDynamicPages(current, preset)
+      const next = normalizePresetPages(current, preset)
       return arePagesEqual(current, next) ? current : next
     })
   }, [preset])

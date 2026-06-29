@@ -64,6 +64,73 @@ export const GYM_TRAINER_ITEMS = [
   { title: 'Sara Kim', description: 'Pilates & Recovery', image: 'https://images.unsplash.com/photo-1550345332-09e3ac987658?w=400&h=400&fit=crop' },
 ]
 
+const CAMP_PROGRAM_ITEMS = [
+  { title: 'Adventure Trail', description: 'Hiking, climbing, compass games, and supervised forest challenges for confident outdoor skills.', image: 'https://images.unsplash.com/photo-1551632811-561732d1e306?w=500&h=500&fit=crop' },
+  { title: 'Lake & Paddle', description: 'Kayaking, swim checks, paddle safety, dock games, and lake ecology led by certified lifeguards.', image: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=500&h=500&fit=crop' },
+  { title: 'Creative Studio', description: 'Painting, pottery, mixed media, photography walks, and a Friday gallery for families.', image: 'https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=500&h=500&fit=crop' },
+  { title: 'Sports League', description: 'Soccer, basketball, tennis, relay games, and low-pressure tournaments for every skill level.', image: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=500&h=500&fit=crop' },
+  { title: 'STEM Explorers', description: 'Nature science, bridge builds, robotics challenges, and experiments using real camp problems.', image: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=500&h=500&fit=crop' },
+  { title: 'Music & Stage', description: 'Band, choir, improv, stagecraft, and the weekly Pinecrest showcase under the pavilion lights.', image: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=500&h=500&fit=crop' },
+]
+
+const CAMP_SESSION_ITEMS = [
+  { title: 'June 15-19 · Welcome Week', description: 'Cabin teams, swim checks, camp tour, trail basics, and the first lakeside campfire.', image: 'https://images.unsplash.com/photo-1478131143081-80f7f84ca84d?w=500&h=500&fit=crop' },
+  { title: 'June 22-26 · Lake Skills', description: 'Kayak lanes, buddy checks, paddle practice, lake ecology, and sunset dock games.', image: 'https://images.unsplash.com/photo-1527489377706-5bf97e608852?w=500&h=500&fit=crop' },
+  { title: 'July 6-10 · Creative Camp', description: 'Studio rotations, clay projects, camera walks, costume building, and family gallery day.', image: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=500&h=500&fit=crop' },
+  { title: 'July 13-17 · Expedition Week', description: 'Orienteering, climbing wall progressions, group hikes, and wilderness first-aid basics.', image: 'https://images.unsplash.com/photo-1487730116645-74489c95b41b?w=500&h=500&fit=crop' },
+  { title: 'July 20-24 · Team Games', description: 'Sports league play, color wars, relay strategy, and the Pinecrest cup ceremony.', image: 'https://images.unsplash.com/photo-1547347298-4074fc3086f0?w=500&h=500&fit=crop' },
+  { title: 'August 3-7 · Leadership Week', description: 'Junior counselor labs, service projects, public speaking, and the closing campfire.', image: 'https://images.unsplash.com/photo-1491438590914-bc09fcaaf77a?w=500&h=500&fit=crop' },
+]
+
+const CAMP_COUNSELOR_ITEMS = [
+  { title: 'Ava Brooks', description: 'Head Counselor · Outdoor leadership and camper care coordinator.', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=500&h=500&fit=crop' },
+  { title: 'Leo Martinez', description: 'Waterfront Director · Lifeguard trainer and kayak safety lead.', image: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&h=500&fit=crop' },
+  { title: 'Priya Shah', description: 'Creative Arts Lead · Studio projects, theater week, and family showcase.', image: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=500&h=500&fit=crop' },
+  { title: 'Ben Carter', description: 'Sports Coach · Team games, skill clinics, and inclusive tournaments.', image: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=500&h=500&fit=crop' },
+  { title: 'Nora Ellis', description: 'Health Coordinator · Medication check-in, allergy plans, and family updates.', image: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=500&h=500&fit=crop' },
+]
+
+const CAMP_SCHEDULE_ITEMS = [
+  { title: 'Monday-Friday', description: '8:30 AM-4:30 PM · Check-in, cabin circles, program blocks, snack, and pickup.', image: 'https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=500&h=500&fit=crop' },
+  { title: 'Lake Safety Clinic', description: 'Tuesday 10:00 AM · Swim checks, life jacket fit, and buddy system practice.', image: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=500&h=500&fit=crop' },
+  { title: 'Pine Ridge Hike', description: 'Wednesday 9:30 AM · Trail groups, packed lunch, and nature journaling.', image: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=500&h=500&fit=crop' },
+  { title: 'Family Talent Night', description: 'Friday 6:30 PM · Campers perform music, comedy, skits, and stagecraft projects.', image: 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=500&h=500&fit=crop' },
+]
+
+const CAMP_REGISTRATION_FIELDS = [
+  { name: 'camperName', label: 'Camper Name', type: 'text', placeholder: 'e.g. Riley Morgan' },
+  { name: 'age', label: 'Age', type: 'text', placeholder: 'e.g. 11' },
+  { name: 'session', label: 'Preferred Session', type: 'text', placeholder: 'e.g. July 13-17 · Expedition Week' },
+  { name: 'parentEmail', label: 'Parent Email', type: 'email', placeholder: 'parent@example.com' },
+  { name: 'notes', label: 'Notes', type: 'textarea', placeholder: 'Cabin friend request, allergies, or access needs' },
+]
+
+const CAMP_HEALTH_FIELDS = [
+  { name: 'camperName', label: 'Camper Name', type: 'text', placeholder: 'e.g. Riley Morgan' },
+  { name: 'emergencyContact', label: 'Emergency Contact', type: 'text', placeholder: 'Name and phone number' },
+  { name: 'allergies', label: 'Allergies', type: 'textarea', placeholder: 'Food, medication, insect, or environmental allergies' },
+  { name: 'medications', label: 'Medications', type: 'textarea', placeholder: 'Medication name, dosage, timing, and storage instructions' },
+]
+
+const CAMP_ABSENCE_FIELDS = [
+  { name: 'camperName', label: 'Camper Name', type: 'text', placeholder: 'e.g. Riley Morgan' },
+  { name: 'date', label: 'Date', type: 'text', placeholder: 'e.g. July 17' },
+  { name: 'reason', label: 'Reason', type: 'textarea', placeholder: 'Optional note for the office' },
+]
+
+const CAMP_CALLBACK_FIELDS = [
+  { name: 'name', label: 'Your Name', type: 'text', placeholder: 'e.g. Jamie Morgan' },
+  { name: 'phone', label: 'Phone', type: 'text', placeholder: '(555) 123-4567' },
+  { name: 'topic', label: 'Question', type: 'textarea', placeholder: 'Tell us what you would like to discuss' },
+]
+
+const CAMP_FAQ_ITEMS = [
+  { question: 'What ages can attend Camp Pinecrest?', answer: 'Day camp is built for campers ages 8-16. Cabin groups and activity progressions are organized by age and comfort level.' },
+  { question: 'What should campers bring each day?', answer: 'Campers should bring a backpack, refillable water bottle, swimsuit, towel, sunscreen, closed-toe shoes, and a packed lunch unless lunch service is selected.' },
+  { question: 'How do medication and allergy plans work?', answer: 'Families submit the Health & Consent Form before the first session. The health coordinator reviews allergies, medications, and emergency contacts before check-in.' },
+  { question: 'Can families register for multiple sessions?', answer: 'Yes. Families can combine any available weekly sessions and update preferences from the Forms page.' },
+]
+
 export const APP_PRESETS: AppPreset[] = [
   {
     id: EMPTY_PRESET_ID,
@@ -184,9 +251,17 @@ export const APP_PRESETS: AppPreset[] = [
   },
   {
     id: 'camp-registration',
-    name: 'Camp Registration',
-    appTitle: 'Summer Camp',
-    appSubtitle: 'Sign up for the 2026 season',
+    name: 'Camp Pinecrest',
+    appTitle: 'Camp Pinecrest',
+    appSubtitle: 'A real summer basecamp for lake days, trail skills, creative studios, and lifelong friends.',
+    appHeader: {
+      show: true,
+      title: 'Camp Pinecrest',
+      subtitle: 'A real summer basecamp for lake days, trail skills, creative studios, and lifelong friends.',
+      icon: 'Trees',
+      backgroundImageUrl: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=1200&h=700&fit=crop',
+      backgroundImageName: 'camp pinecrest',
+    },
     theme: {
       color: '#2F7D45',
       tint: 36,
@@ -228,25 +303,31 @@ export const APP_PRESETS: AppPreset[] = [
         elements: [
           {
             componentId: 'heading',
-            variants: { Size: 'Large', Alignment: 'Center' },
+            variants: { Size: 'Medium', Alignment: 'Left' },
             properties: {
-              Heading: 'Summer of a Lifetime',
-              Subheading: 'Adventures, friendships, memories — all in one place.',
-            },
-          },
-          {
-            componentId: 'image',
-            variants: { 'Has Image': 'Yes', Alignment: 'Center', Size: 'Large' },
-            properties: {
-              'Image URL': 'https://images.unsplash.com/photo-1517824806704-9040b037703b?w=900&h=500&fit=crop',
-              'Alt Text': 'Campers around a campfire',
+              Heading: 'A real summer basecamp',
+              Subheading: 'June 15-August 7, 2026 · Monday-Friday · 8:30 AM-4:30 PM',
             },
           },
           {
             componentId: 'paragraph',
-            variants: { Size: 'Medium', Alignment: 'Center' },
+            variants: { Size: 'Medium', Alignment: 'Left' },
             properties: {
-              Text: 'Eight weeks. Twenty programs. Hundreds of friends in the making. Open to ages 8 – 16.',
+              Text: 'Campers build confidence through lake time, trail skills, studio projects, team games, and small cabin groups supported by trained staff.',
+            },
+          },
+          {
+            componentId: 'button',
+            variants: { Type: 'Standard', Variant: 'Default', Corner: 'Rounded', Width: 'Full' },
+            properties: {
+              Label: 'Register for 2026',
+              'Left Icon': 'CalendarPlus',
+              Action: 'Open Form',
+              'Form Title': 'Camp Registration',
+              'Form Description': 'Tell us about your camper and preferred session.',
+              'Form Submit Label': 'Submit Registration',
+              'Form Fields': JSON.stringify(CAMP_REGISTRATION_FIELDS),
+              'Submits To': 'campers',
             },
           },
           {
@@ -256,7 +337,7 @@ export const APP_PRESETS: AppPreset[] = [
           {
             componentId: 'heading',
             variants: { Size: 'Medium', Alignment: 'Left' },
-            properties: { Heading: 'Featured Programs', Subheading: 'Pick the track that excites you most.' },
+            properties: { Heading: 'Featured Programs', Subheading: 'Tap a track to see the full details.' },
           },
           {
             componentId: 'list',
@@ -268,14 +349,11 @@ export const APP_PRESETS: AppPreset[] = [
               'Card Action': 'Button',
             },
             properties: {
+              Title: 'Featured Programs',
               'Show Header': false,
               'Button Label': 'Explore',
-              Items: JSON.stringify([
-                { title: 'Adventure Trail', description: 'Hiking · Climbing · Kayaking', image: 'https://images.unsplash.com/photo-1551632811-561732d1e306?w=400&h=400&fit=crop' },
-                { title: 'Arts & Crafts', description: 'Painting · Pottery · Theater', image: 'https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=400&h=400&fit=crop' },
-                { title: 'Sports League', description: 'Soccer · Tennis · Basketball', image: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=400&h=400&fit=crop' },
-                { title: 'Music & Drama', description: 'Band · Choir · Stage', image: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=400&fit=crop' },
-              ]),
+              'Click Action': 'Open Dynamic Page',
+              Items: JSON.stringify(CAMP_PROGRAM_ITEMS.slice(0, 4)),
             },
           },
           {
@@ -285,89 +363,58 @@ export const APP_PRESETS: AppPreset[] = [
           {
             componentId: 'heading',
             variants: { Size: 'Medium', Alignment: 'Center' },
-            properties: { Heading: 'Why Choose Us', Subheading: 'Trusted by thousands of families.' },
+            properties: { Heading: 'Why Families Choose Pinecrest', Subheading: 'The structure parents need and the freedom campers remember.' },
           },
           {
             componentId: 'card',
             variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' },
-            properties: { Title: 'Safe & Certified', Description: 'CPR-certified, background-checked staff.', Icon: 'ShieldCheck', Shrinked: true },
+            properties: { Title: 'Safe & Certified', Description: 'CPR-certified, background-checked staff and daily head counts.', Icon: 'ShieldCheck', Shrinked: true },
           },
           {
             componentId: 'card',
             variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' },
-            properties: { Title: 'Expert Counselors', Description: 'Coaches, artists, and educators.', Icon: 'GraduationCap', Shrinked: true },
+            properties: { Title: 'Small Groups', Description: 'Cabin groups stay tight so every camper is known by name.', Icon: 'Users', Shrinked: true },
           },
           {
             componentId: 'card',
             variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' },
-            properties: { Title: 'Daily Adventures', Description: 'A new highlight every single day.', Icon: 'Compass', Shrinked: true },
+            properties: { Title: 'Daily Updates', Description: 'Families get schedule notes, forms, and reminders in one app.', Icon: 'Megaphone', Shrinked: true },
           },
           {
             componentId: 'card',
             variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' },
-            properties: { Title: 'Lifelong Friends', Description: 'Bonds that last beyond the summer.', Icon: 'Heart', Shrinked: true },
-          },
-          {
-            componentId: 'spacer',
-            properties: { Height: 24 },
-          },
-          {
-            componentId: 'button',
-            variants: { Type: 'Standard', Variant: 'Default', Corner: 'Rounded' },
-            properties: {
-              Label: 'Reserve Your Spot',
-              'Left Icon': 'Plus',
-              'Full Width': true,
-            },
-          },
-          {
-            componentId: 'button',
-            variants: { Type: 'Standard', Variant: 'Outlined', Corner: 'Rounded' },
-            properties: {
-              Label: 'Download Brochure',
-              'Left Icon': 'Download',
-              'Full Width': true,
-            },
+            properties: { Title: 'Clear Routines', Description: 'Drop-off, pickup, meals, meds, and activities are easy to follow.', Icon: 'ClipboardCheck', Shrinked: true },
           },
         ],
       },
       {
         id: 'page-2',
-        name: 'Schedule',
-        icon: 'Calendar',
+        name: 'Programs',
+        icon: 'Compass',
         elements: [
           {
             componentId: 'heading',
-            variants: { Size: 'Medium', Alignment: 'Left' },
+            variants: { Size: 'Large', Alignment: 'Left' },
             properties: {
-              Heading: 'Camp Schedule',
-              Subheading: 'Tuesday, July 7 · Week 2',
+              Heading: 'Explore Programs',
+              Subheading: 'Every track has a safe progression and a final showcase moment.',
             },
-          },
-          {
-            componentId: 'daily-task-manager',
-          },
-          {
-            componentId: 'spacer',
-            properties: { Height: 24 },
-          },
-          {
-            componentId: 'heading',
-            variants: { Size: 'Small', Alignment: 'Left' },
-            properties: { Heading: 'This Week at a Glance', Subheading: '' },
           },
           {
             componentId: 'list',
-            variants: { Layout: 'Basic', 'Image Style': 'Square', Size: 'Regular', Action: 'Icon' },
+            variants: {
+              Layout: 'Card',
+              'Card Image Style': 'Square',
+              'Card Layout': 'Vertical',
+              'Card Size': 'Medium',
+              'Card Action': 'Button',
+            },
             properties: {
+              Title: 'Program Tracks',
               'Show Header': false,
-              Items: JSON.stringify([
-                { title: 'Mon · Hiking Trail', description: 'Pine Ridge Loop · 4 hrs', image: 'https://images.unsplash.com/photo-1551632811-561732d1e306?w=200&h=200&fit=crop' },
-                { title: 'Tue · Pottery Workshop', description: 'Studio · 2 hrs', image: 'https://images.unsplash.com/photo-1452860606245-08befc0ff44b?w=200&h=200&fit=crop' },
-                { title: 'Wed · Lake Day', description: 'Kayak · Swim · 5 hrs', image: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=200&h=200&fit=crop' },
-                { title: 'Thu · Sports League', description: 'Soccer Finals · 3 hrs', image: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=200&h=200&fit=crop' },
-                { title: 'Fri · Talent Show', description: 'Main Hall · 7 PM', image: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=200&h=200&fit=crop' },
-              ]),
+              'Button Label': 'View Program',
+              'Click Action': 'Open Dynamic Page',
+              Items: JSON.stringify(CAMP_PROGRAM_ITEMS),
             },
           },
           {
@@ -376,54 +423,122 @@ export const APP_PRESETS: AppPreset[] = [
           },
           {
             componentId: 'heading',
-            variants: { Size: 'Small', Alignment: 'Left' },
-            properties: { Heading: 'Featured Events', Subheading: '' },
+            variants: { Size: 'Medium', Alignment: 'Left' },
+            properties: { Heading: 'How Program Blocks Work', Subheading: 'Campers select a main track and rotate through two discovery blocks each week.' },
           },
           {
             componentId: 'card',
-            variants: { 'Image Style': 'Square', Layout: 'Vertical', Action: 'Button' },
-            properties: {
-              Title: 'Annual Talent Show',
-              Description: 'Music, comedy, magic — Friday at 7 PM in the Main Hall.',
-              'Button Label': 'Sign Up to Perform',
-              'Image URL': 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=600&h=350&fit=crop',
-            },
+            variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' },
+            properties: { Title: 'Morning Focus', Description: 'Main track instruction with skill groups by age and comfort level.', Icon: 'Sun', Shrinked: true },
           },
           {
             componentId: 'card',
-            variants: { 'Image Style': 'Square', Layout: 'Vertical', Action: 'Button' },
-            properties: {
-              Title: 'Lakeside Bonfire',
-              Description: 'Stories, songs, s’mores — Saturday at 8 PM by the lake.',
-              'Button Label': 'Add to Calendar',
-              'Image URL': 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=600&h=350&fit=crop',
-            },
-          },
-          {
-            componentId: 'spacer',
-            properties: { Height: 24 },
-          },
-          {
-            componentId: 'heading',
-            variants: { Size: 'Small', Alignment: 'Left' },
-            properties: { Heading: 'Last Year’s Highlights', Subheading: '' },
-          },
-          {
-            componentId: 'image-gallery',
-            variants: { Layout: '8' },
-            properties: {
-              Images: JSON.stringify([
-                'https://images.unsplash.com/photo-1511497584788-876760111969?w=600&h=600&fit=crop',
-                'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=400&fit=crop',
-                'https://images.unsplash.com/photo-1525193612562-0ec53b0e5d7c?w=400&h=400&fit=crop',
-                'https://images.unsplash.com/photo-1530563885674-66db50a1af19?w=400&h=400&fit=crop',
-              ]),
-            },
+            variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' },
+            properties: { Title: 'Afternoon Choice', Description: 'Campers pick a discovery block like studio, field games, STEM, or dock time.', Icon: 'Sparkles', Shrinked: true },
           },
         ],
       },
       {
         id: 'page-3',
+        name: 'Sessions',
+        icon: 'Calendar',
+        elements: [
+          {
+            componentId: 'heading',
+            variants: { Size: 'Large', Alignment: 'Left' },
+            properties: {
+              Heading: '2026 Sessions',
+              Subheading: 'Choose a week or combine sessions for a longer Pinecrest summer.',
+            },
+          },
+          {
+            componentId: 'list',
+            variants: {
+              Layout: 'Card',
+              'Card Image Style': 'Square',
+              'Card Layout': 'Vertical',
+              'Card Size': 'Medium',
+              'Card Action': 'Button',
+            },
+            properties: {
+              Title: 'Camp Sessions',
+              'Show Header': false,
+              'Button Label': 'View Session',
+              'Click Action': 'Open Dynamic Page',
+              Items: JSON.stringify(CAMP_SESSION_ITEMS),
+            },
+          },
+          {
+            componentId: 'spacer',
+            properties: { Height: 24 },
+          },
+          {
+            componentId: 'heading',
+            variants: { Size: 'Small', Alignment: 'Left' },
+            properties: { Heading: 'Daily Rhythm', Subheading: '' },
+          },
+          {
+            componentId: 'table',
+            properties: {
+              Label: 'Weekday Schedule',
+              Description: '8:30 AM drop-off · 9:30 AM program block · 12:00 PM lunch · 1:30 PM choice block · 3:45 PM pickup',
+              Required: false,
+            },
+          },
+        ],
+      },
+      {
+        id: 'page-4',
+        name: 'Counselors',
+        icon: 'Users',
+        elements: [
+          {
+            componentId: 'heading',
+            variants: { Size: 'Large', Alignment: 'Left' },
+            properties: {
+              Heading: 'Meet the Team',
+              Subheading: 'Counselors are trained in camper care, safety, and program leadership.',
+            },
+          },
+          {
+            componentId: 'list',
+            variants: {
+              Layout: 'Card',
+              'Card Image Style': 'Square',
+              'Card Layout': 'Vertical',
+              'Card Size': 'Medium',
+              'Card Action': 'Button',
+            },
+            properties: {
+              Title: 'Counselors',
+              'Show Header': false,
+              'Button Label': 'View Profile',
+              'Click Action': 'Open Dynamic Page',
+              Items: JSON.stringify(CAMP_COUNSELOR_ITEMS),
+            },
+          },
+          {
+            componentId: 'spacer',
+            properties: { Height: 24 },
+          },
+          {
+            componentId: 'button',
+            variants: { Type: 'Standard', Variant: 'Secondary', Corner: 'Rounded', Width: 'Full' },
+            properties: {
+              Label: 'Request a Counselor Match',
+              'Left Icon': 'MessagesSquare',
+              Action: 'Open Form',
+              'Form Title': 'Counselor Match Request',
+              'Form Description': 'Share what kind of support would help your camper feel ready.',
+              'Form Submit Label': 'Send Request',
+              'Form Fields': JSON.stringify(CAMP_CALLBACK_FIELDS),
+              'Submits To': 'counselorRequests',
+            },
+          },
+        ],
+      },
+      {
+        id: 'page-5',
         name: 'My Campers',
         icon: 'Users',
         elements: [
@@ -437,6 +552,7 @@ export const APP_PRESETS: AppPreset[] = [
           },
           {
             componentId: 'button',
+            variants: { Type: 'Standard', Variant: 'Default', Corner: 'Rounded', Width: 'Full' },
             properties: {
               Label: 'Add new camper',
               'Left Icon': 'Plus',
@@ -446,12 +562,7 @@ export const APP_PRESETS: AppPreset[] = [
               'Form Title': 'Add a Camper',
               'Form Description': 'Register a new camper.',
               'Form Submit Label': 'Register Camper',
-              'Form Fields': JSON.stringify([
-                { name: 'name', label: 'Camper Name', type: 'text', placeholder: 'e.g. Alex Johnson' },
-                { name: 'details', label: 'Age & Group', type: 'text', placeholder: 'e.g. Age 12 · Adventure Group' },
-                { name: 'email', label: 'Parent Email', type: 'email', placeholder: 'parent@example.com' },
-                { name: 'notes', label: 'Allergies / Notes', type: 'textarea', placeholder: 'Any allergies or special needs' },
-              ]),
+              'Form Fields': JSON.stringify(CAMP_REGISTRATION_FIELDS),
               'Submits To': 'campers',
             },
           },
@@ -467,26 +578,37 @@ export const APP_PRESETS: AppPreset[] = [
               'Empty Description': 'Tap "Add new camper" to register your first one.',
             },
           },
+          {
+            componentId: 'spacer',
+            properties: { Height: 24 },
+          },
+          {
+            componentId: 'button',
+            variants: { Type: 'Standard', Variant: 'Outlined', Corner: 'Rounded', Width: 'Full' },
+            properties: {
+              Label: 'Report Absence',
+              'Left Icon': 'CalendarX',
+              Action: 'Open Form',
+              'Form Title': 'Report an Absence',
+              'Form Description': 'Let the camp office know if your camper will miss a day.',
+              'Form Submit Label': 'Send Absence Note',
+              'Form Fields': JSON.stringify(CAMP_ABSENCE_FIELDS),
+              'Submits To': 'absenceNotes',
+            },
+          },
         ],
       },
       {
-        id: 'page-4',
-        name: 'Info',
-        icon: 'Info',
+        id: 'page-6',
+        name: 'Forms',
+        icon: 'ClipboardList',
         elements: [
           {
             componentId: 'heading',
             variants: { Size: 'Large', Alignment: 'Left' },
             properties: {
-              Heading: 'Camp Resources',
-              Subheading: 'Forms, FAQs, and ways to support our mission.',
-            },
-          },
-          {
-            componentId: 'paragraph',
-            variants: { Size: 'Medium', Alignment: 'Left' },
-            properties: {
-              Text: 'Everything you need before, during, and after camp — all in one place.',
+              Heading: 'Forms & Documents',
+              Subheading: 'Complete registration, health, consent, and family office forms.',
             },
           },
           {
@@ -496,7 +618,60 @@ export const APP_PRESETS: AppPreset[] = [
           {
             componentId: 'heading',
             variants: { Size: 'Small', Alignment: 'Left' },
-            properties: { Heading: 'Required Documents', Subheading: '' },
+            properties: { Heading: 'Open Forms', Subheading: 'These forms are available directly on this page.' },
+          },
+          {
+            componentId: 'form',
+            variants: { 'Layout Type': 'Form' },
+            properties: {
+              'Form Title': 'Health & Consent Form',
+              'Form Description': 'Required for every camper before their first session.',
+              'Submit Label': 'Submit Health Form',
+              'Form Fields': JSON.stringify(CAMP_HEALTH_FIELDS),
+              'Show Border': true,
+            },
+          },
+          {
+            componentId: 'spacer',
+            properties: { Height: 24 },
+          },
+          {
+            componentId: 'heading',
+            variants: { Size: 'Small', Alignment: 'Left' },
+            properties: { Heading: 'Required Cards', Subheading: 'These are closed items families can open from search or the office flow.' },
+          },
+          {
+            componentId: 'form',
+            variants: { 'Layout Type': 'Card', Alignment: 'Left', Size: 'Normal' },
+            properties: { Label: 'Field Trip Permission', Description: 'Required before off-site hikes and lake excursions.', Icon: 'ClipboardCheck', Required: true },
+          },
+          {
+            componentId: 'sign-document',
+            variants: { Alignment: 'Left', Size: 'Normal' },
+            properties: { Label: 'Parent Waiver Signature', Description: 'Sign the seasonal release and activity waiver.', Required: true },
+          },
+          {
+            componentId: 'button',
+            variants: { Type: 'Standard', Variant: 'Outlined', Corner: 'Rounded', Width: 'Full' },
+            properties: {
+              Label: 'Ask the Office to Call',
+              'Left Icon': 'Phone',
+              Action: 'Open Form',
+              'Form Title': 'Callback Request',
+              'Form Description': 'The Pinecrest office will follow up during business hours.',
+              'Form Submit Label': 'Request Callback',
+              'Form Fields': JSON.stringify(CAMP_CALLBACK_FIELDS),
+              'Submits To': 'officeCallbacks',
+            },
+          },
+          {
+            componentId: 'spacer',
+            properties: { Height: 24 },
+          },
+          {
+            componentId: 'heading',
+            variants: { Size: 'Small', Alignment: 'Left' },
+            properties: { Heading: 'Documents', Subheading: '' },
           },
           {
             componentId: 'document',
@@ -510,17 +685,62 @@ export const APP_PRESETS: AppPreset[] = [
           },
           {
             componentId: 'document',
-            variants: { 'Has File': 'Yes', Size: 'Large', Alignment: 'Left' },
-            properties: { 'File Name': 'Health & Consent Forms.pdf', Description: 'Required medical and emergency forms.' },
+            variants: { 'Has File': 'Yes', Size: 'Normal', Alignment: 'Left' },
+            properties: { 'File Name': 'Bus & Pickup Map.pdf', Description: 'Arrival routes, car line, and late pickup details.' },
+          },
+        ],
+      },
+      {
+        id: 'page-7',
+        name: 'Family Hub',
+        icon: 'Info',
+        elements: [
+          {
+            componentId: 'heading',
+            variants: { Size: 'Large', Alignment: 'Left' },
+            properties: {
+              Heading: 'Family Hub',
+              Subheading: 'Schedule highlights, FAQs, scholarships, and camp memories.',
+            },
+          },
+          {
+            componentId: 'spacer',
+            properties: { Height: 16 },
+          },
+          {
+            componentId: 'list',
+            variants: { Layout: 'Basic', 'Image Style': 'Square', Size: 'Regular', Action: 'Icon' },
+            properties: {
+              Title: 'This Week at Pinecrest',
+              'Show Header': true,
+              'Click Action': 'Open Dynamic Page',
+              Items: JSON.stringify(CAMP_SCHEDULE_ITEMS),
+            },
+          },
+          {
+            componentId: 'spacer',
+            properties: { Height: 24 },
+          },
+          {
+            componentId: 'heading',
+            variants: { Size: 'Small', Alignment: 'Left' },
+            properties: { Heading: 'Last Year Highlights', Subheading: '' },
+          },
+          {
+            componentId: 'image-gallery',
+            variants: { Layout: '8' },
+            properties: {
+              Images: JSON.stringify([
+                'https://images.unsplash.com/photo-1511497584788-876760111969?w=600&h=600&fit=crop',
+                'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=400&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1525193612562-0ec53b0e5d7c?w=400&h=400&fit=crop',
+                'https://images.unsplash.com/photo-1530563885674-66db50a1af19?w=400&h=400&fit=crop',
+              ]),
+            },
           },
           {
             componentId: 'spacer',
             properties: { Height: 32 },
-          },
-          {
-            componentId: 'heading',
-            variants: { Size: 'Medium', Alignment: 'Center' },
-            properties: { Heading: 'Send a Camper to Camp', Subheading: 'Help families who cannot afford to attend.' },
           },
           {
             componentId: 'donation-box',
@@ -539,11 +759,16 @@ export const APP_PRESETS: AppPreset[] = [
           },
           {
             componentId: 'spacer',
-            properties: { Height: 32 },
+            properties: { Height: 24 },
+          },
+          {
+            componentId: 'faq',
+            variants: { Style: 'Card', Icon: 'Plus/Minus', 'Icon Position': 'Right' },
+            properties: { Items: JSON.stringify(CAMP_FAQ_ITEMS) },
           },
           {
             componentId: 'heading',
-            variants: { Size: 'Medium', Alignment: 'Center' },
+            variants: { Size: 'Small', Alignment: 'Center' },
             properties: { Heading: 'What Parents Say', Subheading: '' },
           },
           {

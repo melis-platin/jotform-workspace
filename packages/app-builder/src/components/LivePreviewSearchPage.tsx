@@ -600,7 +600,9 @@ const getPreviewSearchResults = (
 
   visiblePages.forEach((page, pageIndex) => {
     page.elements?.forEach((element, elementIndex) => {
-      if (!page.id || !element.id) return
+      const pageId = page.id
+      const elementId = element.id
+      if (!pageId || !elementId) return
 
       const componentLabel = COMPONENT_RESULT_LABELS[element.componentId || ''] || 'Element'
       const properties = element.properties ?? {}
@@ -626,8 +628,8 @@ const getPreviewSearchResults = (
         || componentLabel
       const elementTarget: SearchResultTarget = {
         type: 'element',
-        pageId: page.id,
-        elementId: element.id,
+        pageId,
+        elementId,
       }
 
       if (!hasFormConfig) {
@@ -651,7 +653,7 @@ const getPreviewSearchResults = (
       ]
       const hasDynamicDetailTarget = element.componentId === 'list'
         && String(properties['Click Action'] ?? '') === 'Open Dynamic Page'
-        && hasDynamicPageForElement(pages, element.id)
+        && hasDynamicPageForElement(pages, elementId)
 
       listItems.forEach((item, itemIndex) => {
         const itemTitle = getItemText(item, ['title', 'name', 'label', 'question'])
@@ -663,7 +665,7 @@ const getPreviewSearchResults = (
           category: 'contents',
           visual: getItemVisual(item, COMPONENT_RESULT_ICONS[element.componentId || ''] || 'List'),
           target: hasDynamicDetailTarget
-            ? { type: 'dynamic-item', pageId: page.id, elementId: element.id, itemIndex }
+            ? { type: 'dynamic-item', pageId, elementId, itemIndex }
             : elementTarget,
           searchText: getItemSearchCorpus(item),
         })
@@ -676,7 +678,7 @@ const getPreviewSearchResults = (
           description: formDescription || 'Fill out the form',
           category: 'forms',
           visual: { type: 'icon', name: 'ClipboardList' },
-          target: { type: 'form', pageId: page.id, elementId: element.id, openForm: openFormTarget },
+          target: { type: 'form', pageId, elementId, openForm: openFormTarget },
           searchText: [
             componentLabel,
             String(properties.Action ?? ''),
@@ -700,8 +702,8 @@ const getPreviewSearchResults = (
           visual: { type: 'icon', name: 'ClipboardList' },
           target: {
             type: 'form',
-            pageId: page.id,
-            elementId: element.id,
+            pageId,
+            elementId,
             fieldName: getStringValue(field.name) || fieldTitle,
             openForm: openFormTarget,
           },
@@ -717,7 +719,7 @@ const getPreviewSearchResults = (
           description: `Data collection for ${formTitle || page.name}`,
           category: 'forms',
           visual: { type: 'icon', name: 'Database' },
-          target: { type: 'form', pageId: page.id, elementId: element.id, openForm: openFormTarget },
+          target: { type: 'form', pageId, elementId, openForm: openFormTarget },
           searchText: `${componentLabel} data form submissions ${formTitle}`,
         })
       }
