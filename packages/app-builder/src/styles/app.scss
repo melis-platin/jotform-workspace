@@ -3298,8 +3298,6 @@ body {
   --live-preview-search-match-description: #6C73A8;
   --live-preview-search-match-description-strong: #343C6A;
   --live-preview-search-match-highlight: rgba(221, 140, 60, 0.3);
-  --live-preview-search-skeleton: var(--background-light);
-  --live-preview-search-skeleton-shine: color-mix(in srgb, var(--bg-surface) 68%, transparent);
 
   position: absolute;
   top: 59px;
@@ -3408,99 +3406,6 @@ body {
   color: var(--live-preview-search-clear);
   cursor: pointer;
   line-height: 0;
-}
-
-.live-preview__search-skeleton {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-1);
-  margin-top: var(--space-4);
-  padding: var(--space-2) var(--space-4);
-  overflow: hidden;
-}
-
-.live-preview__search-skeleton-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  width: 100%;
-  padding-right: var(--space-2);
-}
-
-.live-preview__search-skeleton-content {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  min-width: 0;
-  padding: var(--space-2);
-  overflow: hidden;
-}
-
-.live-preview__search-skeleton-copy {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  justify-content: center;
-  gap: var(--space-2);
-  min-width: 0;
-}
-
-.live-preview__search-skeleton-block {
-  position: relative;
-  flex-shrink: 0;
-  overflow: hidden;
-  background: var(--live-preview-search-skeleton);
-
-  &::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    transform: translateX(-100%);
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      var(--live-preview-search-skeleton-shine) 50%,
-      transparent 100%
-    );
-    animation: live-preview-search-skeleton-shimmer 1.35s ease-in-out infinite;
-  }
-}
-
-.live-preview__search-skeleton-avatar {
-  width: var(--space-10);
-  height: var(--space-10);
-  border-radius: var(--live-preview-search-radius);
-}
-
-.live-preview__search-skeleton-line {
-  height: 10px;
-  border-radius: var(--live-preview-search-radius);
-}
-
-.live-preview__search-skeleton-line--title {
-  width: 117px;
-}
-
-.live-preview__search-skeleton-line--subtitle {
-  width: 79px;
-}
-
-.live-preview__search-skeleton-pill {
-  width: 38px;
-  height: var(--space-5);
-  border-radius: var(--live-preview-search-radius);
-}
-
-@keyframes live-preview-search-skeleton-shimmer {
-  100% {
-    transform: translateX(100%);
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .live-preview__search-skeleton-block::after {
-    animation: none;
-  }
 }
 
 .live-preview__search-empty {

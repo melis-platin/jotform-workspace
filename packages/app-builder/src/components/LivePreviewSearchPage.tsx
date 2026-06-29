@@ -33,8 +33,6 @@ const FEATURED_SEARCH_LIMIT = 10
 const FEATURED_SEARCH_MAX_WORDS = 2
 const RECENT_SEARCH_LIMIT = 10
 const RECENT_SEARCH_STORAGE_PREFIX = 'jf-live-preview-search-recent'
-const SEARCH_LOADING_DELAY_MS = 2500
-const SEARCH_SKELETON_ITEMS = Array.from({ length: 6 }, (_, index) => index)
 const SEARCH_RESULT_LIMIT = 10
 const SEARCH_DESCRIPTION_MAX_LENGTH = 96
 
@@ -568,28 +566,6 @@ const renderNoResultsFeaturedSearches = (
   </section>
 )
 
-const renderSearchSkeleton = () => (
-  <section
-    className="live-preview__search-skeleton"
-    aria-label="Loading search results"
-    aria-live="polite"
-    aria-busy="true"
-  >
-    {SEARCH_SKELETON_ITEMS.map((item) => (
-      <div key={item} className="live-preview__search-skeleton-row">
-        <div className="live-preview__search-skeleton-content">
-          <span className="live-preview__search-skeleton-block live-preview__search-skeleton-avatar" />
-          <span className="live-preview__search-skeleton-copy">
-            <span className="live-preview__search-skeleton-block live-preview__search-skeleton-line live-preview__search-skeleton-line--title" />
-            <span className="live-preview__search-skeleton-block live-preview__search-skeleton-line live-preview__search-skeleton-line--subtitle" />
-          </span>
-        </div>
-        <span className="live-preview__search-skeleton-block live-preview__search-skeleton-pill" />
-      </div>
-    ))}
-  </section>
-)
-
 const getHighlightedParts = (text: string, searchText: string) => {
   const normalizedSearchText = searchText.trim().toLocaleLowerCase()
   const normalizedText = text.toLocaleLowerCase()
@@ -646,34 +622,25 @@ export function LivePreviewSearchPage({
   )
   const [noResultsQuery, setNoResultsQuery] = useState('')
   const [resultQuery, setResultQuery] = useState('')
-  const [pendingSearchQuery, setPendingSearchQuery] = useState('')
   const inputRef = useRef<HTMLInputElement>(null)
-  const searchDelayRef = useRef<ReturnType<typeof window.setTimeout> | null>(null)
   const featuredSearches = useMemo(
     () => deriveFeaturedSearches({ appTitle, appSubtitle, pages }),
     [appTitle, appSubtitle, pages],
   )
   const hasQuery = query.length > 0
-  const isSearchLoading = pendingSearchQuery.length > 0
-  const hasNoResults = !isSearchLoading && noResultsQuery.length > 0
-  const hasSearchResults = !isSearchLoading && resultQuery.length > 0
+  const hasNoResults = noResultsQuery.length > 0
+  const hasSearchResults = resultQuery.length > 0
   const hasRecentSearches = recentSearches.length > 0
   const matchingSearchResults = hasSearchResults
     ? getPreviewSearchResults(resultQuery, pages, appTitle, appSubtitle)
     : []
-  const showRecentSearches = !isSearchLoading && !hasQuery && !hasNoResults && !hasSearchResults && hasRecentSearches
-  const showDefaultSearches = !isSearchLoading && !hasQuery && !hasNoResults && !hasSearchResults && featuredSearches.length > 0
+  const showRecentSearches = !hasQuery && !hasNoResults && !hasSearchResults && hasRecentSearches
+  const showDefaultSearches = !hasQuery && !hasNoResults && !hasSearchResults && featuredSearches.length > 0
   const showNoResultsFeaturedSearches = hasNoResults && featuredSearches.length > 0
 
   useEffect(() => {
     setRecentSearches(readRecentSearches(recentSearchStorageKey))
   }, [recentSearchStorageKey])
-
-  useEffect(() => () => {
-    if (searchDelayRef.current !== null) {
-      window.clearTimeout(searchDelayRef.current)
-    }
-  }, [])
 
   const updateRecentSearches = (getNextSearches: (currentSearches: string[]) => string[]) => {
     setRecentSearches((currentSearches) => {
@@ -683,39 +650,26 @@ export function LivePreviewSearchPage({
     })
   }
 
-  const clearPendingSearch = () => {
-    if (searchDelayRef.current !== null) {
-      window.clearTimeout(searchDelayRef.current)
-      searchDelayRef.current = null
-    }
-    setPendingSearchQuery('')
-  }
-
-  const completeSearch = (nextQuery: string) => {
+  const recordRecentSearch = (nextQuery: string) => {
     updateRecentSearches((currentSearches) => [
       nextQuery,
       ...currentSearches.filter((item) => item.toLocaleLowerCase() !== nextQuery.toLocaleLowerCase()),
     ])
+  }
 
+  const applySearchState = (nextQuery: string) => {
     if (getPreviewSearchResults(nextQuery, pages, appTitle, appSubtitle).length === 0) {
-      setQuery(nextQuery)
       setNoResultsQuery(nextQuery)
       setResultQuery('')
-      setPendingSearchQuery('')
-      inputRef.current?.focus()
       return
     }
 
     setNoResultsQuery('')
     setResultQuery(nextQuery)
-    setQuery(nextQuery)
-    setPendingSearchQuery('')
-    inputRef.current?.focus()
   }
 
-  const startSearch = (searchText: string, { syncQuery = true } = {}) => {
+  const startSearch = (searchText: string, { syncQuery = true, recordRecent = true } = {}) => {
     const nextQuery = searchText.trim()
-    clearPendingSearch()
 
     if (!nextQuery) {
       if (syncQuery) setQuery('')
@@ -726,18 +680,12 @@ export function LivePreviewSearchPage({
     }
 
     if (syncQuery) setQuery(nextQuery)
-    setNoResultsQuery('')
-    setResultQuery('')
-    setPendingSearchQuery(nextQuery)
-    searchDelayRef.current = window.setTimeout(() => {
-      searchDelayRef.current = null
-      completeSearch(nextQuery)
-    }, SEARCH_LOADING_DELAY_MS)
+    if (recordRecent) recordRecentSearch(nextQuery)
+    applySearchState(nextQuery)
     inputRef.current?.focus()
   }
 
   const handleClear = () => {
-    clearPendingSearch()
     setQuery('')
     setNoResultsQuery('')
     setResultQuery('')
@@ -777,11 +725,10 @@ export function LivePreviewSearchPage({
     setResultQuery('')
 
     if (!nextQuery.trim()) {
-      clearPendingSearch()
       return
     }
 
-    startSearch(nextQuery, { syncQuery: false })
+    startSearch(nextQuery, { syncQuery: false, recordRecent: false })
   }
 
   return (
@@ -825,8 +772,6 @@ export function LivePreviewSearchPage({
           )}
         </form>
       </header>
-
-      {isSearchLoading && renderSearchSkeleton()}
 
       {hasNoResults && (
         <section className="live-preview__search-empty" aria-live="polite">
