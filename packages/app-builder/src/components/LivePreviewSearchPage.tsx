@@ -802,15 +802,6 @@ const renderSearchWelcome = (
   </section>
 )
 
-const renderNoResultsFeaturedSearches = (
-  featuredSearches: string[],
-  onSelect: (keyword: string) => void,
-) => (
-  <section className="live-preview__search-empty-featured" aria-label="Featured searches">
-    {renderFeaturedSearchList(featuredSearches, onSelect, 'live-preview__search-empty-featured-list')}
-  </section>
-)
-
 const getHighlightedParts = (text: string, searchText: string) => {
   const normalizedSearchText = searchText.trim().toLocaleLowerCase()
   const normalizedText = text.toLocaleLowerCase()
@@ -920,7 +911,6 @@ export function LivePreviewSearchPage({
   ))
   const showRecentSearches = !hasQuery && !hasNoResults && !hasSearchResults && hasRecentSearches
   const showSearchWelcome = !hasQuery && !hasNoResults && !hasSearchResults && !hasRecentSearches
-  const showNoResultsFeaturedSearches = hasNoResults && featuredSearches.length > 0
 
   useEffect(() => {
     setRecentSearches(readRecentSearches(recentSearchStorageKey))
@@ -1080,8 +1070,6 @@ export function LivePreviewSearchPage({
           </div>
         </section>
       )}
-
-      {showNoResultsFeaturedSearches && renderNoResultsFeaturedSearches(featuredSearches, submitSearch)}
 
       {hasSearchResults && (
         <section className="live-preview__search-match-results" aria-label={`Search results for ${resultQuery}`}>
