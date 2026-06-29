@@ -567,6 +567,7 @@ function normalizeGymTrainerDynamicPages(pages: AppPage[], preset: AppPreset | u
 }
 
 const CAMP_PINECREST_REQUIRED_PAGES = ['Home', 'Programs', 'Sessions', 'Counselors', 'My Campers', 'Forms', 'Family Hub']
+const CAMP_PINECREST_FORMS_INTRO_HEADINGS = new Set(['forms & documents', 'open forms'])
 
 function isDynamicListElement(element: CanvasElement): boolean {
   return element.componentId === 'list' && String(element.properties['Click Action'] ?? '') === 'Open Dynamic Page'
@@ -635,12 +636,33 @@ function ensureDynamicPagesForOpenDynamicLists(pages: AppPage[]): AppPage[] {
   return result
 }
 
+function removeCampPinecrestFormsIntro(pages: AppPage[]): AppPage[] {
+  return pages.map((page) => {
+    if (page.dynamic || page.name.trim().toLowerCase() !== 'forms') return page
+
+    let removedIntro = false
+    const elements = page.elements.filter((element) => {
+      if (element.componentId !== 'heading') return true
+      const headingText = String(element.properties.Heading ?? '').trim().toLowerCase()
+      if (!CAMP_PINECREST_FORMS_INTRO_HEADINGS.has(headingText)) return true
+      removedIntro = true
+      return false
+    })
+
+    const trimmedElements = removedIntro
+      ? elements.filter((element, index) => !(index === 0 && element.componentId === 'spacer'))
+      : elements
+
+    return { ...page, elements: trimmedElements }
+  })
+}
+
 function normalizeCampPinecrestPages(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {
   if (preset?.id !== 'camp-registration') return pages
   const basePages = hasCampPinecrestStructure(pages)
     ? pages
     : buildAppPagesFromPresetPages(preset.pages, 1).pages
-  return ensureDynamicPagesForOpenDynamicLists(basePages)
+  return ensureDynamicPagesForOpenDynamicLists(removeCampPinecrestFormsIntro(basePages))
 }
 
 function normalizePresetPages(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {

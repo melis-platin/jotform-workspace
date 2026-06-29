@@ -604,23 +604,6 @@ export const APP_PRESETS: AppPreset[] = [
         icon: 'ClipboardList',
         elements: [
           {
-            componentId: 'heading',
-            variants: { Size: 'Large', Alignment: 'Left' },
-            properties: {
-              Heading: 'Forms & Documents',
-              Subheading: 'Complete registration, health, consent, and family office forms.',
-            },
-          },
-          {
-            componentId: 'spacer',
-            properties: { Height: 16 },
-          },
-          {
-            componentId: 'heading',
-            variants: { Size: 'Small', Alignment: 'Left' },
-            properties: { Heading: 'Open Forms', Subheading: 'These forms are available directly on this page.' },
-          },
-          {
             componentId: 'form',
             variants: { 'Layout Type': 'Form' },
             properties: {
