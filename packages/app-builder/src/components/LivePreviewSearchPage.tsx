@@ -39,24 +39,25 @@ const SEARCH_RESULT_LIMIT = 10
 const SEARCH_DESCRIPTION_MAX_LENGTH = 96
 const SEARCH_RESULT_IMAGE_KEYS = ['image', 'Image', 'Image URL', 'photo', 'Photo', 'avatar', 'Avatar', 'thumbnail', 'Thumbnail']
 
-type SearchResultCategory = 'pages' | 'forms' | 'contents'
+type SearchResultCategory = 'pages' | 'forms' | 'sign' | 'contents'
 type SearchResultFilter = 'all' | SearchResultCategory
 type SearchMatchVisual =
   | { type: 'icon', name: string }
   | { type: 'image', src: string }
 
-const SEARCH_RESULT_CATEGORY_ORDER: SearchResultCategory[] = ['pages', 'forms', 'contents']
+const SEARCH_RESULT_CATEGORY_ORDER: SearchResultCategory[] = ['pages', 'forms', 'sign', 'contents']
 const SEARCH_RESULT_CATEGORY_LABELS: Record<SearchResultCategory, string> = {
   pages: 'PAGES',
   forms: 'FORMS',
+  sign: 'SIGN',
   contents: 'CONTENTS',
 }
-const SEARCH_RESULT_FILTERS: Array<{ id: SearchResultFilter, label: string }> = [
-  { id: 'all', label: 'All' },
-  { id: 'pages', label: 'Pages' },
-  { id: 'forms', label: 'Forms' },
-  { id: 'contents', label: 'Contents' },
-]
+const SEARCH_RESULT_FILTER_LABELS: Record<SearchResultCategory, string> = {
+  pages: 'Pages',
+  forms: 'Forms',
+  sign: 'Sign',
+  contents: 'Contents',
+}
 
 const GENERIC_SEARCH_PHRASES = new Set([
   'new app',
@@ -149,6 +150,7 @@ const COMPONENT_RESULT_LABELS: Record<string, string> = {
   list: 'List',
   paragraph: 'Text',
   'product-list': 'Product',
+  'sign-document': 'Sign Document',
   table: 'Table',
   testimonial: 'Testimonial',
 }
@@ -166,6 +168,7 @@ const COMPONENT_RESULT_ICONS: Record<string, string> = {
   list: 'List',
   paragraph: 'Type',
   'product-list': 'Package',
+  'sign-document': 'FilePenLine',
   table: 'Table2',
   testimonial: 'MessageCircle',
 }
@@ -428,6 +431,12 @@ const getItemVisual = (item: Record<string, unknown>, fallbackIcon = 'List'): Se
   return { type: 'icon', name: fallbackIcon }
 }
 
+const getElementSearchCategory = (componentId: string | undefined, hasFormConfig: boolean): SearchResultCategory => {
+  if (componentId === 'sign-document') return 'sign'
+  if (hasFormConfig) return 'forms'
+  return 'contents'
+}
+
 const textMatchesSearch = (value: string, normalizedSearchText: string) => {
   if (!normalizedSearchText) return false
   const normalizedValue = normalizeSearchPhrase(value)
@@ -477,6 +486,7 @@ const pushSearchResult = (
 ) => {
   const normalizedSearchText = normalizeSearchPhrase(searchText)
   const resultTitle = getCleanSearchResultText(title)
+    || (category === 'forms' || category === 'sign' ? getStringValue(title) : '')
   const resultDescription = getCleanSearchResultText(description)
 
   if (!resultTitle) return
@@ -514,8 +524,8 @@ const getPreviewSearchResults = (
     id: 'app-overview',
     title: appTitle,
     description: appSubtitle || 'Open app',
-    category: 'pages',
-    visual: { type: 'icon', name: 'FileText' },
+    category: 'contents',
+    visual: { type: 'icon', name: 'Home' },
   })
 
   visiblePages.forEach((page, pageIndex) => {
@@ -557,7 +567,7 @@ const getPreviewSearchResults = (
           id: `element-${pageIndex}-${elementIndex}`,
           title: elementTitle || componentLabel,
           description: elementDescription,
-          category: 'contents',
+          category: getElementSearchCategory(element.componentId, hasFormConfig),
           visual: getElementVisual(element.componentId, properties),
           searchText: [
             componentLabel,
@@ -772,6 +782,15 @@ export function LivePreviewSearchPage({
       results: matchingSearchResults.filter((result) => result.category === category),
     }))
   ), [matchingSearchResults])
+  const searchResultFilters = useMemo<Array<{ id: SearchResultFilter, label: string }>>(() => [
+    { id: 'all', label: 'All' },
+    ...searchResultGroups
+      .filter((group) => group.results.length > 0)
+      .map((group) => ({
+        id: group.category,
+        label: SEARCH_RESULT_FILTER_LABELS[group.category],
+      })),
+  ], [searchResultGroups])
   const visibleSearchResultGroups = searchResultGroups.filter((group) => (
     group.results.length > 0
     && (activeResultFilter === 'all' || group.category === activeResultFilter)
@@ -783,6 +802,12 @@ export function LivePreviewSearchPage({
   useEffect(() => {
     setRecentSearches(readRecentSearches(recentSearchStorageKey))
   }, [recentSearchStorageKey])
+
+  useEffect(() => {
+    if (!searchResultFilters.some((filter) => filter.id === activeResultFilter)) {
+      setActiveResultFilter('all')
+    }
+  }, [activeResultFilter, searchResultFilters])
 
   const updateRecentSearches = (getNextSearches: (currentSearches: string[]) => string[]) => {
     setRecentSearches((currentSearches) => {
@@ -938,7 +963,7 @@ export function LivePreviewSearchPage({
       {hasSearchResults && (
         <section className="live-preview__search-match-results" aria-label={`Search results for ${resultQuery}`}>
           <div className="live-preview__search-filter-row" role="tablist" aria-label="Search result categories">
-            {SEARCH_RESULT_FILTERS.map((filter) => (
+            {searchResultFilters.map((filter) => (
               <button
                 key={filter.id}
                 type="button"
