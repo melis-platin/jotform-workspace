@@ -9629,6 +9629,10 @@ body.builder--phone-only {
   overflow: hidden;
 }
 
+.live-preview__top-header-nav--contained {
+  overflow: visible;
+}
+
 // Hide nav on mobile/tablet device frames — bottom nav handles paging there.
 .live-preview__phone-screen .live-preview__top-header-nav,
 .live-preview__tablet-screen .live-preview__top-header-nav {
@@ -9988,6 +9992,78 @@ body.builder--phone-only {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.live-preview__top-header-nav-more {
+  position: relative;
+  display: inline-flex;
+  flex: 0 0 auto;
+}
+
+.live-preview__top-header-nav-more-btn {
+  gap: var(--space-1);
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.live-preview__top-header-nav-menu {
+  position: absolute;
+  top: calc(100% + var(--space-3));
+  right: 0;
+  z-index: 6;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  width: max-content;
+  min-width: 200px;
+  max-width: 260px;
+  box-sizing: border-box;
+  padding: var(--space-1);
+  border: 1px solid var(--border);
+  border-radius: min(var(--radius-sm), var(--space-1));
+  background: var(--bg-fill);
+  box-shadow: var(--shadow-md);
+}
+
+.live-preview__top-header-nav-menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  min-height: 36px;
+  box-sizing: border-box;
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  border-radius: min(var(--radius-sm), var(--space-1));
+  background: transparent;
+  color: var(--fg-secondary);
+  font-family: var(--font-family);
+  font-size: 14px;
+  font-weight: var(--font-weight-medium);
+  line-height: 20px;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    background: color-mix(in srgb, var(--fg-primary) 6%, transparent);
+    color: var(--fg-primary);
+    outline: none;
+  }
+
+  &--active {
+    color: var(--fg-brand);
+    font-weight: 600;
+  }
+}
+
+.live-preview__top-header-nav-menu-item span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .app-preview-screen__viewport--tablet {

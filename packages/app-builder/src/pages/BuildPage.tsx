@@ -2817,7 +2817,9 @@ export function BuildPage({
   const [isPreviewSearchOpen, setIsPreviewSearchOpen] = useState(false)
   const [isDesktopPreviewSearchOpen, setIsDesktopPreviewSearchOpen] = useState(false)
   const [desktopPreviewSearchQuery, setDesktopPreviewSearchQuery] = useState('')
+  const [isDesktopNavMoreOpen, setIsDesktopNavMoreOpen] = useState(false)
   const desktopPreviewSearchInputRef = useRef<HTMLInputElement>(null)
+  const desktopNavMoreRef = useRef<HTMLDivElement>(null)
   const previewSearchActions = useMemo(
     () => buildAppHeaderSearchActions(appHeaderState, pages, preset),
     [
@@ -2920,6 +2922,17 @@ export function BuildPage({
     document.addEventListener('mousedown', onDocMouseDown)
     return () => document.removeEventListener('mousedown', onDocMouseDown)
   }, [isQrPopoverOpen])
+
+  useEffect(() => {
+    if (!isDesktopNavMoreOpen) return
+    const onDocMouseDown = (e: MouseEvent) => {
+      if (desktopNavMoreRef.current && !desktopNavMoreRef.current.contains(e.target as Node)) {
+        setIsDesktopNavMoreOpen(false)
+      }
+    }
+    document.addEventListener('mousedown', onDocMouseDown)
+    return () => document.removeEventListener('mousedown', onDocMouseDown)
+  }, [isDesktopNavMoreOpen])
 
   useEffect(() => {
     if (!preset) return
@@ -3087,6 +3100,10 @@ export function BuildPage({
   })
   const hasNavOverflow = navPages.length >= 5
   const visibleNavPages = hasNavOverflow ? navPages.slice(0, 4) : navPages
+  const desktopTopNavUsesOverflow = desktopNavVariant === 'contained'
+  const desktopTopNavPages = desktopTopNavUsesOverflow ? navPages.slice(0, 2) : navPages
+  const desktopTopNavOverflowPages = desktopTopNavUsesOverflow ? navPages.slice(2) : []
+  const desktopTopNavMoreActive = desktopTopNavOverflowPages.some((p) => p.id === activePageId)
   // The page-reorder bar lists every authored page (including hidden ones) but not
   // dynamic detail pages, which are owned by their List and pinned after their host.
   const navBarPages = pages.filter((p) => !p.dynamic)
@@ -3106,6 +3123,7 @@ export function BuildPage({
     if (page?.requireLogin && !isPreviewLoggedIn) {
       pendingAuthRedirectRef.current = pageId
       setIsMorePageOpen(false)
+      setIsDesktopNavMoreOpen(false)
       setIsNotificationsPageOpen(false)
       setIsPreviewSearchOpen(false)
       setIsDesktopPreviewSearchOpen(false)
@@ -3117,6 +3135,7 @@ export function BuildPage({
     setIsNotificationsPageOpen(false)
     setIsPreviewSearchOpen(false)
     setIsDesktopPreviewSearchOpen(false)
+    setIsDesktopNavMoreOpen(false)
     setActivePageId(pageId)
   }, [isPreviewLoggedIn])
 
@@ -3150,6 +3169,7 @@ export function BuildPage({
   useEffect(() => {
     setIsDesktopPreviewSearchOpen(false)
     setDesktopPreviewSearchQuery('')
+    setIsDesktopNavMoreOpen(false)
   }, [desktopNavVariant])
 
   useEffect(() => {
@@ -3158,6 +3178,7 @@ export function BuildPage({
       return
     }
     setIsDesktopPreviewSearchOpen(false)
+    setIsDesktopNavMoreOpen(false)
   }, [previewDevice])
 
   useEffect(() => {
@@ -3173,6 +3194,7 @@ export function BuildPage({
     setIsPreviewSearchOpen(false)
     setIsDesktopPreviewSearchOpen(false)
     setIsMorePageOpen(false)
+    setIsDesktopNavMoreOpen(false)
     setIsPreviewCartOpen(false)
     setIsPreviewCheckoutOpen(false)
     setIsPreviewProfileOpen(false)
@@ -3196,6 +3218,7 @@ export function BuildPage({
     setIsNotificationsPageOpen(false)
     setIsPreviewSearchOpen(false)
     setIsMorePageOpen(false)
+    setIsDesktopNavMoreOpen(false)
     setIsPreviewCartOpen(false)
     setIsPreviewCheckoutOpen(false)
     setIsPreviewProfileOpen(false)
@@ -3223,6 +3246,7 @@ export function BuildPage({
     setIsDesktopPreviewSearchOpen(false)
     setDesktopPreviewSearchQuery('')
     setIsMorePageOpen(false)
+    setIsDesktopNavMoreOpen(false)
     setIsNotificationsPageOpen(false)
     setIsPreviewCartOpen(false)
     setIsPreviewCheckoutOpen(false)
@@ -3470,6 +3494,7 @@ export function BuildPage({
                 setIsDesktopPreviewSearchOpen(true)
                 setIsNotificationsPageOpen(false)
                 setIsMorePageOpen(false)
+                setIsDesktopNavMoreOpen(false)
                 setIsPreviewCartOpen(false)
                 setIsPreviewCheckoutOpen(false)
                 setIsPreviewProfileOpen(false)
@@ -4125,6 +4150,7 @@ export function BuildPage({
     setViewingAsRole((r) => (r === 'anyone' ? 'admin' : r))
     setIsLoginPopoverOpen(false)
     setIsMorePageOpen(false)
+    setIsDesktopNavMoreOpen(false)
     setIsNotificationsPageOpen(false)
     setIsPreviewSearchOpen(false)
     const arr = pagesRef.current
@@ -4648,8 +4674,8 @@ export function BuildPage({
           return renderTopHeaderBrand()
         })()}
         {desktopNavEnabled && desktopNavVariant !== 'left' && !activePageIsDynamic && (
-          <nav className="live-preview__top-header-nav">
-            {navPages.map((p) => (
+          <nav className={`live-preview__top-header-nav${desktopTopNavUsesOverflow ? ' live-preview__top-header-nav--contained' : ''}`}>
+            {desktopTopNavPages.map((p) => (
               <button
                 key={p.id}
                 type="button"
@@ -4662,6 +4688,49 @@ export function BuildPage({
                 <span>{p.name}</span>
               </button>
             ))}
+            {desktopTopNavOverflowPages.length > 0 && (
+              <div className="live-preview__top-header-nav-more" ref={desktopNavMoreRef}>
+                <button
+                  type="button"
+                  className={`live-preview__top-header-nav-link live-preview__top-header-nav-more-btn${desktopTopNavMoreActive || isDesktopNavMoreOpen ? ' live-preview__top-header-nav-link--active' : ''}`}
+                  aria-haspopup="menu"
+                  aria-expanded={isDesktopNavMoreOpen}
+                  onClick={() => {
+                    setIsDesktopNavMoreOpen((open) => !open)
+                    setIsPreviewSearchOpen(false)
+                    setIsDesktopPreviewSearchOpen(false)
+                    setIsNotificationsPageOpen(false)
+                    setIsMorePageOpen(false)
+                    setIsPreviewCartOpen(false)
+                    setIsPreviewCheckoutOpen(false)
+                    setIsPreviewProfileOpen(false)
+                    setIsLoginPopoverOpen(false)
+                    setIsAvatarPopoverOpen(false)
+                  }}
+                >
+                  <span>More</span>
+                  <AppIcon name={isDesktopNavMoreOpen ? 'ChevronUp' : 'ChevronDown'} size={16} />
+                </button>
+                {isDesktopNavMoreOpen && (
+                  <div className="live-preview__top-header-nav-menu" role="menu" aria-label="More pages">
+                    {desktopTopNavOverflowPages.map((p) => (
+                      <button
+                        key={p.id}
+                        type="button"
+                        role="menuitem"
+                        className={`live-preview__top-header-nav-menu-item${p.id === activePageId ? ' live-preview__top-header-nav-menu-item--active' : ''}`}
+                        onClick={() => navigateToPage(p.id)}
+                      >
+                        {desktopNavDisplayStyle === 'iconText' && (
+                          <AppIcon name={getPageIconName(p, 0)} size={18} />
+                        )}
+                        <span>{p.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
           </nav>
         )}
         <div className="live-preview__top-header-right">
@@ -4685,7 +4754,7 @@ export function BuildPage({
                     type="button"
                     className="live-preview__top-header-avatar-btn"
                     aria-label="Account menu"
-                    onClick={() => { setIsDesktopPreviewSearchOpen(false); setIsAvatarPopoverOpen((v) => !v) }}
+                    onClick={() => { setIsDesktopPreviewSearchOpen(false); setIsDesktopNavMoreOpen(false); setIsAvatarPopoverOpen((v) => !v) }}
                   >
                     <span className="live-preview__top-header-avatar" aria-hidden="true">
                       <img src={previewHeaderAvatar} alt="" width="36" height="36" />
