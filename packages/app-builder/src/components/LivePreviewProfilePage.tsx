@@ -21,9 +21,9 @@ interface LivePreviewProfilePageProps {
 export function LivePreviewProfilePage({
   onLogout,
   onClose,
-  name = 'Okan Düngel',
-  username = 'okandungel',
-  email = 'okandungel@jotform.com',
+  name = 'Melis Platin',
+  username = 'melisplatin',
+  email = 'melisplatin@jotform.com',
 }: LivePreviewProfilePageProps) {
   const personalItems = [
     { title: 'Name', description: name },

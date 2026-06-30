@@ -18,7 +18,7 @@ export function LivePreviewAvatarPopover({
   onClose,
   onLogout,
   onProfile,
-  userName = 'Okan Düngel',
+  userName = 'Melis Platin',
 }: LivePreviewAvatarPopoverProps) {
   const ref = useRef<HTMLDivElement>(null)
 

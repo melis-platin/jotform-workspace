@@ -1396,9 +1396,9 @@ function applyPresetHomeAppHeaderRules(
 
 // Mock account shown on the avatar-popover → Profile system page (no backend).
 const PROFILE_USER = {
-  name: 'Okan Düngel',
-  username: 'okandungel',
-  email: 'okandungel@jotform.com',
+  name: 'Melis Platin',
+  username: 'melisplatin',
+  email: 'melisplatin@jotform.com',
 }
 
 // Elements droppable into the app header. Button / Social Follow are the
@@ -4702,6 +4702,7 @@ export function BuildPage({
                   onClose={() => setIsAvatarPopoverOpen(false)}
                   onLogout={handlePreviewLogout}
                   onProfile={() => setIsPreviewProfileOpen(true)}
+                  userName={PROFILE_USER.name}
                 />
               )}
             </>
@@ -4831,13 +4832,13 @@ export function BuildPage({
               <div className="live-preview__side-nav-account">
                 <img
                   className="live-preview__side-nav-avatar"
-                  src={previewUserAvatar}
+                  src={previewHeaderAvatar}
                   alt=""
                   aria-hidden="true"
                 />
                 <div className="live-preview__side-nav-account-info">
-                  <span className="live-preview__side-nav-account-name">Okan Düngel</span>
-                  <span className="live-preview__side-nav-account-email">okan@jotform.com</span>
+                  <span className="live-preview__side-nav-account-name">{PROFILE_USER.name}</span>
+                  <span className="live-preview__side-nav-account-email">{PROFILE_USER.email}</span>
                 </div>
                 <button
                   type="button"
@@ -4853,6 +4854,7 @@ export function BuildPage({
                   onClose={() => setIsAvatarPopoverOpen(false)}
                   onLogout={handlePreviewLogout}
                   onProfile={() => setIsPreviewProfileOpen(true)}
+                  userName={PROFILE_USER.name}
                 />
               </div>
             ) : (
@@ -8979,6 +8981,7 @@ export function BuildPage({
                                 onClose={() => setIsAvatarPopoverOpen(false)}
                                 onLogout={handlePreviewLogout}
                                 onProfile={() => setIsPreviewProfileOpen(true)}
+                                userName={PROFILE_USER.name}
                               />
                             </>
                           ) : activePageIsDynamic ? null : showLandingNav ? (
