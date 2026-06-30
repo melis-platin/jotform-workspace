@@ -3331,6 +3331,12 @@ body {
 }
 
 .live-preview__search-page {
+  --live-preview-search-input-bg: #f3f3fe;
+  --live-preview-search-input-border: transparent;
+  --live-preview-search-input-text: #343c6a;
+  --live-preview-search-input-icon: #6c73a8;
+  --live-preview-search-input-clear: #343c6a;
+
   position: absolute;
   top: 59px;
   left: 0;
@@ -3374,7 +3380,7 @@ body {
   gap: var(--space-2);
   height: var(--space-10);
   padding: 0 var(--space-3);
-  border: 1px solid var(--live-preview-search-input-border);
+  border: 0;
   border-radius: var(--live-preview-search-radius);
   box-sizing: border-box;
   background: var(--live-preview-search-input-bg);
