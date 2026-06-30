@@ -1,4 +1,4 @@
-import { type FormEvent, type KeyboardEvent, type PointerEvent, useEffect, useMemo, useRef, useState } from 'react'
+import { type FormEvent, type KeyboardEvent, type PointerEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AppIcon } from '@jf/app-elements'
 import { Icon as DSIcon } from '@jf/design-system'
 
@@ -873,6 +873,7 @@ export function LivePreviewSearchPage({
   const [resultQuery, setResultQuery] = useState('')
   const [activeResultFilter, setActiveResultFilter] = useState<SearchResultFilter>('all')
   const inputRef = useRef<HTMLInputElement>(null)
+  const autoRecordedQueryRef = useRef('')
   const featuredSearches = useMemo(
     () => deriveFeaturedSearches({ appTitle, appSubtitle, pages, searchActions }),
     [appTitle, appSubtitle, pages, searchActions],
@@ -922,20 +923,40 @@ export function LivePreviewSearchPage({
     }
   }, [activeResultFilter, searchResultFilters])
 
-  const updateRecentSearches = (getNextSearches: (currentSearches: string[]) => string[]) => {
+  const updateRecentSearches = useCallback((getNextSearches: (currentSearches: string[]) => string[]) => {
     setRecentSearches((currentSearches) => {
       const nextSearches = getNextSearches(currentSearches).slice(0, RECENT_SEARCH_LIMIT)
       writeRecentSearches(recentSearchStorageKey, nextSearches)
       return nextSearches
     })
-  }
+  }, [recentSearchStorageKey])
 
-  const recordRecentSearch = (nextQuery: string) => {
+  const recordRecentSearch = useCallback((nextQuery: string) => {
     updateRecentSearches((currentSearches) => [
       nextQuery,
       ...currentSearches.filter((item) => item.toLocaleLowerCase() !== nextQuery.toLocaleLowerCase()),
     ])
-  }
+  }, [updateRecentSearches])
+
+  useEffect(() => {
+    autoRecordedQueryRef.current = ''
+  }, [recentSearchStorageKey])
+
+  useEffect(() => {
+    const nextQuery = query.trim()
+    const settledQuery = noResultsQuery || resultQuery
+
+    if (!nextQuery || settledQuery !== nextQuery || autoRecordedQueryRef.current === nextQuery) {
+      return undefined
+    }
+
+    const timer = window.setTimeout(() => {
+      autoRecordedQueryRef.current = nextQuery
+      recordRecentSearch(nextQuery)
+    }, 800)
+
+    return () => window.clearTimeout(timer)
+  }, [noResultsQuery, query, recentSearchStorageKey, resultQuery, recordRecentSearch])
 
   const applySearchState = (nextQuery: string) => {
     if (getPreviewSearchResults(nextQuery, pages, appTitle, appSubtitle, searchActions).length === 0) {
@@ -1139,12 +1160,16 @@ export function LivePreviewSearchPage({
           <div className="live-preview__search-history-list">
             {recentSearches.map((search) => (
               <div key={search} className="live-preview__search-history-item">
-                <div className="live-preview__search-history-content">
+                <button
+                  type="button"
+                  className="live-preview__search-history-content"
+                  onClick={() => submitSearch(search)}
+                >
                   <span className="live-preview__search-history-icon" aria-hidden="true">
                     <DSIcon name="clock-arrow-rotate-left" category="time-date" size={16} />
                   </span>
                   <span className="live-preview__search-history-text">{search}</span>
-                </div>
+                </button>
                 <button
                   type="button"
                   className="live-preview__search-history-remove"
