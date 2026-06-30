@@ -857,8 +857,9 @@ const pushSearchResult = (
 
   const displayDescription = getDisplayDescription(category, resultDescription, searchText)
   const visibleText = [resultTitle, displayDescription].filter(Boolean).join(' ')
-  const matchContext = getSearchMatchContext(searchCorpus, searchText, visibleText)
-  if (!textMatchesSearch([visibleText, matchContext].filter(Boolean).join(' '), normalizedSearchText)) return
+  const searchMatchContext = getSearchMatchContext(searchCorpus, searchText, visibleText)
+  const matchContext = category === 'pages' || category === 'forms' ? '' : searchMatchContext
+  if (!textMatchesSearch([visibleText, searchMatchContext].filter(Boolean).join(' '), normalizedSearchText)) return
 
   const normalizedKey = `${normalizeSearchPhrase(resultTitle)}:${normalizeSearchPhrase(displayDescription)}:${normalizeSearchPhrase(matchContext)}`
   if (seen.has(normalizedKey)) {
