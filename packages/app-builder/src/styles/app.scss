@@ -3679,6 +3679,14 @@ body {
   max-width: 100%;
 }
 
+.live-preview__search-match-item--single-line .live-preview__search-match-copy {
+  min-height: calc(var(--space-10) + var(--space-1));
+}
+
+.live-preview__search-match-item--single-line .live-preview__search-match-visual--image + .live-preview__search-match-copy {
+  min-height: calc(var(--space-12) + var(--space-1));
+}
+
 .live-preview__search-match-title {
   display: block;
   max-width: 100%;

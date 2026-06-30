@@ -1514,7 +1514,7 @@ export function LivePreviewSearchPage({
                   <button
                     key={result.id}
                     type="button"
-                    className="live-preview__search-match-item"
+                    className={`live-preview__search-match-item${!result.description && !result.matchContext ? ' live-preview__search-match-item--single-line' : ''}`}
                     onClick={() => {
                       recordRecentSearch(resultQuery)
                       onResultSelect?.(result.target)
