@@ -3293,14 +3293,15 @@ body {
 }
 
 // ---- Search Page ----
-.live-preview__search-page {
+.live-preview__search-page,
+.live-preview__top-header-search {
   --live-preview-search-bg: var(--bg-fill-secondary);
   --live-preview-search-text: var(--fg-primary);
-  --live-preview-search-input-bg: #f3f3fe;
-  --live-preview-search-input-border: #c8ceed;
-  --live-preview-search-input-text: #0a1551;
-  --live-preview-search-input-icon: #6c73a8;
-  --live-preview-search-input-clear: #343c6a;
+  --live-preview-search-input-bg: var(--bg-fill-secondary);
+  --live-preview-search-input-border: var(--border-secondary, var(--border));
+  --live-preview-search-input-text: var(--fg-primary);
+  --live-preview-search-input-icon: var(--fg-secondary);
+  --live-preview-search-input-clear: var(--fg-primary);
   --live-preview-search-radius: var(--radius-md);
   --live-preview-search-results-title: var(--fg-primary);
   --live-preview-search-results-item: var(--fg-secondary);
@@ -3327,7 +3328,9 @@ body {
   --live-preview-search-match-visual-color: var(--fg-brand);
   --live-preview-search-filter-selected-bg: var(--live-preview-search-match-visual-color);
   --live-preview-search-filter-selected-text: var(--live-preview-search-match-visual-bg);
+}
 
+.live-preview__search-page {
   position: absolute;
   top: 59px;
   left: 0;
@@ -10026,7 +10029,7 @@ body.builder--phone-only {
   box-sizing: border-box;
   padding: var(--space-1);
   border: 1px solid var(--border);
-  border-radius: min(var(--radius-sm), var(--space-1));
+  border-radius: var(--radius-md);
   background: var(--bg-fill);
   box-shadow: var(--shadow-md);
 }
@@ -10040,7 +10043,7 @@ body.builder--phone-only {
   box-sizing: border-box;
   padding: var(--space-2) var(--space-3);
   border: 0;
-  border-radius: min(var(--radius-sm), var(--space-1));
+  border-radius: var(--radius-sm);
   background: transparent;
   color: var(--fg-secondary);
   font-family: var(--font-family);
@@ -10193,9 +10196,10 @@ body.builder--phone-only {
   transform-origin: right center;
   clip-path: inset(0 0 0 100%);
   pointer-events: none;
-  border: 1px solid var(--border-medium);
-  border-radius: min(var(--radius-sm), var(--space-1));
-  background: var(--background-white);
+  border: 1px solid var(--live-preview-search-input-border);
+  border-radius: var(--live-preview-search-radius);
+  background: var(--live-preview-search-input-bg);
+  color: var(--live-preview-search-input-icon);
   transition:
     clip-path 0.24s ease,
     opacity 0.16s ease,
@@ -10231,7 +10235,7 @@ body.builder--phone-only {
 
 .live-preview__top-header-search-icon {
   flex: 0 0 20px;
-  color: var(--navy-500);
+  color: var(--live-preview-search-input-icon);
 }
 
 .live-preview__top-header-search-input {
@@ -10246,18 +10250,18 @@ body.builder--phone-only {
   border-radius: 0;
   outline: none;
   background: transparent;
-  color: var(--navy-500);
+  color: var(--live-preview-search-input-text);
   box-shadow: none;
   font-family: var(--font-family);
   font-size: 14px;
   font-weight: var(--font-weight-book);
   line-height: 20px;
   letter-spacing: 0;
-  caret-color: var(--navy-500);
+  caret-color: var(--live-preview-search-input-text);
   appearance: none;
 
   &::placeholder {
-    color: var(--navy-200);
+    color: var(--live-preview-search-input-icon);
   }
 
   &:focus {
@@ -10281,13 +10285,13 @@ body.builder--phone-only {
   border: 0;
   border-radius: var(--radius-sm);
   background: transparent;
-  color: var(--navy-500);
+  color: var(--live-preview-search-input-clear);
   cursor: pointer;
   line-height: 0;
 
   &:hover,
   &:focus-visible {
-    background: color-mix(in srgb, var(--navy-100) 35%, transparent);
+    background: var(--live-preview-search-filter-hover-bg);
     outline: none;
   }
 }
@@ -10318,9 +10322,9 @@ body.builder--phone-only {
   gap: var(--space-6);
   padding: var(--space-6);
   overflow: hidden;
-  border-radius: min(var(--radius-sm), var(--space-1));
-  background: var(--background-white);
-  color: var(--navy-500);
+  border-radius: var(--live-preview-search-radius);
+  background: var(--bg-surface);
+  color: var(--live-preview-search-text);
   box-shadow: var(--shadow-md);
 }
 
@@ -10358,9 +10362,9 @@ body.builder--phone-only {
   width: 64px;
   height: 64px;
   flex: 0 0 64px;
-  border-radius: var(--radius-rounded);
-  background: var(--navy-25);
-  color: var(--navy-500);
+  border-radius: var(--live-preview-search-radius);
+  background: var(--live-preview-search-welcome-icon-bg);
+  color: var(--live-preview-search-welcome-icon);
 }
 
 .live-preview__desktop-search-featured-copy {
@@ -10373,7 +10377,7 @@ body.builder--phone-only {
 
 .live-preview__desktop-search-featured-title {
   margin: 0;
-  color: var(--navy-500);
+  color: var(--live-preview-search-welcome-text);
   font-family: var(--font-family);
   font-size: 18px;
   font-weight: 700;
@@ -10383,7 +10387,7 @@ body.builder--phone-only {
 
 .live-preview__desktop-search-featured-description {
   margin: 0;
-  color: var(--navy-200);
+  color: var(--live-preview-search-welcome-muted);
   font-family: var(--font-family);
   font-size: 14px;
   font-weight: var(--font-weight-book);
@@ -10406,10 +10410,10 @@ body.builder--phone-only {
   min-height: 28px;
   box-sizing: border-box;
   padding: var(--space-1) var(--space-4);
-  border: 1px solid var(--navy-50);
-  border-radius: min(var(--radius-sm), var(--space-1));
-  background: var(--background-white);
-  color: var(--navy-500);
+  border: 1px solid var(--live-preview-search-featured-border);
+  border-radius: var(--live-preview-search-radius);
+  background: var(--live-preview-search-featured-item-bg);
+  color: var(--live-preview-search-featured-item);
   font-family: var(--font-family);
   font-size: 14px;
   font-weight: var(--font-weight-book);
@@ -10419,7 +10423,7 @@ body.builder--phone-only {
 
   &:hover,
   &:focus-visible {
-    border-color: var(--navy-100);
+    border-color: var(--border-hover);
     outline: none;
   }
 }
@@ -10476,8 +10480,8 @@ body.builder--phone-only {
   height: 32px;
   flex: 0 0 32px;
   padding: 0;
-  border-radius: var(--radius-sm);
-  color: var(--navy-500);
+  border-radius: var(--radius-md);
+  color: var(--fg-primary);
 }
 
 .app-preview-screen__desktop .live-preview__top-header-search-btn svg {
