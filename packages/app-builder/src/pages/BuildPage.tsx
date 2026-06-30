@@ -3418,11 +3418,12 @@ export function BuildPage({
 
     if (device === 'desktop') {
       const hasPersistentSearchField = desktopNavEnabled && desktopNavVariant === 'top' && !activePageIsDynamic
+      const searchOverlaysNav = desktopNavEnabled && (desktopNavVariant === 'contained' || desktopNavVariant === 'compact') && !activePageIsDynamic
       const searchFieldVisible = hasPersistentSearchField || isDesktopPreviewSearchOpen
       const searchPlaceholder = hasPersistentSearchField && !desktopPreviewSearchQuery ? 'Search' : ''
 
       return (
-        <div className={`live-preview__top-header-search${searchFieldVisible ? ' live-preview__top-header-search--open' : ''}${hasPersistentSearchField ? ' live-preview__top-header-search--persistent' : ''}`}>
+        <div className={`live-preview__top-header-search${searchFieldVisible ? ' live-preview__top-header-search--open' : ''}${hasPersistentSearchField ? ' live-preview__top-header-search--persistent' : ''}${searchOverlaysNav ? ' live-preview__top-header-search--nav-overlay' : ''}`}>
           <form
             className="live-preview__top-header-search-form"
             role="search"
@@ -3463,24 +3464,34 @@ export function BuildPage({
               </button>
             )}
           </form>
-          {!hasPersistentSearchField && isDesktopPreviewSearchOpen && desktopPreviewFeaturedSearches.length > 0 && (
+          {!hasPersistentSearchField && isDesktopPreviewSearchOpen && (
             <section className="live-preview__desktop-search-featured" aria-label="Featured searches">
-              <h2 className="live-preview__desktop-search-featured-title">Featured searches</h2>
-              <div className="live-preview__desktop-search-featured-list">
-                {desktopPreviewFeaturedSearches.map((keyword) => (
-                  <button
-                    key={keyword}
-                    type="button"
-                    className="live-preview__desktop-search-featured-chip"
-                    onClick={() => {
-                      setDesktopPreviewSearchQuery(keyword)
-                      desktopPreviewSearchInputRef.current?.focus()
-                    }}
-                  >
-                    {keyword}
-                  </button>
-                ))}
+              <div className="live-preview__desktop-search-featured-hero">
+                <span className="live-preview__desktop-search-featured-icon" aria-hidden="true">
+                  <AppIcon name="Search" size={32} />
+                </span>
+                <div className="live-preview__desktop-search-featured-copy">
+                  <h2 className="live-preview__desktop-search-featured-title">What are you looking for?</h2>
+                  <p className="live-preview__desktop-search-featured-description">Enter a name to find what you're looking for.</p>
+                </div>
               </div>
+              {desktopPreviewFeaturedSearches.length > 0 && (
+                <div className="live-preview__desktop-search-featured-list">
+                  {desktopPreviewFeaturedSearches.map((keyword) => (
+                    <button
+                      key={keyword}
+                      type="button"
+                      className="live-preview__desktop-search-featured-chip"
+                      onClick={() => {
+                        setDesktopPreviewSearchQuery(keyword)
+                        desktopPreviewSearchInputRef.current?.focus()
+                      }}
+                    >
+                      {keyword}
+                    </button>
+                  ))}
+                </div>
+              )}
             </section>
           )}
           {!searchFieldVisible && (
