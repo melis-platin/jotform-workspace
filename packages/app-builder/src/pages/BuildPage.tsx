@@ -1350,6 +1350,7 @@ function buildAppHeaderSearchActions(
 
   const targetPage = pages.find((page) => page.id === pageId && !page.dynamic)
   const targetPageName = targetPage?.name ?? 'page'
+  const sourcePageId = pages.find((page) => !page.hidden && !page.dynamic)?.id
   const title = header.title || preset?.appTitle || ''
   const subtitle = header.subtitle || preset?.appSubtitle || ''
 
@@ -1358,8 +1359,9 @@ function buildAppHeaderSearchActions(
     title: label,
     description: `Open ${targetPageName}`,
     target: { type: 'page', pageId },
+    sourceTarget: sourcePageId ? { type: 'page', pageId: sourcePageId } : undefined,
     visual: { type: 'icon', name: 'MousePointerClick' },
-    searchText: [label, targetPageName, title, subtitle].filter(Boolean).join(' '),
+    sourceSearchText: [label, title, subtitle].filter(Boolean).join(' '),
   }]
 }
 

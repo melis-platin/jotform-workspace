@@ -33,8 +33,10 @@ export interface SearchSourceAction {
   title: string
   description?: string
   target: SearchResultTarget
+  sourceTarget?: SearchResultTarget
   visual?: SearchMatchVisual
   searchText?: string
+  sourceSearchText?: string
 }
 
 interface SearchMatchResult {
@@ -197,21 +199,58 @@ const COMPONENT_RESULT_ICONS: Record<string, string> = {
 }
 
 const SEARCH_PROPERTY_KEYS = ['Heading', 'Title', 'Label', 'Text', 'Description', 'Subheading', 'Button Text']
-const SEARCH_RESULT_PROPERTY_KEYS = [
+const SEARCH_RESULT_SOURCE_VISIBLE_PROPERTY_KEYS = [
   'Heading',
   'Subheading',
+  'Subtitle',
   'Title',
   'Label',
   'Text',
   'Description',
   'Button Label',
+  'Button Text',
+  'Alt Text',
+]
+const SEARCH_RESULT_FORM_VISIBLE_PROPERTY_KEYS = [
   'Form Title',
   'Form Description',
   'Form Submit Label',
   'Submit Label',
-  'Alt Text',
+  'Label',
+  'Description',
 ]
-const SEARCH_RESULT_ASSOCIATED_DATA_KEYS = ['Data Source', 'Source', 'Submits To']
+const SEARCH_RESULT_ITEM_VISIBLE_KEYS = [
+  'title',
+  'name',
+  'label',
+  'question',
+  'description',
+  'text',
+  'answer',
+  'details',
+  'category',
+  'price',
+  'Title',
+  'Name',
+  'Label',
+  'Question',
+  'Description',
+  'Text',
+  'Answer',
+  'Details',
+  'Category',
+  'Price',
+]
+const SEARCH_RESULT_FORM_FIELD_VISIBLE_KEYS = [
+  'label',
+  'name',
+  'placeholder',
+  'options',
+  'Label',
+  'Name',
+  'Placeholder',
+  'Options',
+]
 const NAVIGATION_ACTION_KEYS = ['Action', 'Button Action', 'Card Action', 'Click Action']
 const NAVIGATION_PAGE_PROPERTY_KEYS = [
   'Action Page',
@@ -427,10 +466,22 @@ const getItemText = (item: Record<string, unknown>, keys: string[]) => {
   return ''
 }
 
-const getItemSearchCorpus = (item: Record<string, unknown>) => (
-  Object.values(item)
-    .filter((value): value is string | number => typeof value === 'string' || typeof value === 'number')
+const getRecordSearchCorpus = (record: Record<string, unknown>, keys: string[]) => (
+  keys
+    .flatMap((key) => {
+      const value = record[key]
+      if (Array.isArray(value)) return value.map((item) => String(item ?? ''))
+      return typeof value === 'string' || typeof value === 'number' ? [String(value)] : []
+    })
     .join(' ')
+)
+
+const getItemSearchCorpus = (item: Record<string, unknown>) => (
+  getRecordSearchCorpus(item, SEARCH_RESULT_ITEM_VISIBLE_KEYS)
+)
+
+const getFormFieldSearchCorpus = (field: Record<string, unknown>) => (
+  getRecordSearchCorpus(field, SEARCH_RESULT_FORM_FIELD_VISIBLE_KEYS)
 )
 
 const getStringValue = (value: unknown) => (
@@ -496,12 +547,42 @@ const getDynamicPageForElement = (pages: SearchSourcePage[], elementId: string) 
   pages.find((page) => page.dynamic && page.dynamicSourceElementId === elementId)
 )
 
-const getElementSearchCorpus = (componentLabel: string, properties: Record<string, unknown>) => (
+const getElementVisibleSearchCorpus = (element: SearchSourceElement) => {
+  const properties = element.properties ?? {}
+  const sourceText = getRecordSearchCorpus(properties, SEARCH_RESULT_SOURCE_VISIBLE_PROPERTY_KEYS)
+  const itemText = [
+    ...parseSearchJsonItems(properties.Items),
+    ...parseSearchJsonItems(properties.Products),
+  ].map(getItemSearchCorpus)
+
+  if (element.componentId !== 'form') {
+    return [sourceText, ...itemText].filter(Boolean).join(' ')
+  }
+
+  const formText = getRecordSearchCorpus(properties, SEARCH_RESULT_FORM_VISIBLE_PROPERTY_KEYS)
+  const fieldText = parseSearchJsonItems(properties['Form Fields']).map(getFormFieldSearchCorpus)
+  return [sourceText, formText, ...fieldText, ...itemText].filter(Boolean).join(' ')
+}
+
+const getFormVisibleSearchCorpus = (
+  properties: Record<string, unknown>,
+  formTitle: string,
+  formDescription: string,
+  formFields: Array<Record<string, unknown>>,
+) => (
   [
-    componentLabel,
-    ...SEARCH_RESULT_PROPERTY_KEYS.map((key) => String(properties[key] ?? '')),
-    ...SEARCH_RESULT_ASSOCIATED_DATA_KEYS.map((key) => String(properties[key] ?? '')),
-  ].join(' ')
+    formTitle,
+    formDescription,
+    getRecordSearchCorpus(properties, SEARCH_RESULT_FORM_VISIBLE_PROPERTY_KEYS),
+    ...formFields.map(getFormFieldSearchCorpus),
+  ].filter(Boolean).join(' ')
+)
+
+const getPageVisibleSearchCorpus = (page: SearchSourcePage) => (
+  [
+    page.name,
+    ...(page.elements ?? []).map(getElementVisibleSearchCorpus),
+  ].filter(Boolean).join(' ')
 )
 
 const hasNavigateToPageAction = (properties: Record<string, unknown>) => (
@@ -591,6 +672,7 @@ const pushSearchResult = (
     visual,
     target,
     searchText: extraSearchText = '',
+    matchText,
   }: {
     id: string
     title: unknown
@@ -599,6 +681,7 @@ const pushSearchResult = (
     visual: SearchMatchVisual
     target: SearchResultTarget
     searchText?: string
+    matchText?: string
   },
 ) => {
   const normalizedSearchText = normalizeSearchPhrase(searchText)
@@ -608,7 +691,7 @@ const pushSearchResult = (
 
   if (!resultTitle) return
 
-  const searchCorpus = [resultTitle, resultDescription, extraSearchText].filter(Boolean).join(' ')
+  const searchCorpus = matchText ?? [resultTitle, resultDescription, extraSearchText].filter(Boolean).join(' ')
   if (!textMatchesSearch(searchCorpus, normalizedSearchText)) return
 
   const normalizedKey = `${normalizeSearchPhrase(resultTitle)}:${normalizeSearchPhrase(resultDescription)}`
@@ -649,27 +732,33 @@ const pushNavigationPageResult = (
     id,
     targetPage,
     sourceTitle,
-    sourceSearchText,
+    description,
+    matchText,
     target,
   }: {
     id: string
     targetPage: SearchSourcePage
     sourceTitle: string
-    sourceSearchText: string
+    description?: string
+    matchText: string
     target: SearchResultTarget
   },
 ) => {
   if (!targetPage.id) return
+  if (results.some((result) => (
+    result.category === 'pages'
+    && normalizeSearchPhrase(result.title) === normalizeSearchPhrase(targetPage.name)
+  ))) return
 
   const targetPageTitle = getCleanSearchResultText(targetPage.name) || targetPage.name
   pushSearchResult(results, seen, searchText, {
     id,
     title: targetPageTitle,
-    description: `Opened by ${sourceTitle || 'element'}`,
+    description: description || `Contains ${sourceTitle || 'element'}`,
     category: 'pages',
     visual: { type: 'icon', name: 'FileText' },
     target,
-    searchText: [targetPage.name, sourceTitle, sourceSearchText].filter(Boolean).join(' '),
+    matchText,
   })
 }
 
@@ -700,14 +789,18 @@ const getPreviewSearchResults = (
   }
 
   searchActions.forEach((action) => {
+    const actionSourceVisibleText = [action.title, action.sourceSearchText ?? ''].filter(Boolean).join(' ')
+    const actionSourcePage = action.sourceTarget?.type === 'page'
+      ? pages.find((page) => page.id === action.sourceTarget?.pageId)
+      : undefined
     pushSearchResult(results, seen, searchText, {
       id: `action-${action.id}`,
       title: action.title,
-      description: action.description || 'Open result',
+      description: actionSourcePage ? `On ${actionSourcePage.name}` : action.description || 'Open result',
       category: 'contents',
       visual: action.visual ?? { type: 'icon', name: 'MousePointerClick' },
-      target: action.target,
-      searchText: action.searchText,
+      target: action.sourceTarget ?? action.target,
+      matchText: actionSourceVisibleText,
     })
 
     if (action.target.type === 'page') {
@@ -717,7 +810,8 @@ const getPreviewSearchResults = (
           id: `action-page-${action.id}`,
           targetPage,
           sourceTitle: action.title,
-          sourceSearchText: [action.title, action.description, action.searchText].filter(Boolean).join(' '),
+          description: `Opened by ${action.title}`,
+          matchText: getPageVisibleSearchCorpus(targetPage),
           target: action.target,
         })
       }
@@ -758,7 +852,7 @@ const getPreviewSearchResults = (
         || Boolean(getCleanSearchResultText(properties['Form Title']))
         || formFields.length > 0
       const openFormTarget = shouldOpenFormTarget(element.componentId, element.variants, properties)
-      const elementTitle = SEARCH_RESULT_PROPERTY_KEYS
+      const elementTitle = SEARCH_RESULT_SOURCE_VISIBLE_PROPERTY_KEYS
         .map((key) => getCleanSearchResultText(properties[key]))
         .find(Boolean)
       const elementDescription = getCleanSearchResultText(properties.Description)
@@ -770,17 +864,28 @@ const getPreviewSearchResults = (
         pageId,
         elementId,
       }
-      const elementSearchText = getElementSearchCorpus(componentLabel, properties)
+      const elementVisibleSearchText = getElementVisibleSearchCorpus(element)
+      const elementMatchesSearch = textMatchesSearch(elementVisibleSearchText, normalizedSearchText)
 
-      if (!hasFormConfig) {
+      if (element.componentId !== 'form') {
         pushSearchResult(results, seen, searchText, {
           id: `element-${pageIndex}-${elementIndex}`,
           title: elementTitle || componentLabel,
           description: elementDescription,
-          category: getElementSearchCategory(element.componentId, hasFormConfig),
+          category: getElementSearchCategory(element.componentId, false),
           visual: getElementVisual(element.componentId, properties),
           target: elementTarget,
-          searchText: elementSearchText,
+          matchText: elementVisibleSearchText,
+        })
+      }
+
+      if (elementMatchesSearch) {
+        pushNavigationPageResult(results, seen, searchText, {
+          id: `source-page-${pageIndex}-${elementIndex}`,
+          targetPage: page,
+          sourceTitle: elementTitle || componentLabel,
+          matchText: [page.name, elementVisibleSearchText].filter(Boolean).join(' '),
+          target: { type: 'page', pageId },
         })
       }
 
@@ -790,7 +895,8 @@ const getPreviewSearchResults = (
           id: `element-page-${pageIndex}-${elementIndex}`,
           targetPage: navigationPage,
           sourceTitle: elementTitle || componentLabel,
-          sourceSearchText: elementSearchText,
+          description: `Opened by ${elementTitle || componentLabel}`,
+          matchText: getPageVisibleSearchCorpus(navigationPage),
           target: { type: 'page', pageId: navigationPage.id || pageId },
         })
       }
@@ -809,6 +915,7 @@ const getPreviewSearchResults = (
         const itemTitle = getItemText(item, ['title', 'name', 'label', 'question'])
         const itemDescription = getItemText(item, ['description', 'text', 'answer', 'details', 'category', 'price'])
         const itemSearchCorpus = getItemSearchCorpus(item)
+        const itemMatchesSearch = textMatchesSearch(itemSearchCorpus, normalizedSearchText)
         pushSearchResult(results, seen, searchText, {
           id: `item-${pageIndex}-${elementIndex}-${itemIndex}`,
           title: itemTitle || elementTitle || componentLabel,
@@ -818,21 +925,33 @@ const getPreviewSearchResults = (
           target: hasDynamicDetailTarget
             ? { type: 'dynamic-item', pageId, elementId, itemIndex }
             : elementTarget,
-          searchText: itemSearchCorpus,
+          matchText: itemSearchCorpus,
         })
+
+        if (itemMatchesSearch) {
+          pushNavigationPageResult(results, seen, searchText, {
+            id: `item-source-page-${pageIndex}-${elementIndex}-${itemIndex}`,
+            targetPage: page,
+            sourceTitle: itemTitle || elementTitle || componentLabel,
+            matchText: [page.name, itemSearchCorpus].filter(Boolean).join(' '),
+            target: { type: 'page', pageId },
+          })
+        }
 
         if (dynamicDetailPage) {
           pushNavigationPageResult(results, seen, searchText, {
             id: `item-page-${pageIndex}-${elementIndex}-${itemIndex}`,
             targetPage: dynamicDetailPage,
             sourceTitle: itemTitle || elementTitle || componentLabel,
-            sourceSearchText: [elementSearchText, itemSearchCorpus].join(' '),
+            description: `Opened by ${itemTitle || elementTitle || componentLabel}`,
+            matchText: itemSearchCorpus,
             target: { type: 'dynamic-item', pageId, elementId, itemIndex },
           })
         }
       })
 
       if (hasFormConfig && (formTitle || formFields.length > 0 || openFormTarget)) {
+        const formVisibleSearchText = getFormVisibleSearchCorpus(properties, formTitle, formDescription, formFields)
         pushSearchResult(results, seen, searchText, {
           id: `form-${pageIndex}-${elementIndex}`,
           title: formTitle || 'Form',
@@ -840,15 +959,7 @@ const getPreviewSearchResults = (
           category: 'forms',
           visual: { type: 'icon', name: 'ClipboardList' },
           target: { type: 'form', pageId, elementId, openForm: openFormTarget },
-          searchText: [
-            componentLabel,
-            String(properties.Action ?? ''),
-            String(properties['Button Action'] ?? ''),
-            String(properties['Card Action'] ?? ''),
-            String(properties['Action Form'] ?? ''),
-            String(properties['Submits To'] ?? ''),
-            String(properties['Form Submit Label'] ?? ''),
-          ].join(' '),
+          matchText: formVisibleSearchText,
         })
       }
 
@@ -868,7 +979,7 @@ const getPreviewSearchResults = (
             fieldName: getStringValue(field.name) || fieldTitle,
             openForm: openFormTarget,
           },
-          searchText: getItemSearchCorpus(field),
+          matchText: getFormFieldSearchCorpus(field),
         })
       })
 
