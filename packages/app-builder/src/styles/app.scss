@@ -3582,6 +3582,7 @@ body {
   justify-content: flex-start;
   gap: var(--space-1);
   width: 100%;
+  height: var(--space-8);
   padding: 0;
   border: 0;
   background: transparent;
@@ -3594,7 +3595,7 @@ body {
   justify-content: center;
   width: auto;
   min-width: 0;
-  height: var(--space-10);
+  height: var(--space-8);
   padding: 0 var(--space-4);
   border: 0;
   border-radius: var(--live-preview-search-radius);
