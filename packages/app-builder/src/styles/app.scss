@@ -2020,7 +2020,7 @@ body {
   justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   flex-shrink: 0;
   background: var(--bg-surface);
@@ -3294,35 +3294,36 @@ body {
 
 // ---- Search Page ----
 .live-preview__search-page {
-  --live-preview-search-bg: var(--navy-25);
-  --live-preview-search-muted: var(--navy-300);
-  --live-preview-search-clear: var(--navy-500);
+  --live-preview-search-bg: var(--bg-fill-secondary);
+  --live-preview-search-muted: var(--fg-tertiary);
+  --live-preview-search-clear: var(--fg-secondary);
   --live-preview-search-text: var(--fg-primary);
-  --live-preview-search-value-border: var(--navy-100);
-  --live-preview-search-value-text: var(--navy-700);
+  --live-preview-search-value-border: var(--form-field-border);
+  --live-preview-search-value-text: var(--fg-primary);
   --live-preview-search-radius: var(--radius-md);
-  --live-preview-search-results-title: #1B2232;
-  --live-preview-search-results-item: var(--navy-400);
+  --live-preview-search-results-title: var(--fg-primary);
+  --live-preview-search-results-item: var(--fg-secondary);
   --live-preview-search-results-clear: var(--fg-brand);
-  --live-preview-search-welcome-icon-bg: var(--navy-25);
-  --live-preview-search-welcome-text: var(--navy-500);
-  --live-preview-search-welcome-muted: var(--navy-300);
-  --live-preview-search-featured-title: #1B2232;
-  --live-preview-search-featured-border: var(--navy-50);
-  --live-preview-search-featured-item-bg: transparent;
-  --live-preview-search-featured-item: var(--navy-500);
-  --live-preview-search-empty-icon-bg: var(--navy-25);
-  --live-preview-search-empty-icon: var(--navy-500);
-  --live-preview-search-empty-title: var(--navy-500);
-  --live-preview-search-empty-description: var(--navy-300);
-  --live-preview-search-match-title: #0A1551;
-  --live-preview-search-match-description: #6C73A8;
-  --live-preview-search-match-section-title: #454E80;
+  --live-preview-search-welcome-icon-bg: var(--bg-surface-brand);
+  --live-preview-search-welcome-icon: var(--fg-brand);
+  --live-preview-search-welcome-text: var(--fg-primary);
+  --live-preview-search-welcome-muted: var(--fg-secondary);
+  --live-preview-search-featured-title: var(--fg-primary);
+  --live-preview-search-featured-border: var(--border);
+  --live-preview-search-featured-item-bg: var(--bg-surface);
+  --live-preview-search-featured-item: var(--fg-secondary);
+  --live-preview-search-empty-icon-bg: var(--bg-surface-brand);
+  --live-preview-search-empty-icon: var(--fg-brand);
+  --live-preview-search-empty-title: var(--fg-primary);
+  --live-preview-search-empty-description: var(--fg-secondary);
+  --live-preview-search-match-title: var(--fg-primary);
+  --live-preview-search-match-description: var(--fg-secondary);
+  --live-preview-search-match-section-title: var(--fg-secondary);
   --live-preview-search-match-highlight: var(--bg-fill-brand, var(--fg-brand));
-  --live-preview-search-filter-text: #343C6A;
-  --live-preview-search-filter-selected-bg: #DADEF3;
-  --live-preview-search-match-visual-bg: var(--navy-25);
-  --live-preview-search-match-visual-color: var(--navy-500);
+  --live-preview-search-filter-text: var(--fg-secondary);
+  --live-preview-search-filter-selected-bg: var(--bg-surface-brand);
+  --live-preview-search-match-visual-bg: var(--bg-surface-brand);
+  --live-preview-search-match-visual-color: var(--fg-brand);
 
   position: absolute;
   top: 59px;
@@ -3456,9 +3457,9 @@ body {
   width: var(--space-16);
   height: var(--space-16);
   padding: var(--space-4);
-  border-radius: var(--radius-rounded);
+  border-radius: var(--radius-md);
   background: var(--live-preview-search-welcome-icon-bg);
-  color: var(--live-preview-search-welcome-text);
+  color: var(--live-preview-search-welcome-icon);
   line-height: 0;
 }
 
@@ -3524,7 +3525,7 @@ body {
   justify-content: center;
   width: var(--space-16);
   height: var(--space-16);
-  border-radius: var(--radius-rounded);
+  border-radius: var(--radius-md);
   background: var(--live-preview-search-empty-icon-bg);
   color: var(--live-preview-search-empty-icon);
   line-height: 0;
@@ -3601,6 +3602,7 @@ body {
 
 .live-preview__search-filter-chip--active {
   background: var(--live-preview-search-filter-selected-bg);
+  color: var(--fg-brand);
 }
 
 .live-preview__search-match-section {
@@ -4085,7 +4087,7 @@ body {
   background: transparent;
   color: var(--fg-primary);
   cursor: pointer;
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   transition: background 0.15s ease;
 
   &:hover {
@@ -4100,7 +4102,7 @@ body {
   min-width: 36px;
   padding: 0 var(--space-2);
   background: var(--bg-fill);
-  border-radius: 2px;
+  border-radius: var(--radius-sm);
   font-family: var(--font-family);
   font-size: var(--font-size-paragraph-sm);
   font-weight: var(--font-weight-medium);
@@ -4383,8 +4385,7 @@ body {
   list-style: none;
   background: var(--bg-surface);
   border: 1px solid var(--border);
-  // Dropdown chrome — radius is intentionally hardcoded, not token-driven.
-  border-radius: 12px;
+  border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   max-height: 220px;
   overflow-y: auto;
@@ -5010,7 +5011,7 @@ body {
   height: 24px;
   padding: 0 var(--space-1) 0 var(--space-2);
   border: none;
-  border-radius: 20px; // chrome pill — hardcoded radius (not a token)
+  border-radius: var(--radius-lg);
   background: var(--bg-surface-brand);
   color: var(--fg-secondary);
   font-family: inherit;
@@ -5034,7 +5035,7 @@ body {
   gap: 2px;
   background: var(--bg-fill);
   border: 1px solid var(--border);
-  border-radius: 12px; // chrome dropdown — hardcoded radius
+  border-radius: var(--radius-lg);
   box-shadow: 0 8px 24px rgba(9, 17, 65, 0.12);
 }
 
@@ -7006,7 +7007,7 @@ body {
 // (inset margin + radius + shadow), and drops the full-bleed divider line.
 .nav-menu-desktop--compact .nav-menu-desktop__nav {
   margin: var(--spacing-sm);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
 }
 
@@ -7151,7 +7152,7 @@ body {
   flex-shrink: 0;
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   background: var(--bg-fill-brand);
   color: var(--fg-inverse);
 }
@@ -9655,7 +9656,7 @@ body.builder--phone-only {
   justify-content: center;
   width: 32px;
   height: 32px;
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   flex-shrink: 0;
   background: var(--bg-fill-brand);
