@@ -1,4 +1,4 @@
-import { type FormEvent, type KeyboardEvent, type PointerEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { type CSSProperties, type FormEvent, type KeyboardEvent, type PointerEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AppIcon } from '@jf/app-elements'
 import { Icon as DSIcon } from '@jf/design-system'
 
@@ -25,7 +25,7 @@ export type SearchResultTarget =
   | { type: 'form', pageId: string, elementId: string, fieldName?: string, openForm?: boolean }
 
 export type SearchMatchVisual =
-  | { type: 'icon', name: string }
+  | { type: 'icon', name: string, color?: string, backgroundColor?: string }
   | { type: 'image', src: string }
 
 export interface SearchSourceAction {
@@ -43,6 +43,7 @@ interface SearchMatchResult {
   id: string
   title: string
   description: string
+  matchContext?: string
   category: SearchResultCategory
   visual: SearchMatchVisual
   target: SearchResultTarget
@@ -65,6 +66,9 @@ const RECENT_SEARCH_LIMIT = 10
 const RECENT_SEARCH_STORAGE_PREFIX = 'jf-live-preview-search-recent'
 const SEARCH_DESCRIPTION_MAX_LENGTH = 96
 const SEARCH_RESULT_IMAGE_KEYS = ['image', 'Image', 'Image URL', 'photo', 'Photo', 'avatar', 'Avatar', 'thumbnail', 'Thumbnail']
+const SEARCH_RESULT_ICON_KEYS = ['Icon', 'Left Icon', 'Right Icon', 'Action Icon', 'icon']
+const SEARCH_RESULT_ICON_COLOR_KEYS = ['Icon Color', 'Indicator Icon Color', 'Action Icon Color', 'iconColor']
+const SEARCH_RESULT_ICON_BACKGROUND_KEYS = ['Icon Background Color', 'Icon Background', 'Background Color', 'Indicator Background Color', 'Icon BG', 'iconBgColor']
 
 type SearchResultCategory = 'pages' | 'forms' | 'sign' | 'contents'
 type SearchResultFilter = 'all' | SearchResultCategory
@@ -265,14 +269,45 @@ const NAVIGATION_PAGE_PROPERTY_KEYS = [
 ]
 const SEARCH_TEXT_SEPARATOR_REGEX = /\s*(?:[·•,&/|+]|\s[-–—]\s)\s*/
 
+const getNormalizedSearchIndex = (value: string) => {
+  const chars: string[] = []
+  const sourceIndexes: number[] = []
+  let sourceIndex = 0
+
+  Array.from(value).forEach((char) => {
+    const currentSourceIndex = sourceIndex
+    sourceIndex += char.length
+
+    if (/['"“”‘’]/.test(char)) return
+
+    const normalizedChar = /[a-z0-9ğüşöçıİĞÜŞÖÇ-]/i.test(char)
+      ? char.toLocaleLowerCase()
+      : ' '
+
+    if (/\s/.test(normalizedChar)) {
+      if (chars.length === 0 || chars[chars.length - 1] === ' ') return
+      chars.push(' ')
+      sourceIndexes.push(currentSourceIndex)
+      return
+    }
+
+    chars.push(normalizedChar)
+    sourceIndexes.push(currentSourceIndex)
+  })
+
+  if (chars[chars.length - 1] === ' ') {
+    chars.pop()
+    sourceIndexes.pop()
+  }
+
+  return {
+    text: chars.join(''),
+    sourceIndexes,
+  }
+}
+
 const normalizeSearchPhrase = (value: string) => (
-  value
-    .trim()
-    .toLocaleLowerCase()
-    .replace(/['"“”‘’]/g, '')
-    .replace(/[^a-z0-9ğüşöçıİĞÜŞÖÇ\s-]/gi, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
+  getNormalizedSearchIndex(value).text
 )
 
 const toTitleCase = (value: string) => (
@@ -503,26 +538,43 @@ const getImageFromRecord = (record: Record<string, unknown>) => {
   return ''
 }
 
+const getVisualStyleValue = (value: unknown) => {
+  const styleValue = getStringValue(value)
+  if (!styleValue || styleValue === 'none') return ''
+  return styleValue
+}
+
+const getFirstRecordValue = (record: Record<string, unknown>, keys: string[]) => {
+  for (const key of keys) {
+    const value = getVisualStyleValue(record[key])
+    if (value) return value
+  }
+
+  return ''
+}
+
+const getIconVisualFromRecord = (
+  record: Record<string, unknown>,
+  fallbackIcon: string,
+): SearchMatchVisual => ({
+  type: 'icon',
+  name: getFirstRecordValue(record, SEARCH_RESULT_ICON_KEYS) || fallbackIcon,
+  color: getFirstRecordValue(record, SEARCH_RESULT_ICON_COLOR_KEYS) || undefined,
+  backgroundColor: getFirstRecordValue(record, SEARCH_RESULT_ICON_BACKGROUND_KEYS) || undefined,
+})
+
 const getElementVisual = (componentId: string | undefined, properties: Record<string, unknown>): SearchMatchVisual => {
   const imageValue = getImageFromRecord(properties)
   if (imageValue) return { type: 'image', src: imageValue }
 
-  const iconName = getStringValue(properties.Icon)
-  if (iconName && iconName !== 'none') {
-    return { type: 'icon', name: iconName }
-  }
-
-  return { type: 'icon', name: COMPONENT_RESULT_ICONS[componentId || ''] || 'Layers' }
+  return getIconVisualFromRecord(properties, COMPONENT_RESULT_ICONS[componentId || ''] || 'Layers')
 }
 
 const getItemVisual = (item: Record<string, unknown>, fallbackIcon = 'List'): SearchMatchVisual => {
   const imageValue = getImageFromRecord(item)
   if (imageValue) return { type: 'image', src: imageValue }
 
-  const iconName = getStringValue(item.icon) || getStringValue(item.Icon)
-  if (iconName && iconName !== 'none') return { type: 'icon', name: iconName }
-
-  return { type: 'icon', name: fallbackIcon }
+  return getIconVisualFromRecord(item, fallbackIcon)
 }
 
 const getElementSearchCategory = (componentId: string | undefined, hasFormConfig: boolean): SearchResultCategory => {
@@ -639,24 +691,111 @@ const textMatchesSearch = (value: string, normalizedSearchText: string) => {
   return normalizedValue.includes(normalizedSearchText) || normalizedSearchText.includes(normalizedValue)
 }
 
+const getOriginalRangeFromNormalizedRange = (
+  normalizedIndex: ReturnType<typeof getNormalizedSearchIndex>,
+  start: number,
+  length: number,
+) => {
+  const rangeStart = normalizedIndex.sourceIndexes[start]
+  const rangeEndSourceIndex = normalizedIndex.sourceIndexes[start + length - 1]
+  if (rangeStart === undefined || rangeEndSourceIndex === undefined) return undefined
+
+  return {
+    start: rangeStart,
+    end: rangeEndSourceIndex + 1,
+  }
+}
+
+const collectNormalizedMatchRanges = (
+  normalizedIndex: ReturnType<typeof getNormalizedSearchIndex>,
+  normalizedSearchText: string,
+) => {
+  const ranges: Array<{ start: number, end: number }> = []
+  let cursor = 0
+  let matchIndex = normalizedIndex.text.indexOf(normalizedSearchText, cursor)
+
+  while (matchIndex !== -1) {
+    const range = getOriginalRangeFromNormalizedRange(normalizedIndex, matchIndex, normalizedSearchText.length)
+    if (range) ranges.push(range)
+    cursor = matchIndex + normalizedSearchText.length
+    matchIndex = normalizedIndex.text.indexOf(normalizedSearchText, cursor)
+  }
+
+  return ranges
+}
+
+const mergeSearchMatchRanges = (ranges: Array<{ start: number, end: number }>) => (
+  ranges
+    .filter((range) => range.end > range.start)
+    .sort((a, b) => a.start - b.start)
+    .reduce<Array<{ start: number, end: number }>>((mergedRanges, range) => {
+      const lastRange = mergedRanges[mergedRanges.length - 1]
+      if (!lastRange || range.start > lastRange.end) {
+        mergedRanges.push({ ...range })
+        return mergedRanges
+      }
+
+      lastRange.end = Math.max(lastRange.end, range.end)
+      return mergedRanges
+    }, [])
+)
+
+const getSearchMatchRanges = (text: string, searchText: string) => {
+  const normalizedSearchText = normalizeSearchPhrase(searchText)
+  if (!normalizedSearchText) return []
+
+  const normalizedIndex = getNormalizedSearchIndex(text)
+  if (!normalizedIndex.text) return []
+
+  const phraseRanges = collectNormalizedMatchRanges(normalizedIndex, normalizedSearchText)
+  if (phraseRanges.length > 0) return mergeSearchMatchRanges(phraseRanges)
+
+  const tokenRanges = normalizedSearchText
+    .split(' ')
+    .filter((token) => token.length > 1)
+    .flatMap((token) => collectNormalizedMatchRanges(normalizedIndex, token))
+
+  return mergeSearchMatchRanges(tokenRanges)
+}
+
 const truncateSearchDescription = (description: string, searchText: string) => {
   const cleanDescription = description.replace(/\s+/g, ' ').trim()
   if (cleanDescription.length <= SEARCH_DESCRIPTION_MAX_LENGTH) return cleanDescription
 
-  const normalizedDescription = cleanDescription.toLocaleLowerCase()
-  const normalizedSearchText = searchText.trim().toLocaleLowerCase()
-  const matchIndex = normalizedDescription.indexOf(normalizedSearchText)
+  const matchRange = getSearchMatchRanges(cleanDescription, searchText)[0]
 
-  if (matchIndex === -1) {
+  if (!matchRange) {
     return `${cleanDescription.slice(0, SEARCH_DESCRIPTION_MAX_LENGTH).trim()}...`
   }
 
-  const start = Math.max(0, matchIndex - 36)
-  const end = Math.min(cleanDescription.length, matchIndex + normalizedSearchText.length + 56)
+  const start = Math.max(0, matchRange.start - 36)
+  const end = Math.min(cleanDescription.length, matchRange.end + 56)
   const prefix = start > 0 ? '... ' : ''
   const suffix = end < cleanDescription.length ? '...' : ''
 
   return `${prefix}${cleanDescription.slice(start, end).trim()}${suffix}`
+}
+
+const getDisplayDescription = (
+  category: SearchResultCategory,
+  description: string,
+  searchText: string,
+) => {
+  if (category === 'pages') return 'Go to page'
+  if (category === 'forms') return 'Fill out form'
+  if (!description) return ''
+  return truncateSearchDescription(description, searchText)
+}
+
+const getSearchMatchContext = (
+  matchText: string,
+  searchText: string,
+  visibleText: string,
+) => {
+  if (!matchText || textMatchesSearch(visibleText, normalizeSearchPhrase(searchText))) return ''
+
+  const matchExcerpt = truncateSearchDescription(matchText, searchText)
+  return textMatchesSearch(matchExcerpt, normalizeSearchPhrase(searchText)) ? matchExcerpt : ''
 }
 
 const pushSearchResult = (
@@ -693,17 +832,23 @@ const pushSearchResult = (
   const searchCorpus = matchText ?? [resultTitle, resultDescription, extraSearchText].filter(Boolean).join(' ')
   if (!textMatchesSearch(searchCorpus, normalizedSearchText)) return
 
-  const normalizedKey = `${normalizeSearchPhrase(resultTitle)}:${normalizeSearchPhrase(resultDescription)}`
+  const displayDescription = getDisplayDescription(category, resultDescription, searchText)
+  const visibleText = [resultTitle, displayDescription].filter(Boolean).join(' ')
+  const matchContext = getSearchMatchContext(searchCorpus, searchText, visibleText)
+  if (!textMatchesSearch([visibleText, matchContext].filter(Boolean).join(' '), normalizedSearchText)) return
+
+  const normalizedKey = `${normalizeSearchPhrase(resultTitle)}:${normalizeSearchPhrase(displayDescription)}:${normalizeSearchPhrase(matchContext)}`
   if (seen.has(normalizedKey)) {
     const existingIndex = results.findIndex((result) => (
-      `${normalizeSearchPhrase(result.title)}:${normalizeSearchPhrase(result.description)}` === normalizedKey
+      `${normalizeSearchPhrase(result.title)}:${normalizeSearchPhrase(result.description)}:${normalizeSearchPhrase(result.matchContext || '')}` === normalizedKey
     ))
     const existingResult = existingIndex >= 0 ? results[existingIndex] : undefined
     if (existingResult && getSearchResultTargetPriority(target) > getSearchResultTargetPriority(existingResult.target)) {
       results[existingIndex] = {
         id,
         title: resultTitle,
-        description: resultDescription ? truncateSearchDescription(resultDescription, searchText) : 'Open result',
+        description: displayDescription,
+        matchContext,
         category,
         visual,
         target,
@@ -716,7 +861,8 @@ const pushSearchResult = (
   results.push({
     id,
     title: resultTitle,
-    description: resultDescription ? truncateSearchDescription(resultDescription, searchText) : 'Open result',
+    description: displayDescription,
+    matchContext,
     category,
     visual,
     target,
@@ -790,14 +936,11 @@ const getPreviewSearchResults = (
   }
 
   searchActions.forEach((action) => {
-    const actionSourceVisibleText = [action.title, action.sourceSearchText ?? ''].filter(Boolean).join(' ')
-    const actionSourcePage = action.sourceTarget?.type === 'page'
-      ? pages.find((page) => page.id === action.sourceTarget?.pageId)
-      : undefined
+    const actionSourceVisibleText = action.title
     pushSearchResult(results, seen, searchText, {
       id: `action-${action.id}`,
       title: action.title,
-      description: actionSourcePage ? `On ${actionSourcePage.name}` : action.description || 'Open result',
+      description: '',
       category: 'contents',
       visual: action.visual ?? { type: 'icon', name: 'MousePointerClick' },
       target: action.sourceTarget ?? action.target,
@@ -859,7 +1002,6 @@ const getPreviewSearchResults = (
       const elementDescription = getCleanSearchResultText(properties.Description)
         || getCleanSearchResultText(properties.Subheading)
         || getCleanSearchResultText(properties.Text)
-        || componentLabel
       const elementTarget: SearchResultTarget = {
         type: 'element',
         pageId,
@@ -923,7 +1065,7 @@ const getPreviewSearchResults = (
         pushSearchResult(results, seen, searchText, {
           id: `item-${pageIndex}-${elementIndex}-${itemIndex}`,
           title: itemTitle || elementTitle || componentLabel,
-          description: itemDescription || `${componentLabel} item in ${page.name}`,
+          description: itemDescription,
           category: 'contents',
           visual: getItemVisual(item, COMPONENT_RESULT_ICONS[element.componentId || ''] || 'List'),
           target: hasDynamicDetailTarget
@@ -960,33 +1102,13 @@ const getPreviewSearchResults = (
         pushSearchResult(results, seen, searchText, {
           id: `form-${pageIndex}-${elementIndex}`,
           title: formTitle || 'Form',
-          description: formDescription || 'Fill out the form',
+          description: formDescription,
           category: 'forms',
           visual: { type: 'icon', name: 'ClipboardList' },
           target: { type: 'form', pageId, elementId, openForm: openFormTarget },
           matchText: formVisibleSearchText,
         })
       }
-
-      formFields.forEach((field, fieldIndex) => {
-        const fieldTitle = getItemText(field, ['label', 'name'])
-        const fieldDescription = getItemText(field, ['placeholder', 'type'])
-        pushSearchResult(results, seen, searchText, {
-          id: `form-field-${pageIndex}-${elementIndex}-${fieldIndex}`,
-          title: fieldTitle,
-          description: fieldDescription || `Field in ${formTitle || 'form'}`,
-          category: 'forms',
-          visual: { type: 'icon', name: 'ClipboardList' },
-          target: {
-            type: 'form',
-            pageId,
-            elementId,
-            fieldName: getStringValue(field.name) || fieldTitle,
-            openForm: openFormTarget,
-          },
-          matchText: getFormFieldSearchCorpus(field),
-        })
-      })
 
     })
   })
@@ -1036,27 +1158,23 @@ const renderSearchWelcome = (
 )
 
 const getHighlightedParts = (text: string, searchText: string) => {
-  const normalizedSearchText = searchText.trim().toLocaleLowerCase()
-  const normalizedText = text.toLocaleLowerCase()
-  const parts: Array<{ isMatch: boolean, text: string }> = []
+  const matchRanges = getSearchMatchRanges(text, searchText)
 
-  if (!normalizedSearchText) {
+  if (matchRanges.length === 0) {
     return [{ isMatch: false, text }]
   }
 
+  const parts: Array<{ isMatch: boolean, text: string }> = []
   let cursor = 0
-  let matchIndex = normalizedText.indexOf(normalizedSearchText, cursor)
 
-  while (matchIndex !== -1) {
-    if (matchIndex > cursor) {
-      parts.push({ isMatch: false, text: text.slice(cursor, matchIndex) })
+  matchRanges.forEach((range) => {
+    if (range.start > cursor) {
+      parts.push({ isMatch: false, text: text.slice(cursor, range.start) })
     }
 
-    const matchEnd = matchIndex + normalizedSearchText.length
-    parts.push({ isMatch: true, text: text.slice(matchIndex, matchEnd) })
-    cursor = matchEnd
-    matchIndex = normalizedText.indexOf(normalizedSearchText, cursor)
-  }
+    parts.push({ isMatch: true, text: text.slice(range.start, range.end) })
+    cursor = range.end
+  })
 
   if (cursor < text.length) {
     parts.push({ isMatch: false, text: text.slice(cursor) })
@@ -1077,10 +1195,20 @@ const renderHighlightedText = (text: string, searchText: string) => (
   ))
 )
 
+const getSearchResultVisualStyle = (visual: SearchMatchVisual): CSSProperties | undefined => {
+  if (visual.type !== 'icon' || (!visual.color && !visual.backgroundColor)) return undefined
+
+  return {
+    color: visual.color,
+    background: visual.backgroundColor,
+  }
+}
+
 const renderSearchResultVisual = (visual: SearchMatchVisual) => (
   <span
     className={`live-preview__search-match-visual live-preview__search-match-visual--${visual.type}`}
     aria-hidden="true"
+    style={getSearchResultVisualStyle(visual)}
   >
     {visual.type === 'image'
       ? <img src={visual.src} alt="" loading="lazy" />
@@ -1365,9 +1493,16 @@ export function LivePreviewSearchPage({
                       <span className="live-preview__search-match-title">
                         {renderHighlightedText(result.title, resultQuery)}
                       </span>
-                      <span className="live-preview__search-match-description">
-                        {renderHighlightedText(result.description, resultQuery)}
-                      </span>
+                      {result.description && (
+                        <span className="live-preview__search-match-description">
+                          {renderHighlightedText(result.description, resultQuery)}
+                        </span>
+                      )}
+                      {result.matchContext && (
+                        <span className="live-preview__search-match-context">
+                          {renderHighlightedText(result.matchContext, resultQuery)}
+                        </span>
+                      )}
                     </span>
                   </button>
                 ))}

@@ -3707,6 +3707,20 @@ body {
   -webkit-line-clamp: 2;
 }
 
+.live-preview__search-match-context {
+  display: -webkit-box;
+  max-width: 100%;
+  overflow: hidden;
+  color: var(--live-preview-search-match-description);
+  font-family: var(--font-family-circular);
+  font-size: var(--font-size-paragraph-sm);
+  font-weight: var(--font-weight-book);
+  line-height: var(--line-height-paragraph-sm);
+  letter-spacing: 0;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 1;
+}
+
 .live-preview__search-match-highlight {
   display: inline;
   padding: 0;
