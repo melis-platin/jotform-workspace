@@ -63,7 +63,6 @@ const FEATURED_SEARCH_LIMIT = 10
 const FEATURED_SEARCH_MAX_WORDS = 2
 const RECENT_SEARCH_LIMIT = 10
 const RECENT_SEARCH_STORAGE_PREFIX = 'jf-live-preview-search-recent'
-const SEARCH_RESULT_LIMIT = 10
 const SEARCH_DESCRIPTION_MAX_LENGTH = 96
 const SEARCH_RESULT_IMAGE_KEYS = ['image', 'Image', 'Image URL', 'photo', 'Photo', 'avatar', 'Avatar', 'thumbnail', 'Thumbnail']
 
@@ -986,7 +985,7 @@ const getPreviewSearchResults = (
     })
   })
 
-  return results.slice(0, SEARCH_RESULT_LIMIT)
+  return results
 }
 
 const renderFeaturedSearchList = (
