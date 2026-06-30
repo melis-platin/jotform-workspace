@@ -3419,11 +3419,12 @@ export function BuildPage({
     if (device === 'desktop') {
       const hasPersistentSearchField = desktopNavEnabled && desktopNavVariant === 'top' && !activePageIsDynamic
       const searchOverlaysNav = desktopNavEnabled && (desktopNavVariant === 'contained' || desktopNavVariant === 'compact') && !activePageIsDynamic
+      const searchUsesContainedOverlay = desktopNavEnabled && desktopNavVariant === 'contained' && !activePageIsDynamic
       const searchFieldVisible = hasPersistentSearchField || isDesktopPreviewSearchOpen
       const searchPlaceholder = hasPersistentSearchField && !desktopPreviewSearchQuery ? 'Search' : ''
 
       return (
-        <div className={`live-preview__top-header-search${searchFieldVisible ? ' live-preview__top-header-search--open' : ''}${hasPersistentSearchField ? ' live-preview__top-header-search--persistent' : ''}${searchOverlaysNav ? ' live-preview__top-header-search--nav-overlay' : ''}`}>
+        <div className={`live-preview__top-header-search${searchFieldVisible ? ' live-preview__top-header-search--open' : ''}${hasPersistentSearchField ? ' live-preview__top-header-search--persistent' : ''}${searchOverlaysNav ? ' live-preview__top-header-search--nav-overlay' : ''}${searchUsesContainedOverlay ? ' live-preview__top-header-search--contained-overlay' : ''}`}>
           <form
             className="live-preview__top-header-search-form"
             role="search"

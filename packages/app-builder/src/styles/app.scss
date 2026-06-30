@@ -10324,6 +10324,12 @@ body.builder--phone-only {
   box-shadow: var(--shadow-md);
 }
 
+.live-preview__top-header-search--contained-overlay .live-preview__desktop-search-featured {
+  top: calc(100% + 8px);
+  width: 450px;
+  min-height: 0;
+}
+
 .live-preview__desktop-search-featured-hero {
   display: flex;
   flex-direction: column;
@@ -10356,7 +10362,7 @@ body.builder--phone-only {
   color: var(--navy-500);
   font-family: var(--font-family);
   font-size: 18px;
-  font-weight: var(--font-weight-bold);
+  font-weight: 700;
   line-height: 24px;
   letter-spacing: 0;
 }
