@@ -3100,7 +3100,7 @@ export function BuildPage({
   })
   const hasNavOverflow = navPages.length >= 5
   const visibleNavPages = hasNavOverflow ? navPages.slice(0, 4) : navPages
-  const desktopTopNavUsesOverflow = desktopNavVariant === 'contained'
+  const desktopTopNavUsesOverflow = desktopNavVariant === 'contained' || desktopNavVariant === 'compact'
   const desktopTopNavPages = desktopTopNavUsesOverflow ? navPages.slice(0, 2) : navPages
   const desktopTopNavOverflowPages = desktopTopNavUsesOverflow ? navPages.slice(2) : []
   const desktopTopNavMoreActive = desktopTopNavOverflowPages.some((p) => p.id === activePageId)
