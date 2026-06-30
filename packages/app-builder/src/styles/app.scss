@@ -3295,11 +3295,12 @@ body {
 // ---- Search Page ----
 .live-preview__search-page {
   --live-preview-search-bg: var(--bg-fill-secondary);
-  --live-preview-search-muted: var(--fg-tertiary);
-  --live-preview-search-clear: var(--fg-secondary);
   --live-preview-search-text: var(--fg-primary);
-  --live-preview-search-value-border: var(--form-field-border);
-  --live-preview-search-value-text: var(--fg-primary);
+  --live-preview-search-input-bg: #f3f3fe;
+  --live-preview-search-input-border: #c8ceed;
+  --live-preview-search-input-text: #0a1551;
+  --live-preview-search-input-icon: #6c73a8;
+  --live-preview-search-input-clear: #343c6a;
   --live-preview-search-radius: var(--radius-md);
   --live-preview-search-results-title: var(--fg-primary);
   --live-preview-search-results-item: var(--fg-secondary);
@@ -3370,11 +3371,11 @@ body {
   gap: var(--space-2);
   height: var(--space-10);
   padding: 0 var(--space-3);
-  border: 0;
+  border: 1px solid var(--live-preview-search-input-border);
   border-radius: var(--live-preview-search-radius);
   box-sizing: border-box;
-  background: var(--live-preview-search-bg);
-  color: var(--live-preview-search-muted);
+  background: var(--live-preview-search-input-bg);
+  color: var(--live-preview-search-input-icon);
   overflow: hidden;
 }
 
@@ -3386,7 +3387,7 @@ body {
   border: 0;
   outline: 0;
   background: transparent;
-  color: var(--live-preview-search-muted);
+  color: var(--live-preview-search-input-text);
   font-family: var(--font-family-circular);
   font-weight: var(--font-weight-book);
   font-size: var(--font-size-paragraph-sm);
@@ -3395,11 +3396,11 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  caret-color: var(--live-preview-search-text);
+  caret-color: var(--live-preview-search-input-text);
   appearance: none;
 
   &::placeholder {
-    color: var(--live-preview-search-muted);
+    color: var(--live-preview-search-input-icon);
     opacity: 1;
   }
 
@@ -3414,11 +3415,11 @@ body {
 }
 
 .live-preview__search-field--has-value {
-  border: 1px solid var(--live-preview-search-value-border);
+  border-color: var(--live-preview-search-input-border);
 }
 
 .live-preview__search-field--has-value input {
-  color: var(--live-preview-search-value-text);
+  color: var(--live-preview-search-input-text);
 }
 
 .live-preview__search-clear {
@@ -3431,7 +3432,7 @@ body {
   padding: 0;
   border: 0;
   background: transparent;
-  color: var(--live-preview-search-clear);
+  color: var(--live-preview-search-input-clear);
   cursor: pointer;
   line-height: 0;
 }
