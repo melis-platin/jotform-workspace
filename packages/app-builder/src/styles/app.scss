@@ -9816,16 +9816,14 @@ body.builder--phone-only {
   position: relative;
   display: flex;
   align-items: center;
-  // avatar (24) + gap (8) = nav icon (20) + gap (12) = 32, so the avatar's left
-  // lines up with the menu-item icons AND the name lines up with their labels.
   gap: var(--space-2);
   padding: var(--space-2) var(--space-3);
   border-radius: var(--radius-md);
 }
 
 .live-preview__side-nav-avatar {
-  width: 24px;
-  height: 24px;
+  width: var(--space-8);
+  height: var(--space-8);
   flex-shrink: 0;
   border-radius: var(--radius-rounded);
   object-fit: cover;
