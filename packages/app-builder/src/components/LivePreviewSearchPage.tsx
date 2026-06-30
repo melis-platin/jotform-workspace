@@ -1019,15 +1019,15 @@ const getPreviewSearchResults = (
   const seen = new Set<string>()
   const visiblePages = pages.filter((page) => !page.hidden && !page.dynamic)
 
-  const overviewPageId = visiblePages[0]?.id
-  if (overviewPageId) {
+  const overviewPage = visiblePages[0]
+  if (overviewPage?.id) {
     pushSearchResult(results, seen, searchText, {
       id: 'app-overview',
       title: appTitle,
       description: appSubtitle || 'Open app',
       category: 'contents',
-      visual: { type: 'icon', name: 'Home' },
-      target: { type: 'page', pageId: overviewPageId },
+      visual: getPageVisual(overviewPage),
+      target: { type: 'page', pageId: overviewPage.id },
     })
   }
 
