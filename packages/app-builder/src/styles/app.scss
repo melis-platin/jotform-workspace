@@ -3683,9 +3683,19 @@ body {
 }
 
 .live-preview__search-match-visual--image {
-  width: calc(var(--space-12) + var(--space-1));
-  height: calc(var(--space-12) + var(--space-1));
   background: transparent;
+}
+
+.live-preview__search-match-visual--image.live-preview__search-match-visual--square {
+  border-radius: var(--radius-none);
+}
+
+.live-preview__search-match-visual--image.live-preview__search-match-visual--rounded {
+  border-radius: var(--radius-lg);
+}
+
+.live-preview__search-match-visual--image.live-preview__search-match-visual--circle {
+  border-radius: var(--radius-rounded);
 }
 
 .live-preview__search-match-visual img {

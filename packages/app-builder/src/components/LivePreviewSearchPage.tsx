@@ -12,6 +12,7 @@ export interface SearchSourceElement {
 export interface SearchSourcePage {
   id?: string
   name: string
+  icon?: string
   hidden?: boolean
   dynamic?: boolean
   dynamicSourceElementId?: string
@@ -24,9 +25,11 @@ export type SearchResultTarget =
   | { type: 'dynamic-item', pageId: string, elementId: string, itemIndex: number }
   | { type: 'form', pageId: string, elementId: string, fieldName?: string, openForm?: boolean }
 
+type SearchMatchImageShape = 'square' | 'rounded' | 'circle'
+
 export type SearchMatchVisual =
   | { type: 'icon', name: string, color?: string, backgroundColor?: string }
-  | { type: 'image', src: string }
+  | { type: 'image', src: string, shape?: SearchMatchImageShape }
 
 export interface SearchSourceAction {
   id: string
@@ -188,7 +191,7 @@ const COMPONENT_RESULT_ICONS: Record<string, string> = {
   card: 'Layout',
   chart: 'Table2',
   document: 'FileText',
-  faq: 'HelpCircle',
+  faq: 'CircleQuestionMark',
   form: 'ClipboardList',
   heading: 'Type',
   image: 'Image',
@@ -200,6 +203,17 @@ const COMPONENT_RESULT_ICONS: Record<string, string> = {
   table: 'Table2',
   testimonial: 'MessageCircle',
 }
+
+const SEARCH_RESULT_ICON_ALIASES: Record<string, string> = {
+  HelpCircle: 'CircleQuestionMark',
+  CircleHelp: 'CircleQuestionMark',
+}
+
+const DEFAULT_SEARCH_PAGE_ICON = 'FileText'
+
+const getSearchResultIconName = (iconName: string) => (
+  SEARCH_RESULT_ICON_ALIASES[iconName] ?? iconName
+)
 
 const SEARCH_PROPERTY_KEYS = ['Heading', 'Title', 'Label', 'Text', 'Description', 'Subheading', 'Button Text']
 const SEARCH_RESULT_SOURCE_VISIBLE_PROPERTY_KEYS = [
@@ -538,6 +552,13 @@ const getImageFromRecord = (record: Record<string, unknown>) => {
   return ''
 }
 
+const getFirstItemImageFromRecord = (record: Record<string, unknown>) => (
+  [
+    ...parseSearchJsonItems(record.Items),
+    ...parseSearchJsonItems(record.Products),
+  ].map(getImageFromRecord).find(Boolean) || ''
+)
+
 const getVisualStyleValue = (value: unknown) => {
   const styleValue = getStringValue(value)
   if (!styleValue || styleValue === 'none') return ''
@@ -556,23 +577,74 @@ const getFirstRecordValue = (record: Record<string, unknown>, keys: string[]) =>
 const getIconVisualFromRecord = (
   record: Record<string, unknown>,
   fallbackIcon: string,
-): SearchMatchVisual => ({
+): SearchMatchVisual => {
+  const iconName = getFirstRecordValue(record, SEARCH_RESULT_ICON_KEYS) || fallbackIcon
+
+  return {
+    type: 'icon',
+    name: getSearchResultIconName(iconName),
+    color: getFirstRecordValue(record, SEARCH_RESULT_ICON_COLOR_KEYS) || undefined,
+    backgroundColor: getFirstRecordValue(record, SEARCH_RESULT_ICON_BACKGROUND_KEYS) || undefined,
+  }
+}
+
+const getPageVisual = (page: SearchSourcePage): SearchMatchVisual => ({
   type: 'icon',
-  name: getFirstRecordValue(record, SEARCH_RESULT_ICON_KEYS) || fallbackIcon,
-  color: getFirstRecordValue(record, SEARCH_RESULT_ICON_COLOR_KEYS) || undefined,
-  backgroundColor: getFirstRecordValue(record, SEARCH_RESULT_ICON_BACKGROUND_KEYS) || undefined,
+  name: getSearchResultIconName(page.icon || DEFAULT_SEARCH_PAGE_ICON),
 })
 
-const getElementVisual = (componentId: string | undefined, properties: Record<string, unknown>): SearchMatchVisual => {
+const getSearchMatchImageShape = (value: unknown, squareShape?: SearchMatchImageShape) => {
+  const shapeValue = getStringValue(value).toLowerCase()
+  if (shapeValue === 'circle') return 'circle'
+  if (shapeValue === 'rounded') return 'rounded'
+  if (shapeValue === 'square') return squareShape
+  return undefined
+}
+
+const getElementImageShape = (
+  componentId: string | undefined,
+  variants: Record<string, unknown> | undefined,
+): SearchMatchImageShape | undefined => {
+  if (!variants) return undefined
+
+  if (componentId === 'image') {
+    return getSearchMatchImageShape(variants['Image Shape'], 'square')
+  }
+
+  if (componentId === 'list') {
+    return getSearchMatchImageShape(
+      variants['Layout'] === 'Card' ? variants['Card Image Style'] : variants['Image Style'],
+    )
+  }
+
+  if (componentId === 'card') {
+    return getSearchMatchImageShape(variants['Image Style'])
+  }
+
+  return undefined
+}
+
+const getElementVisual = (
+  componentId: string | undefined,
+  properties: Record<string, unknown>,
+  variants?: Record<string, unknown>,
+): SearchMatchVisual => {
   const imageValue = getImageFromRecord(properties)
-  if (imageValue) return { type: 'image', src: imageValue }
+    || (componentId === 'list' ? '' : getFirstItemImageFromRecord(properties))
+  if (imageValue) {
+    return { type: 'image', src: imageValue, shape: getElementImageShape(componentId, variants) }
+  }
 
   return getIconVisualFromRecord(properties, COMPONENT_RESULT_ICONS[componentId || ''] || 'Layers')
 }
 
-const getItemVisual = (item: Record<string, unknown>, fallbackIcon = 'List'): SearchMatchVisual => {
+const getItemVisual = (
+  item: Record<string, unknown>,
+  fallbackIcon = 'List',
+  imageShape?: SearchMatchImageShape,
+): SearchMatchVisual => {
   const imageValue = getImageFromRecord(item)
-  if (imageValue) return { type: 'image', src: imageValue }
+  if (imageValue) return { type: 'image', src: imageValue, shape: imageShape }
 
   return getIconVisualFromRecord(item, fallbackIcon)
 }
@@ -927,7 +999,7 @@ const pushNavigationPageResult = (
     title: targetPageTitle,
     description: description || `Contains ${sourceTitle || 'element'}`,
     category: 'pages',
-    visual: { type: 'icon', name: 'FileText' },
+    visual: getPageVisual(targetPage),
     target,
     matchText,
   })
@@ -994,7 +1066,7 @@ const getPreviewSearchResults = (
         title: page.name,
         description: 'Go to page',
         category: 'pages',
-        visual: { type: 'icon', name: 'FileText' },
+        visual: getPageVisual(page),
         target: { type: 'page', pageId: page.id },
       })
     }
@@ -1041,7 +1113,7 @@ const getPreviewSearchResults = (
           title: elementTitle || componentLabel,
           description: elementDescription,
           category: getElementSearchCategory(element.componentId, false),
-          visual: getElementVisual(element.componentId, properties),
+          visual: getElementVisual(element.componentId, properties, element.variants),
           target: elementTarget,
           matchText: elementVisibleSearchText,
         })
@@ -1088,15 +1160,22 @@ const getPreviewSearchResults = (
         const itemDescription = getItemText(item, ['description', 'text', 'answer', 'details', 'category', 'price'])
         const itemSearchCorpus = getItemSearchCorpus(item)
         const itemMatchesSearch = textMatchesSearch(itemSearchCorpus, normalizedSearchText)
+        const itemTarget: SearchResultTarget = hasDynamicDetailTarget
+          ? { type: 'dynamic-item', pageId, elementId, itemIndex }
+          : elementTarget
         pushSearchResult(results, seen, searchText, {
           id: `item-${pageIndex}-${elementIndex}-${itemIndex}`,
           title: itemTitle || elementTitle || componentLabel,
           description: itemDescription,
           category: 'contents',
-          visual: getItemVisual(item, COMPONENT_RESULT_ICONS[element.componentId || ''] || 'List'),
-          target: hasDynamicDetailTarget
-            ? { type: 'dynamic-item', pageId, elementId, itemIndex }
-            : elementTarget,
+          visual: element.componentId === 'list' && itemTarget.type === 'element'
+            ? getIconVisualFromRecord(item, COMPONENT_RESULT_ICONS.list)
+            : getItemVisual(
+              item,
+              COMPONENT_RESULT_ICONS[element.componentId || ''] || 'List',
+              getElementImageShape(element.componentId, element.variants),
+            ),
+          target: itemTarget,
           matchText: itemSearchCorpus,
         })
 
@@ -1238,7 +1317,11 @@ const getSearchResultVisualStyle = (visual: SearchMatchVisual): CSSProperties | 
 
 const renderSearchResultVisual = (visual: SearchMatchVisual) => (
   <span
-    className={`live-preview__search-match-visual live-preview__search-match-visual--${visual.type}`}
+    className={[
+      'live-preview__search-match-visual',
+      `live-preview__search-match-visual--${visual.type}`,
+      visual.type === 'image' && visual.shape && `live-preview__search-match-visual--${visual.shape}`,
+    ].filter(Boolean).join(' ')}
     aria-hidden="true"
     style={getSearchResultVisualStyle(visual)}
   >
