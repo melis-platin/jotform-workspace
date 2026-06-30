@@ -786,6 +786,12 @@ const textMatchesSearch = (value: string, normalizedSearchText: string) => {
   return normalizedValue.includes(normalizedSearchText) || normalizedSearchText.includes(normalizedValue)
 }
 
+const pageNameMatchesSearch = (page: SearchSourcePage, normalizedSearchText: string) => {
+  if (!normalizedSearchText) return false
+  const normalizedPageName = normalizeSearchPhrase(page.name)
+  return Boolean(normalizedPageName && normalizedPageName.includes(normalizedSearchText))
+}
+
 const getOriginalRangeFromNormalizedRange = (
   normalizedIndex: ReturnType<typeof getNormalizedSearchIndex>,
   start: number,
@@ -988,6 +994,9 @@ const pushNavigationPageResult = (
   },
 ) => {
   if (!targetPage.id) return
+  const normalizedSearchText = normalizeSearchPhrase(searchText)
+  if (!pageNameMatchesSearch(targetPage, normalizedSearchText)) return
+
   const targetPageTitle = getCleanSearchResultText(title) || getCleanSearchResultText(targetPage.name) || targetPage.name
   if (results.some((result) => (
     result.category === 'pages'
@@ -1060,7 +1069,7 @@ const getPreviewSearchResults = (
   })
 
   visiblePages.forEach((page, pageIndex) => {
-    if (page.id && textMatchesSearch(page.name, normalizedSearchText)) {
+    if (page.id && pageNameMatchesSearch(page, normalizedSearchText)) {
       pushSearchResult(results, seen, searchText, {
         id: `page-${pageIndex}-${page.name}`,
         title: page.name,
