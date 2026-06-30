@@ -730,6 +730,7 @@ const pushNavigationPageResult = (
   {
     id,
     targetPage,
+    title,
     sourceTitle,
     description,
     matchText,
@@ -737,6 +738,7 @@ const pushNavigationPageResult = (
   }: {
     id: string
     targetPage: SearchSourcePage
+    title?: string
     sourceTitle: string
     description?: string
     matchText: string
@@ -744,12 +746,12 @@ const pushNavigationPageResult = (
   },
 ) => {
   if (!targetPage.id) return
+  const targetPageTitle = getCleanSearchResultText(title) || getCleanSearchResultText(targetPage.name) || targetPage.name
   if (results.some((result) => (
     result.category === 'pages'
-    && normalizeSearchPhrase(result.title) === normalizeSearchPhrase(targetPage.name)
+    && normalizeSearchPhrase(result.title) === normalizeSearchPhrase(targetPageTitle)
   ))) return
 
-  const targetPageTitle = getCleanSearchResultText(targetPage.name) || targetPage.name
   pushSearchResult(results, seen, searchText, {
     id,
     title: targetPageTitle,
@@ -888,7 +890,11 @@ const getPreviewSearchResults = (
         })
       }
 
-      const navigationPage = getElementNavigationPage(pages, element)
+      const isDynamicListNavigation = element.componentId === 'list'
+        && String(properties['Click Action'] ?? '') === 'Open Dynamic Page'
+      const navigationPage = isDynamicListNavigation
+        ? undefined
+        : getElementNavigationPage(pages, element)
       if (navigationPage) {
         pushNavigationPageResult(results, seen, searchText, {
           id: `element-page-${pageIndex}-${elementIndex}`,
@@ -904,8 +910,7 @@ const getPreviewSearchResults = (
         ...parseSearchJsonItems(properties.Items),
         ...parseSearchJsonItems(properties.Products),
       ]
-      const dynamicDetailPage = element.componentId === 'list'
-        && String(properties['Click Action'] ?? '') === 'Open Dynamic Page'
+      const dynamicDetailPage = isDynamicListNavigation
         ? getDynamicPageForElement(pages, elementId)
         : undefined
       const hasDynamicDetailTarget = Boolean(dynamicDetailPage)
@@ -941,6 +946,7 @@ const getPreviewSearchResults = (
           pushNavigationPageResult(results, seen, searchText, {
             id: `item-page-${pageIndex}-${elementIndex}-${itemIndex}`,
             targetPage: dynamicDetailPage,
+            title: itemTitle || elementTitle || componentLabel,
             sourceTitle: itemTitle || elementTitle || componentLabel,
             description: `Opened by ${itemTitle || elementTitle || componentLabel}`,
             matchText: itemSearchCorpus,
