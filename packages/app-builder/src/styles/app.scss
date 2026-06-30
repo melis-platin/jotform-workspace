@@ -3320,7 +3320,6 @@ body {
   --live-preview-search-match-description: var(--fg-secondary);
   --live-preview-search-match-section-title: var(--fg-secondary);
   --live-preview-search-match-highlight: var(--bg-fill-brand, var(--fg-brand));
-  --live-preview-search-filter-bg: color-mix(in srgb, var(--fg-primary) 6%, var(--bg-fill-secondary));
   --live-preview-search-filter-hover-bg: color-mix(in srgb, var(--fg-primary) 7%, transparent);
   --live-preview-search-filter-text: var(--fg-secondary);
   --live-preview-search-filter-selected-bg: var(--bg-surface);
@@ -3586,7 +3585,7 @@ body {
   padding: var(--space-1);
   border: 1px solid var(--live-preview-search-featured-border);
   border-radius: var(--radius-lg);
-  background: var(--live-preview-search-filter-bg);
+  background: transparent;
   box-sizing: border-box;
 }
 
