@@ -2018,9 +2018,9 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-md);
+  width: var(--space-10);
+  height: var(--space-10);
+  border-radius: var(--space-2);
   overflow: hidden;
   flex-shrink: 0;
   background: var(--bg-surface);
