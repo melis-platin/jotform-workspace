@@ -3420,11 +3420,12 @@ export function BuildPage({
       const hasPersistentSearchField = desktopNavEnabled && desktopNavVariant === 'top' && !activePageIsDynamic
       const searchOverlaysNav = desktopNavEnabled && (desktopNavVariant === 'contained' || desktopNavVariant === 'compact') && !activePageIsDynamic
       const searchUsesContainedOverlay = desktopNavEnabled && desktopNavVariant === 'contained' && !activePageIsDynamic
+      const searchUsesCompactOverlay = desktopNavEnabled && desktopNavVariant === 'compact' && !activePageIsDynamic
       const searchFieldVisible = hasPersistentSearchField || isDesktopPreviewSearchOpen
       const searchPlaceholder = hasPersistentSearchField && !desktopPreviewSearchQuery ? 'Search' : ''
 
       return (
-        <div className={`live-preview__top-header-search${searchFieldVisible ? ' live-preview__top-header-search--open' : ''}${hasPersistentSearchField ? ' live-preview__top-header-search--persistent' : ''}${searchOverlaysNav ? ' live-preview__top-header-search--nav-overlay' : ''}${searchUsesContainedOverlay ? ' live-preview__top-header-search--contained-overlay' : ''}`}>
+        <div className={`live-preview__top-header-search${searchFieldVisible ? ' live-preview__top-header-search--open' : ''}${hasPersistentSearchField ? ' live-preview__top-header-search--persistent' : ''}${searchOverlaysNav ? ' live-preview__top-header-search--nav-overlay' : ''}${searchUsesContainedOverlay ? ' live-preview__top-header-search--contained-overlay' : ''}${searchUsesCompactOverlay ? ' live-preview__top-header-search--compact-overlay' : ''}`}>
           <form
             className="live-preview__top-header-search-form"
             role="search"

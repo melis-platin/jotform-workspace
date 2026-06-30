@@ -10330,6 +10330,13 @@ body.builder--phone-only {
   min-height: 0;
 }
 
+.live-preview__top-header-search--compact-overlay .live-preview__desktop-search-featured {
+  top: calc(100% + 8px);
+  width: 450px;
+  min-height: 0;
+  box-shadow: none;
+}
+
 .live-preview__desktop-search-featured-hero {
   display: flex;
   flex-direction: column;
