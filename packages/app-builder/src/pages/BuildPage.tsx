@@ -4793,8 +4793,9 @@ export function BuildPage({
             {searchBarEnabled && (
               <button
                 type="button"
-                className="live-preview__side-nav-search-btn"
+                className="live-preview__side-nav-search-field"
                 aria-label="Search"
+                aria-expanded={isPreviewSearchOpen}
                 onClick={() => {
                   setIsDesktopPreviewSearchOpen(false)
                   setDesktopPreviewSearchQuery('')
@@ -4808,7 +4809,8 @@ export function BuildPage({
                   setIsAvatarPopoverOpen(false)
                 }}
               >
-                <AppIcon name="Search" size={20} />
+                <AppIcon name="Search" size={20} className="live-preview__side-nav-search-icon" />
+                <span className="live-preview__side-nav-search-label">Search</span>
               </button>
             )}
           </div>
