@@ -3674,7 +3674,7 @@ body {
   justify-content: center;
   width: calc(var(--space-10) + var(--space-1));
   height: calc(var(--space-10) + var(--space-1));
-  border-radius: var(--radius-md);
+  border-radius: var(--live-preview-search-radius);
   background: var(--live-preview-search-match-visual-bg);
   color: var(--live-preview-search-match-visual-color);
   line-height: 0;
