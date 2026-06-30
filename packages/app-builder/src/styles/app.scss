@@ -9668,8 +9668,42 @@ body.builder--phone-only {
   display: flex;
   align-items: center;
   gap: var(--space-2);
+  justify-content: space-between;
   min-height: 32px;
   margin-bottom: var(--space-2);
+  width: 100%;
+}
+
+.live-preview__side-nav-brand-main {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.live-preview__side-nav-search-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  flex: 0 0 40px;
+  margin: 0 calc(var(--space-2) * -1) 0 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-rounded);
+  background: transparent;
+  color: var(--navy-500);
+  line-height: 0;
+  cursor: pointer;
+
+  &:hover,
+  &:active,
+  &:focus-visible {
+    background: transparent;
+    outline: none;
+    box-shadow: none;
+  }
 }
 
 // Mirror the top-header app-icon badge: brand-filled rounded square, white glyph.
@@ -10058,6 +10092,22 @@ body.builder--phone-only {
   pointer-events: auto;
 }
 
+.live-preview__top-header-search--persistent {
+  width: 300px;
+  height: 40px;
+  flex: 0 0 300px;
+}
+
+.live-preview__top-header-search--persistent .live-preview__top-header-search-form {
+  position: relative;
+  top: auto;
+  right: auto;
+  width: 300px;
+  transform: none;
+  transform-origin: center;
+  clip-path: inset(0);
+}
+
 .live-preview__top-header-search-icon {
   flex: 0 0 20px;
   color: var(--navy-500);
@@ -10230,6 +10280,26 @@ body.builder--phone-only {
   background: transparent;
   box-shadow: none;
   backdrop-filter: none;
+}
+
+.app-preview-screen__desktop .live-preview__top-header-search:not(.live-preview__top-header-search--persistent) {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+}
+
+.app-preview-screen__desktop .live-preview__top-header-search-btn {
+  width: 32px;
+  height: 32px;
+  flex: 0 0 32px;
+  padding: 0;
+  border-radius: var(--radius-sm);
+  color: var(--navy-500);
+}
+
+.app-preview-screen__desktop .live-preview__top-header-search-btn svg {
+  width: 16px;
+  height: 16px;
 }
 
 .live-preview__top-header-notification-badge {

@@ -3148,6 +3148,11 @@ export function BuildPage({
   }, [searchBarEnabled])
 
   useEffect(() => {
+    setIsDesktopPreviewSearchOpen(false)
+    setDesktopPreviewSearchQuery('')
+  }, [desktopNavVariant])
+
+  useEffect(() => {
     if (previewDevice === 'desktop') {
       setIsPreviewSearchOpen(false)
       return
@@ -3388,8 +3393,12 @@ export function BuildPage({
     if (!searchBarEnabled) return null
 
     if (device === 'desktop') {
+      const hasPersistentSearchField = desktopNavEnabled && desktopNavVariant === 'top' && !activePageIsDynamic
+      const searchFieldVisible = hasPersistentSearchField || isDesktopPreviewSearchOpen
+      const searchPlaceholder = hasPersistentSearchField && !desktopPreviewSearchQuery ? 'Search' : ''
+
       return (
-        <div className={`live-preview__top-header-search${isDesktopPreviewSearchOpen ? ' live-preview__top-header-search--open' : ''}`}>
+        <div className={`live-preview__top-header-search${searchFieldVisible ? ' live-preview__top-header-search--open' : ''}${hasPersistentSearchField ? ' live-preview__top-header-search--persistent' : ''}`}>
           <form
             className="live-preview__top-header-search-form"
             role="search"
@@ -3401,9 +3410,9 @@ export function BuildPage({
               className="live-preview__top-header-search-input"
               type="search"
               aria-label="Search"
-              placeholder=""
+              placeholder={searchPlaceholder}
               value={desktopPreviewSearchQuery}
-              tabIndex={isDesktopPreviewSearchOpen ? 0 : -1}
+              tabIndex={searchFieldVisible ? 0 : -1}
               onChange={(event) => setDesktopPreviewSearchQuery(event.currentTarget.value)}
               onKeyDown={(event) => {
                 if (event.key !== 'Escape') return
@@ -3411,23 +3420,26 @@ export function BuildPage({
                   setDesktopPreviewSearchQuery('')
                   return
                 }
+                if (hasPersistentSearchField) return
                 setIsDesktopPreviewSearchOpen(false)
               }}
             />
-            <button
-              type="button"
-              className="live-preview__top-header-search-close"
-              aria-label="Close search"
-              tabIndex={isDesktopPreviewSearchOpen ? 0 : -1}
-              onClick={() => {
-                setDesktopPreviewSearchQuery('')
-                setIsDesktopPreviewSearchOpen(false)
-              }}
-            >
-              <AppIcon name="X" size={16} />
-            </button>
+            {!hasPersistentSearchField && (
+              <button
+                type="button"
+                className="live-preview__top-header-search-close"
+                aria-label="Close search"
+                tabIndex={isDesktopPreviewSearchOpen ? 0 : -1}
+                onClick={() => {
+                  setDesktopPreviewSearchQuery('')
+                  setIsDesktopPreviewSearchOpen(false)
+                }}
+              >
+                <AppIcon name="X" size={16} />
+              </button>
+            )}
           </form>
-          {isDesktopPreviewSearchOpen && desktopPreviewFeaturedSearches.length > 0 && (
+          {!hasPersistentSearchField && isDesktopPreviewSearchOpen && desktopPreviewFeaturedSearches.length > 0 && (
             <section className="live-preview__desktop-search-featured" aria-label="Featured searches">
               <h2 className="live-preview__desktop-search-featured-title">Featured searches</h2>
               <div className="live-preview__desktop-search-featured-list">
@@ -3447,7 +3459,7 @@ export function BuildPage({
               </div>
             </section>
           )}
-          {!isDesktopPreviewSearchOpen && (
+          {!searchFieldVisible && (
             <button
               type="button"
               className="live-preview__top-header-search-btn"
@@ -3468,7 +3480,7 @@ export function BuildPage({
                 })
               }}
             >
-              <AppIcon name="Search" size={20} />
+              <AppIcon name="Search" size={16} />
             </button>
           )}
         </div>
@@ -4764,17 +4776,40 @@ export function BuildPage({
       {desktopNavEnabled && desktopNavVariant === 'left' && previewDevice === 'desktop' && (
         <aside className="live-preview__side-nav app-scope">
           <div className="live-preview__side-nav-brand">
-            {/* Nav logo is the app identity — always shown, independent of the hero's
-                  imageStyle. Falls back to the icon glyph when the hero icon is removed. */ (
-              <span className={`live-preview__side-nav-logo${appIcon.variant === 'Image' && appIcon.imageUrl ? ' live-preview__side-nav-logo--image' : ''}`}>
-                {appIcon.variant === 'Image' && appIcon.imageUrl ? (
-                  <img src={appIcon.imageUrl} alt="" />
-                ) : (
-                  <AppIcon name={appIcon.icon} size={24} />
-                )}
-              </span>
+            <div className="live-preview__side-nav-brand-main">
+              {/* Nav logo is the app identity — always shown, independent of the hero's
+                    imageStyle. Falls back to the icon glyph when the hero icon is removed. */ (
+                <span className={`live-preview__side-nav-logo${appIcon.variant === 'Image' && appIcon.imageUrl ? ' live-preview__side-nav-logo--image' : ''}`}>
+                  {appIcon.variant === 'Image' && appIcon.imageUrl ? (
+                    <img src={appIcon.imageUrl} alt="" />
+                  ) : (
+                    <AppIcon name={appIcon.icon} size={24} />
+                  )}
+                </span>
+              )}
+              <span className="live-preview__side-nav-title">{appTitle}</span>
+            </div>
+            {searchBarEnabled && (
+              <button
+                type="button"
+                className="live-preview__side-nav-search-btn"
+                aria-label="Search"
+                onClick={() => {
+                  setIsDesktopPreviewSearchOpen(false)
+                  setDesktopPreviewSearchQuery('')
+                  setIsPreviewSearchOpen(true)
+                  setIsNotificationsPageOpen(false)
+                  setIsMorePageOpen(false)
+                  setIsPreviewCartOpen(false)
+                  setIsPreviewCheckoutOpen(false)
+                  setIsPreviewProfileOpen(false)
+                  setIsLoginPopoverOpen(false)
+                  setIsAvatarPopoverOpen(false)
+                }}
+              >
+                <AppIcon name="Search" size={20} />
+              </button>
             )}
-            <span className="live-preview__side-nav-title">{appTitle}</span>
           </div>
           <nav className="live-preview__side-nav-list">
             {navPages.map((p) => (
