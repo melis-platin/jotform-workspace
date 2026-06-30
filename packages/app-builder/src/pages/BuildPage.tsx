@@ -3296,7 +3296,7 @@ export function BuildPage({
     if (needsLogin) return
 
     if (target.type === 'page') {
-      highlightLivePreviewTarget()
+      highlightLivePreviewTarget(target.elementId ? getLivePreviewElementSelector(target.elementId) : undefined)
       return
     }
 

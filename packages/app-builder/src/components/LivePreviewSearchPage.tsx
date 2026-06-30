@@ -19,7 +19,7 @@ export interface SearchSourcePage {
 }
 
 export type SearchResultTarget =
-  | { type: 'page', pageId: string }
+  | { type: 'page', pageId: string, elementId?: string }
   | { type: 'element', pageId: string, elementId: string }
   | { type: 'dynamic-item', pageId: string, elementId: string, itemIndex: number }
   | { type: 'form', pageId: string, elementId: string, fieldName?: string, openForm?: boolean }
@@ -636,6 +636,29 @@ const getPageVisibleSearchCorpus = (page: SearchSourcePage) => (
   ].filter(Boolean).join(' ')
 )
 
+const getFirstMatchingElementId = (
+  page: SearchSourcePage,
+  normalizedSearchText: string,
+) => (
+  page.elements?.find((element) => (
+    element.id
+    && textMatchesSearch(getElementVisibleSearchCorpus(element), normalizedSearchText)
+  ))?.id
+)
+
+const getFirstMatchingFormFieldName = (
+  formFields: Array<Record<string, unknown>>,
+  normalizedSearchText: string,
+) => {
+  const matchingField = formFields.find((field) => textMatchesSearch(getFormFieldSearchCorpus(field), normalizedSearchText))
+  if (!matchingField) return undefined
+
+  return getStringValue(matchingField.name)
+    || getStringValue(matchingField.Name)
+    || getItemText(matchingField, ['label', 'Label'])
+    || undefined
+}
+
 const hasNavigateToPageAction = (properties: Record<string, unknown>) => (
   NAVIGATION_ACTION_KEYS.some((key) => getStringValue(properties[key]) === 'Navigate to Page')
 )
@@ -950,13 +973,14 @@ const getPreviewSearchResults = (
     if (action.target.type === 'page') {
       const targetPage = pages.find((page) => page.id === action.target.pageId)
       if (targetPage) {
+        const targetElementId = getFirstMatchingElementId(targetPage, normalizedSearchText)
         pushNavigationPageResult(results, seen, searchText, {
           id: `action-page-${action.id}`,
           targetPage,
           sourceTitle: action.title,
           description: `Opened by ${action.title}`,
           matchText: getPageVisibleSearchCorpus(targetPage),
-          target: action.target,
+          target: { ...action.target, elementId: targetElementId },
         })
       }
     }
@@ -1028,7 +1052,7 @@ const getPreviewSearchResults = (
           targetPage: page,
           sourceTitle: elementTitle || componentLabel,
           matchText: [page.name, elementVisibleSearchText].filter(Boolean).join(' '),
-          target: { type: 'page', pageId },
+          target: { type: 'page', pageId, elementId },
         })
       }
 
@@ -1038,13 +1062,14 @@ const getPreviewSearchResults = (
         ? undefined
         : getElementNavigationPage(pages, element)
       if (navigationPage) {
+        const targetElementId = getFirstMatchingElementId(navigationPage, normalizedSearchText)
         pushNavigationPageResult(results, seen, searchText, {
           id: `element-page-${pageIndex}-${elementIndex}`,
           targetPage: navigationPage,
           sourceTitle: elementTitle || componentLabel,
           description: `Opened by ${elementTitle || componentLabel}`,
           matchText: getPageVisibleSearchCorpus(navigationPage),
-          target: { type: 'page', pageId: navigationPage.id || pageId },
+          target: { type: 'page', pageId: navigationPage.id || pageId, elementId: targetElementId },
         })
       }
 
@@ -1080,7 +1105,7 @@ const getPreviewSearchResults = (
             targetPage: page,
             sourceTitle: itemTitle || elementTitle || componentLabel,
             matchText: [page.name, itemSearchCorpus].filter(Boolean).join(' '),
-            target: { type: 'page', pageId },
+            target: { type: 'page', pageId, elementId },
           })
         }
 
@@ -1105,7 +1130,13 @@ const getPreviewSearchResults = (
           description: formDescription,
           category: 'forms',
           visual: { type: 'icon', name: 'ClipboardList' },
-          target: { type: 'form', pageId, elementId, openForm: openFormTarget },
+          target: {
+            type: 'form',
+            pageId,
+            elementId,
+            fieldName: getFirstMatchingFormFieldName(formFields, normalizedSearchText),
+            openForm: openFormTarget,
+          },
           matchText: formVisibleSearchText,
         })
       }
