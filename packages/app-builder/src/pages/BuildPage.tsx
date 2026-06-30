@@ -3417,15 +3417,14 @@ export function BuildPage({
     if (!searchBarEnabled) return null
 
     if (device === 'desktop') {
-      const hasPersistentSearchField = desktopNavEnabled && desktopNavVariant === 'top' && !activePageIsDynamic
-      const searchOverlaysNav = desktopNavEnabled && (desktopNavVariant === 'contained' || desktopNavVariant === 'compact') && !activePageIsDynamic
+      const searchOverlaysNav = desktopNavEnabled && (desktopNavVariant === 'top' || desktopNavVariant === 'contained' || desktopNavVariant === 'compact') && !activePageIsDynamic
+      const searchUsesFullwidthOverlay = desktopNavEnabled && desktopNavVariant === 'top' && !activePageIsDynamic
       const searchUsesContainedOverlay = desktopNavEnabled && desktopNavVariant === 'contained' && !activePageIsDynamic
       const searchUsesCompactOverlay = desktopNavEnabled && desktopNavVariant === 'compact' && !activePageIsDynamic
-      const searchFieldVisible = hasPersistentSearchField || isDesktopPreviewSearchOpen
-      const searchPlaceholder = hasPersistentSearchField && !desktopPreviewSearchQuery ? 'Search' : ''
+      const searchFieldVisible = isDesktopPreviewSearchOpen
 
       return (
-        <div className={`live-preview__top-header-search${searchFieldVisible ? ' live-preview__top-header-search--open' : ''}${hasPersistentSearchField ? ' live-preview__top-header-search--persistent' : ''}${searchOverlaysNav ? ' live-preview__top-header-search--nav-overlay' : ''}${searchUsesContainedOverlay ? ' live-preview__top-header-search--contained-overlay' : ''}${searchUsesCompactOverlay ? ' live-preview__top-header-search--compact-overlay' : ''}`}>
+        <div className={`live-preview__top-header-search${searchFieldVisible ? ' live-preview__top-header-search--open' : ''}${searchOverlaysNav ? ' live-preview__top-header-search--nav-overlay' : ''}${searchUsesFullwidthOverlay ? ' live-preview__top-header-search--fullwidth-overlay' : ''}${searchUsesContainedOverlay ? ' live-preview__top-header-search--contained-overlay' : ''}${searchUsesCompactOverlay ? ' live-preview__top-header-search--compact-overlay' : ''}`}>
           <form
             className="live-preview__top-header-search-form"
             role="search"
@@ -3437,7 +3436,7 @@ export function BuildPage({
               className="live-preview__top-header-search-input"
               type="search"
               aria-label="Search"
-              placeholder={searchPlaceholder}
+              placeholder=""
               value={desktopPreviewSearchQuery}
               tabIndex={searchFieldVisible ? 0 : -1}
               onChange={(event) => setDesktopPreviewSearchQuery(event.currentTarget.value)}
@@ -3447,26 +3446,23 @@ export function BuildPage({
                   setDesktopPreviewSearchQuery('')
                   return
                 }
-                if (hasPersistentSearchField) return
                 setIsDesktopPreviewSearchOpen(false)
               }}
             />
-            {!hasPersistentSearchField && (
-              <button
-                type="button"
-                className="live-preview__top-header-search-close"
-                aria-label="Close search"
-                tabIndex={isDesktopPreviewSearchOpen ? 0 : -1}
-                onClick={() => {
-                  setDesktopPreviewSearchQuery('')
-                  setIsDesktopPreviewSearchOpen(false)
-                }}
-              >
-                <AppIcon name="X" size={16} />
-              </button>
-            )}
+            <button
+              type="button"
+              className="live-preview__top-header-search-close"
+              aria-label="Close search"
+              tabIndex={isDesktopPreviewSearchOpen ? 0 : -1}
+              onClick={() => {
+                setDesktopPreviewSearchQuery('')
+                setIsDesktopPreviewSearchOpen(false)
+              }}
+            >
+              <AppIcon name="X" size={16} />
+            </button>
           </form>
-          {!hasPersistentSearchField && isDesktopPreviewSearchOpen && (
+          {isDesktopPreviewSearchOpen && (
             <section className="live-preview__desktop-search-featured" aria-label="Featured searches">
               <div className="live-preview__desktop-search-featured-hero">
                 <span className="live-preview__desktop-search-featured-icon" aria-hidden="true">

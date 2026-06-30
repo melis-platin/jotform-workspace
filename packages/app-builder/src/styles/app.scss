@@ -10299,7 +10299,7 @@ body.builder--phone-only {
   margin: 0;
   padding: 0;
   border: 0;
-  background: rgba(8, 9, 11, 0.2);
+  background: transparent;
   cursor: default;
 }
 
@@ -10328,6 +10328,13 @@ body.builder--phone-only {
   top: calc(100% + 8px);
   width: 450px;
   min-height: 0;
+}
+
+.live-preview__top-header-search--fullwidth-overlay .live-preview__desktop-search-featured {
+  top: calc(100% + 8px);
+  width: 450px;
+  min-height: 0;
+  box-shadow: 0 2px 4px 0 rgba(37, 45, 91, 0.04), 0 8px 16px 0 rgba(84, 95, 111, 0.16);
 }
 
 .live-preview__top-header-search--compact-overlay .live-preview__desktop-search-featured {
