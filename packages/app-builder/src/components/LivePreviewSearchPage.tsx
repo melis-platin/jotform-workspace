@@ -210,7 +210,20 @@ const SEARCH_RESULT_PROPERTY_KEYS = [
   'Form Submit Label',
   'Submit Label',
   'Alt Text',
-  'Data Source',
+]
+const SEARCH_RESULT_ASSOCIATED_DATA_KEYS = ['Data Source', 'Source', 'Submits To']
+const NAVIGATION_ACTION_KEYS = ['Action', 'Button Action', 'Card Action', 'Click Action']
+const NAVIGATION_PAGE_PROPERTY_KEYS = [
+  'Action Page',
+  'Action Page ID',
+  'Destination Page',
+  'Navigate Page',
+  'Navigate To Page',
+  'Page',
+  'Page ID',
+  'Page to Open',
+  'Target Page',
+  'Target Page ID',
 ]
 const SEARCH_TEXT_SEPARATOR_REGEX = /\s*(?:[·•,&/|+]|\s[-–—]\s)\s*/
 
@@ -479,9 +492,58 @@ const shouldOpenFormTarget = (componentId: string | undefined, variants: Record<
   return hasOpenFormAction(properties)
 }
 
-const hasDynamicPageForElement = (pages: SearchSourcePage[], elementId: string) => (
-  pages.some((page) => page.dynamic && page.dynamicSourceElementId === elementId)
+const getDynamicPageForElement = (pages: SearchSourcePage[], elementId: string) => (
+  pages.find((page) => page.dynamic && page.dynamicSourceElementId === elementId)
 )
+
+const getElementSearchCorpus = (componentLabel: string, properties: Record<string, unknown>) => (
+  [
+    componentLabel,
+    ...SEARCH_RESULT_PROPERTY_KEYS.map((key) => String(properties[key] ?? '')),
+    ...SEARCH_RESULT_ASSOCIATED_DATA_KEYS.map((key) => String(properties[key] ?? '')),
+  ].join(' ')
+)
+
+const hasNavigateToPageAction = (properties: Record<string, unknown>) => (
+  NAVIGATION_ACTION_KEYS.some((key) => getStringValue(properties[key]) === 'Navigate to Page')
+)
+
+const getNavigationPageReference = (properties: Record<string, unknown>) => {
+  for (const key of NAVIGATION_PAGE_PROPERTY_KEYS) {
+    const value = getStringValue(properties[key])
+    if (value) return value
+  }
+
+  return ''
+}
+
+const findPageByReference = (pages: SearchSourcePage[], pageReference: string) => {
+  const cleanReference = pageReference.trim().replace(/^page:/i, '')
+  if (!cleanReference) return undefined
+
+  const normalizedReference = normalizeSearchPhrase(cleanReference)
+
+  return pages.find((page) => page.id === cleanReference)
+    ?? pages.find((page) => normalizeSearchPhrase(page.name) === normalizedReference)
+}
+
+const getElementNavigationPage = (
+  pages: SearchSourcePage[],
+  element: SearchSourceElement,
+) => {
+  const properties = element.properties ?? {}
+
+  if (element.componentId === 'list' && getStringValue(properties['Click Action']) === 'Open Dynamic Page' && element.id) {
+    return getDynamicPageForElement(pages, element.id)
+  }
+
+  if (!hasNavigateToPageAction(properties)) return undefined
+
+  const pageReference = getNavigationPageReference(properties)
+  if (!pageReference) return undefined
+
+  return findPageByReference(pages, pageReference)
+}
 
 const getSearchResultTargetPriority = (target: SearchResultTarget) => {
   if (target.type === 'dynamic-item') return 4
@@ -579,6 +641,38 @@ const pushSearchResult = (
   })
 }
 
+const pushNavigationPageResult = (
+  results: SearchMatchResult[],
+  seen: Set<string>,
+  searchText: string,
+  {
+    id,
+    targetPage,
+    sourceTitle,
+    sourceSearchText,
+    target,
+  }: {
+    id: string
+    targetPage: SearchSourcePage
+    sourceTitle: string
+    sourceSearchText: string
+    target: SearchResultTarget
+  },
+) => {
+  if (!targetPage.id) return
+
+  const targetPageTitle = getCleanSearchResultText(targetPage.name) || targetPage.name
+  pushSearchResult(results, seen, searchText, {
+    id,
+    title: targetPageTitle,
+    description: `Opened by ${sourceTitle || 'element'}`,
+    category: 'pages',
+    visual: { type: 'icon', name: 'FileText' },
+    target,
+    searchText: [targetPage.name, sourceTitle, sourceSearchText].filter(Boolean).join(' '),
+  })
+}
+
 const getPreviewSearchResults = (
   searchText: string,
   pages: SearchSourcePage[] = [],
@@ -615,6 +709,19 @@ const getPreviewSearchResults = (
       target: action.target,
       searchText: action.searchText,
     })
+
+    if (action.target.type === 'page') {
+      const targetPage = pages.find((page) => page.id === action.target.pageId)
+      if (targetPage) {
+        pushNavigationPageResult(results, seen, searchText, {
+          id: `action-page-${action.id}`,
+          targetPage,
+          sourceTitle: action.title,
+          sourceSearchText: [action.title, action.description, action.searchText].filter(Boolean).join(' '),
+          target: action.target,
+        })
+      }
+    }
   })
 
   visiblePages.forEach((page, pageIndex) => {
@@ -663,6 +770,7 @@ const getPreviewSearchResults = (
         pageId,
         elementId,
       }
+      const elementSearchText = getElementSearchCorpus(componentLabel, properties)
 
       if (!hasFormConfig) {
         pushSearchResult(results, seen, searchText, {
@@ -672,10 +780,18 @@ const getPreviewSearchResults = (
           category: getElementSearchCategory(element.componentId, hasFormConfig),
           visual: getElementVisual(element.componentId, properties),
           target: elementTarget,
-          searchText: [
-            componentLabel,
-            ...SEARCH_RESULT_PROPERTY_KEYS.map((key) => String(properties[key] ?? '')),
-          ].join(' '),
+          searchText: elementSearchText,
+        })
+      }
+
+      const navigationPage = getElementNavigationPage(pages, element)
+      if (navigationPage) {
+        pushNavigationPageResult(results, seen, searchText, {
+          id: `element-page-${pageIndex}-${elementIndex}`,
+          targetPage: navigationPage,
+          sourceTitle: elementTitle || componentLabel,
+          sourceSearchText: elementSearchText,
+          target: { type: 'page', pageId: navigationPage.id || pageId },
         })
       }
 
@@ -683,13 +799,16 @@ const getPreviewSearchResults = (
         ...parseSearchJsonItems(properties.Items),
         ...parseSearchJsonItems(properties.Products),
       ]
-      const hasDynamicDetailTarget = element.componentId === 'list'
+      const dynamicDetailPage = element.componentId === 'list'
         && String(properties['Click Action'] ?? '') === 'Open Dynamic Page'
-        && hasDynamicPageForElement(pages, elementId)
+        ? getDynamicPageForElement(pages, elementId)
+        : undefined
+      const hasDynamicDetailTarget = Boolean(dynamicDetailPage)
 
       listItems.forEach((item, itemIndex) => {
         const itemTitle = getItemText(item, ['title', 'name', 'label', 'question'])
         const itemDescription = getItemText(item, ['description', 'text', 'answer', 'details', 'category', 'price'])
+        const itemSearchCorpus = getItemSearchCorpus(item)
         pushSearchResult(results, seen, searchText, {
           id: `item-${pageIndex}-${elementIndex}-${itemIndex}`,
           title: itemTitle || elementTitle || componentLabel,
@@ -699,8 +818,18 @@ const getPreviewSearchResults = (
           target: hasDynamicDetailTarget
             ? { type: 'dynamic-item', pageId, elementId, itemIndex }
             : elementTarget,
-          searchText: getItemSearchCorpus(item),
+          searchText: itemSearchCorpus,
         })
+
+        if (dynamicDetailPage) {
+          pushNavigationPageResult(results, seen, searchText, {
+            id: `item-page-${pageIndex}-${elementIndex}-${itemIndex}`,
+            targetPage: dynamicDetailPage,
+            sourceTitle: itemTitle || elementTitle || componentLabel,
+            sourceSearchText: [elementSearchText, itemSearchCorpus].join(' '),
+            target: { type: 'dynamic-item', pageId, elementId, itemIndex },
+          })
+        }
       })
 
       if (hasFormConfig && (formTitle || formFields.length > 0 || openFormTarget)) {
@@ -743,18 +872,6 @@ const getPreviewSearchResults = (
         })
       })
 
-      const submitsTo = getCleanSearchResultText(properties['Submits To'])
-      if (hasFormConfig && submitsTo) {
-        pushSearchResult(results, seen, searchText, {
-          id: `collection-${pageIndex}-${elementIndex}`,
-          title: submitsTo,
-          description: `Data collection for ${formTitle || page.name}`,
-          category: 'forms',
-          visual: { type: 'icon', name: 'Database' },
-          target: { type: 'form', pageId, elementId, openForm: openFormTarget },
-          searchText: `${componentLabel} data form submissions ${formTitle}`,
-        })
-      }
     })
   })
 
