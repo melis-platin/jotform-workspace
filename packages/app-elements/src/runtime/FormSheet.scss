@@ -189,8 +189,8 @@
 @keyframes jf-form-sheet-field-search-highlight {
   0%,
   35% {
-    background: color-mix(in srgb, var(--fg-brand) 10%, transparent);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--fg-brand) 28%, transparent);
+    background: color-mix(in srgb, var(--bg-fill-brand, var(--fg-brand)) 10%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-fill-brand, var(--fg-brand)) 28%, transparent);
   }
 
   100% {

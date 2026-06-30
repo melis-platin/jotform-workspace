@@ -1984,8 +1984,8 @@ body {
 @keyframes live-preview-search-target-highlight {
   0%,
   35% {
-    background: color-mix(in srgb, var(--fg-brand) 12%, transparent);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--fg-brand) 34%, transparent);
+    background: color-mix(in srgb, var(--bg-fill-brand, var(--fg-brand)) 12%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-fill-brand, var(--fg-brand)) 34%, transparent);
   }
 
   100% {
@@ -3318,7 +3318,7 @@ body {
   --live-preview-search-match-title: #0A1551;
   --live-preview-search-match-description: #6C73A8;
   --live-preview-search-match-section-title: #454E80;
-  --live-preview-search-match-highlight: #0099FF;
+  --live-preview-search-match-highlight: var(--bg-fill-brand, var(--fg-brand));
   --live-preview-search-filter-text: #343C6A;
   --live-preview-search-filter-selected-bg: #DADEF3;
   --live-preview-search-match-visual-bg: var(--navy-25);
