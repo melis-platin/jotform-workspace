@@ -31,14 +31,18 @@ ComponentRegistry.register({
     { name: 'Action Form', type: 'text', default: '' },
     { name: 'Action Email', type: 'text', default: '' },
     { name: 'Action Phone', type: 'text', default: '' },
-    // Background
-    { name: 'Background Source', type: 'text', default: 'theme' },
+    // Background — only 'color' | 'image' are user-selectable. 'color' with an empty
+    // colour renders the theme brand surface (usingBrand), which replaces the old
+    // standalone 'theme' source. 'theme' stays a valid value for backward compat.
+    { name: 'Background Source', type: 'text', default: 'color' },
     { name: 'Background Mode', type: 'text', default: 'solid' },
     { name: 'Background Color', type: 'text', default: '' },
     { name: 'Gradient Start', type: 'text', default: '' },
     { name: 'Gradient End', type: 'text', default: '' },
     { name: 'Background Image', type: 'text', default: '' },
     { name: 'Background Image Name', type: 'text', default: '' },
+    // Text colour is auto-contrast only — no user control in the Style panel.
+    // Kept here (default 'auto') so render() always resolves a mode.
     { name: 'Text Color', type: 'text', default: 'auto' },
     { name: 'Height', type: 'number', default: 320, min: 120, max: 720, step: 4 },
     { name: 'Selected', type: 'boolean', default: false },
@@ -116,7 +120,7 @@ ComponentRegistry.register({
         buttonAction={props['Button Action'] as string}
         showButton={props['Show Button'] as boolean}
         alignment={(variants['Alignment'] as BannerAlignment) ?? 'Center'}
-        bgSource={(props['Background Source'] as BannerBgSource) || 'theme'}
+        bgSource={(props['Background Source'] as BannerBgSource) || 'color'}
         bgMode={(props['Background Mode'] as BannerBgMode) || 'solid'}
         bgColor={props['Background Color'] as string}
         gradientStart={props['Gradient Start'] as string}

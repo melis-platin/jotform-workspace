@@ -19,11 +19,12 @@
 
 .bottom-nav__item {
   flex: 1;
+  min-width: 0; // allow flex items to shrink so labels can truncate instead of wrapping
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-1);
-  padding: var(--space-2) 0;
+  padding: var(--space-2) var(--space-1);
   position: relative;
   cursor: pointer;
   color: var(--fg-tertiary);
@@ -47,6 +48,10 @@
   font-weight: var(--font-weight-regular);
   line-height: var(--line-height-label-sm);
   text-align: center;
+  max-width: 100%;
+  white-space: nowrap; // keep labels on a single line…
+  overflow: hidden;
+  text-overflow: ellipsis; // …and truncate long labels (e.g. "Case Studies") with an ellipsis
 }
 
 .bottom-nav__indicator {

@@ -6340,12 +6340,24 @@ export function BuildPage({
                     )
                   }
 
-                  // Banner Style tab — alignment, background (color/gradient/image), text color, height.
+                  // Banner Style tab — alignment, background (color/gradient/image), height.
+                  // Text Color is intentionally not exposed here: it stays "auto"
+                  // (auto-contrast) in the background — see Banner/register.tsx.
                   if (isBanner && propertyTab === 'style') {
                     const p = selectedElement.properties
                     const set = (name: string, value: string | boolean | number) => handlePropertyChange(selectedElement.id, name, value)
                     const str = (name: string) => String(p[name] ?? '')
-                    const bgSource = str('Background Source') || 'theme'
+                    // Only 'color' | 'image' are offered. Legacy 'theme' (and empty) fold
+                    // into 'color': an empty colour renders the theme brand surface, and
+                    // the reset below clears back to it — so 'color' subsumes the old theme.
+                    const bgSource = str('Background Source') === 'image' ? 'image' : 'color'
+                    const hasCustomBg = !!str('Background Color') || !!str('Gradient Start') || !!str('Gradient End')
+                    const resetBgToTheme = () => {
+                      set('Background Color', '')
+                      set('Gradient Start', '')
+                      set('Gradient End', '')
+                      set('Background Mode', 'solid')
+                    }
                     const bannerBgInputId = `banner-bg-${selectedElement.id}`
                     const alignment = String(selectedElement.variants['Alignment'] ?? 'Center')
                     return (
@@ -6368,22 +6380,32 @@ export function BuildPage({
                               variant="text"
                               value={bgSource}
                               onChange={(val) => set('Background Source', val)}
-                              items={[{ value: 'theme', label: 'Theme' }, { value: 'color', label: 'Color' }, { value: 'image', label: 'Image' }]}
+                              items={[{ value: 'color', label: 'Color' }, { value: 'image', label: 'Image' }]}
                             />
                           </DSFormField>
                         </div>
                         {bgSource === 'color' && (
                           <div className="property-panel__field">
                             <DSFormField title="Background Color" size="md" showDescription={false} showHelpText={false}>
-                              <HeaderBackgroundField
-                                mode={(str('Background Mode') as 'solid' | 'gradient') || 'solid'}
-                                color={str('Background Color')}
-                                gradientStart={str('Gradient Start')}
-                                gradientEnd={str('Gradient End')}
-                                onModeChange={(m) => set('Background Mode', m)}
-                                onColorChange={(c) => set('Background Color', c)}
-                                onGradientChange={(s, e) => { set('Gradient Start', s); set('Gradient End', e) }}
-                              />
+                              <div className="banner-bg-field">
+                                <HeaderBackgroundField
+                                  mode={(str('Background Mode') as 'solid' | 'gradient') || 'solid'}
+                                  color={str('Background Color')}
+                                  gradientStart={str('Gradient Start')}
+                                  gradientEnd={str('Gradient End')}
+                                  // Any colour interaction pins the source to 'color' so the
+                                  // pick takes effect even on legacy banners stored as 'theme'.
+                                  onModeChange={(m) => { set('Background Source', 'color'); set('Background Mode', m) }}
+                                  onColorChange={(c) => { set('Background Source', 'color'); set('Background Color', c) }}
+                                  onGradientChange={(s, e) => { set('Background Source', 'color'); set('Gradient Start', s); set('Gradient End', e) }}
+                                />
+                                {hasCustomBg && (
+                                  <button type="button" className="banner-bg-reset" onClick={resetBgToTheme}>
+                                    <Icon name="arrow-rotate-left" category="arrows" size={14} />
+                                    Reset to theme color
+                                  </button>
+                                )}
+                              </div>
                             </DSFormField>
                           </div>
                         )}
@@ -6438,17 +6460,6 @@ export function BuildPage({
                             </DSFormField>
                           </div>
                         )}
-                        <div className="property-panel__field">
-                          <DSFormField title="Text Color" size="md" showDescription={false} showHelpText={false}>
-                            <Segmented
-                              accent="apps"
-                              variant="text"
-                              value={str('Text Color') || 'auto'}
-                              onChange={(val) => set('Text Color', val)}
-                              items={[{ value: 'auto', label: 'Auto' }, { value: 'light', label: 'Light' }, { value: 'dark', label: 'Dark' }]}
-                            />
-                          </DSFormField>
-                        </div>
                         <div className="property-panel__field">
                           <DSFormField title="Height" size="md" showDescription={false} showHelpText={false}>
                             <DSSlider

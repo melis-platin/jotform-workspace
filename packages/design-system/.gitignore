@@ -12,6 +12,12 @@ dist
 dist-ssr
 *.local
 
+# Generated design-sync / bundle artifacts
+.ds-sync/
+.design-sync/
+ds-bundle/
+dist-types/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

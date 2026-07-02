@@ -1171,12 +1171,13 @@ body {
   .themes-view__device {
     width: 100%;
     max-width: 100%;
-    // Edit canvas: the page card is 644px with a --space-6 (24px) inset. Publish
-    // the same to the app header columns (the AppHeader lives in
-    // .themes-view__device, a sibling above the card) so the title / description
-    // / button align with the page elements. Real narrow viewport (<=768px) is
-    // handled by the AppHeader @media, which overrides these on the element.
-    --app-header-max: 644px;
+    // Edit canvas: the page card is 760px (matching the desktop preview) with a
+    // --space-6 (24px) inset. Publish the same to the app header columns (the
+    // AppHeader lives in .themes-view__device, a sibling above the card) so the
+    // title / description / button align with the page elements. Real narrow
+    // viewport (<=768px) is handled by the AppHeader @media, which overrides
+    // these on the element.
+    --app-header-max: 760px;
     --app-header-inset: var(--space-6);
 
     > div {
@@ -1186,7 +1187,7 @@ body {
 
   .themes-view__canvas {
     width: 100%;
-    max-width: 644px;
+    max-width: 760px;
     margin: 0 auto;
     box-shadow: var(--shadow-sm);
     border-radius: var(--radius-xl);
@@ -1591,6 +1592,13 @@ body {
   z-index: 1;
   display: flex;
   flex-direction: column;
+  // Native iPhone safe-area height. The phone screen renders ~348px wide here,
+  // and native is 59pt / 393pt ≈ 15% of width → 52px. Kept as a fixed px (NOT a
+  // container-query unit): making this element a container would re-anchor the
+  // fluid `cqi` typography of everything above app-content (top-header title,
+  // overlay headings) onto the phone width and shrink it. Descendants read
+  // var(--sb-h, 59px); non-phone previews fall back to the original 59px.
+  --sb-h: 52px;
 }
 
 // ---- Tablet Mockup (iPad mini portrait) ----
@@ -1717,7 +1725,7 @@ body {
   top: 0;
   left: 0;
   right: 0;
-  height: 59px;
+  height: var(--sb-h, 59px);
   // Above the top-header (z-index 4) so the nav bar tucks UNDER the safe-area
   // status bar as it scroll-hides, instead of sliding over the clock/battery.
   z-index: 5;
@@ -1738,14 +1746,16 @@ body {
   z-index: 6;
   display: block;
   width: 100%;
-  height: auto;
+  // Fill the safe-area zone; the SVG's default xMidYMid meet centres the
+  // clock / Dynamic Island / battery vertically (native iOS placement).
+  height: var(--sb-h, 59px);
   color: var(--fg-primary);
 }
 
 // ---- Top Header (iOS nav bar) ----
 .live-preview__top-header {
   position: absolute;
-  top: 59px;
+  top: var(--sb-h, 59px);
   left: 0;
   right: 0;
   height: 48px;
@@ -1900,7 +1910,7 @@ body {
   display: none;
 }
 .live-preview__content-scaler.live-preview__content-scaler--no-top-nav {
-  padding-top: 59px;
+  padding-top: var(--sb-h, 59px);
 }
 .live-preview__tablet-screen > .live-preview__content-scaler.live-preview__content-scaler--no-top-nav {
   padding-top: 32px;
@@ -2199,7 +2209,7 @@ body {
 
 .live-preview__popover-scrim {
   position: absolute;
-  top: 59px;
+  top: var(--sb-h, 59px);
   left: 0;
   right: 0;
   bottom: 0;
@@ -2215,10 +2225,10 @@ body {
 
 .live-preview__login-popover {
   position: absolute;
-  top: calc(59px + 48px + 10px);
+  top: calc(var(--sb-h, 59px) + 48px + 10px);
   left: var(--space-2);
   right: var(--space-2);
-  max-height: calc(100% - 59px - 48px - 10px - var(--space-10));
+  max-height: calc(100% - var(--sb-h, 59px) - 48px - 10px - var(--space-10));
   z-index: 4;
   display: flex;
   flex-direction: column;
@@ -2266,7 +2276,7 @@ body {
 // Full-screen auth page (login/sign-up opened from the landing menu, not a popover).
 .live-preview__auth-page {
   position: absolute;
-  top: 59px;
+  top: var(--sb-h, 59px);
   left: 0;
   right: 0;
   bottom: 0;
@@ -2784,7 +2794,10 @@ body {
   overflow-x: hidden;
   scrollbar-width: none;
   background: var(--bg-surface);
-  padding-top: 107px;
+  // Reserve the safe-area status bar (--sb-h) + the 48px top header. Was a hard
+  // 107px (59 + 48); now tracks --sb-h so it stays flush when the status bar
+  // height changes (no stray gap between the header and the page content).
+  padding-top: calc(var(--sb-h, 59px) + 48px);
   // Default reserves the home-indicator strip (21px) when no bottom-nav
   // sits below the scaler. The bottom-nav variant (in flow on phone /
   // tablet shells) takes over that clearance via its own padding-bottom.
@@ -2966,7 +2979,7 @@ body {
 // ---- Checkout Page ----
 .live-preview__checkout-page {
   position: absolute;
-  top: 59px;
+  top: var(--sb-h, 59px);
   left: 0;
   right: 0;
   bottom: 0;
@@ -3946,7 +3959,7 @@ body {
 
 .live-preview__cart-page {
   position: absolute;
-  top: 59px;
+  top: var(--sb-h, 59px);
   left: 0;
   right: 0;
   bottom: 0;
@@ -4243,7 +4256,7 @@ body {
 // ---- Product Detail Page ----
 .live-preview__detail-page {
   position: absolute;
-  top: 59px;
+  top: var(--sb-h, 59px);
   left: 0;
   right: 0;
   bottom: 0;
@@ -4652,7 +4665,7 @@ body {
 // ---- Side Menu Drawer ----
 .live-preview__menu {
   position: absolute;
-  top: 59px;
+  top: var(--sb-h, 59px);
   left: 0;
   right: 0;
   bottom: 0;
@@ -4926,7 +4939,7 @@ body {
   align-items: center;
   gap: var(--space-2);
   width: 100%;
-  max-width: 644px;
+  max-width: 760px;
   margin: 0 auto;
   padding: 0 0 var(--space-2);
   font-family: var(--font-family-circular);
@@ -5010,7 +5023,7 @@ body {
   justify-content: space-between;
   gap: var(--space-2);
   width: 100%;
-  max-width: 644px;
+  max-width: 760px;
   margin: 0 auto;
   padding: 0 0 var(--space-2);
   font-family: var(--font-family-circular);
@@ -5201,7 +5214,7 @@ body {
   padding: 0;
   margin: var(--space-4) auto;
   width: 100%;
-  max-width: 644px;
+  max-width: 760px;
 
   @media (max-width: 768px) {
     max-width: 100%;
@@ -5210,14 +5223,14 @@ body {
 }
 
 // Builder canvas attribution: matches the AddPageDivider's centered
-// 644px column. Default keeps a 16px gap above + below; the override
+// 760px column. Default keeps a 16px gap above + below; the override
 // below drops the top margin when the preceding page-wrapper ends in
 // an AddPageDivider (which already contributes its own 16px below).
 // .themes-view__device is flex-col so margins don't collapse — handle
 // the two cases explicitly.
 .build-page__attribution {
   width: 100%;
-  max-width: 644px;
+  max-width: 760px;
   margin: var(--space-4) auto;
 
   @media (max-width: 768px) {
@@ -6853,6 +6866,34 @@ body {
 
   .upload-area--light & {
     color: var(--text-medium);
+  }
+}
+
+// Banner background colour field: swatch + a subtle "reset to theme colour" link
+// shown only once a custom colour/gradient has been picked.
+.banner-bg-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.banner-bg-reset {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  padding: 0;
+  background: transparent;
+  border: none;
+  font-family: var(--font-family-circular);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--gray-200);
+  cursor: pointer;
+  transition: color 150ms ease;
+
+  &:hover {
+    color: var(--core-white);
   }
 }
 
@@ -9632,8 +9673,8 @@ body.builder--phone-only {
     font-weight: 500;
   }
 
-  // Desktop preview uses a wider page container than the builder canvas (which
-  // stays 644px): 760px gives grid cards more room while keeping text readable.
+  // Desktop preview page container — 760px, matching the builder edit canvas so
+  // the layout you edit lines up 1:1 with the real desktop view.
   .themes-view__canvas {
     width: 100%;
     max-width: 760px;
