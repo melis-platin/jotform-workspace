@@ -42,7 +42,7 @@ export interface SearchSourceAction {
   sourceSearchText?: string
 }
 
-interface SearchMatchResult {
+export interface SearchMatchResult {
   id: string
   title: string
   description: string
@@ -1014,7 +1014,7 @@ const pushNavigationPageResult = (
   })
 }
 
-const getPreviewSearchResults = (
+export const getPreviewSearchResults = (
   searchText: string,
   pages: SearchSourcePage[] = [],
   appTitle = APP_TITLE_PLACEHOLDER,
@@ -1340,6 +1340,120 @@ const renderSearchResultVisual = (visual: SearchMatchVisual) => (
   </span>
 )
 
+export function LivePreviewSearchEmptyState({ query }: { query: string }) {
+  return (
+    <section className="live-preview__search-empty" aria-live="polite">
+      <div className="live-preview__search-empty-icon" aria-hidden="true">
+        <AppIcon name="Search" size={32} />
+      </div>
+      <div className="live-preview__search-empty-copy">
+        <h2 className="live-preview__search-empty-title">
+          No matches for &ldquo;{query}&rdquo;
+        </h2>
+        <p className="live-preview__search-empty-description">Try another keyword.</p>
+      </div>
+    </section>
+  )
+}
+
+export function LivePreviewSearchResultList({
+  resultQuery,
+  results,
+  onResultSelect,
+}: {
+  resultQuery: string
+  results: SearchMatchResult[]
+  onResultSelect?: (target: SearchResultTarget) => void
+}) {
+  const [activeResultFilter, setActiveResultFilter] = useState<SearchResultFilter>('all')
+  const searchResultGroups = useMemo(() => (
+    SEARCH_RESULT_CATEGORY_ORDER.map((category) => ({
+      category,
+      label: SEARCH_RESULT_CATEGORY_LABELS[category],
+      results: results.filter((result) => result.category === category),
+    }))
+  ), [results])
+  const searchResultFilters = useMemo<Array<{ id: SearchResultFilter, label: string }>>(() => [
+    { id: 'all', label: 'All' },
+    ...searchResultGroups
+      .filter((group) => group.results.length > 0)
+      .map((group) => ({
+        id: group.category,
+        label: SEARCH_RESULT_FILTER_LABELS[group.category],
+      })),
+  ], [searchResultGroups])
+  const visibleSearchResultGroups = searchResultGroups.filter((group) => (
+    group.results.length > 0
+    && (activeResultFilter === 'all' || group.category === activeResultFilter)
+  ))
+
+  useEffect(() => {
+    setActiveResultFilter('all')
+  }, [resultQuery])
+
+  useEffect(() => {
+    if (!searchResultFilters.some((filter) => filter.id === activeResultFilter)) {
+      setActiveResultFilter('all')
+    }
+  }, [activeResultFilter, searchResultFilters])
+
+  return (
+    <section className="live-preview__search-match-results" aria-label={`Search results for ${resultQuery}`}>
+      <div className="live-preview__search-filter-row" role="tablist" aria-label="Search result categories">
+        {searchResultFilters.map((filter) => (
+          <button
+            key={filter.id}
+            type="button"
+            role="tab"
+            aria-selected={activeResultFilter === filter.id}
+            className={`live-preview__search-filter-chip${activeResultFilter === filter.id ? ' live-preview__search-filter-chip--active' : ''}`}
+            onClick={() => setActiveResultFilter(filter.id)}
+          >
+            {filter.label}
+          </button>
+        ))}
+      </div>
+
+      {visibleSearchResultGroups.map((group) => (
+        <section
+          key={group.category}
+          className="live-preview__search-match-section"
+          aria-label={group.label}
+        >
+          <h2 className="live-preview__search-match-section-title">{group.label}</h2>
+          <div className="live-preview__search-match-section-list">
+            {group.results.map((result) => (
+              <button
+                key={result.id}
+                type="button"
+                className={`live-preview__search-match-item${!result.description && !result.matchContext ? ' live-preview__search-match-item--single-line' : ''}`}
+                onClick={() => onResultSelect?.(result.target)}
+              >
+                {renderSearchResultVisual(result.visual)}
+                <span className="live-preview__search-match-copy">
+                  <span className="live-preview__search-match-title">
+                    {renderHighlightedText(result.title, resultQuery)}
+                  </span>
+                  {result.description && (
+                    <span className="live-preview__search-match-description">
+                      {renderHighlightedText(result.description, resultQuery)}
+                    </span>
+                  )}
+                  {result.matchContext && (
+                    <span className="live-preview__search-match-context">
+                      {renderHighlightedText(result.matchContext, resultQuery)}
+                    </span>
+                  )}
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
+      ))}
+    </section>
+  )
+}
+
 export function LivePreviewSearchPage({
   onClose,
   onResultSelect,
@@ -1356,7 +1470,6 @@ export function LivePreviewSearchPage({
   )
   const [noResultsQuery, setNoResultsQuery] = useState('')
   const [resultQuery, setResultQuery] = useState('')
-  const [activeResultFilter, setActiveResultFilter] = useState<SearchResultFilter>('all')
   const inputRef = useRef<HTMLInputElement>(null)
   const autoRecordedQueryRef = useRef('')
   const featuredSearches = useMemo(
@@ -1375,38 +1488,12 @@ export function LivePreviewSearchPage({
     ),
     [appSubtitle, appTitle, hasSearchResults, pages, resultQuery, searchActions],
   )
-  const searchResultGroups = useMemo(() => (
-    SEARCH_RESULT_CATEGORY_ORDER.map((category) => ({
-      category,
-      label: SEARCH_RESULT_CATEGORY_LABELS[category],
-      results: matchingSearchResults.filter((result) => result.category === category),
-    }))
-  ), [matchingSearchResults])
-  const searchResultFilters = useMemo<Array<{ id: SearchResultFilter, label: string }>>(() => [
-    { id: 'all', label: 'All' },
-    ...searchResultGroups
-      .filter((group) => group.results.length > 0)
-      .map((group) => ({
-        id: group.category,
-        label: SEARCH_RESULT_FILTER_LABELS[group.category],
-      })),
-  ], [searchResultGroups])
-  const visibleSearchResultGroups = searchResultGroups.filter((group) => (
-    group.results.length > 0
-    && (activeResultFilter === 'all' || group.category === activeResultFilter)
-  ))
   const showRecentSearches = !hasQuery && !hasNoResults && !hasSearchResults && hasRecentSearches
   const showSearchWelcome = !hasQuery && !hasNoResults && !hasSearchResults && !hasRecentSearches
 
   useEffect(() => {
     setRecentSearches(readRecentSearches(recentSearchStorageKey))
   }, [recentSearchStorageKey])
-
-  useEffect(() => {
-    if (!searchResultFilters.some((filter) => filter.id === activeResultFilter)) {
-      setActiveResultFilter('all')
-    }
-  }, [activeResultFilter, searchResultFilters])
 
   const updateRecentSearches = useCallback((getNextSearches: (currentSearches: string[]) => string[]) => {
     setRecentSearches((currentSearches) => {
@@ -1461,13 +1548,11 @@ export function LivePreviewSearchPage({
       if (syncQuery) setQuery('')
       setNoResultsQuery('')
       setResultQuery('')
-      setActiveResultFilter('all')
       inputRef.current?.focus()
       return
     }
 
     if (syncQuery) setQuery(nextQuery)
-    setActiveResultFilter('all')
     if (recordRecent) recordRecentSearch(nextQuery)
     applySearchState(nextQuery)
     inputRef.current?.focus()
@@ -1477,7 +1562,6 @@ export function LivePreviewSearchPage({
     setQuery('')
     setNoResultsQuery('')
     setResultQuery('')
-    setActiveResultFilter('all')
     inputRef.current?.focus()
   }
 
@@ -1512,7 +1596,6 @@ export function LivePreviewSearchPage({
     setQuery(nextQuery)
     setNoResultsQuery('')
     setResultQuery('')
-    setActiveResultFilter('all')
 
     if (!nextQuery.trim()) {
       return
@@ -1563,77 +1646,17 @@ export function LivePreviewSearchPage({
         </form>
       </header>
 
-      {hasNoResults && (
-        <section className="live-preview__search-empty" aria-live="polite">
-          <div className="live-preview__search-empty-icon" aria-hidden="true">
-            <AppIcon name="Search" size={32} />
-          </div>
-          <div className="live-preview__search-empty-copy">
-            <h2 className="live-preview__search-empty-title">
-              No matches for &ldquo;{noResultsQuery}&rdquo;
-            </h2>
-            <p className="live-preview__search-empty-description">Try another keyword.</p>
-          </div>
-        </section>
-      )}
+      {hasNoResults && <LivePreviewSearchEmptyState query={noResultsQuery} />}
 
       {hasSearchResults && (
-        <section className="live-preview__search-match-results" aria-label={`Search results for ${resultQuery}`}>
-          <div className="live-preview__search-filter-row" role="tablist" aria-label="Search result categories">
-            {searchResultFilters.map((filter) => (
-              <button
-                key={filter.id}
-                type="button"
-                role="tab"
-                aria-selected={activeResultFilter === filter.id}
-                className={`live-preview__search-filter-chip${activeResultFilter === filter.id ? ' live-preview__search-filter-chip--active' : ''}`}
-                onClick={() => setActiveResultFilter(filter.id)}
-              >
-                {filter.label}
-              </button>
-            ))}
-          </div>
-
-          {visibleSearchResultGroups.map((group) => (
-            <section
-              key={group.category}
-              className="live-preview__search-match-section"
-              aria-label={group.label}
-            >
-              <h2 className="live-preview__search-match-section-title">{group.label}</h2>
-              <div className="live-preview__search-match-section-list">
-                {group.results.map((result) => (
-                  <button
-                    key={result.id}
-                    type="button"
-                    className={`live-preview__search-match-item${!result.description && !result.matchContext ? ' live-preview__search-match-item--single-line' : ''}`}
-                    onClick={() => {
-                      recordRecentSearch(resultQuery)
-                      onResultSelect?.(result.target)
-                    }}
-                  >
-                    {renderSearchResultVisual(result.visual)}
-                    <span className="live-preview__search-match-copy">
-                      <span className="live-preview__search-match-title">
-                        {renderHighlightedText(result.title, resultQuery)}
-                      </span>
-                      {result.description && (
-                        <span className="live-preview__search-match-description">
-                          {renderHighlightedText(result.description, resultQuery)}
-                        </span>
-                      )}
-                      {result.matchContext && (
-                        <span className="live-preview__search-match-context">
-                          {renderHighlightedText(result.matchContext, resultQuery)}
-                        </span>
-                      )}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </section>
-          ))}
-        </section>
+        <LivePreviewSearchResultList
+          resultQuery={resultQuery}
+          results={matchingSearchResults}
+          onResultSelect={(target) => {
+            recordRecentSearch(resultQuery)
+            onResultSelect?.(target)
+          }}
+        />
       )}
 
       {showRecentSearches && (

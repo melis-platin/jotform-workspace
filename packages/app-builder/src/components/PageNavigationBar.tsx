@@ -30,6 +30,7 @@ interface PageTab {
 interface PageNavigationBarProps {
   pages: PageTab[]
   activePageId: string
+  variant?: 'default' | 'empty'
   onPageSelect: (pageId: string) => void
   onPageReorder: (pages: PageTab[]) => void
   onPageRename: (pageId: string, name: string) => void
@@ -265,6 +266,7 @@ function DragOverlayTab({ page, index }: { page: PageTab; index: number }) {
 export function PageNavigationBar({
   pages,
   activePageId,
+  variant = 'default',
   onPageSelect,
   onPageReorder,
   onPageRename,
@@ -276,6 +278,8 @@ export function PageNavigationBar({
   const [dragActiveId, setDragActiveId] = useState<string | null>(null)
   const [isOverflowing, setIsOverflowing] = useState(false)
   const pagesRef = useRef<HTMLDivElement>(null)
+  const emptyVariant = variant === 'empty'
+  const showNavigationSettings = pages.length > 1
 
   const checkOverflow = useCallback(() => {
     const el = pagesRef.current
@@ -331,38 +335,52 @@ export function PageNavigationBar({
   const draggedIndex = dragActiveId ? pages.findIndex((p) => p.id === dragActiveId) : -1
 
   return (
-    <div className="page-nav">
+    <div className={`page-nav${emptyVariant ? ' page-nav--empty' : ''}`}>
       <div className="page-nav__pages-wrapper">
       {isOverflowing && <div className="page-nav__fade" />}
       <div className="page-nav__pages" ref={pagesRef}>
-        <DndContext
-          id="page-nav-dnd"
-          sensors={sensors}
-          collisionDetection={closestCenter}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-        >
-          <SortableContext items={pages.map((p) => p.id)} strategy={horizontalListSortingStrategy}>
-            {pages.map((page, index) => (
-              <SortablePageTab
-                key={page.id}
-                page={page}
-                index={index}
-                isActive={page.id === activePageId}
-                isFirstPage={index === 0}
-                onSelect={() => onPageSelect(page.id)}
-                onRename={(name) => onPageRename(page.id, name)}
-                onChangeIcon={(icon) => onChangeIcon(page.id, icon)}
-                onDelete={() => onDeletePage(page.id)}
-              />
-            ))}
-          </SortableContext>
-          <DragOverlay>
-            {draggedPage ? (
-              <DragOverlayTab page={draggedPage} index={draggedIndex} />
-            ) : null}
-          </DragOverlay>
-        </DndContext>
+        {emptyVariant ? (
+          pages.map((page) => (
+            <button
+              key={page.id}
+              type="button"
+              className={`page-nav__tab page-nav__tab--empty${page.id === activePageId ? ' page-nav__tab--active' : ''}`}
+              data-page-tab={page.id}
+              onClick={() => onPageSelect(page.id)}
+            >
+              <span className="page-nav__tab-name">{page.name}</span>
+            </button>
+          ))
+        ) : (
+          <DndContext
+            id="page-nav-dnd"
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragStart={handleDragStart}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext items={pages.map((p) => p.id)} strategy={horizontalListSortingStrategy}>
+              {pages.map((page, index) => (
+                <SortablePageTab
+                  key={page.id}
+                  page={page}
+                  index={index}
+                  isActive={page.id === activePageId}
+                  isFirstPage={index === 0}
+                  onSelect={() => onPageSelect(page.id)}
+                  onRename={(name) => onPageRename(page.id, name)}
+                  onChangeIcon={(icon) => onChangeIcon(page.id, icon)}
+                  onDelete={() => onDeletePage(page.id)}
+                />
+              ))}
+            </SortableContext>
+            <DragOverlay>
+              {draggedPage ? (
+                <DragOverlayTab page={draggedPage} index={draggedIndex} />
+              ) : null}
+            </DragOverlay>
+          </DndContext>
+        )}
       </div>
       </div>
       <Button
@@ -376,19 +394,21 @@ export function PageNavigationBar({
       >
         Add Page
       </Button>
-      <div className="page-nav__end">
-        <div className="page-nav__divider" />
-        <Button
-          variant="ghost"
-          colorScheme="secondary"
-          shape="rectangle"
-          size="md"
-          leftIcon={<Icon name="gear-filled" category="general" size={20} />}
-          onClick={onOpenSettings}
-        >
-          Settings
-        </Button>
-      </div>
+      {showNavigationSettings && (
+        <div className="page-nav__end">
+          <div className="page-nav__divider" />
+          <Button
+            variant="ghost"
+            colorScheme="secondary"
+            shape="rectangle"
+            size="md"
+            leftIcon={<Icon name="gear-filled" category="general" size={20} />}
+            onClick={onOpenSettings}
+          >
+            Navigation Settings
+          </Button>
+        </div>
+      )}
     </div>
   )
 }

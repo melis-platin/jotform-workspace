@@ -28,7 +28,7 @@ export function AppPreviewScreen({
   onDeviceChange,
   onBack,
   appScreen,
-  role = 'admin',
+  role = 'anyone',
   onRoleChange,
   roleOptions = DEFAULT_ROLE_OPTIONS,
 }: AppPreviewScreenProps) {

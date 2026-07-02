@@ -56,7 +56,16 @@ import { LivePreviewCheckoutPage } from '../components/LivePreviewCheckoutPage'
 import { LivePreviewOrderBar } from '../components/LivePreviewOrderBar'
 import { LivePreviewAvatarPopover } from '../components/LivePreviewAvatarPopover'
 import { LivePreviewProfilePage } from '../components/LivePreviewProfilePage'
-import { LivePreviewSearchPage, deriveFeaturedSearches, type SearchResultTarget, type SearchSourceAction } from '../components/LivePreviewSearchPage'
+import {
+  LivePreviewSearchEmptyState,
+  LivePreviewSearchPage,
+  LivePreviewSearchResultList,
+  deriveFeaturedSearches,
+  getPreviewSearchResults,
+  type SearchMatchResult,
+  type SearchResultTarget,
+  type SearchSourceAction,
+} from '../components/LivePreviewSearchPage'
 import { LivePreviewLoginPopover } from '../components/LivePreviewLoginPopover'
 import { QrPopover } from '../components/QrPopover'
 import { MobileBottomBar } from '../components/MobileBottomBar'
@@ -1004,6 +1013,26 @@ function LivePreviewSearchPageWithCollections({
   )
 }
 
+function LivePreviewSearchResultListWithCollections({
+  resultQuery,
+  results,
+  onResultSelect,
+}: {
+  resultQuery: string
+  results: SearchMatchResult[]
+  onResultSelect: (target: SearchResultTarget, collections: CollectionsRuntime) => void
+}) {
+  const collections = useCollections()
+
+  return (
+    <LivePreviewSearchResultList
+      resultQuery={resultQuery}
+      results={results}
+      onResultSelect={(target) => onResultSelect(target, collections)}
+    />
+  )
+}
+
 interface HeroCtaConfig {
   label: string
   action: AppHeaderCtaAction
@@ -1407,6 +1436,7 @@ const PROFILE_USER = {
 // so the drop logic only offers top/bottom edges for them.
 const HEADER_ACTION_ALLOWED = ['button', 'social-follow', 'image', 'spacer']
 const HEADER_ACTIONS_MAX = 3
+const DESKTOP_FULLWIDTH_NAV_VISIBLE_COUNT = 6
 // In header context only Button can be shrinked (Social Follow stays full-width)
 const isHeaderShrinkable = (componentId: string): boolean => componentId === 'button'
 
@@ -2603,6 +2633,17 @@ export function BuildPage({
   // Sticky defaults OFF for every desktop nav variant that exposes the toggle
   // (top / contained / compact); users opt in.
   const [desktopNavSticky, setDesktopNavSticky] = useState(false)
+  const handleDesktopNavVariantChange = useCallback((variant: 'top' | 'contained' | 'compact' | 'left') => {
+    setDesktopNavVariant(variant)
+    if (variant === 'left') setDesktopNavDisplayStyle('iconText')
+  }, [])
+  const handleDesktopNavDisplayStyleChange = useCallback((style: 'iconText' | 'text') => {
+    if (desktopNavVariant === 'left') {
+      setDesktopNavDisplayStyle('iconText')
+      return
+    }
+    setDesktopNavDisplayStyle(style)
+  }, [desktopNavVariant])
   const [propertyTab, setPropertyTab] = useState<string>('general')
   const appHeaderImageInputRef = useRef<HTMLInputElement>(null)
   const appHeaderBgImageInputRef = useRef<HTMLInputElement>(null)
@@ -2837,6 +2878,15 @@ export function BuildPage({
     () => deriveFeaturedSearches({ appTitle, appSubtitle, pages, searchActions: previewSearchActions }),
     [appTitle, appSubtitle, pages, previewSearchActions],
   )
+  const desktopPreviewSearchResultQuery = desktopPreviewSearchQuery.trim()
+  const desktopPreviewSearchResults = useMemo(
+    () => (
+      desktopPreviewSearchResultQuery
+        ? getPreviewSearchResults(desktopPreviewSearchResultQuery, pages, appTitle, appSubtitle, previewSearchActions)
+        : []
+    ),
+    [appSubtitle, appTitle, desktopPreviewSearchResultQuery, pages, previewSearchActions],
+  )
   const [isPreviewCartOpen, setIsPreviewCartOpen] = useState(false)
   const [isPreviewDetailOpen, setIsPreviewDetailOpen] = useState(false)
   const [isPreviewCheckoutOpen, setIsPreviewCheckoutOpen] = useState(false)
@@ -2848,11 +2898,12 @@ export function BuildPage({
   const [previewAuthView, setPreviewAuthView] = useState<'login' | 'signup' | null>(null)
   // Page to land on after signing in (set when a logged-out user opens a protected page).
   const pendingAuthRedirectRef = useRef<string | null>(null)
-  const [isPreviewLoggedIn, setIsPreviewLoggedIn] = useState(true)
+  const [isPreviewLoggedIn, setIsPreviewLoggedIn] = useState(false)
   // The preview role doubles as the auth state: 'anyone' (Public) views the app logged
-  // out; Admin/User view it logged in. Defaults to Admin so the App Preview role
-  // control opens in the Figma active state.
-  const [viewingAsRole, setViewingAsRole] = useState('admin')
+  // out; Admin/User view it logged in. Defaults to Public; the dropdown can switch
+  // to a signed-in role when needed.
+  const [viewingAsRole, setViewingAsRole] = useState('anyone')
+  const previewSearchInteractionsEnabled = previewMode || chromeless
   const livePreviewRoleOptions = useMemo(() => ([
     {
       value: 'anyone',
@@ -3100,9 +3151,12 @@ export function BuildPage({
   })
   const hasNavOverflow = navPages.length >= 5
   const visibleNavPages = hasNavOverflow ? navPages.slice(0, 4) : navPages
-  const desktopTopNavUsesOverflow = desktopNavVariant === 'contained' || desktopNavVariant === 'compact'
-  const desktopTopNavPages = desktopTopNavUsesOverflow ? navPages.slice(0, 2) : navPages
-  const desktopTopNavOverflowPages = desktopTopNavUsesOverflow ? navPages.slice(2) : []
+  const desktopTopNavUsesCompactOverflow = desktopNavVariant === 'contained' || desktopNavVariant === 'compact'
+  const desktopTopNavUsesFullwidthOverflow = desktopNavVariant === 'top' && navPages.length > DESKTOP_FULLWIDTH_NAV_VISIBLE_COUNT
+  const desktopTopNavUsesOverflow = desktopTopNavUsesCompactOverflow || desktopTopNavUsesFullwidthOverflow
+  const desktopTopNavVisibleCount = desktopTopNavUsesCompactOverflow ? 2 : DESKTOP_FULLWIDTH_NAV_VISIBLE_COUNT
+  const desktopTopNavPages = desktopTopNavUsesOverflow ? navPages.slice(0, desktopTopNavVisibleCount) : navPages
+  const desktopTopNavOverflowPages = desktopTopNavUsesOverflow ? navPages.slice(desktopTopNavVisibleCount) : []
   const desktopTopNavMoreActive = desktopTopNavOverflowPages.some((p) => p.id === activePageId)
   // The page-reorder bar lists every authored page (including hidden ones) but not
   // dynamic detail pages, which are owned by their List and pinned after their host.
@@ -3167,13 +3221,20 @@ export function BuildPage({
   }, [searchBarEnabled])
 
   useEffect(() => {
+    if (previewSearchInteractionsEnabled) return
+    setIsPreviewSearchOpen(false)
+    setIsDesktopPreviewSearchOpen(false)
+    setDesktopPreviewSearchQuery('')
+  }, [previewSearchInteractionsEnabled])
+
+  useEffect(() => {
     setIsDesktopPreviewSearchOpen(false)
     setDesktopPreviewSearchQuery('')
     setIsDesktopNavMoreOpen(false)
   }, [desktopNavVariant])
 
   useEffect(() => {
-    if (previewDevice === 'desktop') {
+    if (previewDevice !== 'phone') {
       setIsPreviewSearchOpen(false)
       return
     }
@@ -3353,6 +3414,37 @@ export function BuildPage({
     openDynamicDetailFor,
   ])
 
+  const openDesktopPreviewSearch = useCallback((options?: { resetQuery?: boolean }) => {
+    if (!previewSearchInteractionsEnabled) return
+    if (options?.resetQuery) setDesktopPreviewSearchQuery('')
+    setIsPreviewSearchOpen(false)
+    setIsDesktopPreviewSearchOpen(true)
+    setIsNotificationsPageOpen(false)
+    setIsMorePageOpen(false)
+    setIsDesktopNavMoreOpen(false)
+    setIsPreviewCartOpen(false)
+    setIsPreviewCheckoutOpen(false)
+    setIsPreviewProfileOpen(false)
+    setIsLoginPopoverOpen(false)
+    setIsAvatarPopoverOpen(false)
+    window.requestAnimationFrame(() => {
+      desktopPreviewSearchInputRef.current?.focus()
+    })
+  }, [previewSearchInteractionsEnabled])
+
+  const openMobilePreviewSearch = useCallback(() => {
+    if (!previewSearchInteractionsEnabled) return
+    setIsPreviewSearchOpen(true)
+    setIsDesktopPreviewSearchOpen(false)
+    setIsNotificationsPageOpen(false)
+    setIsMorePageOpen(false)
+    setIsPreviewCartOpen(false)
+    setIsPreviewCheckoutOpen(false)
+    setIsPreviewProfileOpen(false)
+    setIsLoginPopoverOpen(false)
+    setIsAvatarPopoverOpen(false)
+  }, [previewSearchInteractionsEnabled])
+
   // True when the live preview is currently showing a dynamic detail page.
   const activePageIsDynamic = !!pages.find((p) => p.id === activePageId)?.dynamic
 
@@ -3416,12 +3508,14 @@ export function BuildPage({
   const renderTopHeaderSearchButton = (device: 'phone' | 'tablet' | 'desktop' = previewDevice) => {
     if (!searchBarEnabled) return null
 
-    if (device === 'desktop') {
+    if (device !== 'phone') {
       const searchOverlaysNav = desktopNavEnabled && (desktopNavVariant === 'top' || desktopNavVariant === 'contained' || desktopNavVariant === 'compact') && !activePageIsDynamic
       const searchUsesFullwidthOverlay = desktopNavEnabled && desktopNavVariant === 'top' && !activePageIsDynamic
       const searchUsesContainedOverlay = desktopNavEnabled && desktopNavVariant === 'contained' && !activePageIsDynamic
       const searchUsesCompactOverlay = desktopNavEnabled && desktopNavVariant === 'compact' && !activePageIsDynamic
-      const searchFieldVisible = isDesktopPreviewSearchOpen
+      const searchFieldVisible = previewSearchInteractionsEnabled && isDesktopPreviewSearchOpen
+      const hasDesktopSearchQuery = desktopPreviewSearchResultQuery.length > 0
+      const hasDesktopSearchResults = desktopPreviewSearchResults.length > 0
 
       return (
         <div className={`live-preview__top-header-search${searchFieldVisible ? ' live-preview__top-header-search--open' : ''}${searchOverlaysNav ? ' live-preview__top-header-search--nav-overlay' : ''}${searchUsesFullwidthOverlay ? ' live-preview__top-header-search--fullwidth-overlay' : ''}${searchUsesContainedOverlay ? ' live-preview__top-header-search--contained-overlay' : ''}${searchUsesCompactOverlay ? ' live-preview__top-header-search--compact-overlay' : ''}`}>
@@ -3453,7 +3547,7 @@ export function BuildPage({
               type="button"
               className="live-preview__top-header-search-close"
               aria-label="Close search"
-              tabIndex={isDesktopPreviewSearchOpen ? 0 : -1}
+              tabIndex={searchFieldVisible ? 0 : -1}
               onClick={() => {
                 setDesktopPreviewSearchQuery('')
                 setIsDesktopPreviewSearchOpen(false)
@@ -3462,33 +3556,47 @@ export function BuildPage({
               <AppIcon name="X" size={16} />
             </button>
           </form>
-          {isDesktopPreviewSearchOpen && (
-            <section className="live-preview__desktop-search-featured" aria-label="Featured searches">
-              <div className="live-preview__desktop-search-featured-hero">
-                <span className="live-preview__desktop-search-featured-icon" aria-hidden="true">
-                  <AppIcon name="Search" size={32} />
-                </span>
-                <div className="live-preview__desktop-search-featured-copy">
-                  <h2 className="live-preview__desktop-search-featured-title">What are you looking for?</h2>
-                  <p className="live-preview__desktop-search-featured-description">Enter a name to find what you're looking for.</p>
-                </div>
-              </div>
-              {desktopPreviewFeaturedSearches.length > 0 && (
-                <div className="live-preview__desktop-search-featured-list">
-                  {desktopPreviewFeaturedSearches.map((keyword) => (
-                    <button
-                      key={keyword}
-                      type="button"
-                      className="live-preview__desktop-search-featured-chip"
-                      onClick={() => {
-                        setDesktopPreviewSearchQuery(keyword)
-                        desktopPreviewSearchInputRef.current?.focus()
-                      }}
-                    >
-                      {keyword}
-                    </button>
-                  ))}
-                </div>
+          {searchFieldVisible && (
+            <section className={`live-preview__desktop-search-featured${hasDesktopSearchQuery ? ' live-preview__desktop-search-featured--results' : ''}`} aria-label={hasDesktopSearchQuery ? `Search results for ${desktopPreviewSearchResultQuery}` : 'Featured searches'}>
+              {hasDesktopSearchQuery ? (
+                hasDesktopSearchResults ? (
+                  <LivePreviewSearchResultListWithCollections
+                    resultQuery={desktopPreviewSearchResultQuery}
+                    results={desktopPreviewSearchResults}
+                    onResultSelect={handleLivePreviewSearchResultSelect}
+                  />
+                ) : (
+                  <LivePreviewSearchEmptyState query={desktopPreviewSearchResultQuery} />
+                )
+              ) : (
+                <>
+                  <div className="live-preview__desktop-search-featured-hero">
+                    <span className="live-preview__desktop-search-featured-icon" aria-hidden="true">
+                      <AppIcon name="Search" size={32} />
+                    </span>
+                    <div className="live-preview__desktop-search-featured-copy">
+                      <h2 className="live-preview__desktop-search-featured-title">What are you looking for?</h2>
+                      <p className="live-preview__desktop-search-featured-description">Enter a name to find what you're looking for.</p>
+                    </div>
+                  </div>
+                  {desktopPreviewFeaturedSearches.length > 0 && (
+                    <div className="live-preview__desktop-search-featured-list">
+                      {desktopPreviewFeaturedSearches.map((keyword) => (
+                        <button
+                          key={keyword}
+                          type="button"
+                          className="live-preview__desktop-search-featured-chip"
+                          onClick={() => {
+                            setDesktopPreviewSearchQuery(keyword)
+                            desktopPreviewSearchInputRef.current?.focus()
+                          }}
+                        >
+                          {keyword}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </>
               )}
             </section>
           )}
@@ -3497,22 +3605,10 @@ export function BuildPage({
               type="button"
               className="live-preview__top-header-search-btn"
               aria-label="Search"
-              aria-expanded={isDesktopPreviewSearchOpen}
-              onClick={() => {
-                setIsPreviewSearchOpen(false)
-                setIsDesktopPreviewSearchOpen(true)
-                setIsNotificationsPageOpen(false)
-                setIsMorePageOpen(false)
-                setIsDesktopNavMoreOpen(false)
-                setIsPreviewCartOpen(false)
-                setIsPreviewCheckoutOpen(false)
-                setIsPreviewProfileOpen(false)
-                setIsLoginPopoverOpen(false)
-                setIsAvatarPopoverOpen(false)
-                window.requestAnimationFrame(() => {
-                  desktopPreviewSearchInputRef.current?.focus()
-                })
-              }}
+              aria-expanded={searchFieldVisible}
+              aria-disabled={!previewSearchInteractionsEnabled}
+              tabIndex={previewSearchInteractionsEnabled ? 0 : -1}
+              onClick={() => openDesktopPreviewSearch()}
             >
               <AppIcon name="Search" size={16} />
             </button>
@@ -3526,21 +3622,102 @@ export function BuildPage({
         type="button"
         className="live-preview__top-header-search-btn"
         aria-label="Search"
-        aria-expanded={isPreviewSearchOpen}
-        onClick={() => {
-          setIsPreviewSearchOpen(true)
-          setIsDesktopPreviewSearchOpen(false)
-          setIsNotificationsPageOpen(false)
-          setIsMorePageOpen(false)
-          setIsPreviewCartOpen(false)
-          setIsPreviewCheckoutOpen(false)
-          setIsPreviewProfileOpen(false)
-          setIsLoginPopoverOpen(false)
-          setIsAvatarPopoverOpen(false)
-        }}
+        aria-expanded={previewSearchInteractionsEnabled && isPreviewSearchOpen}
+        aria-disabled={!previewSearchInteractionsEnabled}
+        tabIndex={previewSearchInteractionsEnabled ? 0 : -1}
+        onClick={openMobilePreviewSearch}
       >
         <AppIcon name="Search" size={20} />
       </button>
+    )
+  }
+
+  const renderLeftDesktopSearchModal = () => {
+    const hasDesktopSearchQuery = desktopPreviewSearchResultQuery.length > 0
+    const hasDesktopSearchResults = desktopPreviewSearchResults.length > 0
+
+    return (
+      <section className={`live-preview__left-search-modal${hasDesktopSearchQuery ? ' live-preview__left-search-modal--results' : ''}`} role="dialog" aria-modal="true" aria-label="Search">
+        <header className="live-preview__left-search-modal-header">
+          <form
+            className="live-preview__left-search-modal-form"
+            role="search"
+            onSubmit={(event) => event.preventDefault()}
+          >
+            <input
+              ref={desktopPreviewSearchInputRef}
+              className="live-preview__left-search-modal-input"
+              type="search"
+              aria-label="Search"
+              placeholder="Search"
+              value={desktopPreviewSearchQuery}
+              onChange={(event) => setDesktopPreviewSearchQuery(event.currentTarget.value)}
+              onKeyDown={(event) => {
+                if (event.key !== 'Escape') return
+                if (desktopPreviewSearchQuery) {
+                  setDesktopPreviewSearchQuery('')
+                  return
+                }
+                setIsDesktopPreviewSearchOpen(false)
+              }}
+            />
+          </form>
+          <button
+            type="button"
+            className="live-preview__left-search-modal-close"
+            aria-label="Close search"
+            onClick={() => {
+              setDesktopPreviewSearchQuery('')
+              setIsDesktopPreviewSearchOpen(false)
+            }}
+          >
+            <AppIcon name="X" size={16} />
+          </button>
+        </header>
+        <div className="live-preview__left-search-modal-divider" />
+        <div className="live-preview__left-search-modal-body">
+          {hasDesktopSearchQuery ? (
+            hasDesktopSearchResults ? (
+              <LivePreviewSearchResultListWithCollections
+                resultQuery={desktopPreviewSearchResultQuery}
+                results={desktopPreviewSearchResults}
+                onResultSelect={handleLivePreviewSearchResultSelect}
+              />
+            ) : (
+              <LivePreviewSearchEmptyState query={desktopPreviewSearchResultQuery} />
+            )
+          ) : (
+            <div className="live-preview__left-search-modal-empty">
+              <div className="live-preview__left-search-modal-main">
+                <span className="live-preview__left-search-modal-icon" aria-hidden="true">
+                  <AppIcon name="Search" size={32} />
+                </span>
+                <div className="live-preview__left-search-modal-copy">
+                  <h2 className="live-preview__left-search-modal-title">What are you looking for?</h2>
+                  <p className="live-preview__left-search-modal-description">Enter a name to find what you're looking for.</p>
+                </div>
+              </div>
+              {desktopPreviewFeaturedSearches.length > 0 && (
+                <div className="live-preview__left-search-modal-chips">
+                  {desktopPreviewFeaturedSearches.map((keyword) => (
+                    <button
+                      key={keyword}
+                      type="button"
+                      className="live-preview__left-search-modal-chip"
+                      onClick={() => {
+                        setDesktopPreviewSearchQuery(keyword)
+                        desktopPreviewSearchInputRef.current?.focus()
+                      }}
+                    >
+                      {keyword}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </section>
     )
   }
 
@@ -4683,7 +4860,7 @@ export function BuildPage({
           return renderTopHeaderBrand()
         })()}
         {desktopNavEnabled && desktopNavVariant !== 'left' && !activePageIsDynamic && (
-          <nav className={`live-preview__top-header-nav${desktopTopNavUsesOverflow ? ' live-preview__top-header-nav--contained' : ''}`}>
+          <nav className={`live-preview__top-header-nav${desktopTopNavUsesCompactOverflow ? ' live-preview__top-header-nav--contained' : ''}`}>
             {desktopTopNavPages.map((p) => (
               <button
                 key={p.id}
@@ -4822,10 +4999,10 @@ export function BuildPage({
           )}
         </div>
       </div>
-      {previewDevice === 'desktop' && isDesktopPreviewSearchOpen && (
+      {previewSearchInteractionsEnabled && previewDevice !== 'phone' && isDesktopPreviewSearchOpen && (
         <button
           type="button"
-          className="live-preview__desktop-search-scrim"
+          className={`live-preview__desktop-search-scrim${desktopNavVariant === 'left' ? ' live-preview__desktop-search-scrim--modal' : ''}`}
           aria-label="Close search"
           onClick={() => {
             setDesktopPreviewSearchQuery('')
@@ -4833,7 +5010,8 @@ export function BuildPage({
           }}
         />
       )}
-      {isPreviewSearchOpen && (
+      {previewSearchInteractionsEnabled && previewDevice === 'desktop' && desktopNavEnabled && desktopNavVariant === 'left' && isDesktopPreviewSearchOpen && renderLeftDesktopSearchModal()}
+      {previewSearchInteractionsEnabled && isPreviewSearchOpen && (
         <LivePreviewSearchPageWithCollections
           appTitle={appTitle}
           appSubtitle={appSubtitle}
@@ -4862,7 +5040,7 @@ export function BuildPage({
                   {appIcon.variant === 'Image' && appIcon.imageUrl ? (
                     <img src={appIcon.imageUrl} alt="" />
                   ) : (
-                    <AppIcon name={appIcon.icon} size={24} />
+                    <AppIcon name={appIcon.icon} size={30} />
                   )}
                 </span>
               )}
@@ -4873,21 +5051,12 @@ export function BuildPage({
                 type="button"
                 className="live-preview__side-nav-search-field"
                 aria-label="Search"
-                aria-expanded={isPreviewSearchOpen}
-                onClick={() => {
-                  setIsDesktopPreviewSearchOpen(false)
-                  setDesktopPreviewSearchQuery('')
-                  setIsPreviewSearchOpen(true)
-                  setIsNotificationsPageOpen(false)
-                  setIsMorePageOpen(false)
-                  setIsPreviewCartOpen(false)
-                  setIsPreviewCheckoutOpen(false)
-                  setIsPreviewProfileOpen(false)
-                  setIsLoginPopoverOpen(false)
-                  setIsAvatarPopoverOpen(false)
-                }}
+                aria-expanded={previewSearchInteractionsEnabled && isDesktopPreviewSearchOpen}
+                aria-disabled={!previewSearchInteractionsEnabled}
+                tabIndex={previewSearchInteractionsEnabled ? 0 : -1}
+                onClick={() => openDesktopPreviewSearch({ resetQuery: true })}
               >
-                <AppIcon name="Search" size={20} className="live-preview__side-nav-search-icon" />
+                <AppIcon name="Search" size={16} className="live-preview__side-nav-search-icon" />
                 <span className="live-preview__side-nav-search-label">Search</span>
               </button>
             )}
@@ -4900,9 +5069,7 @@ export function BuildPage({
                 className={`live-preview__side-nav-link${p.id === activePageId ? ' live-preview__side-nav-link--active' : ''}`}
                 onClick={() => navigateToPage(p.id)}
               >
-                {desktopNavDisplayStyle === 'iconText' && (
-                  <AppIcon name={getPageIconName(p, 0)} size={20} />
-                )}
+                <AppIcon name={getPageIconName(p, 0)} size={16} />
                 <span className="live-preview__side-nav-label">{p.name}</span>
               </button>
             ))}
@@ -4927,7 +5094,7 @@ export function BuildPage({
                   aria-expanded={isAvatarPopoverOpen}
                   onClick={() => setIsAvatarPopoverOpen((v) => !v)}
                 >
-                  <AppIcon name="Ellipsis" size={18} />
+                  <AppIcon name="Ellipsis" size={20} />
                 </button>
                 <LivePreviewAvatarPopover
                   open={isAvatarPopoverOpen}
@@ -5494,10 +5661,11 @@ export function BuildPage({
 
       {/* Page Navigation Bar — hidden while the navigation settings panel is open
           (it is edited from there); restored when the panel closes. */}
-      {!isMobileView && navBarPages.length > 1 && rightPanel !== 'navigation' && (
+      {!isMobileView && navBarPages.length > 0 && rightPanel !== 'navigation' && (
         <PageNavigationBar
           pages={navBarPages}
           activePageId={activePageId}
+          variant={navBarPages.length === 1 ? 'empty' : 'default'}
           onPageSelect={(pageId) => {
             setActivePageId(pageId)
             requestAnimationFrame(() => {
@@ -5580,16 +5748,16 @@ export function BuildPage({
                 topNavTransparent={topNavTransparent}
                 desktopVariant={desktopNavVariant}
                 desktopEnabled={desktopNavEnabled}
-                desktopDisplayStyle={desktopNavDisplayStyle}
+                desktopDisplayStyle={desktopNavVariant === 'left' ? 'iconText' : desktopNavDisplayStyle}
                 desktopAlignment={desktopNavAlignment}
                 desktopSticky={desktopNavSticky}
-                onChangeDesktopVariant={setDesktopNavVariant}
+                onChangeDesktopVariant={handleDesktopNavVariantChange}
                 onToggleEnabled={setBottomNavEnabled}
                 onChangeDisplayStyle={setBottomNavDisplayStyle}
                 onToggleTopNavEnabled={setTopNavEnabled}
                 onToggleTopNavTransparent={setTopNavTransparent}
                 onToggleDesktopEnabled={setDesktopNavEnabled}
-                onChangeDesktopDisplayStyle={setDesktopNavDisplayStyle}
+                onChangeDesktopDisplayStyle={handleDesktopNavDisplayStyleChange}
                 onChangeDesktopAlignment={setDesktopNavAlignment}
                 onToggleDesktopSticky={setDesktopNavSticky}
                 onReorder={(reordered) => setPages(reordered as AppPage[])}
@@ -8930,7 +9098,7 @@ export function BuildPage({
               <ProductDetailProvider onOpenChange={setIsPreviewDetailOpen}>
               <div className="live-preview">
                 <div className="live-preview__header" data-theme="dark">
-                  <span className="live-preview__title">Live Preview</span>
+                  <span className="live-preview__title">Viewing as</span>
                   <div className="live-preview__toolbar">
                     <div className="live-preview__role-dropdown">
                       <DSDropdownSingle
@@ -9091,7 +9259,7 @@ export function BuildPage({
                           )}
                         </div>
                       </div>
-                      {isPreviewSearchOpen && (
+                      {previewSearchInteractionsEnabled && isPreviewSearchOpen && (
                         <LivePreviewSearchPageWithCollections
                           appTitle={appTitle}
                           appSubtitle={appSubtitle}
