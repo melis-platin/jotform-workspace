@@ -57,12 +57,7 @@ import { LivePreviewOrderBar } from '../components/LivePreviewOrderBar'
 import { LivePreviewAvatarPopover } from '../components/LivePreviewAvatarPopover'
 import { LivePreviewProfilePage } from '../components/LivePreviewProfilePage'
 import {
-  LivePreviewSearchEmptyState,
   LivePreviewSearchPage,
-  LivePreviewSearchResultList,
-  deriveFeaturedSearches,
-  getPreviewSearchResults,
-  type SearchMatchResult,
   type SearchResultTarget,
   type SearchSourceAction,
 } from '../components/LivePreviewSearchPage'
@@ -85,7 +80,7 @@ import {
 import { setCustomNativeDragPreview } from '@atlaskit/pragmatic-drag-and-drop/element/set-custom-native-drag-preview'
 import { pointerOutsideOfPreview } from '@atlaskit/pragmatic-drag-and-drop/element/pointer-outside-of-preview'
 import { autoScrollForElements } from '@atlaskit/pragmatic-drag-and-drop-auto-scroll/element'
-import { EMPTY_PRESET_ID, GYM_TRAINER_ITEMS, type AppPreset, type PresetElement } from '../presets/appPresets'
+import { EMPTY_PRESET_ID, type AppPreset, type PresetElement } from '../presets/appPresets'
 import { IconPropertyField } from '../components/IconPropertyField'
 import { ColorInputWithPicker } from '../components/ColorInputWithPicker'
 import { TitleFontDropdown } from '../components/TitleFontDropdown'
@@ -100,7 +95,7 @@ import { DEFAULT_ROLE_OPTIONS, getRoleColorStyle, type AppRoleOption } from '../
 import { ALL_USERS_AUDIENCE_ID } from '../state/pushNotifications'
 import { countSearchableElements } from '../state/searchableElements'
 
-interface CanvasElement {
+export interface CanvasElement {
   id: string
   componentId: string
   variants: VariantValues
@@ -108,7 +103,7 @@ interface CanvasElement {
   states: StateValues
 }
 
-interface AppPage {
+export interface AppPage {
   id: string
   name: string
   icon?: string
@@ -373,16 +368,28 @@ const WIDGETS_GROUPS: PanelGroup[] = [
 
 const HIDDEN_ELEMENTS = ['empty-state', 'app-header', 'bottom-navigation', 'color-picker']
 const LEGACY_PRESET_HEADER_IMAGES: Record<string, string[]> = {
-  'gym-club': ['https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=1000&h=600&fit=crop'],
+  'gym-club': [
+    'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=1000&h=600&fit=crop',
+    'https://images.unsplash.com/photo-1623874514711-0f321325f318?w=1000&h=600&fit=crop',
+  ],
 }
 const LEGACY_PRESET_HEADER_TITLES: Record<string, string[]> = {
-  'gym-club': ['Iron Pulse'],
+  'gym-club': ['Iron Pulse', 'Train stronger with every session'],
   'camp-registration': ['Summer Camp'],
 }
 const LEGACY_PRESET_HEADER_SUBTITLES: Record<string, string[]> = {
-  'gym-club': ['Train with the best in the city'],
+  'gym-club': ['Train with the best in the city', 'Classes, coaches, plans, and support in one place'],
   'camp-registration': ['Sign up for the 2026 season'],
 }
+const BOHO_NEST_LEGACY_TURKISH_MARKERS = [
+  'Evinize sıcak, özgür ve katmanlı bir bohem ruh katın',
+  'Oda oda stil rehberleri, dekorasyon blogu',
+  'Bohem ev için sakin bir başlangıç',
+  'Stil Danışmanlığı İste',
+  'Bu Hafta Öne Çıkanlar',
+  'Rehber',
+  'Ürünler',
+]
 
 function resolveStoredAppHeaderForPreset(
   preset: AppPreset,
@@ -428,6 +435,13 @@ function resolveStoredAppHeaderForPreset(
   }
 
   return nextHeader
+}
+
+function shouldResetLegacyBohoNestSnapshot(preset: AppPreset, stored: unknown): boolean {
+  if (preset.id !== 'boho-nest' || !stored) return false
+
+  const serialized = JSON.stringify(stored) ?? ''
+  return BOHO_NEST_LEGACY_TURKISH_MARKERS.some((marker) => serialized.includes(marker))
 }
 
 function createCanvasElement(comp: RegisteredComponent, id: string): CanvasElement {
@@ -479,100 +493,34 @@ function buildAppPagesFromPresetPages(presetPages: AppPreset['pages'], startId: 
   return { pages, nextId }
 }
 
-function createConfiguredCanvasElement(
-  componentId: string,
-  id: string,
-  variants: Partial<VariantValues>,
-  properties: Partial<PropertyValues>,
-): CanvasElement | null {
-  const comp = ComponentRegistry.get(componentId)
-  if (!comp) return null
-  const el = createCanvasElement(comp, id)
-  Object.assign(el.variants, variants)
-  Object.assign(el.properties, properties)
-  return el
-}
+const IRON_PULSE_REQUIRED_PAGES = [
+  'Home',
+  'Classes',
+  'Programs',
+  'Trainers',
+  'Schedule',
+  'Membership',
+  'Progress',
+  'Recovery',
+  'Challenges',
+  'Gear',
+  'Forms',
+]
 
-function createGymTrainerRosterElements(existingElements: CanvasElement[], usedElementIds: string[]): { elements: CanvasElement[]; listId: string } {
-  const usedIds = [...usedElementIds]
-  const reserveId = () => {
-    const id = nextNumericId('element', usedIds)
-    usedIds.push(id)
-    return id
-  }
-  const existingDynamicList = existingElements.find((el) =>
-    el.componentId === 'list' && String(el.properties['Click Action'] ?? '') === 'Open Dynamic Page'
-  )
-  const headingId = existingElements[0]?.id ?? reserveId()
-  const listId = existingDynamicList?.id ?? existingElements[1]?.id ?? reserveId()
-  const heading = createConfiguredCanvasElement('heading', headingId, { Size: 'Large', Alignment: 'Left' }, {
-    Heading: 'Explore Trainers',
-    Subheading: 'Choose a coach and open their profile.',
-  })
-  const list = createConfiguredCanvasElement('list', listId, {
-    Layout: 'Card',
-    'Card Image Style': 'Square',
-    'Card Layout': 'Vertical',
-    'Card Size': 'Medium',
-    'Card Action': 'Button',
-  }, {
-    Title: 'Trainers',
-    'Show Header': false,
-    'Button Label': 'View Profile',
-    'Click Action': 'Open Dynamic Page',
-    Items: JSON.stringify(GYM_TRAINER_ITEMS),
-  })
-
-  return {
-    elements: [heading, list].filter(Boolean) as CanvasElement[],
-    listId,
-  }
+function hasIronPulseStructure(pages: AppPage[]): boolean {
+  const pageNames = new Set(pages.filter((page) => !page.dynamic).map((page) => page.name.trim().toLowerCase()))
+  const hasAllPages = IRON_PULSE_REQUIRED_PAGES.every((name) => pageNames.has(name.toLowerCase()))
+  const dynamicListCount = pages.filter((page) => !page.dynamic).flatMap((page) => page.elements).filter(isDynamicListElement).length
+  return hasAllPages && dynamicListCount >= 5
 }
 
 function normalizeGymTrainerDynamicPages(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {
   if (preset?.id !== 'gym-club') return pages
-  const trainerPageIndex = pages.findIndex((p) => !p.dynamic && p.name.trim().toLowerCase() === 'trainer')
-  if (trainerPageIndex === -1) return pages
+  const basePages = hasIronPulseStructure(pages)
+    ? pages
+    : buildAppPagesFromPresetPages(preset.pages, 1).pages
 
-  const trainerPage = pages[trainerPageIndex]
-  const originalTrainerElementIds = new Set(trainerPage.elements.map((el) => el.id))
-  const { elements, listId } = createGymTrainerRosterElements(
-    trainerPage.elements,
-    pages.flatMap((p) => p.elements.map((el) => el.id)),
-  )
-  const trainerPageNext: AppPage = {
-    ...trainerPage,
-    icon: trainerPage.icon ?? 'User',
-    elements,
-  }
-  const pagesWithoutStaleTrainerDynamics = pages.filter((page, index) => {
-    if (index === trainerPageIndex) return true
-    if (!page.dynamic) return true
-    if (page.dynamicSourceElementId === listId) return true
-    return !page.dynamicSourceElementId || !originalTrainerElementIds.has(page.dynamicSourceElementId)
-  })
-  const updatedPages = pagesWithoutStaleTrainerDynamics.map((page) =>
-    page.id === trainerPage.id ? trainerPageNext : page,
-  )
-
-  const existingDynamic = updatedPages.find((page) => page.dynamic && page.dynamicSourceElementId === listId)
-  const dynamicPage = existingDynamic
-    ? { ...existingDynamic, name: existingDynamic.name || 'Trainer Detail', dynamic: true, dynamicSourceElementId: listId }
-    : {
-      ...createDynamicDetailPage(
-        listId,
-        nextNumericId('page', updatedPages.map((p) => p.id)),
-        nextNumericIds('element', updatedPages.flatMap((p) => p.elements.map((el) => el.id)), 3),
-      ),
-      name: 'Trainer Detail',
-    }
-
-  const withoutDynamic = updatedPages.filter((page) => page.id !== dynamicPage.id)
-  const insertIndex = withoutDynamic.findIndex((page) => page.id === trainerPage.id)
-  if (insertIndex === -1) return withoutDynamic
-  const next = [...withoutDynamic]
-  next.splice(insertIndex + 1, 0, dynamicPage)
-  return next
+  return ensureDynamicPagesForOpenDynamicLists(basePages)
 }
 
 const CAMP_PINECREST_REQUIRED_PAGES = ['Home', 'Programs', 'Sessions', 'Counselors', 'My Campers', 'Forms', 'Family Hub']
@@ -580,6 +528,17 @@ const CAMP_PINECREST_FORMS_INTRO_HEADINGS = new Set(['forms & documents', 'open 
 
 function isDynamicListElement(element: CanvasElement): boolean {
   return element.componentId === 'list' && String(element.properties['Click Action'] ?? '') === 'Open Dynamic Page'
+}
+
+function isDataBackedElement(element: CanvasElement): boolean {
+  if (['list', 'product-list', 'form', 'table', 'daily-task-manager'].includes(element.componentId)) return true
+  return element.componentId === 'button' && String(element.properties.Action ?? '') === 'Open Form'
+}
+
+function countDataBackedElements(pages: AppPage[]): number {
+  return pages
+    .filter((page) => !page.dynamic)
+    .reduce((count, page) => count + page.elements.filter(isDataBackedElement).length, 0)
 }
 
 function hasCampPinecrestStructure(pages: AppPage[]): boolean {
@@ -591,6 +550,12 @@ function hasCampPinecrestStructure(pages: AppPage[]): boolean {
 
 function getDynamicDetailPageName(hostPageName: string): string {
   const name = hostPageName.trim().toLowerCase()
+  if (name === 'classes') return 'Class Detail'
+  if (name === 'programs') return 'Program Detail'
+  if (name === 'trainers') return 'Trainer Detail'
+  if (name === 'schedule') return 'Schedule Detail'
+  if (name === 'recovery') return 'Recovery Detail'
+  if (name === 'challenges') return 'Challenge Detail'
   if (name === 'home' || name === 'programs') return 'Program Detail'
   if (name === 'sessions') return 'Session Detail'
   if (name === 'counselors') return 'Counselor Detail'
@@ -685,7 +650,7 @@ function arePagesEqual(a: AppPage[], b: AppPage[]): boolean {
   return JSON.stringify(a) === JSON.stringify(b)
 }
 
-function buildInitialStateFromPreset(preset: AppPreset | undefined): {
+export function buildInitialStateFromPreset(preset: AppPreset | undefined): {
   pages: AppPage[]
   headerActions: CanvasElement[]
   activePageId: string
@@ -702,7 +667,8 @@ function buildInitialStateFromPreset(preset: AppPreset | undefined): {
     }
   }
   // Empty App always starts from defaults — skip stored snapshot.
-  const stored = preset.id === 'empty' ? null : loadSnapshot(preset.id)
+  const snapshot = preset.id === 'empty' ? null : loadSnapshot(preset.id)
+  const stored = snapshot && shouldResetLegacyBohoNestSnapshot(preset, snapshot) ? null : snapshot
   if (stored) {
     const pages = normalizePresetPages(stored.pages as AppPage[], preset)
     const storedHeader = resolveStoredAppHeaderForPreset(
@@ -795,7 +761,7 @@ type AppHeaderSizePreset = 'Compact' | 'Default' | 'Maximum'
 // Default-archetype icon/text stacking direction.
 type AppHeaderContentDirection = 'Vertical' | 'Horizontal'
 type AppHeaderCtaAction = 'Do Nothing' | 'Navigate to Page' | 'Open Form' | 'Open URL' | 'Send Email' | 'Make Call'
-interface AppHeaderState {
+export interface AppHeaderState {
   layout: string
   // Selected header layout archetype. 'Hero' carries the existing style controls;
   // Default/Cover/Profile are placeholders whose bespoke content is added later.
@@ -989,6 +955,11 @@ function LivePreviewSearchPageWithCollections({
   appSubtitle,
   pages,
   searchActions,
+  initialQuery,
+  externalQuery,
+  onQueryChange,
+  presentation,
+  showHeader,
   onClose,
   onResultSelect,
 }: {
@@ -996,6 +967,11 @@ function LivePreviewSearchPageWithCollections({
   appSubtitle: string
   pages: AppPage[]
   searchActions: SearchSourceAction[]
+  initialQuery?: string
+  externalQuery?: string
+  onQueryChange?: (query: string) => void
+  presentation?: 'page' | 'desktop-context' | 'desktop-modal'
+  showHeader?: boolean
   onClose: () => void
   onResultSelect: (target: SearchResultTarget, collections: CollectionsRuntime) => void
 }) {
@@ -1007,27 +983,12 @@ function LivePreviewSearchPageWithCollections({
       appSubtitle={appSubtitle}
       pages={pages}
       searchActions={searchActions}
+      initialQuery={initialQuery}
+      externalQuery={externalQuery}
+      onQueryChange={onQueryChange}
+      presentation={presentation}
+      showHeader={showHeader}
       onClose={onClose}
-      onResultSelect={(target) => onResultSelect(target, collections)}
-    />
-  )
-}
-
-function LivePreviewSearchResultListWithCollections({
-  resultQuery,
-  results,
-  onResultSelect,
-}: {
-  resultQuery: string
-  results: SearchMatchResult[]
-  onResultSelect: (target: SearchResultTarget, collections: CollectionsRuntime) => void
-}) {
-  const collections = useCollections()
-
-  return (
-    <LivePreviewSearchResultList
-      resultQuery={resultQuery}
-      results={results}
       onResultSelect={(target) => onResultSelect(target, collections)}
     />
   )
@@ -1345,8 +1306,8 @@ function resolveAppHeaderArchetypeProps(s: AppHeaderState): {
 function getPresetHeroCtaTargetPageId(pages: AppPage[], preset?: AppPreset): string | undefined {
   const firstPageId = pages[0]?.id
   if (preset?.id === 'gym-club') {
-    const trainerPage = pages.find((p) => p.name.trim().toLowerCase() === 'trainer' && !p.hidden && !p.dynamic)
-    if (trainerPage) return trainerPage.id
+    const classesPage = pages.find((p) => p.name.trim().toLowerCase() === 'classes' && !p.hidden && !p.dynamic)
+    if (classesPage) return classesPage.id
   }
   if (preset?.id === 'camp-registration') {
     const formsPage = pages.find((p) => p.name.trim().toLowerCase() === 'forms' && !p.hidden && !p.dynamic)
@@ -1356,7 +1317,7 @@ function getPresetHeroCtaTargetPageId(pages: AppPage[], preset?: AppPreset): str
 }
 
 function getPresetHeroCtaLabel(header: AppHeaderState, preset?: AppPreset): string | undefined {
-  if (preset?.id === 'gym-club') return 'Explore'
+  if (preset?.id === 'gym-club') return 'View Classes'
   if (preset?.id === 'camp-registration') return 'Register for 2026'
   return header.ctaLabel
 }
@@ -2444,6 +2405,7 @@ interface BuildPageProps {
   onPreviewClose?: () => void
   onDeepLinkTargetsChange?: (targets: DeepLinkTarget[]) => void
   onSearchableElementCountChange?: (count: number) => void
+  onDataBackedElementCountChange?: (count: number) => void
   searchBarEnabled?: boolean
   pushNotificationsEnabled?: boolean
   pushNotifications?: LivePreviewPushNotification[]
@@ -2606,6 +2568,7 @@ export function BuildPage({
   onPreviewClose,
   onDeepLinkTargetsChange,
   onSearchableElementCountChange,
+  onDataBackedElementCountChange,
   searchBarEnabled = true,
   pushNotificationsEnabled = false,
   pushNotifications = [],
@@ -2808,6 +2771,10 @@ export function BuildPage({
     onSearchableElementCountChange?.(countSearchableElements(pages))
   }, [onSearchableElementCountChange, pages])
 
+  useEffect(() => {
+    onDataBackedElementCountChange?.(countDataBackedElements(pages))
+  }, [onDataBackedElementCountChange, pages])
+
   // Safety net: if the active page disappears (e.g. a dynamic detail page is
   // parked when its List's action is turned off, or its host page is deleted),
   // fall back to the first page so the canvas/preview never points at nothing.
@@ -2858,6 +2825,8 @@ export function BuildPage({
   const [isPreviewSearchOpen, setIsPreviewSearchOpen] = useState(false)
   const [isDesktopPreviewSearchOpen, setIsDesktopPreviewSearchOpen] = useState(false)
   const [desktopPreviewSearchQuery, setDesktopPreviewSearchQuery] = useState('')
+  const [previewSearchInitialQuery, setPreviewSearchInitialQuery] = useState('')
+  const [previewSearchSessionKey, setPreviewSearchSessionKey] = useState(0)
   const [isDesktopNavMoreOpen, setIsDesktopNavMoreOpen] = useState(false)
   const desktopPreviewSearchInputRef = useRef<HTMLInputElement>(null)
   const desktopNavMoreRef = useRef<HTMLDivElement>(null)
@@ -2873,19 +2842,6 @@ export function BuildPage({
       pages,
       preset,
     ],
-  )
-  const desktopPreviewFeaturedSearches = useMemo(
-    () => deriveFeaturedSearches({ appTitle, appSubtitle, pages, searchActions: previewSearchActions }),
-    [appTitle, appSubtitle, pages, previewSearchActions],
-  )
-  const desktopPreviewSearchResultQuery = desktopPreviewSearchQuery.trim()
-  const desktopPreviewSearchResults = useMemo(
-    () => (
-      desktopPreviewSearchResultQuery
-        ? getPreviewSearchResults(desktopPreviewSearchResultQuery, pages, appTitle, appSubtitle, previewSearchActions)
-        : []
-    ),
-    [appSubtitle, appTitle, desktopPreviewSearchResultQuery, pages, previewSearchActions],
   )
   const [isPreviewCartOpen, setIsPreviewCartOpen] = useState(false)
   const [isPreviewDetailOpen, setIsPreviewDetailOpen] = useState(false)
@@ -2903,12 +2859,11 @@ export function BuildPage({
   // out; Admin/User view it logged in. Defaults to Public; the dropdown can switch
   // to a signed-in role when needed.
   const [viewingAsRole, setViewingAsRole] = useState('anyone')
-  const previewSearchInteractionsEnabled = previewMode || chromeless
   const livePreviewRoleOptions = useMemo(() => ([
     {
       value: 'anyone',
       label: 'Public',
-      leading: <span className="live-preview__role-dot" style={{ background: 'var(--green-200)' }} />,
+      leading: <span className="live-preview__role-dot live-preview__role-dot--public" />,
     },
     ...appUserRoles.map((role) => ({
       value: role.id,
@@ -2937,6 +2892,11 @@ export function BuildPage({
   }, [onPushNotificationRead, viewingAsRole])
   const [previewDevice, setPreviewDevice] = useState<'phone' | 'tablet' | 'desktop'>('phone')
   const [isLivePreviewVisible, setIsLivePreviewVisible] = useState(true)
+  const previewSearchInteractionsEnabled =
+    previewMode ||
+    chromeless ||
+    (rightPanel === 'preview' && isLivePreviewVisible) ||
+    rightPanel === 'navigation'
   // Slider position is "sticky": only updated when its target slot is visible.
   // Prevents preview content from flashing when designer closes while preview
   // is hidden (slider stays at designer until aside finishes sliding out).
@@ -3002,6 +2962,8 @@ export function BuildPage({
   // that chrome swap until the app header image has fully cleared the top bar.
   const [previewContentScalerEl, setPreviewContentScalerEl] = useState<HTMLDivElement | null>(null)
   const [isPreviewContentScrolled, setIsPreviewContentScrolled] = useState(false)
+  const [pendingSearchHighlight, setPendingSearchHighlight] = useState<{ key: number; selector?: string; pageId?: string } | null>(null)
+  const pendingSearchHighlightKeyRef = useRef(0)
   // Transparent top nav: true while the hero is still behind the bar (→ transparent
   // overlay); false once the bar sits over the page content below it (→ solid bar).
   const [topNavOverHero, setTopNavOverHero] = useState(true)
@@ -3234,13 +3196,15 @@ export function BuildPage({
   }, [desktopNavVariant])
 
   useEffect(() => {
-    if (previewDevice !== 'phone') {
+    if (previewDevice === 'desktop') {
       setIsPreviewSearchOpen(false)
-      return
     }
-    setIsDesktopPreviewSearchOpen(false)
-    setIsDesktopNavMoreOpen(false)
-  }, [previewDevice])
+    if (previewDevice === 'phone' || isPreviewSearchOpen) {
+      setIsDesktopPreviewSearchOpen(false)
+      setDesktopPreviewSearchQuery('')
+      setIsDesktopNavMoreOpen(false)
+    }
+  }, [isPreviewSearchOpen, previewDevice])
 
   useEffect(() => {
     if (!isDesktopPreviewSearchOpen) return
@@ -3316,16 +3280,41 @@ export function BuildPage({
     setIsAvatarPopoverOpen(false)
   }, [])
 
+  const getVisiblePreviewContentScaler = useCallback(() => {
+    const selectors = [
+      previewDevice === 'desktop' ? '.app-preview-screen__desktop .live-preview__content-scaler' : '',
+      previewDevice === 'tablet' ? '.live-preview__tablet-screen .live-preview__content-scaler' : '',
+      previewDevice === 'phone' ? '.app-preview-screen__phone .live-preview__content-scaler' : '',
+      previewDevice === 'desktop' ? '.build-page__nav-preview--desktop .live-preview__content-scaler' : '',
+      previewDevice !== 'desktop' ? '.build-page__nav-preview--mobile .live-preview__content-scaler' : '',
+      '.live-preview__phone-screen .live-preview__content-scaler',
+    ].filter(Boolean)
+
+    for (const selector of selectors) {
+      const candidate = document.querySelector<HTMLElement>(selector)
+      if (!candidate) continue
+      const rect = candidate.getBoundingClientRect()
+      if (rect.width > 0 && rect.height > 0) return candidate
+    }
+
+    return previewContentScalerEl
+  }, [previewContentScalerEl, previewDevice])
+
   const highlightLivePreviewTarget = useCallback((selector?: string) => {
-    const scrollContainer = previewContentScalerEl
+    const scrollContainer = getVisiblePreviewContentScaler()
     if (!scrollContainer) return
 
-    window.requestAnimationFrame(() => {
+    let attempts = 0
+    const run = () => {
       window.requestAnimationFrame(() => {
         const target = selector
           ? scrollContainer.querySelector<HTMLElement>(selector)
           : scrollContainer.querySelector<HTMLElement>('.live-preview__app-header-slot, .themes-view__section')
-        if (!target) return
+        if (!target) {
+          attempts += 1
+          if (attempts < 14) window.setTimeout(run, 100)
+          return
+        }
 
         const containerRect = scrollContainer.getBoundingClientRect()
         const targetRect = target.getBoundingClientRect()
@@ -3343,8 +3332,35 @@ export function BuildPage({
           target.classList.remove('themes-view__section--search-highlight')
         }, 1800)
       })
+    }
+
+    window.requestAnimationFrame(run)
+  }, [getVisiblePreviewContentScaler])
+
+  const queueLivePreviewTargetHighlight = useCallback((selector?: string, pageId?: string) => {
+    pendingSearchHighlightKeyRef.current += 1
+    setPendingSearchHighlight({
+      key: pendingSearchHighlightKeyRef.current,
+      pageId,
+      selector,
     })
-  }, [previewContentScalerEl])
+
+    if (!pageId || pageId === activePageId) {
+      window.setTimeout(() => highlightLivePreviewTarget(selector), 120)
+    }
+  }, [activePageId, highlightLivePreviewTarget])
+
+  useEffect(() => {
+    if (!pendingSearchHighlight || isPreviewSearchOpen || !getVisiblePreviewContentScaler()) return
+    if (pendingSearchHighlight.pageId && activePageId !== pendingSearchHighlight.pageId) return
+    const timer = window.setTimeout(() => {
+      highlightLivePreviewTarget(pendingSearchHighlight.selector)
+      setPendingSearchHighlight((current) => (
+        current?.key === pendingSearchHighlight.key ? null : current
+      ))
+    }, 0)
+    return () => window.clearTimeout(timer)
+  }, [activePageId, getVisiblePreviewContentScaler, highlightLivePreviewTarget, isPreviewSearchOpen, pendingSearchHighlight])
 
   const highlightOpenFormSheetField = useCallback((fieldName?: string) => {
     if (!fieldName) return
@@ -3378,7 +3394,7 @@ export function BuildPage({
 
     if (target.type === 'dynamic-item') {
       openDynamicDetailFor(target.elementId, target.itemIndex)
-      if (!needsLogin) highlightLivePreviewTarget()
+      if (!needsLogin) queueLivePreviewTargetHighlight()
       return
     }
 
@@ -3386,12 +3402,15 @@ export function BuildPage({
     if (needsLogin) return
 
     if (target.type === 'page') {
-      highlightLivePreviewTarget(target.elementId ? getLivePreviewElementSelector(target.elementId) : undefined)
+      queueLivePreviewTargetHighlight(
+        target.elementId ? getLivePreviewElementSelector(target.elementId) : undefined,
+        target.pageId,
+      )
       return
     }
 
     const selector = getLivePreviewElementSelector(target.elementId)
-    highlightLivePreviewTarget(selector)
+    queueLivePreviewTargetHighlight(selector, target.pageId)
 
     if (target.type === 'form' && targetPage) {
       if (target.openForm === false) return
@@ -3408,14 +3427,45 @@ export function BuildPage({
   }, [
     closeLivePreviewTransientViews,
     highlightOpenFormSheetField,
-    highlightLivePreviewTarget,
     isPreviewLoggedIn,
     navigateToPage,
     openDynamicDetailFor,
+    queueLivePreviewTargetHighlight,
   ])
 
-  const openDesktopPreviewSearch = useCallback((options?: { resetQuery?: boolean }) => {
+  const closeDesktopPreviewSearch = useCallback(() => {
+    setDesktopPreviewSearchQuery('')
+    setIsDesktopPreviewSearchOpen(false)
+  }, [])
+
+  const openPreviewSearchPage = useCallback((options?: { initialQuery?: string }) => {
     if (!previewSearchInteractionsEnabled) return
+    setPreviewSearchInitialQuery(options?.initialQuery?.trim() ?? '')
+    setPreviewSearchSessionKey((key) => key + 1)
+    setIsPreviewSearchOpen(true)
+    setIsDesktopPreviewSearchOpen(false)
+    setDesktopPreviewSearchQuery('')
+    setIsNotificationsPageOpen(false)
+    setIsMorePageOpen(false)
+    setIsDesktopNavMoreOpen(false)
+    setIsPreviewCartOpen(false)
+    setIsPreviewCheckoutOpen(false)
+    setIsPreviewProfileOpen(false)
+    setIsLoginPopoverOpen(false)
+    setIsAvatarPopoverOpen(false)
+  }, [previewSearchInteractionsEnabled])
+
+  const handleDesktopPreviewSearchQueryChange = useCallback((nextQuery: string) => {
+    setDesktopPreviewSearchQuery(nextQuery)
+    if (!previewSearchInteractionsEnabled) return
+    setIsDesktopPreviewSearchOpen(true)
+  }, [previewSearchInteractionsEnabled])
+
+  const openDesktopPreviewSearch = useCallback((options?: { resetQuery?: boolean; initialQuery?: string }) => {
+    if (!previewSearchInteractionsEnabled) return
+    const nextQuery = options?.initialQuery ?? (options?.resetQuery ? '' : desktopPreviewSearchQuery)
+    setPreviewSearchInitialQuery(nextQuery.trim())
+    setPreviewSearchSessionKey((key) => key + 1)
     if (options?.resetQuery) setDesktopPreviewSearchQuery('')
     setIsPreviewSearchOpen(false)
     setIsDesktopPreviewSearchOpen(true)
@@ -3430,23 +3480,74 @@ export function BuildPage({
     window.requestAnimationFrame(() => {
       desktopPreviewSearchInputRef.current?.focus()
     })
-  }, [previewSearchInteractionsEnabled])
+  }, [desktopPreviewSearchQuery, previewSearchInteractionsEnabled])
 
   const openMobilePreviewSearch = useCallback(() => {
-    if (!previewSearchInteractionsEnabled) return
-    setIsPreviewSearchOpen(true)
-    setIsDesktopPreviewSearchOpen(false)
-    setIsNotificationsPageOpen(false)
-    setIsMorePageOpen(false)
-    setIsPreviewCartOpen(false)
-    setIsPreviewCheckoutOpen(false)
-    setIsPreviewProfileOpen(false)
-    setIsLoginPopoverOpen(false)
-    setIsAvatarPopoverOpen(false)
-  }, [previewSearchInteractionsEnabled])
+    openPreviewSearchPage()
+  }, [openPreviewSearchPage])
 
   // True when the live preview is currently showing a dynamic detail page.
   const activePageIsDynamic = !!pages.find((p) => p.id === activePageId)?.dynamic
+  const desktopFullwidthSearchOpen =
+    previewDevice === 'desktop' &&
+    previewSearchInteractionsEnabled &&
+    isDesktopPreviewSearchOpen &&
+    desktopNavEnabled &&
+    desktopNavVariant === 'top' &&
+    !activePageIsDynamic
+  const desktopContainedSearchOpen =
+    previewDevice === 'desktop' &&
+    previewSearchInteractionsEnabled &&
+    isDesktopPreviewSearchOpen &&
+    desktopNavEnabled &&
+    desktopNavVariant === 'contained' &&
+    !activePageIsDynamic
+  const desktopCompactSearchOpen =
+    previewDevice === 'desktop' &&
+    previewSearchInteractionsEnabled &&
+    isDesktopPreviewSearchOpen &&
+    desktopNavEnabled &&
+    desktopNavVariant === 'compact' &&
+    !activePageIsDynamic
+  const desktopConstrainedSearchOpen = desktopContainedSearchOpen || desktopCompactSearchOpen
+
+  useLayoutEffect(() => {
+    const header = previewTopHeaderRef.current
+    if (!header) return
+
+    const updateContainedSearchWidth = () => {
+      if (!desktopConstrainedSearchOpen) {
+        header.style.removeProperty('--live-preview-contained-search-max-width')
+        return
+      }
+
+      const brand = header.querySelector<HTMLElement>('.live-preview__top-header-compact, .live-preview__top-header-page')
+      const search = header.querySelector<HTMLElement>('.live-preview__top-header-search--contained-overlay, .live-preview__top-header-search--compact-overlay')
+      if (!brand || !search) return
+
+      const brandRect = brand.getBoundingClientRect()
+      const searchRect = search.getBoundingClientRect()
+      const maxWidth = Math.max(0, Math.floor(searchRect.right - brandRect.right - 8))
+      header.style.setProperty('--live-preview-contained-search-max-width', `${maxWidth}px`)
+    }
+
+    updateContainedSearchWidth()
+    if (!desktopConstrainedSearchOpen) return
+
+    const resizeObserver = new ResizeObserver(updateContainedSearchWidth)
+    resizeObserver.observe(header)
+    const brand = header.querySelector<HTMLElement>('.live-preview__top-header-compact, .live-preview__top-header-page')
+    const search = header.querySelector<HTMLElement>('.live-preview__top-header-search--contained-overlay, .live-preview__top-header-search--compact-overlay')
+    if (brand) resizeObserver.observe(brand)
+    if (search) resizeObserver.observe(search)
+    window.addEventListener('resize', updateContainedSearchWidth)
+
+    return () => {
+      resizeObserver.disconnect()
+      window.removeEventListener('resize', updateContainedSearchWidth)
+      header.style.removeProperty('--live-preview-contained-search-max-width')
+    }
+  }, [appTitle, activePageId, desktopConstrainedSearchOpen])
 
   // Single source of truth for the live-preview top-header's left affordance:
   // the Profile system page (back + "Profile") and the dynamic detail page (back
@@ -3509,20 +3610,22 @@ export function BuildPage({
     if (!searchBarEnabled) return null
 
     if (device !== 'phone') {
+      const searchFieldVisible = previewSearchInteractionsEnabled && isDesktopPreviewSearchOpen
+      const searchReplacesFullwidthNav = device === 'desktop' && searchFieldVisible && desktopNavEnabled && desktopNavVariant === 'top' && !activePageIsDynamic
       const searchOverlaysNav = desktopNavEnabled && (desktopNavVariant === 'top' || desktopNavVariant === 'contained' || desktopNavVariant === 'compact') && !activePageIsDynamic
       const searchUsesFullwidthOverlay = desktopNavEnabled && desktopNavVariant === 'top' && !activePageIsDynamic
       const searchUsesContainedOverlay = desktopNavEnabled && desktopNavVariant === 'contained' && !activePageIsDynamic
       const searchUsesCompactOverlay = desktopNavEnabled && desktopNavVariant === 'compact' && !activePageIsDynamic
-      const searchFieldVisible = previewSearchInteractionsEnabled && isDesktopPreviewSearchOpen
-      const hasDesktopSearchQuery = desktopPreviewSearchResultQuery.length > 0
-      const hasDesktopSearchResults = desktopPreviewSearchResults.length > 0
 
       return (
-        <div className={`live-preview__top-header-search${searchFieldVisible ? ' live-preview__top-header-search--open' : ''}${searchOverlaysNav ? ' live-preview__top-header-search--nav-overlay' : ''}${searchUsesFullwidthOverlay ? ' live-preview__top-header-search--fullwidth-overlay' : ''}${searchUsesContainedOverlay ? ' live-preview__top-header-search--contained-overlay' : ''}${searchUsesCompactOverlay ? ' live-preview__top-header-search--compact-overlay' : ''}`}>
+        <div className={`live-preview__top-header-search${searchFieldVisible ? ' live-preview__top-header-search--open' : ''}${searchOverlaysNav ? ' live-preview__top-header-search--nav-overlay' : ''}${searchUsesFullwidthOverlay ? ' live-preview__top-header-search--fullwidth-overlay' : ''}${searchUsesContainedOverlay ? ' live-preview__top-header-search--contained-overlay' : ''}${searchUsesCompactOverlay ? ' live-preview__top-header-search--compact-overlay' : ''}${searchReplacesFullwidthNav ? ' live-preview__top-header-search--persistent live-preview__top-header-search--fullwidth-nav-replacement' : ''}`}>
           <form
             className="live-preview__top-header-search-form"
             role="search"
-            onSubmit={(event) => event.preventDefault()}
+            onSubmit={(event) => {
+              event.preventDefault()
+              openDesktopPreviewSearch({ initialQuery: desktopPreviewSearchQuery })
+            }}
           >
             <AppIcon name="Search" size={20} className="live-preview__top-header-search-icon" />
             <input
@@ -3533,14 +3636,20 @@ export function BuildPage({
               placeholder=""
               value={desktopPreviewSearchQuery}
               tabIndex={searchFieldVisible ? 0 : -1}
-              onChange={(event) => setDesktopPreviewSearchQuery(event.currentTarget.value)}
+              onPointerDown={() => openDesktopPreviewSearch({ initialQuery: desktopPreviewSearchQuery })}
+              onChange={(event) => handleDesktopPreviewSearchQueryChange(event.currentTarget.value)}
               onKeyDown={(event) => {
+                if (event.key === 'Enter') {
+                  event.preventDefault()
+                  openDesktopPreviewSearch({ initialQuery: event.currentTarget.value })
+                  return
+                }
                 if (event.key !== 'Escape') return
                 if (desktopPreviewSearchQuery) {
                   setDesktopPreviewSearchQuery('')
                   return
                 }
-                setIsDesktopPreviewSearchOpen(false)
+                closeDesktopPreviewSearch()
               }}
             />
             <button
@@ -3548,57 +3657,28 @@ export function BuildPage({
               className="live-preview__top-header-search-close"
               aria-label="Close search"
               tabIndex={searchFieldVisible ? 0 : -1}
-              onClick={() => {
-                setDesktopPreviewSearchQuery('')
-                setIsDesktopPreviewSearchOpen(false)
-              }}
+              onClick={closeDesktopPreviewSearch}
             >
               <AppIcon name="X" size={16} />
             </button>
           </form>
-          {searchFieldVisible && (
-            <section className={`live-preview__desktop-search-featured${hasDesktopSearchQuery ? ' live-preview__desktop-search-featured--results' : ''}`} aria-label={hasDesktopSearchQuery ? `Search results for ${desktopPreviewSearchResultQuery}` : 'Featured searches'}>
-              {hasDesktopSearchQuery ? (
-                hasDesktopSearchResults ? (
-                  <LivePreviewSearchResultListWithCollections
-                    resultQuery={desktopPreviewSearchResultQuery}
-                    results={desktopPreviewSearchResults}
-                    onResultSelect={handleLivePreviewSearchResultSelect}
-                  />
-                ) : (
-                  <LivePreviewSearchEmptyState query={desktopPreviewSearchResultQuery} />
-                )
-              ) : (
-                <>
-                  <div className="live-preview__desktop-search-featured-hero">
-                    <span className="live-preview__desktop-search-featured-icon" aria-hidden="true">
-                      <AppIcon name="Search" size={32} />
-                    </span>
-                    <div className="live-preview__desktop-search-featured-copy">
-                      <h2 className="live-preview__desktop-search-featured-title">What are you looking for?</h2>
-                      <p className="live-preview__desktop-search-featured-description">Enter a name to find what you're looking for.</p>
-                    </div>
-                  </div>
-                  {desktopPreviewFeaturedSearches.length > 0 && (
-                    <div className="live-preview__desktop-search-featured-list">
-                      {desktopPreviewFeaturedSearches.map((keyword) => (
-                        <button
-                          key={keyword}
-                          type="button"
-                          className="live-preview__desktop-search-featured-chip"
-                          onClick={() => {
-                            setDesktopPreviewSearchQuery(keyword)
-                            desktopPreviewSearchInputRef.current?.focus()
-                          }}
-                        >
-                          {keyword}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </>
-              )}
-            </section>
+          {searchFieldVisible && searchOverlaysNav && (
+            <div className="live-preview__desktop-search-featured live-preview__desktop-search-featured--surface">
+              <LivePreviewSearchPageWithCollections
+                key={`desktop-context-${previewSearchSessionKey}`}
+                appTitle={appTitle}
+                appSubtitle={appSubtitle}
+                pages={pages}
+                searchActions={previewSearchActions}
+                initialQuery={previewSearchInitialQuery}
+                externalQuery={desktopPreviewSearchQuery}
+                onQueryChange={setDesktopPreviewSearchQuery}
+                presentation="desktop-context"
+                showHeader={false}
+                onClose={closeDesktopPreviewSearch}
+                onResultSelect={handleLivePreviewSearchResultSelect}
+              />
+            </div>
           )}
           {!searchFieldVisible && (
             <button
@@ -3629,95 +3709,6 @@ export function BuildPage({
       >
         <AppIcon name="Search" size={20} />
       </button>
-    )
-  }
-
-  const renderLeftDesktopSearchModal = () => {
-    const hasDesktopSearchQuery = desktopPreviewSearchResultQuery.length > 0
-    const hasDesktopSearchResults = desktopPreviewSearchResults.length > 0
-
-    return (
-      <section className={`live-preview__left-search-modal${hasDesktopSearchQuery ? ' live-preview__left-search-modal--results' : ''}`} role="dialog" aria-modal="true" aria-label="Search">
-        <header className="live-preview__left-search-modal-header">
-          <form
-            className="live-preview__left-search-modal-form"
-            role="search"
-            onSubmit={(event) => event.preventDefault()}
-          >
-            <input
-              ref={desktopPreviewSearchInputRef}
-              className="live-preview__left-search-modal-input"
-              type="search"
-              aria-label="Search"
-              placeholder="Search"
-              value={desktopPreviewSearchQuery}
-              onChange={(event) => setDesktopPreviewSearchQuery(event.currentTarget.value)}
-              onKeyDown={(event) => {
-                if (event.key !== 'Escape') return
-                if (desktopPreviewSearchQuery) {
-                  setDesktopPreviewSearchQuery('')
-                  return
-                }
-                setIsDesktopPreviewSearchOpen(false)
-              }}
-            />
-          </form>
-          <button
-            type="button"
-            className="live-preview__left-search-modal-close"
-            aria-label="Close search"
-            onClick={() => {
-              setDesktopPreviewSearchQuery('')
-              setIsDesktopPreviewSearchOpen(false)
-            }}
-          >
-            <AppIcon name="X" size={16} />
-          </button>
-        </header>
-        <div className="live-preview__left-search-modal-divider" />
-        <div className="live-preview__left-search-modal-body">
-          {hasDesktopSearchQuery ? (
-            hasDesktopSearchResults ? (
-              <LivePreviewSearchResultListWithCollections
-                resultQuery={desktopPreviewSearchResultQuery}
-                results={desktopPreviewSearchResults}
-                onResultSelect={handleLivePreviewSearchResultSelect}
-              />
-            ) : (
-              <LivePreviewSearchEmptyState query={desktopPreviewSearchResultQuery} />
-            )
-          ) : (
-            <div className="live-preview__left-search-modal-empty">
-              <div className="live-preview__left-search-modal-main">
-                <span className="live-preview__left-search-modal-icon" aria-hidden="true">
-                  <AppIcon name="Search" size={32} />
-                </span>
-                <div className="live-preview__left-search-modal-copy">
-                  <h2 className="live-preview__left-search-modal-title">What are you looking for?</h2>
-                  <p className="live-preview__left-search-modal-description">Enter a name to find what you're looking for.</p>
-                </div>
-              </div>
-              {desktopPreviewFeaturedSearches.length > 0 && (
-                <div className="live-preview__left-search-modal-chips">
-                  {desktopPreviewFeaturedSearches.map((keyword) => (
-                    <button
-                      key={keyword}
-                      type="button"
-                      className="live-preview__left-search-modal-chip"
-                      onClick={() => {
-                        setDesktopPreviewSearchQuery(keyword)
-                        desktopPreviewSearchInputRef.current?.focus()
-                      }}
-                    >
-                      {keyword}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-      </section>
     )
   }
 
@@ -3817,9 +3808,10 @@ export function BuildPage({
   // is undefined and the AppHeader text falls back to --fg-inverse — so the overlay nav
   // (icon already uses --fg-inverse) must too, or the title/menu read dark on the brand.
   const topNavOverlayFg = resolveHeaderTextColor(appHeaderState) ?? 'var(--fg-inverse)'
-  // Mobile top header is shown unless Top Navigation is toggled off (desktop has its
-  // own nav controls). When hidden, the content/hero starts below the status bar.
-  const mobileTopHeaderHidden = previewDevice !== 'desktop' && (!topNavEnabled || isPreviewSearchOpen)
+  // Search page owns its own header on every device. The no-top-nav content padding
+  // remains mobile/tablet-only because desktop search is a full-frame overlay.
+  const topHeaderHidden = isPreviewSearchOpen || (previewDevice !== 'desktop' && !topNavEnabled)
+  const contentNoTopNav = previewDevice !== 'desktop' && (!topNavEnabled || isPreviewSearchOpen)
 
   const canDropInHeader = (() => {
     if (appHeaderIsHero || appHeaderIsDefault) return false
@@ -4851,7 +4843,7 @@ export function BuildPage({
           }}
         />
       )}
-      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${topHeaderUsesPageName && isPreviewContentScrolled ? ' live-preview__top-header--page-scrolled' : ''}${desktopNavVariant === 'compact' ? ' live-preview__top-header--compact' : ''}${desktopNavVariant === 'contained' ? ' live-preview__top-header--contained' : ''}${topNavOverlay ? ' live-preview__top-header--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__top-header--over-content' : ''}${mobileTopHeaderHidden ? ' live-preview__top-header--hidden' : ''}`} style={topNavOverlay && topNavOverHero ? { color: topNavOverlayFg } : undefined} data-nav-align={desktopNavAlignment}>
+      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${topHeaderUsesPageName && isPreviewContentScrolled ? ' live-preview__top-header--page-scrolled' : ''}${desktopNavVariant === 'compact' ? ' live-preview__top-header--compact' : ''}${desktopNavVariant === 'contained' ? ' live-preview__top-header--contained' : ''}${desktopFullwidthSearchOpen ? ' live-preview__top-header--fullwidth-search-open' : ''}${topNavOverlay ? ' live-preview__top-header--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__top-header--over-content' : ''}${topHeaderHidden ? ' live-preview__top-header--hidden' : ''}`} style={topNavOverlay && topNavOverHero ? { color: topNavOverlayFg } : undefined} data-nav-align={desktopNavAlignment}>
         {(() => {
           // Profile / dynamic-detail back affordance — shared with the right-panel
           // preview via renderTopHeaderBack so the two never diverge.
@@ -4860,12 +4852,16 @@ export function BuildPage({
           return renderTopHeaderBrand()
         })()}
         {desktopNavEnabled && desktopNavVariant !== 'left' && !activePageIsDynamic && (
-          <nav className={`live-preview__top-header-nav${desktopTopNavUsesCompactOverflow ? ' live-preview__top-header-nav--contained' : ''}`}>
+          <nav
+            className={`live-preview__top-header-nav${desktopTopNavUsesCompactOverflow ? ' live-preview__top-header-nav--contained' : ''}${desktopFullwidthSearchOpen ? ' live-preview__top-header-nav--fullwidth-search-hidden' : ''}`}
+            aria-hidden={desktopFullwidthSearchOpen}
+          >
             {desktopTopNavPages.map((p) => (
               <button
                 key={p.id}
                 type="button"
                 className={`live-preview__top-header-nav-link${p.id === activePageId ? ' live-preview__top-header-nav-link--active' : ''}`}
+                tabIndex={desktopFullwidthSearchOpen ? -1 : undefined}
                 onClick={() => navigateToPage(p.id)}
               >
                 {desktopNavDisplayStyle === 'iconText' && (
@@ -4881,6 +4877,7 @@ export function BuildPage({
                   className={`live-preview__top-header-nav-link live-preview__top-header-nav-more-btn${desktopTopNavMoreActive || isDesktopNavMoreOpen ? ' live-preview__top-header-nav-link--active' : ''}`}
                   aria-haspopup="menu"
                   aria-expanded={isDesktopNavMoreOpen}
+                  tabIndex={desktopFullwidthSearchOpen ? -1 : undefined}
                   onClick={() => {
                     setIsDesktopNavMoreOpen((open) => !open)
                     setIsPreviewSearchOpen(false)
@@ -5004,19 +5001,32 @@ export function BuildPage({
           type="button"
           className={`live-preview__desktop-search-scrim${desktopNavVariant === 'left' ? ' live-preview__desktop-search-scrim--modal' : ''}`}
           aria-label="Close search"
-          onClick={() => {
-            setDesktopPreviewSearchQuery('')
-            setIsDesktopPreviewSearchOpen(false)
-          }}
+          onClick={closeDesktopPreviewSearch}
         />
       )}
-      {previewSearchInteractionsEnabled && previewDevice === 'desktop' && desktopNavEnabled && desktopNavVariant === 'left' && isDesktopPreviewSearchOpen && renderLeftDesktopSearchModal()}
-      {previewSearchInteractionsEnabled && isPreviewSearchOpen && (
+      {previewSearchInteractionsEnabled && previewDevice === 'desktop' && desktopNavVariant === 'left' && isDesktopPreviewSearchOpen && (
+        <div className="live-preview__left-search-modal app-scope">
+          <LivePreviewSearchPageWithCollections
+            key={`desktop-modal-${previewSearchSessionKey}`}
+            appTitle={appTitle}
+            appSubtitle={appSubtitle}
+            pages={pages}
+            searchActions={previewSearchActions}
+            initialQuery={previewSearchInitialQuery}
+            presentation="desktop-modal"
+            onClose={closeDesktopPreviewSearch}
+            onResultSelect={handleLivePreviewSearchResultSelect}
+          />
+        </div>
+      )}
+      {previewSearchInteractionsEnabled && previewDevice !== 'desktop' && isPreviewSearchOpen && (
         <LivePreviewSearchPageWithCollections
+          key={previewSearchSessionKey}
           appTitle={appTitle}
           appSubtitle={appSubtitle}
           pages={pages}
           searchActions={previewSearchActions}
+          initialQuery={previewSearchInitialQuery}
           onClose={() => setIsPreviewSearchOpen(false)}
           onResultSelect={handleLivePreviewSearchResultSelect}
         />
@@ -5129,7 +5139,7 @@ export function BuildPage({
           </div>
         </aside>
       )}
-      <div ref={setPreviewContentScalerEl} className={`live-preview__content-scaler app-scope${mobileTopHeaderHidden ? ' live-preview__content-scaler--no-top-nav' : ''}`}>
+      <div ref={setPreviewContentScalerEl} className={`live-preview__content-scaler app-scope${contentNoTopNav ? ' live-preview__content-scaler--no-top-nav' : ''}`}>
         <div className="live-preview__content app-scope">
           {isPreviewProfileOpen ? (
             <>
@@ -9109,8 +9119,8 @@ export function BuildPage({
               <ProductDetailProvider onOpenChange={setIsPreviewDetailOpen}>
               <div className="live-preview">
                 <div className="live-preview__header" data-theme="dark">
-                  <span className="live-preview__title">Viewing as</span>
-                  <div className="live-preview__toolbar">
+                  <div className="live-preview__viewing">
+                    <span className="live-preview__title">Viewing as</span>
                     <div className="live-preview__role-dropdown">
                       <DSDropdownSingle
                         size="sm"
@@ -9119,6 +9129,8 @@ export function BuildPage({
                         options={livePreviewRoleOptions}
                       />
                     </div>
+                  </div>
+                  <div className="live-preview__toolbar">
                     <div className="live-preview__device-dropdown">
                       <DSDropdownSingle
                         size="sm"
@@ -9197,7 +9209,7 @@ export function BuildPage({
                           }}
                         />
                       )}
-                      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${topHeaderUsesPageName && isPreviewContentScrolled ? ' live-preview__top-header--page-scrolled' : ''}${topNavOverlay ? ' live-preview__top-header--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__top-header--over-content' : ''}${mobileTopHeaderHidden ? ' live-preview__top-header--hidden' : ''}`} style={topNavOverlay && topNavOverHero ? { color: topNavOverlayFg } : undefined} data-nav-align={desktopNavAlignment}>
+                      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${topHeaderUsesPageName && isPreviewContentScrolled ? ' live-preview__top-header--page-scrolled' : ''}${topNavOverlay ? ' live-preview__top-header--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__top-header--over-content' : ''}${topHeaderHidden ? ' live-preview__top-header--hidden' : ''}`} style={topNavOverlay && topNavOverHero ? { color: topNavOverlayFg } : undefined} data-nav-align={desktopNavAlignment}>
                         {(() => {
                           // Profile / dynamic-detail back affordance — shared with the
                           // full-screen preview. The right-panel preview always renders a
@@ -9272,10 +9284,12 @@ export function BuildPage({
                       </div>
                       {previewSearchInteractionsEnabled && isPreviewSearchOpen && (
                         <LivePreviewSearchPageWithCollections
+                          key={previewSearchSessionKey}
                           appTitle={appTitle}
                           appSubtitle={appSubtitle}
                           pages={pages}
                           searchActions={previewSearchActions}
+                          initialQuery={previewSearchInitialQuery}
                           onClose={() => setIsPreviewSearchOpen(false)}
                           onResultSelect={handleLivePreviewSearchResultSelect}
                         />
@@ -9288,7 +9302,7 @@ export function BuildPage({
                           onLoggedIn={handlePreviewLogin}
                         />
                       )}
-                      <div ref={setPreviewContentScalerEl} className={`live-preview__content-scaler app-scope${mobileTopHeaderHidden ? ' live-preview__content-scaler--no-top-nav' : ''}`}>
+                      <div ref={setPreviewContentScalerEl} className={`live-preview__content-scaler app-scope${contentNoTopNav ? ' live-preview__content-scaler--no-top-nav' : ''}`}>
                         <div className="live-preview__content app-scope">
                           {isPreviewProfileOpen ? (
                             <>

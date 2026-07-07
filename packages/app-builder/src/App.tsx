@@ -2,17 +2,23 @@ import { useState, useMemo, useEffect, useSyncExternalStore, useCallback, useRef
 import { IconLibraryProvider } from '@jf/app-elements'
 import { TopBar } from './shell/TopBar.tsx'
 import { BuildPage } from './pages/BuildPage.tsx'
+import { DataPage, presetUsesDataElement } from './pages/DataPage.tsx'
 import { SettingsPage, type PushNotificationHistoryItem } from './pages/SettingsPage.tsx'
-import { APP_USER_NAME_FIELD_VALUE, APP_USER_TABLE_ROLE_IDS, PublishPage } from './pages/PublishPage.tsx'
-import { APP_PRESETS, EMPTY_PRESET_ID, getPresetById, type AppPreset } from './presets/appPresets.ts'
+import {
+  getAppUserNameFieldValueForPreset,
+  getAppUserRoleOptionsForPreset,
+  getAppUserTableRoleIdsForPreset,
+  PublishPage,
+} from './pages/PublishPage.tsx'
+import { APP_PRESETS, EMPTY_PRESET_ID, getPresetById } from './presets/appPresets.ts'
 import { loadStoredAppTitle, loadStoredAppHeaderIcon, saveSnapshot, type PresetSnapshot } from './presets/storage.ts'
 import { loadRemoteApp, applyRemoteTheme } from './presets/remoteStore.ts'
-import { DEFAULT_ROLE_OPTIONS, type AppRoleOption } from './state/appUserRoles.ts'
+import { type AppRoleOption } from './state/appUserRoles.ts'
 import { createDeepLinkTargetsFromPreset, type DeepLinkTarget } from './state/deepLinkTargets.ts'
 import { ALL_USERS_AUDIENCE_ID } from './state/pushNotifications.ts'
 import { SEARCH_BAR_AUTO_ENABLE_THRESHOLD } from './state/searchableElements.ts'
 
-type Page = 'build' | 'settings' | 'publish'
+type Page = 'build' | 'data' | 'settings' | 'publish'
 
 interface FigmaCaptureOptions {
   selector?: string
@@ -73,12 +79,6 @@ function useUrlSearch(): string {
   return useSyncExternalStore(subscribeUrl, getUrlSearch, getUrlSearch)
 }
 
-function presetUsesListElement(preset: AppPreset): boolean {
-  return preset.pages.some((page) => (
-    page.elements.some((element) => element.componentId === 'list')
-  ))
-}
-
 async function waitForFigmaCaptureTarget(selector: string, signal: AbortSignal): Promise<void> {
   const timeoutAt = Date.now() + 10000
   while (!signal.aborted && Date.now() < timeoutAt) {
@@ -99,16 +99,18 @@ export function App() {
       isFigmaCapture: p.has('figmaCapture'),
     }
   }, [search])
+  const initialPresetId = urlPreset ?? EMPTY_PRESET_ID
 
   const [activePage, setActivePage] = useState<Page>('build')
   const [publishResetKey, setPublishResetKey] = useState(0)
   const [previewMode, setPreviewMode] = useState(false)
-  const [activePresetId, setActivePresetId] = useState<string>(urlPreset ?? EMPTY_PRESET_ID)
-  const [appUserRoleOptions, setAppUserRoleOptions] = useState<AppRoleOption[]>(DEFAULT_ROLE_OPTIONS)
-  const [appUserTableRoleIds, setAppUserTableRoleIds] = useState<string[]>(APP_USER_TABLE_ROLE_IDS)
+  const [activePresetId, setActivePresetId] = useState<string>(initialPresetId)
+  const [appUserRoleOptions, setAppUserRoleOptions] = useState<AppRoleOption[]>(() => getAppUserRoleOptionsForPreset(initialPresetId))
+  const [appUserTableRoleIds, setAppUserTableRoleIds] = useState<string[]>(() => getAppUserTableRoleIdsForPreset(initialPresetId))
   const [pushNotificationsEnabled, setPushNotificationsEnabled] = useState(false)
   const [searchBarEnabled, setSearchBarEnabledState] = useState(false)
   const [searchableElementCount, setSearchableElementCount] = useState(0)
+  const [dataBackedElementCount, setDataBackedElementCount] = useState(0)
   const [searchBarAutoEnablePaused, setSearchBarAutoEnablePaused] = useState(false)
   const previousSearchableElementCountRef = useRef(0)
   const previousUrlPresetRef = useRef(urlPreset)
@@ -116,7 +118,7 @@ export function App() {
   const [pushNotificationHistoryItems, setPushNotificationHistoryItems] = useState<PushNotificationHistoryItem[]>([])
   const [readPushNotificationDeliveryIds, setReadPushNotificationDeliveryIds] = useState<Set<string>>(() => new Set())
   const preset = useMemo(() => getPresetById(activePresetId), [activePresetId])
-  const showDataTab = useMemo(() => presetUsesListElement(preset), [preset])
+  const showDataTab = useMemo(() => presetUsesDataElement(preset) || dataBackedElementCount > 0, [dataBackedElementCount, preset])
   const [deepLinkTargets, setDeepLinkTargets] = useState<DeepLinkTarget[]>(() =>
     createDeepLinkTargetsFromPreset(getPresetById(urlPreset ?? EMPTY_PRESET_ID)),
   )
@@ -129,6 +131,7 @@ export function App() {
   const resetSearchBarAutomation = useCallback(() => {
     previousSearchableElementCountRef.current = 0
     setSearchableElementCount(0)
+    setDataBackedElementCount(0)
     setSearchBarAutoEnablePaused(false)
     setSearchBarEnabledState(false)
   }, [])
@@ -167,6 +170,8 @@ export function App() {
     setAppTitle(titleForPreset(urlPreset))
     setAppIcon(defaultAppIcon(urlPreset))
     setDeepLinkTargets(createDeepLinkTargetsFromPreset(getPresetById(urlPreset)))
+    setAppUserRoleOptions(getAppUserRoleOptionsForPreset(urlPreset))
+    setAppUserTableRoleIds(getAppUserTableRoleIdsForPreset(urlPreset))
     if (presetChanged) resetSearchBarAutomation()
     // titleForPreset is stable enough here; intentionally omitted from deps.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -237,6 +242,8 @@ export function App() {
     setAppTitle(titleForPreset(id))
     setAppIcon(defaultAppIcon(id))
     setDeepLinkTargets(createDeepLinkTargetsFromPreset(getPresetById(id)))
+    setAppUserRoleOptions(getAppUserRoleOptionsForPreset(id))
+    setAppUserTableRoleIds(getAppUserTableRoleIdsForPreset(id))
     resetSearchBarAutomation()
   }
 
@@ -305,6 +312,10 @@ export function App() {
     return roles.length > 0 ? roles : appUserRoleOptions
   }, [appUserTableRoleIds, appUserRoleOptions])
 
+  const livePreviewAppUserRoleOptions = useMemo(() => (
+    activePresetId === EMPTY_PRESET_ID ? appUserRoleOptions : appUserTableRoleOptions
+  ), [activePresetId, appUserRoleOptions, appUserTableRoleOptions])
+
   const buildInitialPageId = urlFullscreen || isFigmaCapture ? (urlPage ?? undefined) : undefined
 
   return (
@@ -347,12 +358,16 @@ export function App() {
             onPreviewClose={() => setPreviewMode(false)}
             onDeepLinkTargetsChange={setDeepLinkTargets}
             onSearchableElementCountChange={handleSearchableElementCountChange}
+            onDataBackedElementCountChange={setDataBackedElementCount}
             pushNotificationsEnabled={pushNotificationsEnabled}
             searchBarEnabled={searchBarEnabled}
             pushNotifications={livePreviewPushNotifications}
             onPushNotificationRead={markPushNotificationRead}
-            appUserRoles={appUserTableRoleOptions}
+            appUserRoles={livePreviewAppUserRoleOptions}
           />
+        )}
+        {activePage === 'data' && (
+          <DataPage preset={preset} />
         )}
         {activePage === 'settings' && (
           <SettingsPage
@@ -370,12 +385,13 @@ export function App() {
             onPushNotificationHistoryItemCreate={addPushNotificationHistoryItem}
             onPushNotificationHistoryItemUpdate={updatePushNotificationHistoryItem}
             onPushNotificationHistoryItemDelete={deletePushNotificationHistoryItem}
-            pushComposerFieldValues={{ 'user-name': APP_USER_NAME_FIELD_VALUE }}
+            pushComposerFieldValues={{ 'user-name': getAppUserNameFieldValueForPreset(activePresetId) }}
           />
         )}
         {activePage === 'publish' && (
           <PublishPage
-            key={publishResetKey}
+            key={`${publishResetKey}:${activePresetId}`}
+            presetId={activePresetId}
             roleOptions={appUserRoleOptions}
             setRoleOptions={setAppUserRoleOptions}
             onAppUserTableRoleIdsChange={setAppUserTableRoleIds}

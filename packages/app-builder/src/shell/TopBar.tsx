@@ -3,8 +3,8 @@ import jotformLogo from '@jf/design-system/src/assets/jotform-logo.svg'
 import jotformLogomark from '@jf/design-system/src/assets/jotform-logomark.svg'
 import melisAvatar from '../assets/app-users/melis-platin.png'
 
-type Page = 'build' | 'settings' | 'publish'
-type NavPage = Page | 'data'
+type Page = 'build' | 'data' | 'settings' | 'publish'
+type NavPage = Page
 
 interface PresetOption {
   id: string
@@ -177,10 +177,7 @@ export function TopBar({
             <button
               key={page.id}
               className={`topbar__nav-item ${activePage === page.id ? 'topbar__nav-item--active' : ''}`}
-              onClick={() => {
-                if (page.id === 'data') return
-                onPageChange(page.id)
-              }}
+              onClick={() => onPageChange(page.id)}
             >
               {page.label}
             </button>

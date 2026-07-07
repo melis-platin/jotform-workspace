@@ -52,6 +52,8 @@ export interface SearchMatchResult {
   target: SearchResultTarget
 }
 
+type LivePreviewSearchPresentation = 'page' | 'desktop-context' | 'desktop-modal'
+
 interface LivePreviewSearchPageProps {
   onClose: () => void
   onResultSelect?: (target: SearchResultTarget) => void
@@ -59,6 +61,11 @@ interface LivePreviewSearchPageProps {
   appSubtitle?: string
   pages?: SearchSourcePage[]
   searchActions?: SearchSourceAction[]
+  initialQuery?: string
+  externalQuery?: string
+  onQueryChange?: (query: string) => void
+  presentation?: LivePreviewSearchPresentation
+  showHeader?: boolean
 }
 
 const APP_TITLE_PLACEHOLDER = 'New App'
@@ -1461,15 +1468,32 @@ export function LivePreviewSearchPage({
   appSubtitle,
   pages,
   searchActions = [],
+  initialQuery = '',
+  externalQuery,
+  onQueryChange,
+  presentation = 'page',
+  showHeader = true,
 }: LivePreviewSearchPageProps) {
-  const [query, setQuery] = useState('')
+  const normalizedInitialQuery = (externalQuery ?? initialQuery).trim()
+  const initialSearchState = (() => {
+    const nextQuery = normalizedInitialQuery
+    if (!nextQuery) return { query: '', noResultsQuery: '', resultQuery: '' }
+
+    const hasResults = getPreviewSearchResults(nextQuery, pages, appTitle, appSubtitle, searchActions).length > 0
+    return {
+      query: nextQuery,
+      noResultsQuery: hasResults ? '' : nextQuery,
+      resultQuery: hasResults ? nextQuery : '',
+    }
+  })()
+  const [query, setQuery] = useState(initialSearchState.query)
   const [isSearchFocused, setIsSearchFocused] = useState(false)
   const recentSearchStorageKey = useMemo(() => getRecentSearchStorageKey(appTitle), [appTitle])
   const [recentSearches, setRecentSearches] = useState<string[]>(
     () => readRecentSearches(recentSearchStorageKey),
   )
-  const [noResultsQuery, setNoResultsQuery] = useState('')
-  const [resultQuery, setResultQuery] = useState('')
+  const [noResultsQuery, setNoResultsQuery] = useState(initialSearchState.noResultsQuery)
+  const [resultQuery, setResultQuery] = useState(initialSearchState.resultQuery)
   const inputRef = useRef<HTMLInputElement>(null)
   const autoRecordedQueryRef = useRef('')
   const featuredSearches = useMemo(
@@ -1490,6 +1514,16 @@ export function LivePreviewSearchPage({
   )
   const showRecentSearches = !hasQuery && !hasNoResults && !hasSearchResults && hasRecentSearches
   const showSearchWelcome = !hasQuery && !hasNoResults && !hasSearchResults && !hasRecentSearches
+
+  useEffect(() => {
+    if (!showHeader) return undefined
+
+    const frame = window.requestAnimationFrame(() => {
+      inputRef.current?.focus()
+      setIsSearchFocused(true)
+    })
+    return () => window.cancelAnimationFrame(frame)
+  }, [showHeader])
 
   useEffect(() => {
     setRecentSearches(readRecentSearches(recentSearchStorageKey))
@@ -1530,7 +1564,7 @@ export function LivePreviewSearchPage({
     return () => window.clearTimeout(timer)
   }, [noResultsQuery, query, recentSearchStorageKey, resultQuery, recordRecentSearch])
 
-  const applySearchState = (nextQuery: string) => {
+  const applySearchState = useCallback((nextQuery: string) => {
     if (getPreviewSearchResults(nextQuery, pages, appTitle, appSubtitle, searchActions).length === 0) {
       setNoResultsQuery(nextQuery)
       setResultQuery('')
@@ -1539,20 +1573,26 @@ export function LivePreviewSearchPage({
 
     setNoResultsQuery('')
     setResultQuery(nextQuery)
-  }
+  }, [appSubtitle, appTitle, pages, searchActions])
 
   const startSearch = (searchText: string, { syncQuery = true, recordRecent = true } = {}) => {
     const nextQuery = searchText.trim()
 
     if (!nextQuery) {
-      if (syncQuery) setQuery('')
+      if (syncQuery) {
+        setQuery('')
+        onQueryChange?.('')
+      }
       setNoResultsQuery('')
       setResultQuery('')
       inputRef.current?.focus()
       return
     }
 
-    if (syncQuery) setQuery(nextQuery)
+    if (syncQuery) {
+      setQuery(nextQuery)
+      onQueryChange?.(nextQuery)
+    }
     if (recordRecent) recordRecentSearch(nextQuery)
     applySearchState(nextQuery)
     inputRef.current?.focus()
@@ -1560,6 +1600,7 @@ export function LivePreviewSearchPage({
 
   const handleClear = () => {
     setQuery('')
+    onQueryChange?.('')
     setNoResultsQuery('')
     setResultQuery('')
     inputRef.current?.focus()
@@ -1594,6 +1635,7 @@ export function LivePreviewSearchPage({
 
   const handleQueryChange = (nextQuery: string) => {
     setQuery(nextQuery)
+    onQueryChange?.(nextQuery)
     setNoResultsQuery('')
     setResultQuery('')
 
@@ -1604,47 +1646,84 @@ export function LivePreviewSearchPage({
     startSearch(nextQuery, { syncQuery: false, recordRecent: false })
   }
 
+  useEffect(() => {
+    if (externalQuery === undefined) return
+
+    const nextExternalQuery = externalQuery.trim()
+    setQuery(externalQuery)
+
+    if (!nextExternalQuery) {
+      setNoResultsQuery('')
+      setResultQuery('')
+      return
+    }
+
+    applySearchState(nextExternalQuery)
+  }, [applySearchState, externalQuery])
+
+  const usesDesktopModalHeader = presentation === 'desktop-modal'
+  const rootClassName = [
+    'live-preview__search-page',
+    presentation !== 'page' ? `live-preview__search-page--${presentation}` : '',
+    showSearchWelcome ? 'live-preview__search-page--welcome' : '',
+    !showHeader ? 'live-preview__search-page--no-header' : '',
+  ].filter(Boolean).join(' ')
+
   return (
-    <section className="live-preview__search-page app-scope" aria-label="Search">
-      <header className="live-preview__search-header">
-        <button
-          type="button"
-          className="live-preview__search-back"
-          aria-label="Back"
-          onClick={onClose}
-        >
-          <AppIcon name="ChevronLeft" size={20} />
-        </button>
-        <form
-          className={`live-preview__search-field${hasQuery ? ' live-preview__search-field--has-value' : ''}`}
-          onSubmit={handleSubmit}
-        >
-          <AppIcon name="Search" size={20} />
-          <input
-            ref={inputRef}
-            type="search"
-            aria-label="Search"
-            placeholder={isSearchFocused ? '' : 'Search'}
-            value={query}
-            onChange={(event) => handleQueryChange(event.target.value)}
-            onPointerDown={() => setIsSearchFocused(true)}
-            onFocus={() => setIsSearchFocused(true)}
-            onBlur={() => setIsSearchFocused(false)}
-            onKeyDown={handleKeyDown}
-          />
-          {hasQuery && (
+    <section className={`${rootClassName} app-scope`} aria-label="Search">
+      {showHeader && (
+        <header className={`live-preview__search-header${usesDesktopModalHeader ? ' live-preview__search-header--desktop-modal' : ''}`}>
+          {!usesDesktopModalHeader && (
             <button
               type="button"
-              className="live-preview__search-clear"
-              aria-label="Clear search"
-              onPointerDown={handleClearPointerDown}
-              onClick={handleClear}
+              className="live-preview__search-back"
+              aria-label="Back"
+              onClick={onClose}
             >
-              <DSIcon name="xmark-circle-filled" size={20} />
+              <AppIcon name="ChevronLeft" size={20} />
             </button>
           )}
-        </form>
-      </header>
+          <form
+            className={`live-preview__search-field${hasQuery ? ' live-preview__search-field--has-value' : ''}`}
+            onSubmit={handleSubmit}
+          >
+            {!usesDesktopModalHeader && <AppIcon name="Search" size={20} />}
+            <input
+              ref={inputRef}
+              type="search"
+              aria-label="Search"
+              placeholder={usesDesktopModalHeader ? 'Search' : (isSearchFocused ? '' : 'Search')}
+              value={query}
+              onChange={(event) => handleQueryChange(event.target.value)}
+              onPointerDown={() => setIsSearchFocused(true)}
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => setIsSearchFocused(false)}
+              onKeyDown={handleKeyDown}
+            />
+            {hasQuery && !usesDesktopModalHeader && (
+              <button
+                type="button"
+                className="live-preview__search-clear"
+                aria-label="Clear search"
+                onPointerDown={handleClearPointerDown}
+                onClick={handleClear}
+              >
+                <DSIcon name="xmark-circle-filled" size={20} />
+              </button>
+            )}
+          </form>
+          {usesDesktopModalHeader && (
+            <button
+              type="button"
+              className="live-preview__search-close"
+              aria-label="Close search"
+              onClick={onClose}
+            >
+              <DSIcon name="xmark" size={20} />
+            </button>
+          )}
+        </header>
+      )}
 
       {hasNoResults && <LivePreviewSearchEmptyState query={noResultsQuery} />}
 

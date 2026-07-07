@@ -1,27 +1,16 @@
 import { type Dispatch, type SetStateAction, useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { Badge, Button, Icon, SearchInput } from '@jf/design-system'
 import { PanelHeader } from '../components/PanelHeader'
 import { QuickSharePanel } from '../components/QuickSharePanel'
 import { SideNav, type SideNavItem } from '../components/SideNav'
+import { EMPTY_PRESET_ID } from '../presets/appPresets'
 import ownerAvatar from '../assets/app-users/melis-platin.png'
-import alfonsoRosserAvatar from '../assets/app-users/figma/app-user-list-14/alfonso-rosser.jpg'
-import allisonPassaquindiciArcandAvatar from '../assets/app-users/figma/app-user-list-14/allison-passaquindici-arcand.jpg'
-import anikaGeidtAvatar from '../assets/app-users/figma/app-user-list-14/anika-geidt.jpg'
-import cristoferSiphronAvatar from '../assets/app-users/figma/app-user-list-14/cristofer-siphron.jpg'
-import emeryVetrovsAvatar from '../assets/app-users/figma/app-user-list-14/emery-vetrovs.jpg'
-import gianaGeidtAvatar from '../assets/app-users/figma/app-user-list-14/giana-geidt.jpg'
-import haylieSarisAvatar from '../assets/app-users/figma/app-user-list-14/haylie-saris.jpg'
-import jakobSeptimusAvatar from '../assets/app-users/figma/app-user-list-14/jakob-septimus.jpg'
-import kaylynnLevinAvatar from '../assets/app-users/figma/app-user-list-14/kaylynn-levin.jpg'
-import martinWesterveltAvatar from '../assets/app-users/figma/app-user-list-14/martin-westervelt.jpg'
-import paitynEkstromBothmanAvatar from '../assets/app-users/figma/app-user-list-14/paityn-ekstrom-bothman.jpg'
-import raynaBotoshAvatar from '../assets/app-users/figma/app-user-list-14/rayna-botosh.jpg'
-import raynaSarisAvatar from '../assets/app-users/figma/app-user-list-14/rayna-saris.jpg'
-import terryWorkmanAvatar from '../assets/app-users/figma/app-user-list-14/terry-workman.jpg'
 import {
   DEFAULT_ROLE_OPTIONS,
   getRandomRoleColor,
   getRoleColorStyle,
+  ROLE_COLOR_PALETTE,
   type AppRoleOption,
 } from '../state/appUserRoles'
 
@@ -73,8 +62,20 @@ interface AppUser {
   avatarUrl: string
 }
 
-const TOTAL_APP_USERS_COUNT = 15
+interface AppUserRoleProfile {
+  emailDomain: string
+  roles: AppRoleOption[]
+}
+
+type PresetUserGender = 'female' | 'male'
+
+interface PresetUserProfile {
+  name: string
+  gender: PresetUserGender
+}
+
 const TABLE_DATE = 'May 22, 2026'
+const PRESET_APP_USER_COUNT = 60
 
 const OWNER_USER: AppUser = {
   id: 'app-owner',
@@ -86,138 +87,349 @@ const OWNER_USER: AppUser = {
   avatarUrl: ownerAvatar,
 }
 
-const APP_USERS: AppUser[] = [
-  OWNER_USER,
-  {
-    id: 'allison-passaquindici-arcand',
-    name: 'Allison Passaquindici Arcand',
-    email: 'allisonpass@gmail.com',
-    roleId: 'manager',
-    registrationDate: TABLE_DATE,
-    lastSeenDate: TABLE_DATE,
-    avatarUrl: allisonPassaquindiciArcandAvatar,
-  },
-  {
-    id: 'kaylynn-levin',
-    name: 'Kaylynn Levin',
-    email: 'kaylynnlevi@gmail.com',
-    roleId: 'teacher',
-    registrationDate: TABLE_DATE,
-    lastSeenDate: TABLE_DATE,
-    avatarUrl: kaylynnLevinAvatar,
-  },
-  {
-    id: 'terry-workman',
-    name: 'Terry Workman',
-    email: 't.workman@gmail.com',
-    roleId: 'parent',
-    registrationDate: TABLE_DATE,
-    lastSeenDate: TABLE_DATE,
-    avatarUrl: terryWorkmanAvatar,
-  },
-  {
-    id: 'anika-geidt',
-    name: 'Anika Geidt',
-    email: 'anika@gmail.com',
-    roleId: 'parent',
-    registrationDate: TABLE_DATE,
-    lastSeenDate: TABLE_DATE,
-    avatarUrl: anikaGeidtAvatar,
-  },
-  {
-    id: 'rayna-saris',
-    name: 'Rayna Saris',
-    email: 'raynasaris@gmail.com',
-    roleId: 'parent',
-    registrationDate: TABLE_DATE,
-    lastSeenDate: TABLE_DATE,
-    avatarUrl: raynaSarisAvatar,
-  },
-  {
-    id: 'cristofer-siphron',
-    name: 'Cristofer Siphron',
-    email: 'c.siphron@gmail.com',
-    roleId: 'parent',
-    registrationDate: TABLE_DATE,
-    lastSeenDate: TABLE_DATE,
-    avatarUrl: cristoferSiphronAvatar,
-  },
-  {
-    id: 'giana-geidt',
-    name: 'Giana Geidt',
-    email: 'gg.geidt@gmail.com',
-    roleId: 'parent',
-    registrationDate: TABLE_DATE,
-    lastSeenDate: TABLE_DATE,
-    avatarUrl: gianaGeidtAvatar,
-  },
-  {
-    id: 'martin-westervelt',
-    name: 'Martin Westervelt',
-    email: 'martin_wester@gmail.com',
-    roleId: 'parent',
-    registrationDate: TABLE_DATE,
-    lastSeenDate: TABLE_DATE,
-    avatarUrl: martinWesterveltAvatar,
-  },
-  {
-    id: 'haylie-saris',
-    name: 'Haylie Saris',
-    email: 'hayliesaris@gmail.com',
-    roleId: 'parent',
-    registrationDate: TABLE_DATE,
-    lastSeenDate: TABLE_DATE,
-    avatarUrl: haylieSarisAvatar,
-  },
-  {
-    id: 'emery-vetrovs',
-    name: 'Emery Vetrovs',
-    email: 'emeryvetrovs@gmail.com',
-    roleId: 'parent',
-    registrationDate: TABLE_DATE,
-    lastSeenDate: TABLE_DATE,
-    avatarUrl: emeryVetrovsAvatar,
-  },
-  {
-    id: 'alfonso-rosser',
-    name: 'Alfonso Rosser',
-    email: 'rosser.alfonso@gmail.com',
-    roleId: 'parent',
-    registrationDate: TABLE_DATE,
-    lastSeenDate: TABLE_DATE,
-    avatarUrl: alfonsoRosserAvatar,
-  },
-  {
-    id: 'jakob-septimus',
-    name: 'Jakob Septimus',
-    email: 'jakob_sptms@gmail.com',
-    roleId: 'parent',
-    registrationDate: TABLE_DATE,
-    lastSeenDate: TABLE_DATE,
-    avatarUrl: jakobSeptimusAvatar,
-  },
-  {
-    id: 'rayna-botosh',
-    name: 'Rayna Botosh',
-    email: 'raynabotosh@gmail.com',
-    roleId: 'parent',
-    registrationDate: TABLE_DATE,
-    lastSeenDate: TABLE_DATE,
-    avatarUrl: raynaBotoshAvatar,
-  },
-  {
-    id: 'paityn-ekstrom-bothman',
-    name: 'Paityn Ekstrom Bothman',
-    email: 'p.e.bothman@gmail.com',
-    roleId: 'parent',
-    registrationDate: TABLE_DATE,
-    lastSeenDate: TABLE_DATE,
-    avatarUrl: paitynEkstromBothmanAvatar,
-  },
+function getPresetUserAvatarUrl(gender: PresetUserGender, genderIndex: number) {
+  const avatarId = (genderIndex * 37 + (gender === 'female' ? 11 : 7)) % 100
+  const directory = gender === 'female' ? 'women' : 'men'
+
+  return `https://randomuser.me/api/portraits/${directory}/${avatarId}.jpg`
+}
+
+const PRESET_USER_PROFILES: PresetUserProfile[] = [
+  { name: 'Allison Passaquindici Arcand', gender: 'female' },
+  { name: 'Kaylynn Levin', gender: 'female' },
+  { name: 'Terry Workman', gender: 'male' },
+  { name: 'Anika Geidt', gender: 'female' },
+  { name: 'Rayna Saris', gender: 'female' },
+  { name: 'Cristofer Siphron', gender: 'male' },
+  { name: 'Giana Geidt', gender: 'female' },
+  { name: 'Martin Westervelt', gender: 'male' },
+  { name: 'Haylie Saris', gender: 'female' },
+  { name: 'Emery Vetrovs', gender: 'female' },
+  { name: 'Alfonso Rosser', gender: 'male' },
+  { name: 'Jakob Septimus', gender: 'male' },
+  { name: 'Rayna Botosh', gender: 'female' },
+  { name: 'Paityn Ekstrom Bothman', gender: 'female' },
+  { name: 'Busra Yildirim', gender: 'female' },
+  { name: 'Cihat Salik', gender: 'male' },
+  { name: 'Erdem Erol', gender: 'male' },
+  { name: 'Fatih Salgir', gender: 'male' },
+  { name: 'Mithat Turan', gender: 'male' },
+  { name: 'Mustafa Oger', gender: 'male' },
+  { name: 'Ava Thompson', gender: 'female' },
+  { name: 'Noah Bennett', gender: 'male' },
+  { name: 'Mia Carter', gender: 'female' },
+  { name: 'Liam Brooks', gender: 'male' },
+  { name: 'Sofia Martinez', gender: 'female' },
+  { name: 'Ethan Walker', gender: 'male' },
+  { name: 'Isabella Reed', gender: 'female' },
+  { name: 'Lucas Morgan', gender: 'male' },
+  { name: 'Amelia Parker', gender: 'female' },
+  { name: 'Mason Hughes', gender: 'male' },
+  { name: 'Harper Collins', gender: 'female' },
+  { name: 'Logan Rivera', gender: 'male' },
+  { name: 'Evelyn Foster', gender: 'female' },
+  { name: 'Jackson Hayes', gender: 'male' },
+  { name: 'Charlotte Price', gender: 'female' },
+  { name: 'Aiden Cooper', gender: 'male' },
+  { name: 'Abigail Turner', gender: 'female' },
+  { name: 'Sebastian Ward', gender: 'male' },
+  { name: 'Ella Simmons', gender: 'female' },
+  { name: 'Henry Russell', gender: 'male' },
+  { name: 'Grace Peterson', gender: 'female' },
+  { name: 'Daniel Bryant', gender: 'male' },
+  { name: 'Scarlett Bell', gender: 'female' },
+  { name: 'Matthew Griffin', gender: 'male' },
+  { name: 'Victoria Brooks', gender: 'female' },
+  { name: 'Owen Murphy', gender: 'male' },
+  { name: 'Lily Sanders', gender: 'female' },
+  { name: 'Wyatt Coleman', gender: 'male' },
+  { name: 'Chloe Jenkins', gender: 'female' },
+  { name: 'Leo Ramirez', gender: 'male' },
+  { name: 'Nora Watson', gender: 'female' },
+  { name: 'Julian Fisher', gender: 'male' },
+  { name: 'Zoey Patterson', gender: 'female' },
+  { name: 'Caleb Henderson', gender: 'male' },
+  { name: 'Hannah Kim', gender: 'female' },
+  { name: 'Miles Bailey', gender: 'male' },
+  { name: 'Leah Bennett', gender: 'female' },
+  { name: 'Nathan Ross', gender: 'male' },
+  { name: 'Aurora Hughes', gender: 'female' },
 ]
 
-export const APP_USER_NAME_FIELD_VALUE = APP_USERS[0]?.name.trim().split(/\s+/)[0] ?? 'User'
-export const APP_USER_TABLE_ROLE_IDS = Array.from(new Set(APP_USERS.map((user) => user.roleId)))
+const PRESET_TABLE_DATES = [
+  'May 22, 2026',
+  'May 21, 2026',
+  'May 20, 2026',
+  'May 18, 2026',
+  'May 16, 2026',
+  'May 14, 2026',
+  'May 12, 2026',
+  'May 10, 2026',
+  'May 8, 2026',
+  'May 6, 2026',
+  'May 4, 2026',
+  'May 2, 2026',
+]
+
+const role = (id: string, label: string, colorIndex: number, tone: AppRoleOption['tone'] = 'custom'): AppRoleOption => ({
+  id,
+  label,
+  tone,
+  color: ROLE_COLOR_PALETTE[colorIndex] ?? ROLE_COLOR_PALETTE[0],
+})
+
+const EMPTY_APP_ROLE_OPTIONS = [
+  { ...DEFAULT_ROLE_OPTIONS[0] },
+  { ...DEFAULT_ROLE_OPTIONS.find((roleOption) => roleOption.id === 'user')! },
+]
+
+const APP_USERS_INVITE_LINK = 'https://app.jotform.com/252042991035958'
+
+const DEFAULT_PRESET_ROLE_PROFILE: AppUserRoleProfile = {
+  emailDomain: 'appusers.test',
+  roles: [
+    role('admin', 'Admin', 0, 'admin'),
+    role('manager', 'Manager', 17),
+    role('staff', 'Staff', 2),
+    role('member', 'Member', 19, 'user'),
+    role('customer', 'Customer', 18),
+    role('guest', 'Guest', 3),
+  ],
+}
+
+const APP_USER_ROLE_PROFILES: Record<string, AppUserRoleProfile> = {
+  'gym-club': {
+    emailDomain: 'ironpulse.app',
+    roles: [
+      role('admin', 'Admin', 0, 'admin'),
+      role('trainer', 'Trainer', 17),
+      role('member', 'Member', 19, 'user'),
+      role('class-instructor', 'Class Instructor', 2),
+      role('front-desk', 'Front Desk', 3),
+      role('nutrition-coach', 'Nutrition Coach', 18),
+    ],
+  },
+  'camp-registration': {
+    emailDomain: 'camppinecrest.app',
+    roles: [
+      role('admin', 'Admin', 0, 'admin'),
+      role('program-director', 'Program Director', 17),
+      role('counselor', 'Counselor', 2),
+      role('parent', 'Parent', 19, 'user'),
+      role('camper', 'Camper', 18),
+      role('health-staff', 'Health Staff', 3),
+    ],
+  },
+  education: {
+    emailDomain: 'academy.app',
+    roles: [
+      role('admin', 'Admin', 0, 'admin'),
+      role('teacher', 'Teacher', 2),
+      role('student', 'Student', 17, 'user'),
+      role('parent', 'Parent', 19),
+      role('coordinator', 'Coordinator', 3),
+      role('counselor', 'Counselor', 18),
+    ],
+  },
+  healthcare: {
+    emailDomain: 'care.app',
+    roles: [
+      role('admin', 'Admin', 0, 'admin'),
+      role('doctor', 'Doctor', 17),
+      role('nurse', 'Nurse', 2),
+      role('patient', 'Patient', 19, 'user'),
+      role('care-coordinator', 'Care Coordinator', 18),
+      role('billing', 'Billing', 3),
+    ],
+  },
+  'online-store': {
+    emailDomain: 'store.app',
+    roles: [
+      role('admin', 'Admin', 0, 'admin'),
+      role('store-manager', 'Store Manager', 17),
+      role('staff', 'Staff', 2),
+      role('customer', 'Customer', 19, 'user'),
+      role('supplier', 'Supplier', 18),
+      role('support', 'Support', 3),
+    ],
+  },
+  'student-management': {
+    emailDomain: 'school.app',
+    roles: [
+      role('admin', 'Admin', 0, 'admin'),
+      role('teacher', 'Teacher', 2),
+      role('student', 'Student', 17, 'user'),
+      role('parent', 'Parent', 19),
+      role('registrar', 'Registrar', 3),
+      role('advisor', 'Advisor', 18),
+    ],
+  },
+  'coffee-shop': {
+    emailDomain: 'coffee.app',
+    roles: [
+      role('admin', 'Admin', 0, 'admin'),
+      role('store-manager', 'Store Manager', 17),
+      role('barista', 'Barista', 2),
+      role('customer', 'Customer', 19, 'user'),
+      role('supplier', 'Supplier', 18),
+      role('delivery', 'Delivery', 3),
+    ],
+  },
+  'beverage-shop': {
+    emailDomain: 'beverage.app',
+    roles: [
+      role('admin', 'Admin', 0, 'admin'),
+      role('store-manager', 'Store Manager', 17),
+      role('staff', 'Staff', 2),
+      role('customer', 'Customer', 19, 'user'),
+      role('vendor', 'Vendor', 18),
+      role('support', 'Support', 3),
+    ],
+  },
+  'landing-hero': {
+    emailDomain: 'launch.app',
+    roles: [
+      role('admin', 'Admin', 0, 'admin'),
+      role('editor', 'Editor', 17),
+      role('contributor', 'Contributor', 2),
+      role('subscriber', 'Subscriber', 19, 'user'),
+      role('reviewer', 'Reviewer', 18),
+      role('guest', 'Guest', 3),
+    ],
+  },
+  'landing-storefront': {
+    emailDomain: 'storefront.app',
+    roles: [
+      role('admin', 'Admin', 0, 'admin'),
+      role('store-manager', 'Store Manager', 17),
+      role('staff', 'Staff', 2),
+      role('customer', 'Customer', 19, 'user'),
+      role('supplier', 'Supplier', 18),
+      role('support', 'Support', 3),
+    ],
+  },
+  'landing-registration': {
+    emailDomain: 'event.app',
+    roles: [
+      role('admin', 'Admin', 0, 'admin'),
+      role('organizer', 'Organizer', 17),
+      role('attendee', 'Attendee', 19, 'user'),
+      role('volunteer', 'Volunteer', 2),
+      role('speaker', 'Speaker', 18),
+      role('sponsor', 'Sponsor', 3),
+    ],
+  },
+  'landing-editorial': {
+    emailDomain: 'editorial.app',
+    roles: [
+      role('admin', 'Admin', 0, 'admin'),
+      role('editor', 'Editor', 17),
+      role('writer', 'Writer', 2),
+      role('subscriber', 'Subscriber', 19, 'user'),
+      role('reviewer', 'Reviewer', 18),
+      role('guest', 'Guest', 3),
+    ],
+  },
+  'landing-saas': {
+    emailDomain: 'saas.app',
+    roles: [
+      role('admin', 'Admin', 0, 'admin'),
+      role('sales', 'Sales', 17),
+      role('customer-success', 'Customer Success', 2),
+      role('viewer', 'Viewer', 19, 'user'),
+      role('partner', 'Partner', 18),
+      role('support', 'Support', 3),
+    ],
+  },
+  'landing-b2b': {
+    emailDomain: 'b2b.app',
+    roles: [
+      role('admin', 'Admin', 0, 'admin'),
+      role('sales', 'Sales', 17),
+      role('customer-success', 'Customer Success', 2),
+      role('viewer', 'Viewer', 19, 'user'),
+      role('partner', 'Partner', 18),
+      role('support', 'Support', 3),
+    ],
+  },
+  'landing-club': {
+    emailDomain: 'club.app',
+    roles: [
+      role('admin', 'Admin', 0, 'admin'),
+      role('club-manager', 'Club Manager', 17),
+      role('member', 'Member', 19, 'user'),
+      role('coach', 'Coach', 2),
+      role('event-staff', 'Event Staff', 18),
+      role('guest', 'Guest', 3),
+    ],
+  },
+}
+
+function getRoleProfileForPreset(presetId: string): AppUserRoleProfile {
+  return APP_USER_ROLE_PROFILES[presetId] ?? DEFAULT_PRESET_ROLE_PROFILE
+}
+
+function cloneRoleOptions(roles: AppRoleOption[]): AppRoleOption[] {
+  return roles.map((roleOption) => ({ ...roleOption }))
+}
+
+function slugifyUserName(name: string) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g, '.').replace(/(^\.|\.$)/g, '')
+}
+
+function buildPresetAppUsers(presetId: string): AppUser[] {
+  const profile = getRoleProfileForPreset(presetId)
+  const assignableRoles = profile.roles.slice(1)
+  const users: AppUser[] = [{ ...OWNER_USER }]
+  const avatarIndexesByGender: Record<PresetUserGender, number> = { female: 0, male: 0 }
+
+  for (let index = 0; users.length < PRESET_APP_USER_COUNT; index += 1) {
+    const userProfile = PRESET_USER_PROFILES[index % PRESET_USER_PROFILES.length] ?? {
+      name: `App User ${index + 1}`,
+      gender: index % 2 === 0 ? 'female' : 'male',
+    }
+    const { gender, name } = userProfile
+    const genderAvatarIndex = avatarIndexesByGender[gender]
+    const slug = slugifyUserName(name)
+    const assignedRole = assignableRoles.length > 0
+      ? assignableRoles[index % assignableRoles.length]
+      : profile.roles[0]
+    const registrationDate = PRESET_TABLE_DATES[index % PRESET_TABLE_DATES.length] ?? TABLE_DATE
+    const lastSeenDate = PRESET_TABLE_DATES[(index + 3) % PRESET_TABLE_DATES.length] ?? TABLE_DATE
+
+    avatarIndexesByGender[gender] += 1
+
+    users.push({
+      id: `${slug}-${index + 1}`,
+      name,
+      email: `${slug}@${profile.emailDomain}`,
+      roleId: assignedRole?.id ?? 'admin',
+      registrationDate,
+      lastSeenDate,
+      avatarUrl: getPresetUserAvatarUrl(gender, genderAvatarIndex),
+    })
+  }
+
+  return users
+}
+
+export function getAppUsersForPreset(presetId: string): AppUser[] {
+  if (presetId === EMPTY_PRESET_ID) return [{ ...OWNER_USER }]
+  return buildPresetAppUsers(presetId)
+}
+
+export function getAppUserRoleOptionsForPreset(presetId: string): AppRoleOption[] {
+  if (presetId === EMPTY_PRESET_ID) return cloneRoleOptions(EMPTY_APP_ROLE_OPTIONS)
+  return cloneRoleOptions(getRoleProfileForPreset(presetId).roles)
+}
+
+export function getAppUserTableRoleIdsForPreset(presetId: string): string[] {
+  return Array.from(new Set(getAppUsersForPreset(presetId).map((user) => user.roleId)))
+}
+
+export function getAppUserNameFieldValueForPreset(presetId: string): string {
+  return getAppUsersForPreset(presetId)[0]?.name.trim().split(/\s+/)[0] ?? 'User'
+}
 
 function getAssignedRole(user: AppUser, assignedRoleId: string, roleById: Map<string, AppRoleOption>) {
   const assignedRole = roleById.get(assignedRoleId) ?? DEFAULT_ROLE_OPTIONS[0]
@@ -230,12 +442,13 @@ function getAssignedRole(user: AppUser, assignedRoleId: string, roleById: Map<st
 }
 
 interface PublishPageProps {
+  presetId: string
   roleOptions: AppRoleOption[]
   setRoleOptions: Dispatch<SetStateAction<AppRoleOption[]>>
   onAppUserTableRoleIdsChange?: (roleIds: string[]) => void
 }
 
-export function PublishPage({ roleOptions, setRoleOptions, onAppUserTableRoleIdsChange }: PublishPageProps) {
+export function PublishPage({ presetId, roleOptions, setRoleOptions, onAppUserTableRoleIdsChange }: PublishPageProps) {
   const [activeId, setActiveId] = useState('quick-share')
   const active = NAV_ITEMS.find((item) => item.id === activeId) ?? NAV_ITEMS[0]
 
@@ -254,6 +467,7 @@ export function PublishPage({ roleOptions, setRoleOptions, onAppUserTableRoleIds
           {activeId === 'quick-share' && <QuickSharePanel />}
           {activeId === 'app-users' && (
             <AppUsersPanel
+              presetId={presetId}
               roleOptions={roleOptions}
               setRoleOptions={setRoleOptions}
               onAppUserTableRoleIdsChange={onAppUserTableRoleIdsChange}
@@ -266,16 +480,289 @@ export function PublishPage({ roleOptions, setRoleOptions, onAppUserTableRoleIds
 }
 
 interface AppUsersPanelProps {
+  presetId: string
   roleOptions: AppRoleOption[]
   setRoleOptions: Dispatch<SetStateAction<AppRoleOption[]>>
   onAppUserTableRoleIdsChange?: (roleIds: string[]) => void
 }
 
-function AppUsersPanel({ roleOptions, setRoleOptions, onAppUserTableRoleIdsChange }: AppUsersPanelProps) {
+interface AddUserModalProps {
+  onClose: () => void
+  roleOptions: AppRoleOption[]
+}
+
+function AddUserModal({ onClose, roleOptions }: AddUserModalProps) {
+  const modalRef = useRef<HTMLElement | null>(null)
+  const emailInputRef = useRef<HTMLInputElement | null>(null)
+  const invitationRoleOptions = roleOptions.length > 0 ? roleOptions : [DEFAULT_ROLE_OPTIONS[0]]
+  const defaultInvitationRoleId = invitationRoleOptions.find((roleOption) => roleOption.tone === 'user')?.id
+    ?? invitationRoleOptions[0].id
+  const [activeInvitationTab, setActiveInvitationTab] = useState<'email' | 'link'>('email')
+  const [isEmailComposerOpen, setIsEmailComposerOpen] = useState(false)
+  const [isRoleMenuOpen, setIsRoleMenuOpen] = useState(false)
+  const [invitationEmailValue, setInvitationEmailValue] = useState('')
+  const [selectedInvitationRoleId, setSelectedInvitationRoleId] = useState(defaultInvitationRoleId)
+  const selectedInvitationRole = invitationRoleOptions.find((roleOption) => roleOption.id === selectedInvitationRoleId)
+    ?? invitationRoleOptions[0]
+  const hasInvitationEmail = invitationEmailValue.trim().length > 0
+  const isInviteByLinkActive = activeInvitationTab === 'link'
+  const roleMenuId = 'app-users-add-modal-role-menu'
+  const emailTabId = 'app-users-add-modal-email-tab'
+  const linkTabId = 'app-users-add-modal-link-tab'
+  const emailPanelId = 'app-users-add-modal-email-panel'
+  const linkPanelId = 'app-users-add-modal-link-panel'
+
+  useEffect(() => {
+    modalRef.current?.focus({ preventScroll: true })
+
+    const previousOverflow = document.body.style.overflow
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        if (isRoleMenuOpen) {
+          setIsRoleMenuOpen(false)
+          return
+        }
+
+        onClose()
+      }
+    }
+
+    document.body.style.overflow = 'hidden'
+    document.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [isRoleMenuOpen, onClose])
+
+  useEffect(() => {
+    if (!invitationRoleOptions.some((roleOption) => roleOption.id === selectedInvitationRoleId)) {
+      setSelectedInvitationRoleId(defaultInvitationRoleId)
+    }
+  }, [defaultInvitationRoleId, invitationRoleOptions, selectedInvitationRoleId])
+
+  return createPortal(
+    <div
+      className="app-users-add-modal__backdrop"
+      role="presentation"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) {
+          onClose()
+        }
+      }}
+    >
+      <section
+        ref={modalRef}
+        className={[
+          'app-users-add-modal',
+          isInviteByLinkActive && 'app-users-add-modal--link-active',
+          !isInviteByLinkActive && isEmailComposerOpen && 'app-users-add-modal--email-composer-open',
+        ].filter(Boolean).join(' ')}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="app-users-add-modal-title"
+        tabIndex={-1}
+      >
+        <header className="app-users-add-modal__header">
+          <div className="app-users-add-modal__header-main">
+            <span className="app-users-add-modal__icon" aria-hidden="true">
+              <Icon name="user-plus-filled" category="users" size={24} />
+            </span>
+            <div className="app-users-add-modal__heading">
+              <h2 id="app-users-add-modal-title">Add New User</h2>
+              <p>User will have access to this app.</p>
+            </div>
+          </div>
+          <button type="button" className="app-users-add-modal__close" aria-label="Close add user modal" onClick={onClose}>
+            <Icon name="xmark" category="general" size={20} />
+          </button>
+        </header>
+
+        <div className="app-users-add-modal__tabs" role="tablist" aria-label="Invitation method">
+          <button
+            id={emailTabId}
+            type="button"
+            className={`app-users-add-modal__tab${!isInviteByLinkActive ? ' app-users-add-modal__tab--active' : ''}`}
+            role="tab"
+            aria-selected={!isInviteByLinkActive}
+            aria-controls={emailPanelId}
+            onClick={() => {
+              setActiveInvitationTab('email')
+              setIsRoleMenuOpen(false)
+            }}
+          >
+            INVITE BY EMAIL
+          </button>
+          <button
+            id={linkTabId}
+            type="button"
+            className={`app-users-add-modal__tab${isInviteByLinkActive ? ' app-users-add-modal__tab--active' : ''}`}
+            role="tab"
+            aria-selected={isInviteByLinkActive}
+            aria-controls={linkPanelId}
+            onClick={() => {
+              setActiveInvitationTab('link')
+              setIsRoleMenuOpen(false)
+            }}
+          >
+            INVITE BY LINK
+          </button>
+        </div>
+
+        {isInviteByLinkActive ? (
+          <div
+            id={linkPanelId}
+            className="app-users-add-modal__body app-users-add-modal__body--link"
+            role="tabpanel"
+            aria-labelledby={linkTabId}
+          >
+            <div className="app-users-add-modal__link-share">
+              <label className="app-users-add-modal__label" htmlFor="app-users-add-link">
+                LINK TO SHARE
+              </label>
+              <div className="app-users-add-modal__link-row">
+                <div className="app-users-add-modal__link-field">
+                  <Icon name="link-diagonal" category="general" size={24} />
+                  <input
+                    id="app-users-add-link"
+                    className="app-users-add-modal__link-input"
+                    type="text"
+                    readOnly
+                    value={APP_USERS_INVITE_LINK}
+                    aria-label="Link to share"
+                  />
+                </div>
+                <button
+                  type="button"
+                  className="app-users-add-modal__copy-link"
+                  onClick={() => {
+                    void navigator.clipboard?.writeText(APP_USERS_INVITE_LINK)
+                  }}
+                >
+                  COPY LINK
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div
+            id={emailPanelId}
+            className="app-users-add-modal__body"
+            role="tabpanel"
+            aria-labelledby={emailTabId}
+          >
+            <div className="app-users-add-modal__field-head">
+              <label className="app-users-add-modal__label" htmlFor="app-users-add-email">
+                EMAIL ADDRESSES
+              </label>
+              <button type="button" className="app-users-add-modal__upload" aria-label="Upload email addresses">
+                <Icon name="arrow-up-from-bracket" category="arrows" size={16} />
+              </button>
+            </div>
+
+            <div
+              className={`app-users-add-modal__input-shell${isEmailComposerOpen ? ' app-users-add-modal__input-shell--composer' : ''}`}
+              onClick={() => {
+                setIsEmailComposerOpen(true)
+                setIsRoleMenuOpen(false)
+                emailInputRef.current?.focus()
+              }}
+            >
+              <Icon name="envelope-closed-filled" category="communication" size={24} />
+              <span className="app-users-add-modal__input-prefix">To:</span>
+              <input
+                ref={emailInputRef}
+                id="app-users-add-email"
+                className="app-users-add-modal__input"
+                type="text"
+                aria-label="Email addresses"
+                value={invitationEmailValue}
+                placeholder="Enter email addresses to send invitation."
+                onChange={(event) => setInvitationEmailValue(event.target.value)}
+                onFocus={() => setIsEmailComposerOpen(true)}
+              />
+              {isEmailComposerOpen && (
+                <div className="app-users-add-modal__role-control">
+                  <button
+                    type="button"
+                    className="app-users-add-modal__role-select"
+                    aria-controls={isRoleMenuOpen ? roleMenuId : undefined}
+                    aria-expanded={isRoleMenuOpen}
+                    aria-haspopup="menu"
+                    aria-label="Select invitation role"
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      setIsRoleMenuOpen((isOpen) => !isOpen)
+                    }}
+                  >
+                    <span>{`Role: ${selectedInvitationRole.label}`}</span>
+                    <Icon name="chevron-down" category="arrows" size={16} />
+                  </button>
+
+                  {isRoleMenuOpen && (
+                    <div id={roleMenuId} className="app-users-add-modal__role-menu" role="menu" aria-label="Roles">
+                      {invitationRoleOptions.map((roleOption) => {
+                        const isSelectedRole = roleOption.id === selectedInvitationRole.id
+
+                        return (
+                          <button
+                            type="button"
+                            key={roleOption.id}
+                            className="app-users-add-modal__role-menu-item"
+                            style={getRoleColorStyle(roleOption.color)}
+                            role="menuitemradio"
+                            aria-checked={isSelectedRole}
+                            onClick={(event) => {
+                              event.stopPropagation()
+                              setSelectedInvitationRoleId(roleOption.id)
+                              setIsRoleMenuOpen(false)
+                            }}
+                          >
+                            <span>{roleOption.label}</span>
+                            {isSelectedRole && <Icon name="check" category="general" size={16} />}
+                          </button>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {isEmailComposerOpen && (
+              <textarea
+                className="app-users-add-modal__message"
+                aria-label="Invitation message"
+                placeholder="Add an invitation message (optional)"
+              />
+            )}
+          </div>
+        )}
+
+        {!isInviteByLinkActive && isEmailComposerOpen && (
+          <footer className="app-users-add-modal__footer">
+            <button type="button" className="app-users-add-modal__cancel" onClick={onClose}>
+              CANCEL
+            </button>
+            <button type="button" className="app-users-add-modal__send" disabled={!hasInvitationEmail}>
+              SEND INVITATION
+            </button>
+          </footer>
+        )}
+      </section>
+    </div>,
+    document.body,
+  )
+}
+
+function AppUsersPanel({ presetId, roleOptions, setRoleOptions, onAppUserTableRoleIdsChange }: AppUsersPanelProps) {
+  const appUsers = useMemo(() => getAppUsersForPreset(presetId), [presetId])
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedRoleUserId, setSelectedRoleUserId] = useState<string | null>(null)
+  const [isAddUserModalOpen, setIsAddUserModalOpen] = useState(false)
   const [assignedRoleIds, setAssignedRoleIds] = useState<Record<string, string>>(() => (
-    Object.fromEntries(APP_USERS.map((user) => [user.id, user.roleId]))
+    Object.fromEntries(appUsers.map((user) => [user.id, user.roleId]))
   ))
   const [draftRoleUserId, setDraftRoleUserId] = useState<string | null>(null)
   const [draftRoleInputs, setDraftRoleInputs] = useState<DraftRoleInput[]>([])
@@ -286,11 +773,11 @@ function AppUsersPanel({ roleOptions, setRoleOptions, onAppUserTableRoleIdsChang
   const normalizedSearch = searchQuery.trim().toLowerCase()
   const roleById = useMemo(() => new Map(roleOptions.map((role) => [role.id, role])), [roleOptions])
   const assignedTableRoleIds = useMemo(() => (
-    Array.from(new Set(APP_USERS.map((user) => assignedRoleIds[user.id] ?? user.roleId)))
-  ), [assignedRoleIds])
+    Array.from(new Set(appUsers.map((user) => assignedRoleIds[user.id] ?? user.roleId)))
+  ), [appUsers, assignedRoleIds])
   const visibleUsers = useMemo(() => {
-    if (!normalizedSearch) return APP_USERS
-    return APP_USERS.filter((user) => {
+    if (!normalizedSearch) return appUsers
+    return appUsers.filter((user) => {
       const assignedRoleId = assignedRoleIds[user.id] ?? user.roleId
       const assignedRole = getAssignedRole(user, assignedRoleId, roleById)
 
@@ -300,14 +787,22 @@ function AppUsersPanel({ roleOptions, setRoleOptions, onAppUserTableRoleIdsChang
         || assignedRole.label.toLowerCase().includes(normalizedSearch)
       )
     })
-  }, [assignedRoleIds, normalizedSearch, roleById])
-  const userCountLabel = `${TOTAL_APP_USERS_COUNT} Users`
+  }, [appUsers, assignedRoleIds, normalizedSearch, roleById])
+  const userCountLabel = `${appUsers.length} ${appUsers.length === 1 ? 'User' : 'Users'}`
 
   useEffect(() => {
     if (draftRoleUserId && activeDraftRoleInputId) {
       draftRoleInputRefs.current[activeDraftRoleInputId]?.focus()
     }
   }, [activeDraftRoleInputId, draftRoleInputs.length, draftRoleUserId])
+
+  useEffect(() => {
+    setAssignedRoleIds(Object.fromEntries(appUsers.map((user) => [user.id, user.roleId])))
+    setSelectedRoleUserId(null)
+    setDraftRoleUserId(null)
+    setDraftRoleInputs([])
+    setActiveDraftRoleInputId(null)
+  }, [appUsers])
 
   useEffect(() => {
     onAppUserTableRoleIdsChange?.(assignedTableRoleIds)
@@ -424,6 +919,13 @@ function AppUsersPanel({ roleOptions, setRoleOptions, onAppUserTableRoleIdsChang
           className="app-users-panel__add"
           colorScheme="constructive"
           leftIcon={<Icon name="plus" category="general" size={16} />}
+          onClick={() => {
+            setSelectedRoleUserId(null)
+            setDraftRoleUserId(null)
+            setDraftRoleInputs([])
+            setActiveDraftRoleInputId(null)
+            setIsAddUserModalOpen(true)
+          }}
         >
           Add User
         </Button>
@@ -658,6 +1160,12 @@ function AppUsersPanel({ roleOptions, setRoleOptions, onAppUserTableRoleIdsChang
           })}
         </div>
       </div>
+      {isAddUserModalOpen && (
+        <AddUserModal
+          roleOptions={roleOptions}
+          onClose={() => setIsAddUserModalOpen(false)}
+        />
+      )}
     </section>
   )
 }

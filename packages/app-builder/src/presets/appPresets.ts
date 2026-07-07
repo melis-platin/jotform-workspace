@@ -56,12 +56,113 @@ export interface AppPreset {
 export const EMPTY_PRESET_ID = 'empty'
 
 export const GYM_TRAINER_ITEMS = [
-  { title: 'Marcus Reid', description: 'Strength & Conditioning', image: 'https://images.unsplash.com/photo-1567013127542-490d757e51fc?w=400&h=400&fit=crop' },
-  { title: 'Elena Vasquez', description: 'HIIT & Cardio', image: 'https://images.unsplash.com/photo-1594381898411-846e7d193883?w=400&h=400&fit=crop' },
-  { title: 'Jordan Lee', description: 'Yoga & Mobility', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=400&h=400&fit=crop' },
-  { title: 'David Okafor', description: 'Powerlifting', image: 'https://images.unsplash.com/photo-1549476464-37392f717541?w=400&h=400&fit=crop' },
-  { title: 'Mia Thompson', description: 'Functional Training', image: 'https://images.unsplash.com/photo-1597452485677-d661670d9640?w=400&h=400&fit=crop' },
-  { title: 'Sara Kim', description: 'Pilates & Recovery', image: 'https://images.unsplash.com/photo-1550345332-09e3ac987658?w=400&h=400&fit=crop' },
+  { title: 'Marcus Reid', description: 'Strength Director - barbell technique, hypertrophy blocks, and performance testing.', image: 'https://images.unsplash.com/photo-1567013127542-490d757e51fc?w=500&h=500&fit=crop' },
+  { title: 'Elena Vasquez', description: 'Conditioning Lead - HIIT, engine building, and return-to-cardio progressions.', image: 'https://images.unsplash.com/photo-1594381898411-846e7d193883?w=500&h=500&fit=crop' },
+  { title: 'Jordan Lee', description: 'Mobility Coach - yoga, breathwork, joint prep, and recovery sessions.', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=500&fit=crop' },
+  { title: 'David Okafor', description: 'Powerlifting Coach - squat, bench, deadlift, meet prep, and strength cycles.', image: 'https://images.unsplash.com/photo-1549476464-37392f717541?w=500&h=500&fit=crop' },
+  { title: 'Mia Thompson', description: 'Functional Training - athletic circuits, core strength, and movement quality.', image: 'https://images.unsplash.com/photo-1597452485677-d661670d9640?w=500&h=500&fit=crop' },
+  { title: 'Sara Kim', description: 'Pilates & Recovery - low-impact strength, posture, and nervous system reset.', image: 'https://images.unsplash.com/photo-1550345332-09e3ac987658?w=500&h=500&fit=crop' },
+  { title: 'Andre Mills', description: 'Performance Nutrition - habit coaching, macro guidance, and weekly check-ins.', image: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=500&h=500&fit=crop' },
+  { title: 'Nina Patel', description: 'Beginner Coach - onboarding, confidence building, and safe strength foundations.', image: 'https://images.unsplash.com/photo-1609899464726-209befaac5bc?w=500&h=500&fit=crop' },
+]
+
+const GYM_CLASS_ITEMS = [
+  { title: 'Strength Engine', description: 'Barbell fundamentals, progressive overload, and coach-led strength blocks. Mon/Wed/Fri - 6:30 AM.', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500&h=500&fit=crop' },
+  { title: 'Pulse HIIT', description: 'High-output intervals with rowers, bikes, sleds, and dumbbell complexes. Tue/Thu - 6:00 PM.', image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=500&h=500&fit=crop' },
+  { title: 'Mobility Reset', description: 'Breath-led mobility, soft tissue prep, and range-of-motion work for desk bodies and lifters.', image: 'https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?w=500&h=500&fit=crop' },
+  { title: 'Athletic Circuit', description: 'Speed, agility, core, and conditioning stations for team-sport style training.', image: 'https://images.unsplash.com/photo-1517963879433-6ad2b056d712?w=500&h=500&fit=crop' },
+  { title: 'Lift Lab', description: 'Small-group coaching for squat, bench, deadlift, Olympic lift patterns, and accessory work.', image: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?w=500&h=500&fit=crop' },
+  { title: 'Weekend Sweat', description: 'Saturday partner workouts, leaderboard finisher, and post-class smoothie bar.', image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500&h=500&fit=crop' },
+]
+
+const GYM_PROGRAM_ITEMS = [
+  { title: 'Foundations 4-Week Track', description: 'A structured start for new members: movement screening, technique coaching, and habit setup.', image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=500&h=500&fit=crop' },
+  { title: 'Build Muscle 8-Week Block', description: 'Hypertrophy split, progressive strength metrics, recovery targets, and nutrition check-ins.', image: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=500&h=500&fit=crop' },
+  { title: 'Engine Builder', description: 'Zone 2, threshold intervals, row-bike-run testing, and weekly conditioning scorecards.', image: 'https://images.unsplash.com/photo-1579758629938-03607ccdbaba?w=500&h=500&fit=crop' },
+  { title: 'Strong Parent Program', description: 'Efficient 45-minute sessions for busy parents who need strength, mobility, and energy.', image: 'https://images.unsplash.com/photo-1576678927484-cc907957088c?w=500&h=500&fit=crop' },
+  { title: 'Powerlifting Prep', description: 'Meet-style programming, attempt selection, video review, and coach feedback.', image: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=500&h=500&fit=crop' },
+  { title: 'Recovery Rebuild', description: 'Low-impact strength, mobility screens, corrective circuits, and return-to-training plans.', image: 'https://images.unsplash.com/photo-1607962837359-5e7e89f86776?w=500&h=500&fit=crop' },
+]
+
+const GYM_SCHEDULE_ITEMS = [
+  { title: 'Monday - Strength Engine', description: '6:30 AM, 12:15 PM, 6:00 PM - lower body strength, sled pushes, and core finishers.', image: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=500&h=500&fit=crop' },
+  { title: 'Tuesday - Pulse HIIT', description: '7:00 AM, 5:30 PM, 6:30 PM - bike sprints, dumbbell complexes, and partner intervals.', image: 'https://images.unsplash.com/photo-1607962837359-5e7e89f86776?w=500&h=500&fit=crop' },
+  { title: 'Wednesday - Lift Lab', description: '7:30 AM, 6:00 PM - technique video review and coached barbell stations.', image: 'https://images.unsplash.com/photo-1581009137042-c552e485697a?w=500&h=500&fit=crop' },
+  { title: 'Thursday - Mobility Reset', description: '12:15 PM, 7:00 PM - hips, t-spine, shoulders, breathwork, and recovery flow.', image: 'https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?w=500&h=500&fit=crop' },
+  { title: 'Friday - Athletic Circuit', description: '6:30 AM, 5:30 PM - agility, med balls, carries, and team conditioning.', image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=500&h=500&fit=crop' },
+  { title: 'Saturday - Weekend Sweat', description: '9:00 AM - community workout, leaderboard finisher, and recovery lounge.', image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500&h=500&fit=crop' },
+]
+
+const GYM_RECOVERY_ITEMS = [
+  { title: 'Compression Lounge', description: 'Normatec-style boots, guided cooldowns, and coach-recommended recovery windows.', image: 'https://images.unsplash.com/photo-1600881333168-2ef49b341f30?w=500&h=500&fit=crop' },
+  { title: 'Mobility Screen', description: 'Monthly shoulder, hip, ankle, and trunk assessments with personalized prep drills.', image: 'https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?w=500&h=500&fit=crop' },
+  { title: 'Breathwork Reset', description: 'Ten-minute downshift protocols after hard sessions and on active recovery days.', image: 'https://images.unsplash.com/photo-1593810450967-f9c42742e326?w=500&h=500&fit=crop' },
+  { title: 'Recovery Nutrition', description: 'Protein, hydration, sleep, and meal timing recommendations from the coaching team.', image: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=500&h=500&fit=crop' },
+]
+
+const GYM_CHALLENGE_ITEMS = [
+  { title: 'July Push/Pull Ladder', description: 'Four weeks of deadlift, pull-up, row, and push press benchmarks with team scoring.', image: 'https://images.unsplash.com/photo-1534367610401-9f5ed68180aa?w=500&h=500&fit=crop' },
+  { title: 'Summer Engine Test', description: 'Row, bike, and ski intervals scored by consistency, effort, and recovery rate.', image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=500&h=500&fit=crop' },
+  { title: 'Mobility Streak', description: 'Complete ten guided sessions in fourteen days and unlock a recovery workshop credit.', image: 'https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?w=500&h=500&fit=crop' },
+  { title: 'Team Saturday Throwdown', description: 'Partner workouts, coach draft teams, and a monthly community leaderboard.', image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500&h=500&fit=crop' },
+]
+
+const GYM_MEMBERSHIP_PRODUCTS = [
+  { name: 'Pulse Starter', price: '89/mo', description: '2 classes per week, onboarding session, and progress dashboard.', image: 'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=500&h=500&fit=crop' },
+  { name: 'Unlimited Training', price: '149/mo', description: 'Unlimited classes, open gym, recovery lounge access, and monthly consult.', image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=500&h=500&fit=crop' },
+  { name: 'Performance Coaching', price: '249/mo', description: 'Unlimited access plus 1:1 programming, nutrition review, and weekly check-ins.', image: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=500&h=500&fit=crop' },
+  { name: 'Drop-In Class', price: '24', description: 'Single class pass for visitors or friends joining a community workout.', image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=500&fit=crop' },
+]
+
+const GYM_GEAR_PRODUCTS = [
+  { name: 'Iron Pulse Training Tee', price: '34', description: 'Breathable cotton blend with reflective back mark.', image: 'https://images.unsplash.com/photo-1523398002811-999ca8dec234?w=500&h=500&fit=crop' },
+  { name: 'Performance Shaker', price: '18', description: 'Leak-resistant 24 oz bottle with measurement marks.', image: 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=500&h=500&fit=crop' },
+  { name: 'Wrist Wraps', price: '22', description: 'Supportive wraps for pressing, Olympic lifts, and high-volume workouts.', image: 'https://images.unsplash.com/photo-1599058917765-a780eda07a3e?w=500&h=500&fit=crop' },
+  { name: 'Recovery Band Set', price: '29', description: 'Three resistance bands for warm-ups, mobility, and accessory work.', image: 'https://images.unsplash.com/photo-1517963879433-6ad2b056d712?w=500&h=500&fit=crop' },
+  { name: 'Grip Socks', price: '16', description: 'Studio socks for mobility, pilates, and recovery sessions.', image: 'https://images.unsplash.com/photo-1605296867304-46d5465a13f1?w=500&h=500&fit=crop' },
+  { name: 'Coach Notebook', price: '12', description: 'Track lifts, notes, sleep, and weekly goals in one compact log.', image: 'https://images.unsplash.com/photo-1517971129774-8a2b38fa128e?w=500&h=500&fit=crop' },
+]
+
+const GYM_GALLERY_IMAGES = [
+  'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=700&h=700&fit=crop',
+  'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=700&h=700&fit=crop',
+  'https://images.unsplash.com/photo-1581009137042-c552e485697a?w=700&h=700&fit=crop',
+  'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=700&h=700&fit=crop',
+]
+
+const GYM_INTAKE_FIELDS = [
+  { name: 'fullName', label: 'Full Name', type: 'text', placeholder: 'e.g. Jamie Morgan' },
+  { name: 'goal', label: 'Primary Goal', type: 'text', placeholder: 'e.g. build strength, lose fat, improve conditioning' },
+  { name: 'trainingExperience', label: 'Training Experience', type: 'textarea', placeholder: 'Tell us what you have tried and what you need help with.' },
+  { name: 'preferredTime', label: 'Preferred Training Time', type: 'text', placeholder: 'e.g. weekday mornings' },
+  { name: 'email', label: 'Email', type: 'email', placeholder: 'you@example.com' },
+]
+
+const GYM_BODY_COMP_FIELDS = [
+  { name: 'fullName', label: 'Full Name', type: 'text', placeholder: 'e.g. Jamie Morgan' },
+  { name: 'preferredDate', label: 'Preferred Date', type: 'text', placeholder: 'e.g. July 18' },
+  { name: 'focus', label: 'What should we review?', type: 'textarea', placeholder: 'Body composition, measurements, photos, or training metrics.' },
+]
+
+const GYM_TRAINER_REQUEST_FIELDS = [
+  { name: 'memberName', label: 'Member Name', type: 'text', placeholder: 'e.g. Jamie Morgan' },
+  { name: 'trainer', label: 'Preferred Trainer', type: 'text', placeholder: 'e.g. Marcus Reid' },
+  { name: 'goal', label: 'Training Goal', type: 'textarea', placeholder: 'Describe the result you want and any limitations.' },
+  { name: 'phone', label: 'Phone', type: 'text', placeholder: '(555) 123-4567' },
+]
+
+const GYM_CHECKIN_FIELDS = [
+  { name: 'memberName', label: 'Member Name', type: 'text', placeholder: 'e.g. Jamie Morgan' },
+  { name: 'energy', label: 'Energy Level', type: 'text', placeholder: '1-10' },
+  { name: 'sleep', label: 'Sleep Last Night', type: 'text', placeholder: 'e.g. 7 hours' },
+  { name: 'notes', label: 'Coach Notes', type: 'textarea', placeholder: 'Soreness, stress, wins, blockers, or questions.' },
+]
+
+const GYM_FAQ_ITEMS = [
+  { question: 'Do I need experience before joining Iron Pulse?', answer: 'No. New members start with a movement screen and a coach-guided first week so the plan fits their level.' },
+  { question: 'Can I mix classes, open gym, and personal training?', answer: 'Yes. Memberships can combine group classes, open gym access, 1:1 coaching, and recovery services.' },
+  { question: 'How are programs updated?', answer: 'Coaches refresh blocks every four to eight weeks based on testing, attendance, and member goals.' },
+  { question: 'What should I bring to class?', answer: 'Bring training shoes, water, comfortable clothing, and any personal supports such as wraps or a belt.' },
 ]
 
 const CAMP_PROGRAM_ITEMS = [
@@ -131,6 +232,72 @@ const CAMP_FAQ_ITEMS = [
   { question: 'Can families register for multiple sessions?', answer: 'Yes. Families can combine any available weekly sessions and update preferences from the Forms page.' },
 ]
 
+const BOHO_STYLE_GUIDE_ITEMS = [
+  { title: 'Layered textures', description: 'Build a warm foundation by combining a jute rug, cotton throw, linen curtains, and woven pillows in one calm palette.', image: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=500&h=500&fit=crop' },
+  { title: 'Earthy tones', description: 'Warm white, sand, terracotta, olive, and walnut create a grounded base that still feels full of character.', image: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=500&h=500&fit=crop' },
+  { title: 'Plant-filled corners', description: 'Add rhythm with monstera, pothos, olive trees, and hanging planters at different heights.', image: 'https://images.unsplash.com/photo-1485955900006-10f4d324d411?w=500&h=500&fit=crop' },
+  { title: 'Handmade and vintage pieces', description: 'Mix ceramics, rattan, macrame, and secondhand wood accents instead of relying on matching sets.', image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500&h=500&fit=crop' },
+  { title: 'Low lounge seating', description: 'Use a low table, floor cushions, and soft rug layers to create a relaxed, welcoming seating area.', image: 'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=500&h=500&fit=crop' },
+  { title: 'Soft lighting', description: 'Create a calmer evening mood with woven floor lamps, candles, sconces, and warm LED bulbs.', image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=500&h=500&fit=crop' },
+]
+
+const BOHO_ROOM_ITEMS = [
+  { title: 'Living room', description: 'Create a layered, conversation-friendly setup with a kilim rug, rattan chair, low table, and plenty of pillows.', image: 'https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?w=500&h=500&fit=crop' },
+  { title: 'Bedroom', description: 'Use linen bedding, wood nightstands, a woven headboard, and two-tone curtains for a calm place to rest.', image: 'https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=500&h=500&fit=crop' },
+  { title: 'Dining area', description: 'Keep the table simple, then add texture with placemats, ceramic vases, and dried flowers.', image: 'https://images.unsplash.com/photo-1616486701797-0f33f61038ec?w=500&h=500&fit=crop' },
+  { title: 'Balcony', description: 'Turn a small balcony into a living space with a folding wood table, woven lantern, outdoor rug, and hanging plants.', image: 'https://images.unsplash.com/photo-1467043153537-a4fba2cd39ef?w=500&h=500&fit=crop' },
+  { title: 'Work nook', description: 'Reduce clutter with calm colors, a cork board, a ceramic pen cup, and one meaningful accent object.', image: 'https://images.unsplash.com/photo-1518005020951-eccb494ad742?w=500&h=500&fit=crop' },
+  { title: 'Entryway', description: 'Warm up a narrow entry with a round mirror, storage basket, small stool, and simple wall hooks.', image: 'https://images.unsplash.com/photo-1560185127-6ed189bf02f4?w=500&h=500&fit=crop' },
+]
+
+const BOHO_BLOG_POSTS = [
+  { title: '7 ideas for making a small home feel boho', description: '5 min read - A guide to balancing color, texture, and storage in a compact space.', image: 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=500&h=500&fit=crop' },
+  { title: 'Where should macrame wall art go?', description: '3 min read - Sizing tips for bedsides, sofa walls, entryways, and gallery walls.', image: 'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?w=500&h=500&fit=crop' },
+  { title: 'Jute rug care guide', description: '4 min read - Practical routines for protecting natural-fiber rugs from stains, moisture, and sun.', image: 'https://images.unsplash.com/photo-1600210491892-03d54c0aaf87?w=500&h=500&fit=crop' },
+  { title: 'Choosing plants for a boho home', description: '6 min read - Plant ideas for low-light living rooms, sunny balconies, and pet-friendly homes.', image: 'https://images.unsplash.com/photo-1521334884684-d80222895322?w=500&h=500&fit=crop' },
+  { title: 'Rental-friendly decorating without marks', description: '5 min read - Adhesive hooks, freestanding shelves, and portable lighting ideas.', image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=500&h=500&fit=crop' },
+  { title: 'A tidy shelf styling formula for boho homes', description: '4 min read - Arrange books, ceramics, baskets, and framed photos with a calmer rhythm.', image: 'https://images.unsplash.com/photo-1494438639946-1ebd1d20bf85?w=500&h=500&fit=crop' },
+]
+
+const BOHO_DECOR_PRODUCTS = [
+  { name: 'Round Jute Rug', price: '129', description: 'Natural-fiber rug, 4 ft wide, ideal for living room and balcony layers.', image: 'https://images.unsplash.com/photo-1600210491892-03d54c0aaf87?w=500&h=500&fit=crop' },
+  { name: 'Macrame Wall Panel', price: '74', description: 'Handmade cotton macrame for a warm accent above a bed or sofa.', image: 'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?w=500&h=500&fit=crop' },
+  { name: 'Rattan Basket Set', price: '89', description: 'Three natural baskets for blankets, magazines, and plant pot styling.', image: 'https://images.unsplash.com/photo-1513519245088-0e12902e5a38?w=500&h=500&fit=crop' },
+  { name: 'Linen Pillow Cover', price: '32', description: 'Textured cover in sand and terracotta tones for layered sofa styling.', image: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=500&h=500&fit=crop' },
+  { name: 'Ceramic Vase Trio', price: '56', description: 'Three matte vases for dried flowers, pampas, and eucalyptus stems.', image: 'https://images.unsplash.com/photo-1612196808214-b8e1d6145a8c?w=500&h=500&fit=crop' },
+  { name: 'Bamboo Floor Lamp', price: '185', description: 'Textured lamp with warm light for reading corners and bedrooms.', image: 'https://images.unsplash.com/photo-1505693416388-ac5ce068fe85?w=500&h=500&fit=crop' },
+  { name: 'Wood Serving Tray', price: '42', description: 'Walnut-tone tray for candles, books, and mugs on a coffee table.', image: 'https://images.unsplash.com/photo-1533090481720-856c6e3c1fdc?w=500&h=500&fit=crop' },
+  { name: 'Woven Wall Basket Set', price: '68', description: 'Lightweight trio of natural woven baskets for a gallery wall.', image: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=500&h=500&fit=crop' },
+]
+
+const BOHO_GALLERY_IMAGES = [
+  'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=700&h=700&fit=crop',
+  'https://images.unsplash.com/photo-1516455590571-18256e5bb9ff?w=700&h=700&fit=crop',
+  'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=700&h=700&fit=crop',
+  'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=700&h=700&fit=crop',
+]
+
+const BOHO_CONSULTATION_FIELDS = [
+  { name: 'fullName', label: 'Full Name', type: 'text', placeholder: 'e.g. Avery Stone' },
+  { name: 'roomType', label: 'Which Space?', type: 'text', placeholder: 'e.g. living room, bedroom, balcony' },
+  { name: 'homeSize', label: 'Approximate Size', type: 'text', placeholder: 'e.g. 250 sq ft' },
+  { name: 'styleNeed', label: 'What Do You Need Help With?', type: 'textarea', placeholder: 'Share notes about color palette, product choices, layout, or budget.' },
+  { name: 'email', label: 'Email', type: 'email', placeholder: 'you@example.com' },
+]
+
+const BOHO_FAQ_ITEMS = [
+  { question: 'Does boho decorating have to be expensive?', answer: 'No. The strongest effect usually comes from texture, layers, natural materials, and personal accessories rather than costly furniture.' },
+  { question: 'Can boho style work with minimalism?', answer: 'Yes. Keep the palette calm and choose a smaller number of strong textures and handmade pieces for a boho-minimal result.' },
+  { question: 'Which colors work best in small living rooms?', answer: 'Warm white, sand, light walnut, olive, and terracotta accents add warmth without overwhelming a compact room.' },
+  { question: 'Can I turn the product list into a shop?', answer: 'Yes. The Product List component can be edited with product names, prices, descriptions, images, stock notes, and promo copy.' },
+]
+
+const BOHO_TESTIMONIAL_ITEMS = [
+  { name: 'Emma Lane', role: 'Small-space owner', rating: 5, text: 'I had no idea where to start with my narrow living room. The layered rug and plant suggestions made the whole space feel warmer.', avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop&crop=face' },
+  { name: 'Noah Brooks', role: 'New renter', rating: 5, text: 'The product list and room guide helped me create a boho setup without damaging my rental.', avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop&crop=face' },
+  { name: 'Mia Carter', role: 'Decor enthusiast', rating: 5, text: 'The blog posts are more than inspiration. They helped me make clear decisions about sizing and placement.', avatar: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&h=200&fit=crop&crop=face' },
+]
+
 export const APP_PRESETS: AppPreset[] = [
   {
     id: EMPTY_PRESET_ID,
@@ -142,16 +309,16 @@ export const APP_PRESETS: AppPreset[] = [
   },
   {
     id: 'gym-club',
-    name: 'Gym Club',
+    name: 'Iron Pulse',
     appTitle: 'Iron Pulse',
-    appSubtitle: 'Strength · Conditioning · Community',
+    appSubtitle: 'Performance training, recovery, coaching, and community in one member app.',
     appHeader: {
       show: true,
-      title: 'Train stronger with every session',
-      subtitle: 'Classes, coaches, plans, and support in one place',
+      title: 'Build strength that shows up everywhere',
+      subtitle: 'Book classes, follow programs, track progress, recover smarter, and stay connected with your coaches.',
       icon: 'Dumbbell',
-      backgroundImageUrl: 'https://images.unsplash.com/photo-1623874514711-0f321325f318?w=1000&h=600&fit=crop',
-      backgroundImageName: 'gym',
+      backgroundImageUrl: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=1200&h=700&fit=crop',
+      backgroundImageName: 'iron pulse training floor',
     },
     headerActions: [],
     theme: {
@@ -180,15 +347,90 @@ export const APP_PRESETS: AppPreset[] = [
     pages: [
       {
         id: 'page-1',
-        name: 'Trainers',
-        icon: 'Dumbbell',
+        name: 'Home',
+        icon: 'House',
         elements: [
           {
             componentId: 'heading',
             variants: { Size: 'Large', Alignment: 'Left' },
             properties: {
-              Heading: 'Meet Our Trainers',
-              Subheading: 'Certified coaches ready to push you further.',
+              Heading: 'Your training command center',
+              Subheading: 'Classes, coaching, progress, recovery, challenges, and membership tools in one place.',
+            },
+          },
+          {
+            componentId: 'paragraph',
+            variants: { Size: 'Medium', Alignment: 'Left' },
+            properties: {
+              Text: 'Iron Pulse is built for members who want clear programming, accountable coaching, and a stronger weekly rhythm. Use this app to book your next session, follow your training block, submit check-ins, and keep momentum between visits.',
+            },
+          },
+          {
+            componentId: 'button',
+            variants: { Type: 'Standard', Variant: 'Default', Corner: 'Rounded', Width: 'Full' },
+            properties: {
+              Label: 'Start Your Free Strategy Session',
+              'Left Icon': 'CalendarPlus',
+              Action: 'Open Form',
+              'Form Title': 'Free Strategy Session',
+              'Form Description': 'Tell us your goals and a coach will recommend the best first step.',
+              'Form Submit Label': 'Request Session',
+              'Form Fields': JSON.stringify(GYM_INTAKE_FIELDS),
+              'Submits To': 'strategySessions',
+            },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'heading',
+            variants: { Size: 'Medium', Alignment: 'Left' },
+            properties: { Heading: 'Featured This Week', Subheading: 'Start with a class, program, or coaching touchpoint.' },
+          },
+          {
+            componentId: 'list',
+            variants: {
+              Layout: 'Card',
+              'Card Image Style': 'Square',
+              'Card Layout': 'Vertical',
+              'Card Size': 'Medium',
+              'Card Action': 'Button',
+            },
+            properties: {
+              Title: 'Featured Classes',
+              'Show Header': false,
+              'Button Label': 'View Class',
+              'Click Action': 'Open Dynamic Page',
+              Items: JSON.stringify(GYM_CLASS_ITEMS.slice(0, 4)),
+            },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'heading',
+            variants: { Size: 'Medium', Alignment: 'Center' },
+            properties: { Heading: 'Why Members Stay Consistent', Subheading: 'The floor, app, and coaching system work together.' },
+          },
+          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Coach-Led Floor', Description: 'Every session has a coach, a plan, and a clear training intent.', Icon: 'Dumbbell', Shrinked: true } },
+          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Measurable Progress', Description: 'Track lifts, conditioning, habits, and recovery markers week by week.', Icon: 'BarChart3', Shrinked: true } },
+          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Recovery Built In', Description: 'Mobility, breathwork, and recovery tools are part of the program.', Icon: 'HeartPulse', Shrinked: true } },
+          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Real Community', Description: 'Challenges, partner workouts, and member wins keep training social.', Icon: 'Users', Shrinked: true } },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'image-gallery',
+            variants: { Layout: '8' },
+            properties: { Images: JSON.stringify(GYM_GALLERY_IMAGES) },
+          },
+        ],
+      },
+      {
+        id: 'page-2',
+        name: 'Classes',
+        icon: 'Activity',
+        elements: [
+          {
+            componentId: 'heading',
+            variants: { Size: 'Large', Alignment: 'Left' },
+            properties: {
+              Heading: 'Book the right class for today',
+              Subheading: 'Choose strength, conditioning, mobility, or community workouts based on your training week.',
             },
           },
           {
@@ -201,32 +443,79 @@ export const APP_PRESETS: AppPreset[] = [
               'Card Action': 'Button',
             },
             properties: {
+              Title: 'Class Library',
               'Show Header': false,
-              'Button Label': 'View Profile',
-              Items: JSON.stringify(GYM_TRAINER_ITEMS),
+              'Button Label': 'View Class',
+              'Click Action': 'Open Dynamic Page',
+              Items: JSON.stringify(GYM_CLASS_ITEMS),
             },
           },
           { componentId: 'spacer', properties: { Height: 24 } },
           {
             componentId: 'heading',
             variants: { Size: 'Medium', Alignment: 'Left' },
-            properties: { Heading: 'Why Train With Us', Subheading: 'More than a gym — a team behind every rep.' },
+            properties: { Heading: 'Class Flow', Subheading: 'Every class is structured so members know what to expect.' },
           },
-          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Certified Coaches', Description: 'Nationally accredited, years on the floor.', Icon: 'Award', Shrinked: true } },
-          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Tailored Plans', Description: 'Programs built around your goals.', Icon: 'Target', Shrinked: true } },
-          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Flexible Hours', Description: 'Early mornings to late evenings.', Icon: 'Clock', Shrinked: true } },
-          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Real Results', Description: 'Track progress every session.', Icon: 'Trophy', Shrinked: true } },
+          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Coach Brief', Description: 'Warm-up, intent, scaling, and safety notes before the clock starts.', Icon: 'ClipboardCheck', Shrinked: true } },
+          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Progressions', Description: 'Every workout has beginner, intermediate, and advanced options.', Icon: 'Layers', Shrinked: true } },
+          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Coach Feedback', Description: 'Technique cues, load guidance, and post-session notes.', Icon: 'MessageSquare', Shrinked: true } },
+          {
+            componentId: 'table',
+            properties: {
+              Label: 'Class Attendance',
+              Description: 'View reservations, waitlists, no-shows, and coach notes for each class block.',
+              Required: false,
+            },
+          },
         ],
       },
       {
-        id: 'page-2',
-        name: 'Trainer',
+        id: 'page-3',
+        name: 'Programs',
+        icon: 'Target',
+        elements: [
+          {
+            componentId: 'heading',
+            variants: { Size: 'Large', Alignment: 'Left' },
+            properties: { Heading: 'Follow a real training block', Subheading: 'Programs turn scattered workouts into measurable progress.' },
+          },
+          {
+            componentId: 'list',
+            variants: {
+              Layout: 'Card',
+              'Card Image Style': 'Square',
+              'Card Layout': 'Vertical',
+              'Card Size': 'Medium',
+              'Card Action': 'Button',
+            },
+            properties: {
+              Title: 'Programs',
+              'Show Header': false,
+              'Button Label': 'View Program',
+              'Click Action': 'Open Dynamic Page',
+              Items: JSON.stringify(GYM_PROGRAM_ITEMS),
+            },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'heading',
+            variants: { Size: 'Medium', Alignment: 'Left' },
+            properties: { Heading: 'How Programming Works', Subheading: 'Each block includes testing, training, and recovery checkpoints.' },
+          },
+          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Start With Testing', Description: 'Coaches capture baseline strength, movement, and conditioning markers.', Icon: 'Gauge', Shrinked: true } },
+          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Train the Block', Description: 'Sessions build week to week with planned volume and intensity.', Icon: 'Flame', Shrinked: true } },
+          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Review Results', Description: 'Members get a clear recap and next recommendation at the end.', Icon: 'Trophy', Shrinked: true } },
+        ],
+      },
+      {
+        id: 'page-4',
+        name: 'Trainers',
         icon: 'User',
         elements: [
           {
             componentId: 'heading',
             variants: { Size: 'Large', Alignment: 'Left' },
-            properties: { Heading: 'Explore Trainers', Subheading: 'Choose a coach and open their profile.' },
+            properties: { Heading: 'Meet the coaching team', Subheading: 'Pick a coach by specialty, training style, or the goal you want to attack next.' },
           },
           {
             componentId: 'list',
@@ -244,6 +533,305 @@ export const APP_PRESETS: AppPreset[] = [
               'Click Action': 'Open Dynamic Page',
               Items: JSON.stringify(GYM_TRAINER_ITEMS),
             },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'button',
+            variants: { Type: 'Standard', Variant: 'Secondary', Corner: 'Rounded', Width: 'Full' },
+            properties: {
+              Label: 'Request a Coach Match',
+              'Left Icon': 'MessagesSquare',
+              Action: 'Open Form',
+              'Form Title': 'Coach Match Request',
+              'Form Description': 'Tell us your goal, availability, and coaching style preference.',
+              'Form Submit Label': 'Send Request',
+              'Form Fields': JSON.stringify(GYM_TRAINER_REQUEST_FIELDS),
+              'Submits To': 'coachRequests',
+            },
+          },
+        ],
+      },
+      {
+        id: 'page-5',
+        name: 'Schedule',
+        icon: 'Calendar',
+        elements: [
+          {
+            componentId: 'heading',
+            variants: { Size: 'Large', Alignment: 'Left' },
+            properties: { Heading: 'Weekly training schedule', Subheading: 'See class themes, peak times, and the best day to stack strength with recovery.' },
+          },
+          {
+            componentId: 'list',
+            variants: { Layout: 'Basic', 'Image Style': 'Square', Size: 'Regular', Action: 'Button' },
+            properties: {
+              Title: 'This Week',
+              'Show Header': false,
+              'Button Label': 'Details',
+              'Click Action': 'Open Dynamic Page',
+              Items: JSON.stringify(GYM_SCHEDULE_ITEMS),
+            },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'button',
+            variants: { Type: 'Standard', Variant: 'Default', Corner: 'Rounded', Width: 'Full' },
+            properties: {
+              Label: 'Book a Drop-In Class',
+              'Left Icon': 'CalendarPlus',
+              Action: 'Open Form',
+              'Form Title': 'Drop-In Class Request',
+              'Form Description': 'Pick a class time and we will confirm availability.',
+              'Form Submit Label': 'Request Spot',
+              'Form Fields': JSON.stringify(GYM_INTAKE_FIELDS),
+              'Submits To': 'dropIns',
+            },
+          },
+          {
+            componentId: 'table',
+            properties: {
+              Label: 'Coach Coverage',
+              Description: 'View coach assignments, capacity, and waitlist status for every class block.',
+              Required: false,
+            },
+          },
+        ],
+      },
+      {
+        id: 'page-6',
+        name: 'Membership',
+        icon: 'CreditCard',
+        elements: [
+          {
+            componentId: 'heading',
+            variants: { Size: 'Large', Alignment: 'Left' },
+            properties: { Heading: 'Choose your membership path', Subheading: 'Plans scale from weekly classes to full performance coaching.' },
+          },
+          {
+            componentId: 'product-list',
+            variants: { Layout: 'Grid' },
+            properties: {
+              Title: 'Membership Plans',
+              Subtitle: 'Compare coaching levels, access, and monthly support.',
+              Currency: '$',
+              'Search Placeholder': 'Search plans',
+              'Button Label': 'Choose Plan',
+              'Show Toolbar': false,
+              'Add New Card': false,
+              Products: JSON.stringify(GYM_MEMBERSHIP_PRODUCTS),
+            },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Pause Anytime', Description: 'Travel, injury, or schedule change? Submit a pause request from Forms.', Icon: 'PauseCircle', Shrinked: true } },
+          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Upgrade With a Coach', Description: 'Move from classes to personal programming when your goal needs more structure.', Icon: 'ArrowUpRight', Shrinked: true } },
+        ],
+      },
+      {
+        id: 'page-7',
+        name: 'Progress',
+        icon: 'BarChart3',
+        elements: [
+          {
+            componentId: 'heading',
+            variants: { Size: 'Large', Alignment: 'Left' },
+            properties: { Heading: 'Track the work that matters', Subheading: 'Use check-ins, dashboards, and coach reviews to keep training measurable.' },
+          },
+          { componentId: 'chart', variants: { Type: 'Line' }, properties: { Icon: 'TrendingUp', 'Date Filter': true } },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          { componentId: 'progress-indicator', properties: { Selected: false } },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'button',
+            variants: { Type: 'Standard', Variant: 'Default', Corner: 'Rounded', Width: 'Full' },
+            properties: {
+              Label: 'Submit Weekly Check-In',
+              'Left Icon': 'ClipboardCheck',
+              Action: 'Open Form',
+              'Form Title': 'Weekly Training Check-In',
+              'Form Description': 'Share energy, sleep, soreness, wins, and blockers before coach review.',
+              'Form Submit Label': 'Submit Check-In',
+              'Form Fields': JSON.stringify(GYM_CHECKIN_FIELDS),
+              'Submits To': 'weeklyCheckins',
+            },
+          },
+          {
+            componentId: 'table',
+            properties: {
+              Label: 'Member Metrics',
+              Description: 'Strength tests, conditioning scores, body composition, attendance, and coach notes.',
+              Required: false,
+            },
+          },
+        ],
+      },
+      {
+        id: 'page-8',
+        name: 'Recovery',
+        icon: 'HeartPulse',
+        elements: [
+          {
+            componentId: 'heading',
+            variants: { Size: 'Large', Alignment: 'Left' },
+            properties: { Heading: 'Recover like it is part of training', Subheading: 'The best members do not just work hard. They recover with intent.' },
+          },
+          {
+            componentId: 'list',
+            variants: { Layout: 'Card', 'Card Image Style': 'Square', 'Card Layout': 'Vertical', 'Card Size': 'Medium', 'Card Action': 'Button' },
+            properties: {
+              Title: 'Recovery Services',
+              'Show Header': false,
+              'Button Label': 'Learn More',
+              'Click Action': 'Open Dynamic Page',
+              Items: JSON.stringify(GYM_RECOVERY_ITEMS),
+            },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'button',
+            variants: { Type: 'Standard', Variant: 'Outlined', Corner: 'Rounded', Width: 'Full' },
+            properties: {
+              Label: 'Book Body Comp Review',
+              'Left Icon': 'Ruler',
+              Action: 'Open Form',
+              'Form Title': 'Body Composition Review',
+              'Form Description': 'Schedule measurements, photos, and coach analysis.',
+              'Form Submit Label': 'Request Review',
+              'Form Fields': JSON.stringify(GYM_BODY_COMP_FIELDS),
+              'Submits To': 'bodyCompReviews',
+            },
+          },
+        ],
+      },
+      {
+        id: 'page-9',
+        name: 'Challenges',
+        icon: 'Trophy',
+        elements: [
+          {
+            componentId: 'heading',
+            variants: { Size: 'Large', Alignment: 'Left' },
+            properties: { Heading: 'Compete with your future self', Subheading: 'Monthly challenges bring goals, teams, and accountability into the app.' },
+          },
+          {
+            componentId: 'list',
+            variants: { Layout: 'Card', 'Card Image Style': 'Square', 'Card Layout': 'Vertical', 'Card Size': 'Medium', 'Card Action': 'Button' },
+            properties: {
+              Title: 'Active Challenges',
+              'Show Header': false,
+              'Button Label': 'View Challenge',
+              'Click Action': 'Open Dynamic Page',
+              Items: JSON.stringify(GYM_CHALLENGE_ITEMS),
+            },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          { componentId: 'daily-task-manager', properties: { Selected: false } },
+          {
+            componentId: 'table',
+            properties: {
+              Label: 'Leaderboard',
+              Description: 'Team points, completion streaks, coach nominations, and monthly awards.',
+              Required: false,
+            },
+          },
+        ],
+      },
+      {
+        id: 'page-10',
+        name: 'Gear',
+        icon: 'ShoppingBag',
+        elements: [
+          {
+            componentId: 'heading',
+            variants: { Size: 'Large', Alignment: 'Left' },
+            properties: { Heading: 'Training gear and club essentials', Subheading: 'Pick up apparel, wraps, bands, bottles, and recovery tools from the front desk.' },
+          },
+          {
+            componentId: 'product-list',
+            variants: { Layout: 'Grid 3' },
+            properties: {
+              Title: 'Iron Pulse Gear',
+              Subtitle: 'Member favorites for training and recovery.',
+              Currency: '$',
+              'Search Placeholder': 'Search gear',
+              'Button Label': 'Add to Bag',
+              'Show Toolbar': true,
+              'Add New Card': false,
+              Products: JSON.stringify(GYM_GEAR_PRODUCTS),
+            },
+          },
+        ],
+      },
+      {
+        id: 'page-11',
+        name: 'Forms',
+        icon: 'ClipboardList',
+        elements: [
+          {
+            componentId: 'form',
+            variants: { 'Layout Type': 'Form' },
+            properties: {
+              'Form Title': 'Member Intake Form',
+              'Form Description': 'Use this before your first strategy session or whenever your goals change.',
+              'Submit Label': 'Submit Intake',
+              'Form Fields': JSON.stringify(GYM_INTAKE_FIELDS),
+              'Show Border': true,
+            },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'heading',
+            variants: { Size: 'Small', Alignment: 'Left' },
+            properties: { Heading: 'Member Actions', Subheading: 'Quick requests that route to the right coach or desk team.' },
+          },
+          {
+            componentId: 'form',
+            variants: { 'Layout Type': 'Card', Alignment: 'Left', Size: 'Normal' },
+            properties: { Label: 'Membership Pause Request', Description: 'Pause for travel, recovery, schedule changes, or billing questions.', Icon: 'PauseCircle', Required: false },
+          },
+          {
+            componentId: 'sign-document',
+            variants: { Alignment: 'Left', Size: 'Normal' },
+            properties: { Label: 'Training Waiver', Description: 'Sign the seasonal training and recovery service release.', Required: true },
+          },
+          {
+            componentId: 'button',
+            variants: { Type: 'Standard', Variant: 'Outlined', Corner: 'Rounded', Width: 'Full' },
+            properties: {
+              Label: 'Ask a Coach to Call',
+              'Left Icon': 'Phone',
+              Action: 'Open Form',
+              'Form Title': 'Coach Callback Request',
+              'Form Description': 'Send a question and the right coach will follow up.',
+              'Form Submit Label': 'Request Callback',
+              'Form Fields': JSON.stringify(GYM_TRAINER_REQUEST_FIELDS),
+              'Submits To': 'coachCallbacks',
+            },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'heading',
+            variants: { Size: 'Small', Alignment: 'Left' },
+            properties: { Heading: 'Documents', Subheading: '' },
+          },
+          {
+            componentId: 'document',
+            variants: { 'Has File': 'Yes', Size: 'Normal', Alignment: 'Left' },
+            properties: { 'File Name': 'Iron Pulse Member Guide.pdf', Description: 'Class etiquette, booking rules, and coach contact paths.' },
+          },
+          {
+            componentId: 'document',
+            variants: { 'Has File': 'Yes', Size: 'Normal', Alignment: 'Left' },
+            properties: { 'File Name': 'Training Block Calendar.pdf', Description: 'Testing weeks, deloads, events, and challenge dates.' },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'faq',
+            variants: { Style: 'Card', Icon: 'Plus/Minus', 'Icon Position': 'Right' },
+            properties: { Items: JSON.stringify(GYM_FAQ_ITEMS) },
+          },
+          {
+            componentId: 'testimonial',
+            properties: { 'Show Avatars': true },
           },
         ],
       },
@@ -766,6 +1354,338 @@ export const APP_PRESETS: AppPreset[] = [
             componentId: 'heading',
             variants: { Size: 'Small', Alignment: 'Center' },
             properties: { Heading: 'Stay Connected', Subheading: '' },
+          },
+          {
+            componentId: 'social-follow',
+            variants: { Layout: 'Wrap', Variant: 'Secondary', Filled: 'No' },
+          },
+        ],
+      },
+    ],
+    headerActions: [],
+  },
+  {
+    id: 'boho-nest',
+    name: 'Boho Nest',
+    appTitle: 'Boho Nest',
+    appSubtitle: 'Boho home decor guides, styling stories, and natural product picks.',
+    appHeader: {
+      show: true,
+      title: 'Bring a warm, layered boho spirit into your home',
+      subtitle: 'Room-by-room styling guides, decor stories, natural product picks, and personal consultation forms in one place.',
+      icon: 'Leaf',
+      backgroundImageUrl: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=1200&h=700&fit=crop',
+      backgroundImageName: 'boho living room',
+    },
+    theme: {
+      color: '#A66A3F',
+      tint: 34,
+      font: 'DM Sans',
+      headingFont: 'DM Sans',
+      radius: 'Large',
+      harmonyOffset: 135,
+      activePreset: '',
+      colorMode: 'light',
+      tokenOverrides: {
+        '--bg-page': '#F6F1EA',
+        '--bg-surface': '#FFFDF8',
+        '--bg-surface-hover': '#F1E6D9',
+        '--bg-surface-brand': '#EFE0CF',
+        '--bg-surface-brand-hover': '#E5D0BA',
+        '--bg-fill': '#FFFDF8',
+        '--bg-fill-hover': '#F3E9DE',
+        '--bg-fill-active': '#E8D8C6',
+        '--bg-fill-brand': '#A66A3F',
+        '--bg-fill-brand-hover': '#8E5530',
+        '--bg-fill-brand-active': '#744424',
+        '--bg-fill-brand-disabled': '#D8B99C',
+        '--fg-brand': '#A66A3F',
+        '--fg-brand-hover': '#8E5530',
+        '--fg-inverse': '#FFFDF8',
+        '--fg-primary': '#2D2118',
+        '--fg-secondary': '#6B5848',
+        '--fg-tertiary': '#8D7866',
+        '--fg-disabled': '#B9A795',
+        '--border': '#DDCDBB',
+        '--border-hover': '#BFA58B',
+      },
+    },
+    pages: [
+      {
+        id: 'page-1',
+        name: 'Home',
+        icon: 'House',
+        elements: [
+          {
+            componentId: 'heading',
+            variants: { Size: 'Large', Alignment: 'Left' },
+            properties: {
+              Heading: 'A calm starting point for a boho home',
+              Subheading: 'Make your home feel warmer with color palettes, layered textures, plant choices, and product recommendations.',
+            },
+          },
+          {
+            componentId: 'paragraph',
+            variants: { Size: 'Medium', Alignment: 'Left' },
+            properties: {
+              Text: 'Boho Nest turns boho decorating from an inspiration board into a practical home plan. From small living rooms to balconies, it offers styling notes, decor stories, and shopping lists for every space.',
+            },
+          },
+          {
+            componentId: 'button',
+            variants: { Type: 'Standard', Variant: 'Default', Corner: 'Rounded', Width: 'Full' },
+            properties: {
+              Label: 'Request Style Consultation',
+              'Left Icon': 'MessageCircle',
+              Action: 'Open Form',
+              'Form Title': 'Boho Style Consultation',
+              'Form Description': 'Tell us which space you want to refresh, and we will prepare color and product ideas for you.',
+              'Form Submit Label': 'Send Request',
+              'Form Fields': JSON.stringify(BOHO_CONSULTATION_FIELDS),
+              'Submits To': 'styleRequests',
+            },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'heading',
+            variants: { Size: 'Medium', Alignment: 'Left' },
+            properties: { Heading: 'Featured This Week', Subheading: 'Guides and ideas that can quickly shift the mood of your home.' },
+          },
+          {
+            componentId: 'list',
+            variants: {
+              Layout: 'Card',
+              'Card Image Style': 'Square',
+              'Card Layout': 'Vertical',
+              'Card Size': 'Medium',
+              'Card Action': 'Button',
+            },
+            properties: {
+              Title: 'Boho Starter Guide',
+              'Show Header': false,
+              'Button Label': 'Explore',
+              'Click Action': 'Open Dynamic Page',
+              Items: JSON.stringify(BOHO_STYLE_GUIDE_ITEMS.slice(0, 4)),
+            },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'heading',
+            variants: { Size: 'Medium', Alignment: 'Center' },
+            properties: { Heading: '4 details that keep boho style balanced', Subheading: 'Essential choices for a natural, relaxed, and personal home.' },
+          },
+          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Natural Materials', Description: 'Textures like jute, rattan, bamboo, cotton, and ceramic set the foundation for the home.', Icon: 'Leaf', Shrinked: true } },
+          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Warm Palette', Description: 'Sand, walnut, terracotta, and olive tones make a room feel more inviting together.', Icon: 'Palette', Shrinked: true } },
+          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Plant Rhythm', Description: 'Plants in different sizes add living depth to shelves, corners, and window areas.', Icon: 'Sprout', Shrinked: true } },
+          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Personal Pieces', Description: 'Travel objects, handmade items, and vintage finds give boho style its soul.', Icon: 'Sparkles', Shrinked: true } },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'image-gallery',
+            variants: { Layout: '8' },
+            properties: { Images: JSON.stringify(BOHO_GALLERY_IMAGES) },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'testimonial',
+            variants: { Layout: 'Carousel', Alignment: 'Left', 'Card Style': 'Border' },
+            properties: {
+              'Show Avatars': true,
+              'Show Rating': true,
+              'Show Role': true,
+              Items: JSON.stringify(BOHO_TESTIMONIAL_ITEMS),
+            },
+          },
+        ],
+      },
+      {
+        id: 'page-2',
+        name: 'Guide',
+        icon: 'Palette',
+        elements: [
+          {
+            componentId: 'heading',
+            variants: { Size: 'Large', Alignment: 'Left' },
+            properties: {
+              Heading: 'The core rules of boho style',
+              Subheading: 'Every choice is read through material, color, light, and living details.',
+            },
+          },
+          {
+            componentId: 'list',
+            variants: {
+              Layout: 'Card',
+              'Card Image Style': 'Square',
+              'Card Layout': 'Vertical',
+              'Card Size': 'Medium',
+              'Card Action': 'Button',
+            },
+            properties: {
+              Title: 'Style Guide',
+              'Show Header': false,
+              'Button Label': 'View Details',
+              'Click Action': 'Open Dynamic Page',
+              Items: JSON.stringify(BOHO_STYLE_GUIDE_ITEMS),
+            },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'heading',
+            variants: { Size: 'Medium', Alignment: 'Left' },
+            properties: { Heading: 'Room-by-room application', Subheading: 'Use the same boho language in different rooms with practical scale.' },
+          },
+          {
+            componentId: 'list',
+            variants: { Layout: 'Basic', 'Image Style': 'Square', Size: 'Regular', Action: 'Button' },
+            properties: {
+              Title: 'Room Plans',
+              'Show Header': false,
+              'Button Label': 'Plan',
+              'Click Action': 'Open Dynamic Page',
+              Items: JSON.stringify(BOHO_ROOM_ITEMS),
+            },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Choose 3 colors', Description: 'Set one main tone, one supporting tone, and one accent color to reduce visual clutter.', Icon: 'Brush', Shrinked: true } },
+          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'One large texture', Description: 'A single natural-textured rug or curtain can make enough impact without overwhelming the room.', Icon: 'Layers', Shrinked: true } },
+          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Leave breathing room', Description: 'Skip filling every corner so boho style feels more refined and intentional.', Icon: 'PanelsTopLeft', Shrinked: true } },
+        ],
+      },
+      {
+        id: 'page-3',
+        name: 'Blog',
+        icon: 'BookOpen',
+        elements: [
+          {
+            componentId: 'heading',
+            variants: { Size: 'Large', Alignment: 'Left' },
+            properties: {
+              Heading: 'Decor Stories',
+              Subheading: 'Boho decorating stories that turn small ideas into practical home decisions.',
+            },
+          },
+          {
+            componentId: 'list',
+            variants: {
+              Layout: 'Card',
+              'Card Image Style': 'Square',
+              'Card Layout': 'Vertical',
+              'Card Size': 'Medium',
+              'Card Action': 'Button',
+            },
+            properties: {
+              Title: 'Latest Stories',
+              'Show Header': false,
+              'Button Label': 'Read',
+              'Click Action': 'Open Dynamic Page',
+              Items: JSON.stringify(BOHO_BLOG_POSTS),
+            },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'heading',
+            variants: { Size: 'Medium', Alignment: 'Left' },
+            properties: { Heading: "Editor's Picks", Subheading: 'Two of the most useful places to start.' },
+          },
+          {
+            componentId: 'card',
+            variants: { 'Image Style': 'Square', Layout: 'Vertical', Action: 'Button' },
+            properties: {
+              Title: 'A 1-week plan for making a living room feel boho',
+              Description: 'Day 1 palette, day 2 rug, day 3 pillows, day 4 plants, day 5 lighting, day 6 shelves, day 7 final edit.',
+              'Button Label': 'Open Plan',
+              'Image URL': 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=700&h=380&fit=crop',
+            },
+          },
+          {
+            componentId: 'card',
+            variants: { 'Image Style': 'Square', Layout: 'Vertical', Action: 'Button' },
+            properties: {
+              Title: 'What should you buy first for a boho home?',
+              Description: 'Start with large textures and the color palette, then add lighting, baskets, ceramics, and wall objects for character.',
+              'Button Label': 'View List',
+              'Image URL': 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=700&h=380&fit=crop',
+            },
+          },
+        ],
+      },
+      {
+        id: 'page-4',
+        name: 'Shop',
+        icon: 'ShoppingBag',
+        elements: [
+          {
+            componentId: 'heading',
+            variants: { Size: 'Large', Alignment: 'Left' },
+            properties: {
+              Heading: 'Boho decor products',
+              Subheading: 'Natural-textured, warm-toned home decor pieces that are easy to mix and match.',
+            },
+          },
+          {
+            componentId: 'product-list',
+            variants: { Layout: 'Grid 3' },
+            properties: {
+              Title: 'Boho Nest Picks',
+              Subtitle: 'Rugs, baskets, macrame, textiles, ceramics, and lighting.',
+              Currency: 'USD',
+              'Search Placeholder': 'Search products',
+              'Button Label': 'Add to Cart',
+              'Show Toolbar': true,
+              'Add New Card': false,
+              Products: JSON.stringify(BOHO_DECOR_PRODUCTS),
+            },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'heading',
+            variants: { Size: 'Medium', Alignment: 'Left' },
+            properties: { Heading: 'Shopping notes', Subheading: 'Think about each product by its role in the room, not as a standalone item.' },
+          },
+          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Floor first', Description: 'Large surfaces like rugs and curtains set the palette; accessories should come after.', Icon: 'Layers', Shrinked: true } },
+          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Repeat materials', Description: 'Repeat rattan, ceramic, or wood in at least two points in the room for cohesion.', Icon: 'Repeat', Shrinked: true } },
+          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Check dimensions', Description: 'Measure the space before buying baskets, rugs, or floor lamps to reduce return risk.', Icon: 'Ruler', Shrinked: true } },
+        ],
+      },
+      {
+        id: 'page-5',
+        name: 'Consult',
+        icon: 'ClipboardList',
+        elements: [
+          {
+            componentId: 'heading',
+            variants: { Size: 'Large', Alignment: 'Left' },
+            properties: {
+              Heading: 'A boho style plan for your home',
+              Subheading: 'Share your space, budget, and taste; we will reply with a color palette, product list, and layout suggestions.',
+            },
+          },
+          {
+            componentId: 'form',
+            variants: { 'Layout Type': 'Form' },
+            properties: {
+              'Form Title': 'Boho Style Consultation',
+              'Form Description': 'Share the space you want to refresh, your budget, and the colors you like.',
+              'Submit Label': 'Send Request',
+              'Form Fields': JSON.stringify(BOHO_CONSULTATION_FIELDS),
+              'Show Border': true,
+            },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'heading',
+            variants: { Size: 'Medium', Alignment: 'Left' },
+            properties: { Heading: 'FAQ', Subheading: 'Short answers about boho style, budget, and product selection.' },
+          },
+          {
+            componentId: 'faq',
+            variants: { Style: 'Card', Icon: 'Plus/Minus', 'Icon Position': 'Right' },
+            properties: { Items: JSON.stringify(BOHO_FAQ_ITEMS) },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'heading',
+            variants: { Size: 'Small', Alignment: 'Center' },
+            properties: { Heading: 'Follow the inspiration boards', Subheading: '' },
           },
           {
             componentId: 'social-follow',
