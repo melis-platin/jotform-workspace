@@ -14853,6 +14853,10 @@ body.builder--phone-only {
   opacity: 1;
 }
 
+.data-page__table-item--active .data-page__table-more {
+  background: color-mix(in srgb, var(--product-tables-dark, #007b2a) 20%, transparent);
+}
+
 .data-page__main {
   flex: 1;
   min-width: 0;
