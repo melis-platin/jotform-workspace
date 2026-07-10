@@ -3290,14 +3290,36 @@ export function BuildPage({
       '.live-preview__phone-screen .live-preview__content-scaler',
     ].filter(Boolean)
 
-    for (const selector of selectors) {
-      const candidate = document.querySelector<HTMLElement>(selector)
-      if (!candidate) continue
-      const rect = candidate.getBoundingClientRect()
-      if (rect.width > 0 && rect.height > 0) return candidate
+    const isVisibleElement = (element: HTMLElement) => {
+      const rect = element.getBoundingClientRect()
+      if (rect.width <= 0 || rect.height <= 0) return false
+
+      const viewportWidth = window.innerWidth || document.documentElement.clientWidth
+      const viewportHeight = window.innerHeight || document.documentElement.clientHeight
+      if (rect.right <= 0 || rect.bottom <= 0 || rect.left >= viewportWidth || rect.top >= viewportHeight) return false
+
+      const style = window.getComputedStyle(element)
+      return style.display !== 'none' && style.visibility !== 'hidden'
     }
 
-    return previewContentScalerEl
+    const isVisibleScaler = (candidate: HTMLElement) => {
+      if (!isVisibleElement(candidate)) return false
+
+      const previewRoot = candidate.closest<HTMLElement>(
+        '.app-preview-screen__desktop, .live-preview__tablet-screen, .live-preview__phone-screen, .build-page__nav-preview-frame',
+      )
+      return !previewRoot || isVisibleElement(previewRoot)
+    }
+
+    for (const selector of selectors) {
+      const candidates = Array.from(document.querySelectorAll<HTMLElement>(selector))
+      const visibleCandidate = candidates.find(isVisibleScaler)
+      if (visibleCandidate) return visibleCandidate
+    }
+
+    return previewContentScalerEl && isVisibleScaler(previewContentScalerEl)
+      ? previewContentScalerEl
+      : null
   }, [previewContentScalerEl, previewDevice])
 
   const highlightLivePreviewTarget = useCallback((selector?: string) => {
@@ -3346,12 +3368,21 @@ export function BuildPage({
     })
 
     if (!pageId || pageId === activePageId) {
-      window.setTimeout(() => highlightLivePreviewTarget(selector), 120)
+      window.setTimeout(() => {
+        if (!isPreviewSearchOpen && !isDesktopPreviewSearchOpen) {
+          highlightLivePreviewTarget(selector)
+        }
+      }, 120)
     }
-  }, [activePageId, highlightLivePreviewTarget])
+  }, [activePageId, highlightLivePreviewTarget, isDesktopPreviewSearchOpen, isPreviewSearchOpen])
 
   useEffect(() => {
-    if (!pendingSearchHighlight || isPreviewSearchOpen || !getVisiblePreviewContentScaler()) return
+    if (
+      !pendingSearchHighlight ||
+      isPreviewSearchOpen ||
+      isDesktopPreviewSearchOpen ||
+      !getVisiblePreviewContentScaler()
+    ) return
     if (pendingSearchHighlight.pageId && activePageId !== pendingSearchHighlight.pageId) return
     const timer = window.setTimeout(() => {
       highlightLivePreviewTarget(pendingSearchHighlight.selector)
@@ -3360,14 +3391,16 @@ export function BuildPage({
       ))
     }, 0)
     return () => window.clearTimeout(timer)
-  }, [activePageId, getVisiblePreviewContentScaler, highlightLivePreviewTarget, isPreviewSearchOpen, pendingSearchHighlight])
+  }, [activePageId, getVisiblePreviewContentScaler, highlightLivePreviewTarget, isDesktopPreviewSearchOpen, isPreviewSearchOpen, pendingSearchHighlight])
 
   const highlightOpenFormSheetField = useCallback((fieldName?: string) => {
     if (!fieldName) return
 
     window.setTimeout(() => {
       window.requestAnimationFrame(() => {
-        const previewRoot = previewContentScalerEl?.closest('.live-preview__phone-screen') ?? document
+        const previewRoot = getVisiblePreviewContentScaler()?.closest(
+          '.live-preview__phone-screen, .live-preview__tablet-screen, .app-preview-screen__desktop',
+        ) ?? document
         const target = previewRoot.querySelector<HTMLElement>(getFormSheetFieldSelector(fieldName))
         if (!target) return
 
@@ -3381,7 +3414,7 @@ export function BuildPage({
         }, 1800)
       })
     }, 160)
-  }, [previewContentScalerEl])
+  }, [getVisiblePreviewContentScaler])
 
   const handleLivePreviewSearchResultSelect = useCallback((
     target: SearchResultTarget,
