@@ -322,6 +322,10 @@ function sourceElementLabel(sourceType: DataTable['sourceType']): string {
   return `${sourceType} Element`
 }
 
+function tableConnectionLabel(table: DataTable): string {
+  return `${table.name} is connected to ${sourceElementLabel(table.sourceType)}`
+}
+
 function columnHeaderIcon(column: DataColumn) {
   return column.type === 'image'
     ? { name: 'paperclip-diagonal', category: 'general' }
@@ -381,21 +385,22 @@ export function DataPage({ preset }: { preset: AppPreset }) {
               type="button"
               className={`data-page__table-item${table.id === activeTable?.id ? ' data-page__table-item--active' : ''}`}
               onClick={() => setActiveTableId(table.id)}
+              aria-label={tableConnectionLabel(table)}
+              title={tableConnectionLabel(table)}
             >
               <span className="data-page__table-copy">
-                <span className="data-page__table-heading">
-                  <span className="data-page__table-icon">
-                    <Icon name="product-tables-mono" category="products" size={20} />
-                  </span>
-                  <span className="data-page__table-name">{table.name}</span>
+                <span className="data-page__table-icon">
+                  <Icon name="product-tables-mono" category="products" size={20} />
                 </span>
-                <span className="data-page__table-meta">
-                  <Icon name="link-diagonal" category="general" size={12} />
-                  {sourceElementLabel(table.sourceType)}
+                <span className="data-page__table-heading">
+                  <span className="data-page__table-name">{table.name}</span>
+                  <span className="data-page__table-link-badge" aria-hidden="true">
+                    <Icon name="link-diagonal" category="general" size={12} />
+                  </span>
                 </span>
               </span>
-              <span className="data-page__table-more">
-                <Icon name="ellipsis-vertical" category="general" size={16} />
+              <span className="data-page__table-more" aria-hidden="true">
+                <Icon name="chevron-right" category="arrows" size={16} />
               </span>
             </button>
           ))}
