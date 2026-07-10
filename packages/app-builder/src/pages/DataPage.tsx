@@ -400,7 +400,7 @@ export function DataPage({ preset }: { preset: AppPreset }) {
                 </span>
               </span>
               <span className="data-page__table-more" aria-hidden="true">
-                <Icon name="chevron-right" category="arrows" size={16} />
+                <Icon name="ellipsis-vertical" category="general" size={16} />
               </span>
             </button>
           ))}
