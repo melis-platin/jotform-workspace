@@ -170,6 +170,7 @@ function buildTableConnection(element: CanvasElement, page: AppPage): DataTableC
   const component = ComponentRegistry.get(element.componentId)
   const isFormConnection = element.componentId === 'form'
     || (element.componentId === 'button' && String(element.properties.Action ?? '') === 'Open Form')
+  const isProductListConnection = element.componentId === 'product-list'
   const listTitle = element.componentId === 'list' ? element.properties.Title : undefined
   const label = isFormConnection
     ? getElementTitle(element, component?.name ?? 'Form')
@@ -181,8 +182,12 @@ function buildTableConnection(element: CanvasElement, page: AppPage): DataTableC
     label: typeof label === 'string' && label.trim()
       ? label.trim()
       : component?.name ?? titleCase(element.componentId),
-    icon: isFormConnection ? 'product-form-builder-filled' : component?.icon ?? 'LayoutGrid',
-    iconCategory: isFormConnection ? 'products' : undefined,
+    icon: isFormConnection
+      ? 'product-form-builder-filled'
+      : isProductListConnection
+        ? 'cart-shopping-filled'
+        : component?.icon ?? 'LayoutGrid',
+    iconCategory: isFormConnection ? 'products' : isProductListConnection ? 'finance' : undefined,
     isFormElement: element.componentId === 'form',
   }
 }
@@ -238,7 +243,7 @@ function buildProductTable(element: CanvasElement, page: AppPage): DataTable | n
     sourceType: 'Products',
     columns: columnsFromRows(rows, PRODUCT_COLUMN_PRIORITY),
     rows,
-    connections: [],
+    connections: [buildTableConnection(element, page)],
   }
 }
 
