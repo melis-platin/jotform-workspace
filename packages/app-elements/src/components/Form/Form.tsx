@@ -85,7 +85,7 @@ function parseOpenFormFields(raw?: string): OpenFormField[] | null {
           helpText: value.helpText,
           required: Boolean(value.required),
           labelHidden: Boolean(value.labelHidden),
-          width: value.width === 'full' || value.type === 'textarea' ? 'full' : 'half',
+          width: value.width === 'full' ? 'full' : 'half',
           options: Array.isArray(value.options) ? value.options.filter((option): option is string => typeof option === 'string') : undefined,
         };
       })

@@ -226,8 +226,8 @@
   grid-column: 1 / -1;
 }
 
-.jf-form-open__field--textarea {
-  grid-column: 1 / -1;
+.jf-form-open__field--textarea.jf-form-open__field--half {
+  grid-row: span 2;
 }
 
 .jf-form-open__field--radio-group {
@@ -297,6 +297,10 @@
   border-radius: var(--radius-lg);
   align-items: flex-start;
   resize: vertical;
+}
+
+.jf-form-open__field--textarea.jf-form-open__field--half .jf-form-open__input--textarea {
+  flex: 1;
 }
 
 .jf-form-open__hint {
@@ -392,6 +396,10 @@
 
   .jf-form-open__field--half {
     grid-column: 1 / -1;
+  }
+
+  .jf-form-open__field--textarea {
+    grid-row: auto;
   }
 
   .jf-form-open__label--hidden {
