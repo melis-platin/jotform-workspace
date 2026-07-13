@@ -3789,8 +3789,13 @@ export function BuildPage({
   const activePageForTopHeader = pages.find((p) => p.id === activePageId) ?? pages[0]
   const activeIsFirstPage = activePageForTopHeader?.id === pages[0]?.id
   const topHeaderUsesPageName = !!preset && preset.id !== EMPTY_PRESET_ID && !activeIsFirstPage
+  // Desktop top headers keep the app identity visible across every page. The Left
+  // layout owns its identity in the sidebar, while mobile/tablet continue to use
+  // the active page name after the home page.
+  const desktopTopHeaderKeepsBrand = previewDevice === 'desktop' && desktopNavVariant !== 'left'
+  const topHeaderShowsPageName = topHeaderUsesPageName && !desktopTopHeaderKeepsBrand
   const renderTopHeaderBrand = () => {
-    if (topHeaderUsesPageName) {
+    if (topHeaderShowsPageName) {
       return (
         <div className="live-preview__top-header-page">
           <span className="live-preview__top-header-page-name">{activePageForTopHeader?.name ?? appTitle}</span>
@@ -4873,7 +4878,7 @@ export function BuildPage({
           }}
         />
       )}
-      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${topHeaderUsesPageName && isPreviewContentScrolled ? ' live-preview__top-header--page-scrolled' : ''}${desktopNavVariant === 'compact' ? ' live-preview__top-header--compact' : ''}${desktopNavVariant === 'contained' ? ' live-preview__top-header--contained' : ''}${desktopFullwidthSearchOpen ? ' live-preview__top-header--fullwidth-search-open' : ''}${isDesktopPreviewSearchOpen ? ' live-preview__top-header--desktop-search-open' : ''}${topNavOverlay ? ' live-preview__top-header--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__top-header--over-content' : ''}${topHeaderHidden ? ' live-preview__top-header--hidden' : ''}`} style={topNavOverlay && topNavOverHero ? { color: topNavOverlayFg } : undefined} data-nav-align={desktopNavAlignment}>
+      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${topHeaderShowsPageName && isPreviewContentScrolled ? ' live-preview__top-header--page-scrolled' : ''}${desktopNavVariant === 'compact' ? ' live-preview__top-header--compact' : ''}${desktopNavVariant === 'contained' ? ' live-preview__top-header--contained' : ''}${desktopFullwidthSearchOpen ? ' live-preview__top-header--fullwidth-search-open' : ''}${isDesktopPreviewSearchOpen ? ' live-preview__top-header--desktop-search-open' : ''}${topNavOverlay ? ' live-preview__top-header--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__top-header--over-content' : ''}${topHeaderHidden ? ' live-preview__top-header--hidden' : ''}`} style={topNavOverlay && topNavOverHero ? { color: topNavOverlayFg } : undefined} data-nav-align={desktopNavAlignment}>
         {(() => {
           // Profile / dynamic-detail back affordance — shared with the right-panel
           // preview via renderTopHeaderBack so the two never diverge.
@@ -9231,7 +9236,7 @@ export function BuildPage({
                           }}
                         />
                       )}
-                      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${topHeaderUsesPageName && isPreviewContentScrolled ? ' live-preview__top-header--page-scrolled' : ''}${isDesktopPreviewSearchOpen ? ' live-preview__top-header--desktop-search-open' : ''}${topNavOverlay ? ' live-preview__top-header--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__top-header--over-content' : ''}${topHeaderHidden ? ' live-preview__top-header--hidden' : ''}`} style={topNavOverlay && topNavOverHero ? { color: topNavOverlayFg } : undefined} data-nav-align={desktopNavAlignment}>
+                      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${topHeaderShowsPageName && isPreviewContentScrolled ? ' live-preview__top-header--page-scrolled' : ''}${isDesktopPreviewSearchOpen ? ' live-preview__top-header--desktop-search-open' : ''}${topNavOverlay ? ' live-preview__top-header--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__top-header--over-content' : ''}${topHeaderHidden ? ' live-preview__top-header--hidden' : ''}`} style={topNavOverlay && topNavOverHero ? { color: topNavOverlayFg } : undefined} data-nav-align={desktopNavAlignment}>
                         {(() => {
                           // Profile / dynamic-detail back affordance — shared with the
                           // full-screen preview. The right-panel preview always renders a
