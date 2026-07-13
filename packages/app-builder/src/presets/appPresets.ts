@@ -1463,6 +1463,9 @@ export const APP_PRESETS: AppPreset[] = [
             properties: {
               Title: 'Boho Starter Guide',
               'Show Header': false,
+              'Data Source': 'Boho Starter Guide Dynamic List Table',
+              'Items to show': 4,
+              __bohoSharedListSourceMigrated: true,
               'Button Label': 'Explore',
               'Click Action': 'Open Dynamic Page',
               Items: JSON.stringify(BOHO_STYLE_GUIDE_ITEMS.slice(0, 4)),
@@ -1522,6 +1525,9 @@ export const APP_PRESETS: AppPreset[] = [
             properties: {
               Title: 'Style Guide',
               'Show Header': false,
+              'Data Source': 'Boho Starter Guide Dynamic List Table',
+              'Items to show': 10,
+              __bohoSharedListSourceMigrated: true,
               'Button Label': 'View Details',
               'Click Action': 'Open Dynamic Page',
               Items: JSON.stringify(BOHO_STYLE_GUIDE_ITEMS),

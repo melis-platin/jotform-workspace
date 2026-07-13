@@ -17,7 +17,7 @@ interface DataTable {
   name: string
   description: string
   sourceType: 'List' | 'Form' | 'Products' | 'Table' | 'Tasks'
-  identityKeys: string[]
+  sharedSourceKey?: string
   columns: DataColumn[]
   rows: Record<string, DataCellValue>[]
   connections: DataTableConnection[]
@@ -39,6 +39,7 @@ interface FormFieldLike {
 }
 
 const DATA_ELEMENT_IDS = new Set(['list', 'product-list', 'form', 'table', 'daily-task-manager'])
+const SHARED_TABLE_CONSUMER_IDS = new Set(['list', 'ai-widget'])
 const LIST_COLUMN_PRIORITY = ['title', 'name', 'description', 'image', 'avatar', 'photo', 'price', 'date', 'time', 'duration', 'coach', 'category', 'location', 'details', 'detail']
 const PRODUCT_COLUMN_PRIORITY = ['name', 'title', 'description', 'price', 'image', 'category', 'sku', 'inventory']
 const DEFAULT_FORM_FIELDS: FormFieldLike[] = [
@@ -53,12 +54,22 @@ export function presetUsesDataElement(preset: AppPreset): boolean {
 
 function isPresetDataElement(element: PresetElement): boolean {
   if (DATA_ELEMENT_IDS.has(element.componentId)) return true
+  if (isSharedTableConsumerId(element.componentId)) return true
   return element.componentId === 'button' && element.properties?.Action === 'Open Form'
 }
 
 function isCanvasDataElement(element: CanvasElement): boolean {
   if (DATA_ELEMENT_IDS.has(element.componentId)) return true
   return element.componentId === 'button' && String(element.properties.Action ?? '') === 'Open Form'
+}
+
+function isSharedTableConsumerId(componentId: string): boolean {
+  return SHARED_TABLE_CONSUMER_IDS.has(componentId)
+    || ComponentRegistry.get(componentId)?.name === 'AI Widget'
+}
+
+function isSharedTableConsumer(element: CanvasElement): boolean {
+  return isSharedTableConsumerId(element.componentId)
 }
 
 function parseJsonArray(value: unknown): Record<string, DataCellValue>[] {
@@ -166,19 +177,11 @@ function buildTableConnection(element: CanvasElement, page: AppPage): DataTableC
   }
 }
 
-function buildTableIdentityKeys(
-  element: CanvasElement,
-  name: string,
-  sourceType: DataTable['sourceType'],
-): string[] {
-  const generatedNameKey = `name:${sourceType}:${name.trim().toLocaleLowerCase('en-US')}`
-  const explicitSource = element.properties['Data Source'] ?? element.properties['Submits To']
-
-  if (typeof explicitSource !== 'string' || !explicitSource.trim() || explicitSource === 'New Table') {
-    return [generatedNameKey]
-  }
-
-  return [generatedNameKey, `source:${explicitSource.trim().toLocaleLowerCase('en-US')}`]
+function getSharedSourceKey(element: CanvasElement): string | undefined {
+  if (!isSharedTableConsumer(element)) return undefined
+  const dataSource = element.properties['Data Source']
+  if (typeof dataSource !== 'string' || !dataSource.trim() || dataSource === 'New Table') return undefined
+  return dataSource.trim().toLocaleLowerCase('en-US')
 }
 
 function formatPrice(value: DataCellValue, currency: string): DataCellValue {
@@ -198,7 +201,7 @@ function buildListTable(element: CanvasElement, page: AppPage): DataTable | null
     name,
     description: `${page.name} / List`,
     sourceType: 'List',
-    identityKeys: buildTableIdentityKeys(element, name, 'List'),
+    sharedSourceKey: getSharedSourceKey(element),
     columns: columnsFromRows(rows, LIST_COLUMN_PRIORITY),
     rows,
     connections: [buildTableConnection(element, page)],
@@ -219,10 +222,9 @@ function buildProductTable(element: CanvasElement, page: AppPage): DataTable | n
     name,
     description: `${page.name} / Products`,
     sourceType: 'Products',
-    identityKeys: buildTableIdentityKeys(element, name, 'Products'),
     columns: columnsFromRows(rows, PRODUCT_COLUMN_PRIORITY),
     rows,
-    connections: [buildTableConnection(element, page)],
+    connections: [],
   }
 }
 
@@ -245,10 +247,9 @@ function buildFormTable(element: CanvasElement, page: AppPage): DataTable {
     name,
     description: `${page.name} / Form`,
     sourceType: 'Form',
-    identityKeys: buildTableIdentityKeys(element, name, 'Form'),
     columns,
     rows: buildSubmissionRows(usableFields),
-    connections: [buildTableConnection(element, page)],
+    connections: [],
   }
 }
 
@@ -313,10 +314,9 @@ function buildWidgetTable(element: CanvasElement, page: AppPage): DataTable {
     name,
     description: `${page.name} / Table`,
     sourceType: 'Table',
-    identityKeys: buildTableIdentityKeys(element, name, 'Table'),
     columns: columnsFromRows(rows, ['class', 'member', 'entry', 'metric', 'value', 'status', 'coachNotes', 'owner', 'updated']),
     rows,
-    connections: [buildTableConnection(element, page)],
+    connections: [],
   }
 }
 
@@ -333,10 +333,9 @@ function buildTaskTable(element: CanvasElement, page: AppPage): DataTable {
     name,
     description: `${page.name} / Tasks`,
     sourceType: 'Tasks',
-    identityKeys: buildTableIdentityKeys(element, name, 'Tasks'),
     columns: columnsFromRows(rows, ['task', 'completed', 'owner', 'dueDate']),
     rows,
-    connections: [buildTableConnection(element, page)],
+    connections: [],
   }
 }
 
@@ -358,16 +357,16 @@ function collectDataTables(pages: AppPage[]): DataTable[] {
       .filter((table): table is DataTable => Boolean(table)))
 
   const tables: DataTable[] = []
-  const tablesByIdentity = new Map<string, DataTable>()
+  const tablesBySharedSource = new Map<string, DataTable>()
 
   elementTables.forEach((table) => {
-    const existingTable = table.identityKeys
-      .map((identityKey) => tablesByIdentity.get(identityKey))
-      .find((candidate): candidate is DataTable => Boolean(candidate))
+    const existingTable = table.sharedSourceKey
+      ? tablesBySharedSource.get(table.sharedSourceKey)
+      : undefined
 
     if (!existingTable) {
       tables.push(table)
-      table.identityKeys.forEach((identityKey) => tablesByIdentity.set(identityKey, table))
+      if (table.sharedSourceKey) tablesBySharedSource.set(table.sharedSourceKey, table)
       return
     }
 
@@ -377,8 +376,25 @@ function collectDataTables(pages: AppPage[]): DataTable[] {
     existingTable.connections.push(...table.connections.filter((connection) => (
       !connectedElements.has(`${connection.pageId}:${connection.elementId}`)
     )))
-    table.identityKeys.forEach((identityKey) => tablesByIdentity.set(identityKey, existingTable))
+    if (table.rows.length > existingTable.rows.length) {
+      existingTable.columns = table.columns
+      existingTable.rows = table.rows
+    }
   })
+
+  pages
+    .filter((page) => !page.dynamic)
+    .flatMap((page) => page.elements.map((element) => ({ element, page })))
+    .filter(({ element }) => isSharedTableConsumer(element) && element.componentId !== 'list')
+    .forEach(({ element, page }) => {
+      const sharedSourceKey = getSharedSourceKey(element)
+      const table = sharedSourceKey ? tablesBySharedSource.get(sharedSourceKey) : undefined
+      if (!table) return
+
+      const connectionKey = `${page.id}:${element.id}`
+      if (table.connections.some((connection) => `${connection.pageId}:${connection.elementId}` === connectionKey)) return
+      table.connections.push(buildTableConnection(element, page))
+    })
 
   return tables
 }
@@ -475,34 +491,40 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
                 </span>
                 <span className="data-page__table-name">{table.name}</span>
               </button>
-              <span className="data-page__table-connection">
-                <button
-                  type="button"
-                  className="data-page__table-link-badge"
-                  aria-label={tableConnectionLabel(table)}
-                  aria-haspopup="menu"
-                >
-                  <Icon name="link-diagonal" category="general" size={12} />
-                </button>
-                <span className="data-page__connection-menu" role="menu" aria-label={`Elements connected to ${table.name}`}>
-                  {table.connections.map((connection) => (
-                    <button
-                      key={`${connection.pageId}:${connection.elementId}`}
-                      type="button"
-                      role="menuitem"
-                      className="data-page__connection-menu-item"
-                      onClick={() => onElementNavigate?.(connection.pageId, connection.elementId)}
-                      title={connection.label}
-                    >
-                      <span className="data-page__connection-menu-copy">
-                        <AppIcon name={connection.icon} size={16} />
-                        <span>{connection.label}</span>
-                      </span>
-                      <Icon name="arrow-up-right-from-square-sm" category="arrows" size={12} />
-                    </button>
-                  ))}
+              {table.connections.length > 0 ? (
+                <span className="data-page__table-connection">
+                  <button
+                    type="button"
+                    className="data-page__table-link-badge"
+                    aria-label={tableConnectionLabel(table)}
+                    aria-haspopup="menu"
+                  >
+                    <Icon name="link-diagonal" category="general" size={12} />
+                  </button>
+                  <span className="data-page__connection-menu" role="menu" aria-label={`Elements connected to ${table.name}`}>
+                    {table.connections.map((connection) => (
+                      <button
+                        key={`${connection.pageId}:${connection.elementId}`}
+                        type="button"
+                        role="menuitem"
+                        className="data-page__connection-menu-item"
+                        onClick={() => onElementNavigate?.(connection.pageId, connection.elementId)}
+                        title={connection.label}
+                      >
+                        <span className="data-page__connection-menu-copy">
+                          <AppIcon name={connection.icon} size={16} />
+                          <span>{connection.label}</span>
+                        </span>
+                        <Icon name="arrow-up-right-from-square-sm" category="arrows" size={12} />
+                      </button>
+                    ))}
+                  </span>
                 </span>
-              </span>
+              ) : (
+                <span className="data-page__table-link-badge data-page__table-link-badge--static" aria-hidden="true">
+                  <Icon name="link-diagonal" category="general" size={12} />
+                </span>
+              )}
               <span className="data-page__table-more" aria-hidden="true">
                 <Icon name="ellipsis-vertical" category="general" size={16} />
               </span>

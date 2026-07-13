@@ -14865,6 +14865,10 @@ body.builder--phone-only {
   cursor: pointer;
 }
 
+.data-page__table-link-badge--static {
+  cursor: default;
+}
+
 .data-page__connection-menu {
   position: absolute;
   z-index: 20;

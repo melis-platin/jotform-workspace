@@ -390,6 +390,9 @@ const BOHO_NEST_LEGACY_TURKISH_MARKERS = [
   'Rehber',
   'Ürünler',
 ]
+const BOHO_SHARED_LIST_SOURCE = 'Boho Starter Guide Dynamic List Table'
+const BOHO_SHARED_LIST_TITLES = new Set(['Boho Starter Guide', 'Style Guide'])
+const BOHO_SHARED_LIST_MIGRATION_KEY = '__bohoSharedListSourceMigrated'
 
 function resolveStoredAppHeaderForPreset(
   preset: AppPreset,
@@ -639,9 +642,54 @@ function normalizeCampPinecrestPages(pages: AppPage[], preset: AppPreset | undef
   return ensureDynamicPagesForOpenDynamicLists(removeCampPinecrestFormsIntro(basePages))
 }
 
+function normalizeBohoNestSharedListSources(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {
+  if (preset?.id !== 'boho-nest') return pages
+
+  const sharedLists = pages
+    .filter((page) => !page.dynamic)
+    .flatMap((page) => page.elements)
+    .filter((element) => (
+      element.componentId === 'list'
+      && BOHO_SHARED_LIST_TITLES.has(String(element.properties.Title ?? ''))
+    ))
+
+  if (sharedLists.length !== BOHO_SHARED_LIST_TITLES.size) return pages
+  if (sharedLists.every((element) => element.properties[BOHO_SHARED_LIST_MIGRATION_KEY] === true)) return pages
+
+  const needsSourceMigration = sharedLists.every((element) => {
+    const dataSource = element.properties['Data Source']
+    return typeof dataSource !== 'string' || !dataSource.trim() || dataSource === 'New Table'
+  })
+  const alreadyUsesSharedSource = sharedLists.every(
+    (element) => element.properties['Data Source'] === BOHO_SHARED_LIST_SOURCE,
+  )
+
+  if (!needsSourceMigration && !alreadyUsesSharedSource) return pages
+
+  return pages.map((page) => ({
+    ...page,
+    elements: page.elements.map((element) => (
+      element.componentId === 'list'
+      && BOHO_SHARED_LIST_TITLES.has(String(element.properties.Title ?? ''))
+        ? {
+            ...element,
+            properties: {
+              ...element.properties,
+              ...(needsSourceMigration ? { 'Data Source': BOHO_SHARED_LIST_SOURCE } : {}),
+              [BOHO_SHARED_LIST_MIGRATION_KEY]: true,
+            },
+          }
+        : element
+    )),
+  }))
+}
+
 function normalizePresetPages(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {
-  return normalizeCampPinecrestPages(
-    normalizeGymTrainerDynamicPages(pages, preset),
+  return normalizeBohoNestSharedListSources(
+    normalizeCampPinecrestPages(
+      normalizeGymTrainerDynamicPages(pages, preset),
+      preset,
+    ),
     preset,
   )
 }
@@ -7645,6 +7693,14 @@ export function BuildPage({
                               {(() => {
                                 const dataSource = String(selectedElement.properties['Data Source'] ?? 'New Table')
                                 const checkIcon = <Icon name="check" category="general" size={20} />
+                                const currentSourceOption = !['New Table', 'Our Team', 'New app table'].includes(dataSource)
+                                  ? [{
+                                      value: dataSource,
+                                      label: dataSource,
+                                      leading: <Icon name="table" category="general" size={20} />,
+                                      trailing: checkIcon,
+                                    }]
+                                  : []
                                 return (
                                   <DSDropdownSingle
                                     value={dataSource}
@@ -7656,6 +7712,7 @@ export function BuildPage({
                                         leading: <Icon name="table" category="general" size={20} />,
                                         trailing: dataSource === 'New Table' ? checkIcon : undefined,
                                       },
+                                      ...currentSourceOption,
                                       {
                                         value: 'Our Team',
                                         label: 'Our Team',
