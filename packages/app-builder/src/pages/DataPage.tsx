@@ -650,8 +650,6 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
                     aria-label={tableConnectionLabel(table)}
                     aria-haspopup="menu"
                     aria-expanded={openConnectionTableId === table.id}
-                    onMouseEnter={() => setOpenConnectionTableId(table.id)}
-                    onFocus={() => setOpenConnectionTableId(table.id)}
                     onClick={() => setOpenConnectionTableId((openTableId) => openTableId === table.id ? null : table.id)}
                   >
                     <Icon name="link-diagonal" category="general" size={12} />
