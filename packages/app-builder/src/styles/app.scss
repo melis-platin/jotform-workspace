@@ -2835,10 +2835,6 @@ body {
   cursor: pointer;
 }
 
-.live-preview__cart-label {
-  display: none;
-}
-
 .live-preview__cart-badge {
   position: absolute;
   top: -2px;
@@ -9910,20 +9906,6 @@ body.builder--phone-only {
   // Desktop: no dimming scrim behind the auth popover.
   .live-preview__popover-scrim {
     display: none;
-  }
-
-  // Desktop cart button shows label next to icon
-  .live-preview__cart-btn {
-    width: auto;
-    gap: var(--space-2);
-    padding: 0 var(--space-2);
-  }
-
-  .live-preview__cart-label {
-    display: inline;
-    font-family: var(--font-family);
-    font-size: 16px;
-    font-weight: 500;
   }
 
   // Desktop preview page container — 760px, matching the builder edit canvas so

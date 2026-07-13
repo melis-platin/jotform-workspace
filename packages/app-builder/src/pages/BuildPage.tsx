@@ -1399,6 +1399,7 @@ const HEADER_ACTION_ALLOWED = ['button', 'social-follow', 'image', 'spacer']
 const HEADER_ACTIONS_MAX = 3
 const DESKTOP_FULLWIDTH_NAV_VISIBLE_COUNT = 6
 const DESKTOP_CONSTRAINED_NAV_VISIBLE_COUNT = 2
+const CART_TRIGGER_COMPONENT_IDS = new Set(['product-list', 'donation-box'])
 // In header context only Button can be shrinked (Social Follow stays full-width)
 const isHeaderShrinkable = (componentId: string): boolean => componentId === 'button'
 
@@ -3127,6 +3128,9 @@ export function BuildPage({
   const desktopTopNavPages = desktopTopNavUsesOverflow ? navPages.slice(0, desktopTopNavVisibleCount) : navPages
   const desktopTopNavOverflowPages = desktopTopNavUsesOverflow ? navPages.slice(desktopTopNavVisibleCount) : []
   const desktopTopNavMoreActive = desktopTopNavOverflowPages.some((p) => p.id === activePageId)
+  const hasCartTriggerElement = pages.some((page) => (
+    page.elements.some((element) => CART_TRIGGER_COMPONENT_IDS.has(element.componentId))
+  ))
   // The page-reorder bar lists every authored page (including hidden ones) but not
   // dynamic detail pages, which are owned by their List and pinned after their host.
   const navBarPages = pages.filter((p) => !p.dynamic)
@@ -4957,7 +4961,7 @@ export function BuildPage({
           </nav>
         )}
         <div className="live-preview__top-header-right">
-          {!isDesktopPreviewSearchOpen && !activePageIsDynamic && pages.some((p) => p.elements.some((el) => el.componentId === 'product-list')) && (
+          {!isDesktopPreviewSearchOpen && !activePageIsDynamic && hasCartTriggerElement && (
             <LivePreviewCartButton onClick={() => { setIsNotificationsPageOpen(false); setIsPreviewSearchOpen(false); setIsDesktopPreviewSearchOpen(false); setIsPreviewCartOpen(true) }} />
           )}
           {pushNotificationsEnabled && (
@@ -9259,7 +9263,7 @@ export function BuildPage({
                           return renderTopHeaderBrand()
                         })()}
                         <div className="live-preview__top-header-right">
-                          {!isDesktopPreviewSearchOpen && !activePageIsDynamic && pages.some((p) => p.elements.some((el) => el.componentId === 'product-list')) && (
+                          {!isDesktopPreviewSearchOpen && !activePageIsDynamic && hasCartTriggerElement && (
                             <LivePreviewCartButton onClick={() => { setIsNotificationsPageOpen(false); setIsPreviewSearchOpen(false); setIsDesktopPreviewSearchOpen(false); setIsPreviewCartOpen(true) }} />
                           )}
                           {pushNotificationsEnabled && (
