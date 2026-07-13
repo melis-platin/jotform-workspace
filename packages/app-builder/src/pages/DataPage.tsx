@@ -520,6 +520,7 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
   const tables = useMemo(() => collectDataTables(initialState.pages), [initialState.pages])
   const [activeTableId, setActiveTableId] = useState(() => tables[0]?.id ?? '')
   const [openConnectionTableId, setOpenConnectionTableId] = useState<string | null>(null)
+  const [openTableMenuId, setOpenTableMenuId] = useState<string | null>(null)
   const [tableRowsById, setTableRowsById] = useState<Record<string, Record<string, DataCellValue>[]>>({})
   const activeTable = tables.find((table) => table.id === activeTableId) ?? tables[0] ?? null
   const activeRows = activeTable ? tableRowsById[activeTable.id] ?? activeTable.rows : []
@@ -574,6 +575,7 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
                 onClick={() => {
                   setActiveTableId(table.id)
                   setOpenConnectionTableId(null)
+                  setOpenTableMenuId(null)
                 }}
                 aria-label={table.name}
                 title={table.name}
@@ -627,8 +629,72 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
                   <Icon name="link-diagonal" category="general" size={12} />
                 </span>
               )}
-              <span className="data-page__table-more" aria-hidden="true">
-                <Icon name="ellipsis-vertical" category="general" size={16} />
+              <span className={`data-page__table-menu${openTableMenuId === table.id ? ' data-page__table-menu--open' : ''}`}>
+                <button
+                  type="button"
+                  className="data-page__table-more"
+                  aria-label={`More options for ${table.name}`}
+                  aria-haspopup="menu"
+                  aria-expanded={openTableMenuId === table.id}
+                  onClick={() => setOpenTableMenuId((openTableId) => openTableId === table.id ? null : table.id)}
+                >
+                  <Icon name="ellipsis-vertical" category="general" size={16} />
+                </button>
+                <span className="data-page__table-context-menu" role="menu" aria-label={`Options for ${table.name}`}>
+                  <button type="button" role="menuitem" className="data-page__table-context-item" onClick={() => setOpenTableMenuId(null)}>
+                    <Icon name="gear-filled" category="general" size={16} />
+                    <span>Manage columns</span>
+                  </button>
+                  <button type="button" role="menuitem" className="data-page__table-context-item data-page__table-context-item--submenu" onClick={() => setOpenTableMenuId(null)}>
+                    <span className="data-page__table-context-copy">
+                      <Icon name="droplet-filled" category="editor" size={16} />
+                      <span>Tab colors</span>
+                    </span>
+                    <Icon name="chevron-right" category="arrows" size={16} />
+                  </button>
+                  <span className="data-page__table-context-divider" />
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className="data-page__table-context-item"
+                    onClick={() => {
+                      setOpenTableMenuId(null)
+                      const connection = table.connections[0]
+                      if (connection) onElementNavigate?.(connection.pageId, connection.elementId)
+                    }}
+                  >
+                    <Icon name="link-diagonal" category="general" size={16} />
+                    <span>View Connected Element</span>
+                  </button>
+                  <span className="data-page__table-context-divider" />
+                  <button type="button" role="menuitem" className="data-page__table-context-item" onClick={() => setOpenTableMenuId(null)}>
+                    <Icon name="pencil-to-square" category="general" size={16} />
+                    <span>Rename</span>
+                  </button>
+                  <button type="button" role="menuitem" className="data-page__table-context-item" onClick={() => setOpenTableMenuId(null)}>
+                    <Icon name="copy-filled" category="general" size={16} />
+                    <span>Duplicate</span>
+                  </button>
+                  <button type="button" role="menuitem" className="data-page__table-context-item data-page__table-context-item--submenu" onClick={() => setOpenTableMenuId(null)}>
+                    <span className="data-page__table-context-copy">
+                      <Icon name="arrows-rotate" category="arrows" size={16} />
+                      <span>Change type</span>
+                    </span>
+                    <Icon name="chevron-right" category="arrows" size={16} />
+                  </button>
+                  <button type="button" role="menuitem" className="data-page__table-context-item" onClick={() => setOpenTableMenuId(null)}>
+                    <Icon name="sticker-filled" category="forms-files" size={16} />
+                    <span>Add tab note</span>
+                  </button>
+                  <span className="data-page__table-context-divider" />
+                  <button type="button" role="menuitem" className="data-page__table-context-item data-page__table-context-item--submenu" onClick={() => setOpenTableMenuId(null)}>
+                    <span className="data-page__table-context-copy">
+                      <Icon name="arrow-down-to-line" category="arrows" size={16} />
+                      <span>Download</span>
+                    </span>
+                    <Icon name="chevron-right" category="arrows" size={16} />
+                  </button>
+                </span>
               </span>
             </div>
           ))}
