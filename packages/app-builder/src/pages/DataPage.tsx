@@ -18,6 +18,7 @@ interface DataTable {
   description: string
   sourceType: 'List' | 'Form' | 'Products' | 'Table' | 'Tasks'
   sharedSourceKey?: string
+  formSourceKey?: string
   columns: DataColumn[]
   rows: Record<string, DataCellValue>[]
   connections: DataTableConnection[]
@@ -29,6 +30,7 @@ interface DataTableConnection {
   label: string
   icon: string
   iconCategory?: string
+  isFormElement?: boolean
 }
 
 interface FormFieldLike {
@@ -181,6 +183,7 @@ function buildTableConnection(element: CanvasElement, page: AppPage): DataTableC
       : component?.name ?? titleCase(element.componentId),
     icon: isFormConnection ? 'cart-shopping-filled' : component?.icon ?? 'LayoutGrid',
     iconCategory: isFormConnection ? 'finance' : undefined,
+    isFormElement: element.componentId === 'form',
   }
 }
 
@@ -189,6 +192,10 @@ function getSharedSourceKey(element: CanvasElement): string | undefined {
   const dataSource = element.properties['Data Source']
   if (typeof dataSource !== 'string' || !dataSource.trim() || dataSource === 'New Table') return undefined
   return dataSource.trim().toLocaleLowerCase('en-US')
+}
+
+function getFormSourceKey(element: CanvasElement): string {
+  return getElementTitle(element, 'Form').toLocaleLowerCase('en-US')
 }
 
 function formatPrice(value: DataCellValue, currency: string): DataCellValue {
@@ -254,6 +261,7 @@ function buildFormTable(element: CanvasElement, page: AppPage): DataTable {
     name,
     description: `${page.name} / Form`,
     sourceType: 'Form',
+    formSourceKey: getFormSourceKey(element),
     columns,
     rows: buildSubmissionRows(usableFields),
     connections: [buildTableConnection(element, page)],
@@ -365,15 +373,40 @@ function collectDataTables(pages: AppPage[]): DataTable[] {
 
   const tables: DataTable[] = []
   const tablesBySharedSource = new Map<string, DataTable>()
+  const tablesByFormSource = new Map<string, DataTable>()
 
   elementTables.forEach((table) => {
     const existingTable = table.sharedSourceKey
       ? tablesBySharedSource.get(table.sharedSourceKey)
-      : undefined
+      : table.formSourceKey
+        ? tablesByFormSource.get(table.formSourceKey)
+        : undefined
 
     if (!existingTable) {
       tables.push(table)
       if (table.sharedSourceKey) tablesBySharedSource.set(table.sharedSourceKey, table)
+      if (table.formSourceKey) tablesByFormSource.set(table.formSourceKey, table)
+      return
+    }
+
+    if (table.formSourceKey) {
+      const existingTargetsForm = existingTable.connections.some((connection) => connection.isFormElement)
+      const incomingTargetsForm = table.connections.some((connection) => connection.isFormElement)
+
+      // An Open Form button is a trigger, not the actual form surface. When the
+      // form exists in the app, make it the sole navigation target for this table.
+      if (incomingTargetsForm && !existingTargetsForm) {
+        existingTable.columns = table.columns
+        existingTable.rows = table.rows
+        existingTable.connections = table.connections
+      } else if (!existingTargetsForm) {
+        const connectedElements = new Set(
+          existingTable.connections.map((connection) => `${connection.pageId}:${connection.elementId}`),
+        )
+        existingTable.connections.push(...table.connections.filter((connection) => (
+          !connectedElements.has(`${connection.pageId}:${connection.elementId}`)
+        )))
+      }
       return
     }
 
