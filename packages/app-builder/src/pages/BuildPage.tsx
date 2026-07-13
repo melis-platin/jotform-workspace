@@ -1397,8 +1397,7 @@ const PROFILE_USER = {
 // so the drop logic only offers top/bottom edges for them.
 const HEADER_ACTION_ALLOWED = ['button', 'social-follow', 'image', 'spacer']
 const HEADER_ACTIONS_MAX = 3
-const DESKTOP_FULLWIDTH_NAV_VISIBLE_COUNT = 6
-const DESKTOP_CONSTRAINED_NAV_VISIBLE_COUNT = 2
+const DESKTOP_TOP_NAV_VISIBLE_COUNT = 2
 const CART_TRIGGER_COMPONENT_IDS = new Set(['product-list', 'donation-box'])
 // In header context only Button can be shrinked (Social Follow stays full-width)
 const isHeaderShrinkable = (componentId: string): boolean => componentId === 'button'
@@ -3106,19 +3105,14 @@ export function BuildPage({
   })
   const hasNavOverflow = navPages.length >= 5
   const visibleNavPages = hasNavOverflow ? navPages.slice(0, 4) : navPages
-  // Compact/contained desktop bars have limited horizontal room: show at most
-  // two page names, then keep the remaining pages under More.
+  // Desktop top headers show two page names; the rest live under More.
   const desktopTopNavUsesConstrainedLayout = desktopNavVariant === 'contained' || desktopNavVariant === 'compact'
-  const desktopTopNavUsesConstrainedOverflow = desktopTopNavUsesConstrainedLayout
-    && navPages.length > DESKTOP_CONSTRAINED_NAV_VISIBLE_COUNT
-  const desktopTopNavUsesFullwidthOverflow = desktopNavVariant === 'top' && navPages.length > DESKTOP_FULLWIDTH_NAV_VISIBLE_COUNT
-  const desktopTopNavUsesOverflow = desktopTopNavUsesConstrainedOverflow || desktopTopNavUsesFullwidthOverflow
-  const desktopTopNavVisibleCount = desktopTopNavUsesConstrainedLayout
-    ? DESKTOP_CONSTRAINED_NAV_VISIBLE_COUNT
-    : DESKTOP_FULLWIDTH_NAV_VISIBLE_COUNT
-  const desktopTopNavPages = desktopTopNavUsesOverflow ? navPages.slice(0, desktopTopNavVisibleCount) : navPages
-  const desktopTopNavOverflowPages = desktopTopNavUsesOverflow ? navPages.slice(desktopTopNavVisibleCount) : []
-  const desktopTopNavMoreActive = desktopTopNavOverflowPages.some((p) => p.id === activePageId)
+  const desktopTopNavUsesOverflow = desktopNavVariant !== 'left' && navPages.length > DESKTOP_TOP_NAV_VISIBLE_COUNT
+  const desktopTopNavPages = desktopTopNavUsesOverflow ? navPages.slice(0, DESKTOP_TOP_NAV_VISIBLE_COUNT) : navPages
+  const desktopTopNavOverflowPages = desktopTopNavUsesOverflow ? navPages.slice(DESKTOP_TOP_NAV_VISIBLE_COUNT) : []
+  const desktopTopNavActiveOverflowPage = desktopTopNavOverflowPages.find((p) => p.id === activePageId)
+  const desktopTopNavMoreActive = Boolean(desktopTopNavActiveOverflowPage)
+  const desktopTopNavMoreLabel = desktopTopNavActiveOverflowPage?.name ?? 'More'
   const hasCartTriggerElement = pages.some((page) => (
     page.elements.some((element) => CART_TRIGGER_COMPONENT_IDS.has(element.componentId))
   ))
@@ -4924,7 +4918,7 @@ export function BuildPage({
                     setIsAvatarPopoverOpen(false)
                   }}
                 >
-                  <span>More</span>
+                  <span>{desktopTopNavMoreLabel}</span>
                   <AppIcon name={isDesktopNavMoreOpen ? 'ChevronUp' : 'ChevronDown'} size={16} />
                 </button>
                 {isDesktopNavMoreOpen && (
