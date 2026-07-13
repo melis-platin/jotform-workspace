@@ -2831,7 +2831,7 @@ body {
   padding: 0;
   border: 0;
   background: transparent;
-  color: inherit;
+  color: var(--fg-secondary);
   cursor: pointer;
 }
 
@@ -11217,7 +11217,7 @@ body.builder--phone-only {
   border: var(--spacing-3xs) solid var(--app-bg);
   border-radius: var(--radius-rounded);
   background: var(--background-white);
-  color: var(--fg-primary);
+  color: var(--fg-secondary);
   line-height: 0;
   cursor: pointer;
   backdrop-filter: blur(var(--spacing-3xs));
@@ -11257,7 +11257,7 @@ body.builder--phone-only {
   flex: 0 0 32px;
   padding: 0;
   border-radius: var(--radius-md);
-  color: var(--fg-primary);
+  color: var(--fg-secondary);
 }
 
 .app-preview-screen__desktop .live-preview__top-header-search-btn svg {
