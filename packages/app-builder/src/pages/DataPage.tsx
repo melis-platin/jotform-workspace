@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { AppIcon, ComponentRegistry } from '@jf/app-elements'
 import { Icon } from '@jf/design-system'
 import { type AppPreset, type PresetElement } from '../presets/appPresets'
 import { buildInitialStateFromPreset, type AppPage, type CanvasElement } from './BuildPage'
@@ -16,8 +17,17 @@ interface DataTable {
   name: string
   description: string
   sourceType: 'List' | 'Form' | 'Products' | 'Table' | 'Tasks'
+  identityKeys: string[]
   columns: DataColumn[]
   rows: Record<string, DataCellValue>[]
+  connections: DataTableConnection[]
+}
+
+interface DataTableConnection {
+  elementId: string
+  pageId: string
+  label: string
+  icon: string
 }
 
 interface FormFieldLike {
@@ -142,6 +152,35 @@ function getElementTitle(element: CanvasElement, fallback: string): string {
   return typeof title === 'string' && title.trim() ? title.trim() : fallback
 }
 
+function buildTableConnection(element: CanvasElement, page: AppPage): DataTableConnection {
+  const component = ComponentRegistry.get(element.componentId)
+  const label = element.properties.Label
+
+  return {
+    elementId: element.id,
+    pageId: page.id,
+    label: typeof label === 'string' && label.trim()
+      ? label.trim()
+      : component?.name ?? titleCase(element.componentId),
+    icon: component?.icon ?? 'LayoutGrid',
+  }
+}
+
+function buildTableIdentityKeys(
+  element: CanvasElement,
+  name: string,
+  sourceType: DataTable['sourceType'],
+): string[] {
+  const generatedNameKey = `name:${sourceType}:${name.trim().toLocaleLowerCase('en-US')}`
+  const explicitSource = element.properties['Data Source'] ?? element.properties['Submits To']
+
+  if (typeof explicitSource !== 'string' || !explicitSource.trim() || explicitSource === 'New Table') {
+    return [generatedNameKey]
+  }
+
+  return [generatedNameKey, `source:${explicitSource.trim().toLocaleLowerCase('en-US')}`]
+}
+
 function formatPrice(value: DataCellValue, currency: string): DataCellValue {
   if (value == null || value === '') return value
   const text = String(value)
@@ -153,13 +192,16 @@ function buildListTable(element: CanvasElement, page: AppPage): DataTable | null
   const rows = parseJsonArray(element.properties.Items)
   if (rows.length === 0) return null
   const title = getElementTitle(element, `${page.name} List`)
+  const name = `${title} Dynamic List Table`
   return {
     id: element.id,
-    name: `${title} Dynamic List Table`,
+    name,
     description: `${page.name} / List`,
     sourceType: 'List',
+    identityKeys: buildTableIdentityKeys(element, name, 'List'),
     columns: columnsFromRows(rows, LIST_COLUMN_PRIORITY),
     rows,
+    connections: [buildTableConnection(element, page)],
   }
 }
 
@@ -171,13 +213,16 @@ function buildProductTable(element: CanvasElement, page: AppPage): DataTable | n
   }))
   if (rows.length === 0) return null
   const title = getElementTitle(element, `${page.name} Products`)
+  const name = `${title} Products Table`
   return {
     id: element.id,
-    name: `${title} Products Table`,
+    name,
     description: `${page.name} / Products`,
     sourceType: 'Products',
+    identityKeys: buildTableIdentityKeys(element, name, 'Products'),
     columns: columnsFromRows(rows, PRODUCT_COLUMN_PRIORITY),
     rows,
+    connections: [buildTableConnection(element, page)],
   }
 }
 
@@ -185,6 +230,7 @@ function buildFormTable(element: CanvasElement, page: AppPage): DataTable {
   const fields = parseFormFields(element.properties['Form Fields'])
   const usableFields = fields.length > 0 ? fields : DEFAULT_FORM_FIELDS
   const title = getElementTitle(element, `${page.name} Form`)
+  const name = `${title} Submissions`
   const columns = [
     ...usableFields.map((field, index) => ({
       key: field.name || `field${index + 1}`,
@@ -196,11 +242,13 @@ function buildFormTable(element: CanvasElement, page: AppPage): DataTable {
   ]
   return {
     id: element.id,
-    name: `${title} Submissions`,
+    name,
     description: `${page.name} / Form`,
     sourceType: 'Form',
+    identityKeys: buildTableIdentityKeys(element, name, 'Form'),
     columns,
     rows: buildSubmissionRows(usableFields),
+    connections: [buildTableConnection(element, page)],
   }
 }
 
@@ -238,6 +286,7 @@ function sampleFieldValue(field: FormFieldLike, index: number): string {
 
 function buildWidgetTable(element: CanvasElement, page: AppPage): DataTable {
   const title = getElementTitle(element, `${page.name} Table`)
+  const name = `${title} Table`
   const lowerTitle = title.toLowerCase()
   const rows = lowerTitle.includes('attendance')
     ? [
@@ -261,11 +310,13 @@ function buildWidgetTable(element: CanvasElement, page: AppPage): DataTable {
         ]
   return {
     id: element.id,
-    name: `${title} Table`,
+    name,
     description: `${page.name} / Table`,
     sourceType: 'Table',
+    identityKeys: buildTableIdentityKeys(element, name, 'Table'),
     columns: columnsFromRows(rows, ['class', 'member', 'entry', 'metric', 'value', 'status', 'coachNotes', 'owner', 'updated']),
     rows,
+    connections: [buildTableConnection(element, page)],
   }
 }
 
@@ -276,13 +327,16 @@ function buildTaskTable(element: CanvasElement, page: AppPage): DataTable {
     { task: 'Review coach notes', completed: 'No', owner: 'Coach', dueDate: 'Jul 4, 2026' },
     { task: 'Book recovery session', completed: 'No', owner: 'Member', dueDate: 'Jul 5, 2026' },
   ]
+  const name = `${getElementTitle(element, 'Daily Tasks')} Table`
   return {
     id: element.id,
-    name: `${getElementTitle(element, 'Daily Tasks')} Table`,
+    name,
     description: `${page.name} / Tasks`,
     sourceType: 'Tasks',
+    identityKeys: buildTableIdentityKeys(element, name, 'Tasks'),
     columns: columnsFromRows(rows, ['task', 'completed', 'owner', 'dueDate']),
     rows,
+    connections: [buildTableConnection(element, page)],
   }
 }
 
@@ -296,12 +350,37 @@ function buildTableForElement(element: CanvasElement, page: AppPage): DataTable 
 }
 
 function collectDataTables(pages: AppPage[]): DataTable[] {
-  return pages
+  const elementTables = pages
     .filter((page) => !page.dynamic)
     .flatMap((page) => page.elements
       .filter(isCanvasDataElement)
       .map((element) => buildTableForElement(element, page))
       .filter((table): table is DataTable => Boolean(table)))
+
+  const tables: DataTable[] = []
+  const tablesByIdentity = new Map<string, DataTable>()
+
+  elementTables.forEach((table) => {
+    const existingTable = table.identityKeys
+      .map((identityKey) => tablesByIdentity.get(identityKey))
+      .find((candidate): candidate is DataTable => Boolean(candidate))
+
+    if (!existingTable) {
+      tables.push(table)
+      table.identityKeys.forEach((identityKey) => tablesByIdentity.set(identityKey, table))
+      return
+    }
+
+    const connectedElements = new Set(
+      existingTable.connections.map((connection) => `${connection.pageId}:${connection.elementId}`),
+    )
+    existingTable.connections.push(...table.connections.filter((connection) => (
+      !connectedElements.has(`${connection.pageId}:${connection.elementId}`)
+    )))
+    table.identityKeys.forEach((identityKey) => tablesByIdentity.set(identityKey, existingTable))
+  })
+
+  return tables
 }
 
 function renderCellValue(column: DataColumn, value: DataCellValue) {
@@ -316,14 +395,9 @@ function renderCellValue(column: DataColumn, value: DataCellValue) {
   return value == null || value === '' ? '' : String(value)
 }
 
-function sourceElementLabel(sourceType: DataTable['sourceType']): string {
-  if (sourceType === 'Products') return 'Product List Element'
-  if (sourceType === 'Tasks') return 'Task Manager Element'
-  return `${sourceType} Element`
-}
-
 function tableConnectionLabel(table: DataTable): string {
-  return `${table.name} is connected to ${sourceElementLabel(table.sourceType)}`
+  const connectionCount = table.connections.length
+  return `${table.name} is connected to ${connectionCount} ${connectionCount === 1 ? 'element' : 'elements'}`
 }
 
 function columnHeaderIcon(column: DataColumn) {
@@ -332,7 +406,12 @@ function columnHeaderIcon(column: DataColumn) {
     : { name: 'type-square-filled', category: 'general' }
 }
 
-export function DataPage({ preset }: { preset: AppPreset }) {
+interface DataPageProps {
+  preset: AppPreset
+  onElementNavigate?: (pageId: string, elementId: string) => void
+}
+
+export function DataPage({ preset, onElementNavigate }: DataPageProps) {
   const initialState = useMemo(() => buildInitialStateFromPreset(preset), [preset])
   const tables = useMemo(() => collectDataTables(initialState.pages), [initialState.pages])
   const [activeTableId, setActiveTableId] = useState(() => tables[0]?.id ?? '')
@@ -380,29 +459,54 @@ export function DataPage({ preset }: { preset: AppPreset }) {
         </div>
         <div className="data-page__table-list">
           {tables.map((table) => (
-            <button
+            <div
               key={table.id}
-              type="button"
               className={`data-page__table-item${table.id === activeTable?.id ? ' data-page__table-item--active' : ''}`}
-              onClick={() => setActiveTableId(table.id)}
-              aria-label={tableConnectionLabel(table)}
-              title={tableConnectionLabel(table)}
             >
-              <span className="data-page__table-copy">
+              <button
+                type="button"
+                className="data-page__table-select"
+                onClick={() => setActiveTableId(table.id)}
+                aria-label={table.name}
+                title={table.name}
+              >
                 <span className="data-page__table-icon">
                   <Icon name="product-tables-mono" category="products" size={20} />
                 </span>
-                <span className="data-page__table-heading">
-                  <span className="data-page__table-name">{table.name}</span>
-                  <span className="data-page__table-link-badge" aria-hidden="true">
-                    <Icon name="link-diagonal" category="general" size={12} />
-                  </span>
+                <span className="data-page__table-name">{table.name}</span>
+              </button>
+              <span className="data-page__table-connection">
+                <button
+                  type="button"
+                  className="data-page__table-link-badge"
+                  aria-label={tableConnectionLabel(table)}
+                  aria-haspopup="menu"
+                >
+                  <Icon name="link-diagonal" category="general" size={12} />
+                </button>
+                <span className="data-page__connection-menu" role="menu" aria-label={`Elements connected to ${table.name}`}>
+                  {table.connections.map((connection) => (
+                    <button
+                      key={`${connection.pageId}:${connection.elementId}`}
+                      type="button"
+                      role="menuitem"
+                      className="data-page__connection-menu-item"
+                      onClick={() => onElementNavigate?.(connection.pageId, connection.elementId)}
+                      title={connection.label}
+                    >
+                      <span className="data-page__connection-menu-copy">
+                        <AppIcon name={connection.icon} size={16} />
+                        <span>{connection.label}</span>
+                      </span>
+                      <Icon name="arrow-up-right-from-square-sm" category="arrows" size={12} />
+                    </button>
+                  ))}
                 </span>
               </span>
               <span className="data-page__table-more" aria-hidden="true">
                 <Icon name="ellipsis-vertical" category="general" size={16} />
               </span>
-            </button>
+            </div>
           ))}
         </div>
       </aside>

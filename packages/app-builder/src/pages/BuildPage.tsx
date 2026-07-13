@@ -2400,6 +2400,7 @@ interface BuildPageProps {
   appIcon?: { variant: 'Icon' | 'Image'; icon: string; imageUrl: string | null }
   preset?: AppPreset
   initialPageId?: string
+  initialElementId?: string
   chromeless?: boolean
   openAttributionSheet?: boolean
   previewMode?: boolean
@@ -2563,6 +2564,7 @@ export function BuildPage({
   appIcon = { variant: 'Icon', icon: 'Leaf', imageUrl: null },
   preset,
   initialPageId,
+  initialElementId,
   chromeless = false,
   openAttributionSheet = false,
   previewMode = false,
@@ -2756,6 +2758,42 @@ export function BuildPage({
 
   const pagesRef = useRef<AppPage[]>([])
   useEffect(() => { pagesRef.current = pages }, [pages])
+  const initialElementFocusHandledRef = useRef(false)
+  useEffect(() => {
+    if (!initialElementId || initialElementFocusHandledRef.current) return
+    const ownerPage = pages.find((page) => page.elements.some((element) => element.id === initialElementId))
+    if (!ownerPage) return
+
+    initialElementFocusHandledRef.current = true
+    setActivePageId(ownerPage.id)
+    setSelectedElementId(initialElementId)
+    setRightPanel('properties')
+
+    let attempts = 0
+    let timer: number | undefined
+    const focusElement = () => {
+      window.requestAnimationFrame(() => {
+        const scrollContainer = canvasRef.current
+        const target = scrollContainer?.querySelector<HTMLElement>(`[data-element-id="${initialElementId}"]`)
+        if (!scrollContainer || !target) {
+          attempts += 1
+          if (attempts < 12) timer = window.setTimeout(focusElement, 80)
+          return
+        }
+
+        const containerRect = scrollContainer.getBoundingClientRect()
+        const targetRect = target.getBoundingClientRect()
+        const targetTop = scrollContainer.scrollTop + targetRect.top - containerRect.top
+        const targetY = Math.max(0, targetTop - (containerRect.height / 2) + (targetRect.height / 2))
+        scrollContainer.scrollTo({ top: targetY, behavior: 'smooth' })
+      })
+    }
+
+    timer = window.setTimeout(focusElement, 80)
+    return () => {
+      if (timer !== undefined) window.clearTimeout(timer)
+    }
+  }, [initialElementId, pages, setSelectedElementId])
   useEffect(() => {
     onDeepLinkTargetsChange?.(createDeepLinkTargetsFromPages(pages))
   }, [onDeepLinkTargetsChange, pages])

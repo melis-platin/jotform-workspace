@@ -20,6 +20,12 @@ import { SEARCH_BAR_AUTO_ENABLE_THRESHOLD } from './state/searchableElements.ts'
 
 type Page = 'build' | 'data' | 'settings' | 'publish'
 
+interface BuildNavigationTarget {
+  pageId: string
+  elementId: string
+  requestId: number
+}
+
 interface FigmaCaptureOptions {
   selector?: string
   delayMs?: number
@@ -115,8 +121,10 @@ export function App() {
   const previousSearchableElementCountRef = useRef(0)
   const previousUrlPresetRef = useRef(urlPreset)
   const presetChangeRequestRef = useRef(0)
+  const buildNavigationRequestRef = useRef(0)
   const [pushNotificationHistoryItems, setPushNotificationHistoryItems] = useState<PushNotificationHistoryItem[]>([])
   const [readPushNotificationDeliveryIds, setReadPushNotificationDeliveryIds] = useState<Set<string>>(() => new Set())
+  const [buildNavigationTarget, setBuildNavigationTarget] = useState<BuildNavigationTarget | null>(null)
   const preset = useMemo(() => getPresetById(activePresetId), [activePresetId])
   const showDataTab = useMemo(() => presetUsesDataElement(preset) || dataBackedElementCount > 0, [dataBackedElementCount, preset])
   const [deepLinkTargets, setDeepLinkTargets] = useState<DeepLinkTarget[]>(() =>
@@ -166,6 +174,7 @@ export function App() {
     const presetChanged = previousUrlPresetRef.current !== urlPreset
     previousUrlPresetRef.current = urlPreset
     if (presetChanged) presetChangeRequestRef.current += 1
+    if (presetChanged) setBuildNavigationTarget(null)
     setActivePresetId((prev) => (prev === urlPreset ? prev : urlPreset))
     setAppTitle(titleForPreset(urlPreset))
     setAppIcon(defaultAppIcon(urlPreset))
@@ -239,6 +248,7 @@ export function App() {
     }
     if (presetChangeRequestRef.current !== requestId) return
     setActivePresetId(id)
+    setBuildNavigationTarget(null)
     setAppTitle(titleForPreset(id))
     setAppIcon(defaultAppIcon(id))
     setDeepLinkTargets(createDeepLinkTargetsFromPreset(getPresetById(id)))
@@ -251,8 +261,16 @@ export function App() {
     if (page === 'publish') {
       setPublishResetKey((prev) => prev + 1)
     }
+    if (page === 'build') setBuildNavigationTarget(null)
     setActivePage(page)
   }
+
+  const handleDataElementNavigate = useCallback((pageId: string, elementId: string) => {
+    buildNavigationRequestRef.current += 1
+    setBuildNavigationTarget({ pageId, elementId, requestId: buildNavigationRequestRef.current })
+    setPreviewMode(false)
+    setActivePage('build')
+  }, [])
 
   const addPushNotificationHistoryItem = (item: PushNotificationHistoryItem) => {
     setPushNotificationHistoryItems((currentItems) => [item, ...currentItems])
@@ -316,7 +334,8 @@ export function App() {
     activePresetId === EMPTY_PRESET_ID ? appUserRoleOptions : appUserTableRoleOptions
   ), [activePresetId, appUserRoleOptions, appUserTableRoleOptions])
 
-  const buildInitialPageId = urlFullscreen || isFigmaCapture ? (urlPage ?? undefined) : undefined
+  const buildInitialPageId = buildNavigationTarget?.pageId
+    ?? (urlFullscreen || isFigmaCapture ? (urlPage ?? undefined) : undefined)
 
   return (
     <IconLibraryProvider>
@@ -346,12 +365,13 @@ export function App() {
           <BuildPage
             // Bumping the key on URL preset/page changes forces a remount so
             // BuildPage re-derives its initial state from the new URL params.
-            key={`${activePresetId}:${buildInitialPageId ?? 'home'}`}
+            key={`${activePresetId}:${buildInitialPageId ?? 'home'}:${buildNavigationTarget?.requestId ?? 'default'}`}
             preset={preset}
             appTitle={appTitle}
             onAppTitleChange={setAppTitle}
             appIcon={appIcon}
             initialPageId={buildInitialPageId}
+            initialElementId={buildNavigationTarget?.elementId}
             chromeless={urlFullscreen || isFigmaCapture}
             openAttributionSheet={urlOpenAttributionSheet}
             previewMode={previewMode}
@@ -367,7 +387,7 @@ export function App() {
           />
         )}
         {activePage === 'data' && (
-          <DataPage preset={preset} />
+          <DataPage preset={preset} onElementNavigate={handleDataElementNavigate} />
         )}
         {activePage === 'settings' && (
           <SettingsPage
