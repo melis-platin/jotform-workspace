@@ -14836,6 +14836,14 @@ body.builder--phone-only {
   height: 16px;
   flex: 0 0 16px;
   display: inline-flex;
+  opacity: 0;
+  transition: opacity 120ms ease;
+}
+
+.data-page__table-item:hover .data-page__table-connection,
+.data-page__table-item--active .data-page__table-connection,
+.data-page__table-connection--open {
+  opacity: 1;
 }
 
 .data-page__table-connection::after {
