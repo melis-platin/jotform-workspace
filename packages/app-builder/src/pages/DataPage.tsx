@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { AppIcon, ComponentRegistry } from '@jf/app-elements'
 import { Icon } from '@jf/design-system'
@@ -524,6 +524,7 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
   const [openTableMenuId, setOpenTableMenuId] = useState<string | null>(null)
   const [openTableContextConnectionId, setOpenTableContextConnectionId] = useState<string | null>(null)
   const [tableContextConnectionAnchor, setTableContextConnectionAnchor] = useState<{ tableId: string; left: number; top: number } | null>(null)
+  const tableContextConnectionCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [tableRowsById, setTableRowsById] = useState<Record<string, Record<string, DataCellValue>[]>>({})
   const activeTable = tables.find((table) => table.id === activeTableId) ?? tables[0] ?? null
   const activeRows = activeTable ? tableRowsById[activeTable.id] ?? activeTable.rows : []
@@ -537,6 +538,32 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
     setTableRowsById({})
   }, [tables])
 
+  const clearTableContextConnectionCloseTimer = () => {
+    if (tableContextConnectionCloseTimer.current == null) return
+    clearTimeout(tableContextConnectionCloseTimer.current)
+    tableContextConnectionCloseTimer.current = null
+  }
+
+  const closeTableContextConnections = () => {
+    clearTableContextConnectionCloseTimer()
+    setOpenTableContextConnectionId(null)
+    setTableContextConnectionAnchor(null)
+  }
+
+  const openTableContextConnections = (tableId: string, anchorElement: HTMLElement) => {
+    clearTableContextConnectionCloseTimer()
+    const anchor = anchorElement.getBoundingClientRect()
+    setOpenTableContextConnectionId(tableId)
+    setTableContextConnectionAnchor({ tableId, left: anchor.right + 4, top: anchor.top })
+  }
+
+  const scheduleTableContextConnectionsClose = () => {
+    clearTableContextConnectionCloseTimer()
+    tableContextConnectionCloseTimer.current = setTimeout(closeTableContextConnections, 120)
+  }
+
+  useEffect(() => () => clearTableContextConnectionCloseTimer(), [])
+
   useEffect(() => {
     if (!openTableMenuId) return
 
@@ -545,8 +572,7 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
       if (event.target.closest('.data-page__table-menu, .data-page__table-context-connections--portal')) return
 
       setOpenTableMenuId(null)
-      setOpenTableContextConnectionId(null)
-      setTableContextConnectionAnchor(null)
+      closeTableContextConnections()
     }
 
     document.addEventListener('pointerdown', handleOutsidePointerDown)
@@ -570,6 +596,7 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
   }
 
   const closeTableContextMenu = () => {
+    clearTableContextConnectionCloseTimer()
     setOpenTableMenuId(null)
     setOpenTableContextConnectionId(null)
     setTableContextConnectionAnchor(null)
@@ -664,6 +691,7 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
                   aria-haspopup="menu"
                   aria-expanded={openTableMenuId === table.id}
                   onClick={() => {
+                    clearTableContextConnectionCloseTimer()
                     setOpenConnectionTableId(null)
                     setOpenTableContextConnectionId(null)
                     setTableContextConnectionAnchor(null)
@@ -686,23 +714,19 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
                   </button>
                   <span className="data-page__table-context-divider" />
                   {table.connections.length > 1 ? (
-                    <span className="data-page__table-context-connection">
+                    <span
+                      className="data-page__table-context-connection"
+                      onMouseLeave={scheduleTableContextConnectionsClose}
+                    >
                       <button
                         type="button"
                         role="menuitem"
                         className="data-page__table-context-item data-page__table-context-item--submenu"
                         aria-haspopup="menu"
                         aria-expanded={openTableContextConnectionId === table.id}
-                        onClick={(event) => {
-                          if (openTableContextConnectionId === table.id) {
-                            setOpenTableContextConnectionId(null)
-                            setTableContextConnectionAnchor(null)
-                            return
-                          }
-                          const anchor = event.currentTarget.getBoundingClientRect()
-                          setOpenTableContextConnectionId(table.id)
-                          setTableContextConnectionAnchor({ tableId: table.id, left: anchor.right + 4, top: anchor.top })
-                        }}
+                        onMouseEnter={(event) => openTableContextConnections(table.id, event.currentTarget)}
+                        onFocus={(event) => openTableContextConnections(table.id, event.currentTarget)}
+                        onClick={(event) => openTableContextConnections(table.id, event.currentTarget)}
                       >
                         <span className="data-page__table-context-copy">
                           <Icon name="link-diagonal" category="general" size={16} />
@@ -762,6 +786,8 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
                   role="menu"
                   aria-label={`Elements connected to ${table.name}`}
                   style={{ left: tableContextConnectionAnchor.left, top: tableContextConnectionAnchor.top }}
+                  onMouseEnter={clearTableContextConnectionCloseTimer}
+                  onMouseLeave={scheduleTableContextConnectionsClose}
                 >
                   {table.connections.map((connection) => (
                     <button
