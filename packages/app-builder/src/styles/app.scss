@@ -2122,6 +2122,10 @@ body {
   }
 }
 
+.live-preview__top-header--desktop-search-open .live-preview__top-header-compact-icon {
+  display: none;
+}
+
 .live-preview__top-header-compact-title {
   font-family: var(--font-family-heading);
   font-size: var(--font-size-paragraph-lg);

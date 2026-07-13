@@ -4876,7 +4876,7 @@ export function BuildPage({
           }}
         />
       )}
-      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${topHeaderUsesPageName && isPreviewContentScrolled ? ' live-preview__top-header--page-scrolled' : ''}${desktopNavVariant === 'compact' ? ' live-preview__top-header--compact' : ''}${desktopNavVariant === 'contained' ? ' live-preview__top-header--contained' : ''}${desktopFullwidthSearchOpen ? ' live-preview__top-header--fullwidth-search-open' : ''}${topNavOverlay ? ' live-preview__top-header--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__top-header--over-content' : ''}${topHeaderHidden ? ' live-preview__top-header--hidden' : ''}`} style={topNavOverlay && topNavOverHero ? { color: topNavOverlayFg } : undefined} data-nav-align={desktopNavAlignment}>
+      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${topHeaderUsesPageName && isPreviewContentScrolled ? ' live-preview__top-header--page-scrolled' : ''}${desktopNavVariant === 'compact' ? ' live-preview__top-header--compact' : ''}${desktopNavVariant === 'contained' ? ' live-preview__top-header--contained' : ''}${desktopFullwidthSearchOpen ? ' live-preview__top-header--fullwidth-search-open' : ''}${isDesktopPreviewSearchOpen ? ' live-preview__top-header--desktop-search-open' : ''}${topNavOverlay ? ' live-preview__top-header--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__top-header--over-content' : ''}${topHeaderHidden ? ' live-preview__top-header--hidden' : ''}`} style={topNavOverlay && topNavOverHero ? { color: topNavOverlayFg } : undefined} data-nav-align={desktopNavAlignment}>
         {(() => {
           // Profile / dynamic-detail back affordance — shared with the right-panel
           // preview via renderTopHeaderBack so the two never diverge.
@@ -4950,7 +4950,7 @@ export function BuildPage({
           </nav>
         )}
         <div className="live-preview__top-header-right">
-          {!activePageIsDynamic && pages.some((p) => p.elements.some((el) => el.componentId === 'product-list')) && (
+          {!isDesktopPreviewSearchOpen && !activePageIsDynamic && pages.some((p) => p.elements.some((el) => el.componentId === 'product-list')) && (
             <LivePreviewCartButton onClick={() => { setIsNotificationsPageOpen(false); setIsPreviewSearchOpen(false); setIsDesktopPreviewSearchOpen(false); setIsPreviewCartOpen(true) }} />
           )}
           {pushNotificationsEnabled && (
@@ -9242,7 +9242,7 @@ export function BuildPage({
                           }}
                         />
                       )}
-                      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${topHeaderUsesPageName && isPreviewContentScrolled ? ' live-preview__top-header--page-scrolled' : ''}${topNavOverlay ? ' live-preview__top-header--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__top-header--over-content' : ''}${topHeaderHidden ? ' live-preview__top-header--hidden' : ''}`} style={topNavOverlay && topNavOverHero ? { color: topNavOverlayFg } : undefined} data-nav-align={desktopNavAlignment}>
+                      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${topHeaderUsesPageName && isPreviewContentScrolled ? ' live-preview__top-header--page-scrolled' : ''}${isDesktopPreviewSearchOpen ? ' live-preview__top-header--desktop-search-open' : ''}${topNavOverlay ? ' live-preview__top-header--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__top-header--over-content' : ''}${topHeaderHidden ? ' live-preview__top-header--hidden' : ''}`} style={topNavOverlay && topNavOverHero ? { color: topNavOverlayFg } : undefined} data-nav-align={desktopNavAlignment}>
                         {(() => {
                           // Profile / dynamic-detail back affordance — shared with the
                           // full-screen preview. The right-panel preview always renders a
@@ -9252,7 +9252,7 @@ export function BuildPage({
                           return renderTopHeaderBrand()
                         })()}
                         <div className="live-preview__top-header-right">
-                          {!activePageIsDynamic && pages.some((p) => p.elements.some((el) => el.componentId === 'product-list')) && (
+                          {!isDesktopPreviewSearchOpen && !activePageIsDynamic && pages.some((p) => p.elements.some((el) => el.componentId === 'product-list')) && (
                             <LivePreviewCartButton onClick={() => { setIsNotificationsPageOpen(false); setIsPreviewSearchOpen(false); setIsDesktopPreviewSearchOpen(false); setIsPreviewCartOpen(true) }} />
                           )}
                           {pushNotificationsEnabled && (

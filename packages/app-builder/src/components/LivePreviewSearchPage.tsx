@@ -725,6 +725,19 @@ const getFirstMatchingElementId = (
   ))?.id
 )
 
+const getFirstVisibleElementId = (page: SearchSourcePage) => (
+  page.elements?.find((element) => element.id && getElementVisibleSearchCorpus(element))?.id
+  ?? page.elements?.find((element) => element.id)?.id
+)
+
+const getBestPageTargetElementId = (
+  page: SearchSourcePage,
+  normalizedSearchText: string,
+) => (
+  getFirstMatchingElementId(page, normalizedSearchText)
+  ?? getFirstVisibleElementId(page)
+)
+
 const getFirstMatchingFormFieldName = (
   formFields: Array<Record<string, unknown>>,
   normalizedSearchText: string,
@@ -1043,7 +1056,11 @@ export const getPreviewSearchResults = (
       description: appSubtitle || 'Open app',
       category: 'contents',
       visual: getPageVisual(overviewPage),
-      target: { type: 'page', pageId: overviewPage.id },
+      target: {
+        type: 'page',
+        pageId: overviewPage.id,
+        elementId: getBestPageTargetElementId(overviewPage, normalizedSearchText),
+      },
     })
   }
 
@@ -1062,14 +1079,13 @@ export const getPreviewSearchResults = (
     if (action.target.type === 'page') {
       const targetPage = pages.find((page) => page.id === action.target.pageId)
       if (targetPage) {
-        const targetElementId = getFirstMatchingElementId(targetPage, normalizedSearchText)
         pushNavigationPageResult(results, seen, searchText, {
           id: `action-page-${action.id}`,
           targetPage,
           sourceTitle: action.title,
           description: `Opened by ${action.title}`,
           matchText: getPageVisibleSearchCorpus(targetPage),
-          target: { ...action.target, elementId: targetElementId },
+          target: { ...action.target, elementId: getBestPageTargetElementId(targetPage, normalizedSearchText) },
         })
       }
     }
@@ -1083,7 +1099,11 @@ export const getPreviewSearchResults = (
         description: 'Go to page',
         category: 'pages',
         visual: getPageVisual(page),
-        target: { type: 'page', pageId: page.id },
+        target: {
+          type: 'page',
+          pageId: page.id,
+          elementId: getBestPageTargetElementId(page, normalizedSearchText),
+        },
       })
     }
   })
@@ -1151,14 +1171,17 @@ export const getPreviewSearchResults = (
         ? undefined
         : getElementNavigationPage(pages, element)
       if (navigationPage) {
-        const targetElementId = getFirstMatchingElementId(navigationPage, normalizedSearchText)
         pushNavigationPageResult(results, seen, searchText, {
           id: `element-page-${pageIndex}-${elementIndex}`,
           targetPage: navigationPage,
           sourceTitle: elementTitle || componentLabel,
           description: `Opened by ${elementTitle || componentLabel}`,
           matchText: getPageVisibleSearchCorpus(navigationPage),
-          target: { type: 'page', pageId: navigationPage.id || pageId, elementId: targetElementId },
+          target: {
+            type: 'page',
+            pageId: navigationPage.id || pageId,
+            elementId: getBestPageTargetElementId(navigationPage, normalizedSearchText),
+          },
         })
       }
 
