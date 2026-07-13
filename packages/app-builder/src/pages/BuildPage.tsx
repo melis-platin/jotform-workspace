@@ -2857,7 +2857,6 @@ export function BuildPage({
     const ownerPage = pages.find((page) => page.elements.some((element) => element.id === initialElementId))
     if (!ownerPage) return
 
-    initialElementFocusHandledRef.current = true
     setActivePageId(ownerPage.id)
     setSelectedElementId(initialElementId)
     setRightPanel('properties')
@@ -2879,6 +2878,7 @@ export function BuildPage({
         const targetTop = scrollContainer.scrollTop + targetRect.top - containerRect.top
         const targetY = Math.max(0, targetTop - (containerRect.height / 2) + (targetRect.height / 2))
         scrollContainer.scrollTo({ top: targetY, behavior: 'smooth' })
+        initialElementFocusHandledRef.current = true
       })
     }
 
