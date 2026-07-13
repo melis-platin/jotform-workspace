@@ -28,6 +28,7 @@ interface DataTableConnection {
   pageId: string
   label: string
   icon: string
+  iconCategory?: string
 }
 
 interface FormFieldLike {
@@ -178,7 +179,8 @@ function buildTableConnection(element: CanvasElement, page: AppPage): DataTableC
     label: typeof label === 'string' && label.trim()
       ? label.trim()
       : component?.name ?? titleCase(element.componentId),
-    icon: isFormConnection ? 'ClipboardList' : component?.icon ?? 'LayoutGrid',
+    icon: isFormConnection ? 'cart-shopping-filled' : component?.icon ?? 'LayoutGrid',
+    iconCategory: isFormConnection ? 'finance' : undefined,
   }
 }
 
@@ -527,7 +529,11 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
                         title={connection.label}
                       >
                         <span className="data-page__connection-menu-copy">
-                          <AppIcon name={connection.icon} size={16} />
+                          {connection.iconCategory ? (
+                            <Icon name={connection.icon} category={connection.iconCategory} size={16} />
+                          ) : (
+                            <AppIcon name={connection.icon} size={16} />
+                          )}
                           <span>{connection.label}</span>
                         </span>
                         <Icon name="arrow-up-right-from-square-sm" category="arrows" size={12} />
