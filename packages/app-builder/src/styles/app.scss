@@ -14887,7 +14887,8 @@ body.builder--phone-only {
 }
 
 .data-page__table-connection:hover .data-page__connection-menu,
-.data-page__table-connection:focus-within .data-page__connection-menu {
+.data-page__table-connection:focus-within .data-page__connection-menu,
+.data-page__table-connection--open .data-page__connection-menu {
   opacity: 1;
   visibility: visible;
   pointer-events: auto;

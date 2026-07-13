@@ -432,6 +432,7 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
   const initialState = useMemo(() => buildInitialStateFromPreset(preset), [preset])
   const tables = useMemo(() => collectDataTables(initialState.pages), [initialState.pages])
   const [activeTableId, setActiveTableId] = useState(() => tables[0]?.id ?? '')
+  const [openConnectionTableId, setOpenConnectionTableId] = useState<string | null>(null)
   const [tableRowsById, setTableRowsById] = useState<Record<string, Record<string, DataCellValue>[]>>({})
   const activeTable = tables.find((table) => table.id === activeTableId) ?? tables[0] ?? null
   const activeRows = activeTable ? tableRowsById[activeTable.id] ?? activeTable.rows : []
@@ -483,7 +484,10 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
               <button
                 type="button"
                 className="data-page__table-select"
-                onClick={() => setActiveTableId(table.id)}
+                onClick={() => {
+                  setActiveTableId(table.id)
+                  setOpenConnectionTableId(null)
+                }}
                 aria-label={table.name}
                 title={table.name}
               >
@@ -493,12 +497,18 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
                 <span className="data-page__table-name">{table.name}</span>
               </button>
               {table.connections.length > 0 ? (
-                <span className="data-page__table-connection">
+                <span
+                  className={`data-page__table-connection${openConnectionTableId === table.id ? ' data-page__table-connection--open' : ''}`}
+                  onMouseEnter={() => setOpenConnectionTableId(table.id)}
+                  onMouseLeave={() => setOpenConnectionTableId((openTableId) => openTableId === table.id ? null : openTableId)}
+                >
                   <button
                     type="button"
                     className="data-page__table-link-badge"
                     aria-label={tableConnectionLabel(table)}
                     aria-haspopup="menu"
+                    aria-expanded={openConnectionTableId === table.id}
+                    onClick={() => setOpenConnectionTableId((openTableId) => openTableId === table.id ? null : table.id)}
                   >
                     <Icon name="link-diagonal" category="general" size={12} />
                   </button>
