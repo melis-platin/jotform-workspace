@@ -642,7 +642,6 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
               {table.connections.length > 0 ? (
                 <span
                   className={`data-page__table-connection${openConnectionTableId === table.id ? ' data-page__table-connection--open' : ''}`}
-                  onMouseEnter={() => setOpenConnectionTableId(table.id)}
                   onMouseLeave={() => setOpenConnectionTableId((openTableId) => openTableId === table.id ? null : openTableId)}
                 >
                   <button
@@ -651,6 +650,8 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
                     aria-label={tableConnectionLabel(table)}
                     aria-haspopup="menu"
                     aria-expanded={openConnectionTableId === table.id}
+                    onMouseEnter={() => setOpenConnectionTableId(table.id)}
+                    onFocus={() => setOpenConnectionTableId(table.id)}
                     onClick={() => setOpenConnectionTableId((openTableId) => openTableId === table.id ? null : table.id)}
                   >
                     <Icon name="link-diagonal" category="general" size={12} />
