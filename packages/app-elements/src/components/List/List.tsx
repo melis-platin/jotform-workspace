@@ -203,7 +203,6 @@ export const List: FC<ListProps> = ({
   layout = 'Basic',
   title = 'List',
   subtitle = '',
-  showHeader = true,
   imageStyle = 'Square',
   size = 'Regular',
   action = 'None',
@@ -224,8 +223,9 @@ export const List: FC<ListProps> = ({
   items = DEFAULT_ITEMS,
 }) => {
   const animClass = skeletonAnimation === 'shimmer' ? 'animate-shimmer' : 'animate-pulse';
+  const hasTitle = title.trim().length > 0;
 
-  const header = showHeader ? (
+  const header = hasTitle ? (
     <div className="jf-list__heading">
       <h3 className="jf-list__title">{title}</h3>
       <p className={`jf-list__subtitle ${!subtitle ? 'jf-list__subtitle--empty' : ''}`}>{subtitle}</p>

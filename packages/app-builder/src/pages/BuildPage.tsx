@@ -684,14 +684,54 @@ function normalizeBohoNestSharedListSources(pages: AppPage[], preset: AppPreset 
   }))
 }
 
+// A List Title owns the visible heading for a list. When presets contain an
+// adjacent Heading, preserve its copy by moving it into the list instead.
+function normalizeListTitleHeaders(pages: AppPage[]): AppPage[] {
+  return pages.map((page) => {
+    let changed = false
+    const elements = page.elements.reduce<CanvasElement[]>((result, element) => {
+      const listTitle = element.componentId === 'list'
+        ? String(element.properties.Title ?? '').trim()
+        : ''
+      const precedingElement = result.at(-1)
+
+      if (!listTitle || precedingElement?.componentId !== 'heading') {
+        result.push(element)
+        return result
+      }
+
+      const headingTitle = String(precedingElement.properties.Heading ?? '').trim()
+      if (!headingTitle) {
+        result.push(element)
+        return result
+      }
+
+      const headingSubtitle = String(precedingElement.properties.Subheading ?? '').trim()
+      changed = true
+      result.pop()
+      result.push({
+        ...element,
+        properties: {
+          ...element.properties,
+          Title: headingTitle,
+          ...(headingSubtitle ? { Subtitle: headingSubtitle } : {}),
+        },
+      })
+      return result
+    }, [])
+
+    return changed ? { ...page, elements } : page
+  })
+}
+
 function normalizePresetPages(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {
-  return normalizeBohoNestSharedListSources(
+  return normalizeListTitleHeaders(normalizeBohoNestSharedListSources(
     normalizeCampPinecrestPages(
       normalizeGymTrainerDynamicPages(pages, preset),
       preset,
     ),
     preset,
-  )
+  ))
 }
 
 function arePagesEqual(a: AppPage[], b: AppPage[]): boolean {
@@ -7666,7 +7706,7 @@ export function BuildPage({
                     )
                   }
 
-                  // List General tab — bespoke per Figma (Show Header, Data Source, Field mapping, Filter/Sorting, Items to show).
+                  // List General tab — bespoke per Figma (List Title, Data Source, field mapping, Filter/Sorting, Items to show).
                   if (isList && propertyTab === 'general') {
                     return (
                       <div className="property-panel__body">
@@ -7853,21 +7893,6 @@ export function BuildPage({
                               max={999}
                               value={Number(selectedElement.properties['Items to show']) || 10}
                               onChange={(val) => handlePropertyChange(selectedElement.id, 'Items to show', val ?? 10)}
-                            />
-                          </DSFormField>
-                        </div>
-                        <div className="property-panel__field property-panel__field--inline">
-                          <DSFormField
-                            title="Show Header"
-                            description="Display a header above the list items."
-                            size="md"
-                            showDescription
-                            showHelpText={false}
-                          >
-                            <DSToggle
-                              size="md"
-                              checked={Boolean(selectedElement.properties['Show Header'])}
-                              onChange={(e) => handlePropertyChange(selectedElement.id, 'Show Header', e.target.checked)}
                             />
                           </DSFormField>
                         </div>
@@ -8361,7 +8386,7 @@ export function BuildPage({
                         return cardTabProps.includes(prop.name)
                       }
                       if (isList) {
-                        // Button Label is rendered inside the Action tab; Show Header is rendered bespoke at the top.
+                        // Button Label is rendered inside the Action tab; List Title owns the visible list header.
                         if (propertyTab === 'general') return prop.name !== 'Button Label' && prop.name !== 'Show Header'
                         return false
                       }
@@ -8416,23 +8441,6 @@ export function BuildPage({
 
                   return (
                     <div className="property-panel__body">
-                      {isList && propertyTab === 'general' && (
-                        <div className="property-panel__field property-panel__field--inline">
-                          <DSFormField
-                            title="Show Header"
-                            description="Display a header above the list items."
-                            size="md"
-                            showDescription
-                            showHelpText={false}
-                          >
-                            <DSToggle
-                              size="md"
-                              checked={Boolean(selectedElement.properties['Show Header'])}
-                              onChange={(e) => handlePropertyChange(selectedElement.id, 'Show Header', e.target.checked)}
-                            />
-                          </DSFormField>
-                        </div>
-                      )}
                       {isAppHeader && propertyTab === 'style' && (
                         <>
                           <div className="property-panel__field">
