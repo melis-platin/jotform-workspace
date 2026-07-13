@@ -10012,15 +10012,15 @@ body.builder--phone-only {
 }
 
 // Fullwidth, Contained and Compact desktop headers keep page navigation on a
-// 4px rhythm, while their Cart and Search actions use a 12px gap. The Left
-// layout owns a separate sidebar navigation and retains its existing spacing.
+// 4px rhythm. Their Cart and Search actions form an 8px group, separated from
+// the page names by 12px. The Left layout retains its existing spacing.
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header-nav {
   gap: var(--space-1);
-  margin-right: var(--space-1);
+  margin-right: var(--space-3);
 }
 
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header-right {
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--fullwidth-search-open .live-preview__top-header-nav {
