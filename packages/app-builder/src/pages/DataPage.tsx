@@ -537,6 +537,22 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
     setTableRowsById({})
   }, [tables])
 
+  useEffect(() => {
+    if (!openTableMenuId) return
+
+    const handleOutsidePointerDown = (event: PointerEvent) => {
+      if (!(event.target instanceof Element)) return
+      if (event.target.closest('.data-page__table-menu, .data-page__table-context-connections--portal')) return
+
+      setOpenTableMenuId(null)
+      setOpenTableContextConnectionId(null)
+      setTableContextConnectionAnchor(null)
+    }
+
+    document.addEventListener('pointerdown', handleOutsidePointerDown)
+    return () => document.removeEventListener('pointerdown', handleOutsidePointerDown)
+  }, [openTableMenuId])
+
   const handleAddRow = () => {
     if (!activeTable) return
     const emptyRow = activeTable.columns.reduce<Record<string, DataCellValue>>((row, column) => {
