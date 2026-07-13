@@ -2863,6 +2863,7 @@ export function BuildPage({
 
     let attempts = 0
     let timer: number | undefined
+    let highlightTimer: number | undefined
     const focusElement = () => {
       window.requestAnimationFrame(() => {
         const scrollContainer = canvasRef.current
@@ -2878,6 +2879,12 @@ export function BuildPage({
         const targetTop = scrollContainer.scrollTop + targetRect.top - containerRect.top
         const targetY = Math.max(0, targetTop)
         scrollContainer.scrollTo({ top: targetY, behavior: 'smooth' })
+        target.classList.remove('themes-view__section--search-highlight')
+        void target.offsetWidth
+        target.classList.add('themes-view__section--search-highlight')
+        highlightTimer = window.setTimeout(() => {
+          target.classList.remove('themes-view__section--search-highlight')
+        }, 1800)
         initialElementFocusHandledRef.current = true
       })
     }
@@ -2885,6 +2892,7 @@ export function BuildPage({
     timer = window.setTimeout(focusElement, 80)
     return () => {
       if (timer !== undefined) window.clearTimeout(timer)
+      if (highlightTimer !== undefined) window.clearTimeout(highlightTimer)
     }
   }, [initialElementId, pages, setSelectedElementId])
   useEffect(() => {

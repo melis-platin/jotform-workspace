@@ -165,8 +165,12 @@ function getElementTitle(element: CanvasElement, fallback: string): string {
 
 function buildTableConnection(element: CanvasElement, page: AppPage): DataTableConnection {
   const component = ComponentRegistry.get(element.componentId)
+  const isFormConnection = element.componentId === 'form'
+    || (element.componentId === 'button' && String(element.properties.Action ?? '') === 'Open Form')
   const listTitle = element.componentId === 'list' ? element.properties.Title : undefined
-  const label = listTitle ?? element.properties.Label
+  const label = isFormConnection
+    ? getElementTitle(element, component?.name ?? 'Form')
+    : listTitle ?? element.properties.Label
 
   return {
     elementId: element.id,
@@ -174,7 +178,7 @@ function buildTableConnection(element: CanvasElement, page: AppPage): DataTableC
     label: typeof label === 'string' && label.trim()
       ? label.trim()
       : component?.name ?? titleCase(element.componentId),
-    icon: component?.icon ?? 'LayoutGrid',
+    icon: isFormConnection ? 'ClipboardList' : component?.icon ?? 'LayoutGrid',
   }
 }
 
@@ -250,7 +254,7 @@ function buildFormTable(element: CanvasElement, page: AppPage): DataTable {
     sourceType: 'Form',
     columns,
     rows: buildSubmissionRows(usableFields),
-    connections: [],
+    connections: [buildTableConnection(element, page)],
   }
 }
 
