@@ -15046,6 +15046,20 @@ body.builder--phone-only {
   justify-content: space-between;
 }
 
+.data-page__table-context-connection {
+  position: relative;
+  display: block;
+}
+
+.data-page__table-context-connections--portal {
+  position: fixed;
+  right: auto;
+  z-index: 31;
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
 .data-page__table-context-copy {
   min-width: 0;
   display: flex;

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { AppIcon, ComponentRegistry } from '@jf/app-elements'
 import { Icon } from '@jf/design-system'
 import { type AppPreset, type PresetElement } from '../presets/appPresets'
@@ -521,6 +522,8 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
   const [activeTableId, setActiveTableId] = useState(() => tables[0]?.id ?? '')
   const [openConnectionTableId, setOpenConnectionTableId] = useState<string | null>(null)
   const [openTableMenuId, setOpenTableMenuId] = useState<string | null>(null)
+  const [openTableContextConnectionId, setOpenTableContextConnectionId] = useState<string | null>(null)
+  const [tableContextConnectionAnchor, setTableContextConnectionAnchor] = useState<{ tableId: string; left: number; top: number } | null>(null)
   const [tableRowsById, setTableRowsById] = useState<Record<string, Record<string, DataCellValue>[]>>({})
   const activeTable = tables.find((table) => table.id === activeTableId) ?? tables[0] ?? null
   const activeRows = activeTable ? tableRowsById[activeTable.id] ?? activeTable.rows : []
@@ -550,6 +553,12 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
     })
   }
 
+  const closeTableContextMenu = () => {
+    setOpenTableMenuId(null)
+    setOpenTableContextConnectionId(null)
+    setTableContextConnectionAnchor(null)
+  }
+
   const gridTemplateColumns = activeTable
     ? `86px repeat(${activeTable.columns.length}, 200px) 86px`
     : '1fr'
@@ -576,6 +585,8 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
                   setActiveTableId(table.id)
                   setOpenConnectionTableId(null)
                   setOpenTableMenuId(null)
+                  setOpenTableContextConnectionId(null)
+                  setTableContextConnectionAnchor(null)
                 }}
                 aria-label={table.name}
                 title={table.name}
@@ -636,16 +647,21 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
                   aria-label={`More options for ${table.name}`}
                   aria-haspopup="menu"
                   aria-expanded={openTableMenuId === table.id}
-                  onClick={() => setOpenTableMenuId((openTableId) => openTableId === table.id ? null : table.id)}
+                  onClick={() => {
+                    setOpenConnectionTableId(null)
+                    setOpenTableContextConnectionId(null)
+                    setTableContextConnectionAnchor(null)
+                    setOpenTableMenuId((openTableId) => openTableId === table.id ? null : table.id)
+                  }}
                 >
                   <Icon name="ellipsis-vertical" category="general" size={16} />
                 </button>
                 <span className="data-page__table-context-menu" role="menu" aria-label={`Options for ${table.name}`}>
-                  <button type="button" role="menuitem" className="data-page__table-context-item" onClick={() => setOpenTableMenuId(null)}>
+                  <button type="button" role="menuitem" className="data-page__table-context-item" onClick={closeTableContextMenu}>
                     <Icon name="gear-filled" category="general" size={16} />
                     <span>Manage columns</span>
                   </button>
-                  <button type="button" role="menuitem" className="data-page__table-context-item data-page__table-context-item--submenu" onClick={() => setOpenTableMenuId(null)}>
+                  <button type="button" role="menuitem" className="data-page__table-context-item data-page__table-context-item--submenu" onClick={closeTableContextMenu}>
                     <span className="data-page__table-context-copy">
                       <Icon name="droplet-filled" category="editor" size={16} />
                       <span>Tab colors</span>
@@ -653,41 +669,69 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
                     <Icon name="chevron-right" category="arrows" size={16} />
                   </button>
                   <span className="data-page__table-context-divider" />
-                  <button
-                    type="button"
-                    role="menuitem"
-                    className="data-page__table-context-item"
-                    onClick={() => {
-                      setOpenTableMenuId(null)
-                      const connection = table.connections[0]
-                      if (connection) onElementNavigate?.(connection.pageId, connection.elementId)
-                    }}
-                  >
-                    <Icon name="link-diagonal" category="general" size={16} />
-                    <span>View Connected Element</span>
-                  </button>
+                  {table.connections.length > 1 ? (
+                    <span className="data-page__table-context-connection">
+                      <button
+                        type="button"
+                        role="menuitem"
+                        className="data-page__table-context-item data-page__table-context-item--submenu"
+                        aria-haspopup="menu"
+                        aria-expanded={openTableContextConnectionId === table.id}
+                        onClick={(event) => {
+                          if (openTableContextConnectionId === table.id) {
+                            setOpenTableContextConnectionId(null)
+                            setTableContextConnectionAnchor(null)
+                            return
+                          }
+                          const anchor = event.currentTarget.getBoundingClientRect()
+                          setOpenTableContextConnectionId(table.id)
+                          setTableContextConnectionAnchor({ tableId: table.id, left: anchor.right + 4, top: anchor.top })
+                        }}
+                      >
+                        <span className="data-page__table-context-copy">
+                          <Icon name="link-diagonal" category="general" size={16} />
+                          <span>View Connected Elements</span>
+                        </span>
+                        <Icon name="chevron-right" category="arrows" size={16} />
+                      </button>
+                    </span>
+                  ) : (
+                    <button
+                      type="button"
+                      role="menuitem"
+                      className="data-page__table-context-item"
+                      onClick={() => {
+                        closeTableContextMenu()
+                        const connection = table.connections[0]
+                        if (connection) onElementNavigate?.(connection.pageId, connection.elementId)
+                      }}
+                    >
+                      <Icon name="link-diagonal" category="general" size={16} />
+                      <span>View Connected Element</span>
+                    </button>
+                  )}
                   <span className="data-page__table-context-divider" />
-                  <button type="button" role="menuitem" className="data-page__table-context-item" onClick={() => setOpenTableMenuId(null)}>
+                  <button type="button" role="menuitem" className="data-page__table-context-item" onClick={closeTableContextMenu}>
                     <Icon name="pencil-to-square" category="general" size={16} />
                     <span>Rename</span>
                   </button>
-                  <button type="button" role="menuitem" className="data-page__table-context-item" onClick={() => setOpenTableMenuId(null)}>
+                  <button type="button" role="menuitem" className="data-page__table-context-item" onClick={closeTableContextMenu}>
                     <Icon name="copy-filled" category="general" size={16} />
                     <span>Duplicate</span>
                   </button>
-                  <button type="button" role="menuitem" className="data-page__table-context-item data-page__table-context-item--submenu" onClick={() => setOpenTableMenuId(null)}>
+                  <button type="button" role="menuitem" className="data-page__table-context-item data-page__table-context-item--submenu" onClick={closeTableContextMenu}>
                     <span className="data-page__table-context-copy">
                       <Icon name="arrows-rotate" category="arrows" size={16} />
                       <span>Change type</span>
                     </span>
                     <Icon name="chevron-right" category="arrows" size={16} />
                   </button>
-                  <button type="button" role="menuitem" className="data-page__table-context-item" onClick={() => setOpenTableMenuId(null)}>
+                  <button type="button" role="menuitem" className="data-page__table-context-item" onClick={closeTableContextMenu}>
                     <Icon name="sticker-filled" category="forms-files" size={16} />
                     <span>Add tab note</span>
                   </button>
                   <span className="data-page__table-context-divider" />
-                  <button type="button" role="menuitem" className="data-page__table-context-item data-page__table-context-item--submenu" onClick={() => setOpenTableMenuId(null)}>
+                  <button type="button" role="menuitem" className="data-page__table-context-item data-page__table-context-item--submenu" onClick={closeTableContextMenu}>
                     <span className="data-page__table-context-copy">
                       <Icon name="arrow-down-to-line" category="arrows" size={16} />
                       <span>Download</span>
@@ -696,6 +740,39 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
                   </button>
                 </span>
               </span>
+              {openTableContextConnectionId === table.id && tableContextConnectionAnchor?.tableId === table.id && createPortal(
+                <span
+                  className="data-page__connection-menu data-page__table-context-connections--portal"
+                  role="menu"
+                  aria-label={`Elements connected to ${table.name}`}
+                  style={{ left: tableContextConnectionAnchor.left, top: tableContextConnectionAnchor.top }}
+                >
+                  {table.connections.map((connection) => (
+                    <button
+                      key={`${connection.pageId}:${connection.elementId}`}
+                      type="button"
+                      role="menuitem"
+                      className="data-page__connection-menu-item"
+                      onClick={() => {
+                        closeTableContextMenu()
+                        onElementNavigate?.(connection.pageId, connection.elementId)
+                      }}
+                      title={connection.label}
+                    >
+                      <span className="data-page__connection-menu-copy">
+                        {connection.iconCategory ? (
+                          <Icon name={connection.icon} category={connection.iconCategory} size={16} />
+                        ) : (
+                          <AppIcon name={connection.icon} size={16} />
+                        )}
+                        <span>{connection.label}</span>
+                      </span>
+                      <Icon name="arrow-up-right-from-square-sm" category="arrows" size={12} />
+                    </button>
+                  ))}
+                </span>,
+                document.body,
+              )}
             </div>
           ))}
         </div>
