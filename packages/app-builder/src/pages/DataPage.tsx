@@ -16,7 +16,7 @@ interface DataTable {
   id: string
   name: string
   description: string
-  sourceType: 'List' | 'Form' | 'Products' | 'Table' | 'Tasks'
+  sourceType: 'List' | 'Form' | 'Products' | 'Donation' | 'Table' | 'Tasks'
   sharedSourceKey?: string
   formSourceKey?: string
   columns: DataColumn[]
@@ -41,7 +41,7 @@ interface FormFieldLike {
   options?: string[]
 }
 
-const DATA_ELEMENT_IDS = new Set(['list', 'product-list', 'form', 'table', 'daily-task-manager'])
+const DATA_ELEMENT_IDS = new Set(['list', 'product-list', 'donation-box', 'form', 'table', 'daily-task-manager'])
 const SHARED_TABLE_CONSUMER_IDS = new Set(['list', 'ai-widget'])
 const LIST_COLUMN_PRIORITY = ['title', 'name', 'description', 'image', 'avatar', 'photo', 'price', 'date', 'time', 'duration', 'coach', 'category', 'location', 'details', 'detail']
 const PRODUCT_COLUMN_PRIORITY = ['name', 'title', 'description', 'price', 'image', 'category', 'sku', 'inventory']
@@ -171,6 +171,7 @@ function buildTableConnection(element: CanvasElement, page: AppPage): DataTableC
   const isFormConnection = element.componentId === 'form'
     || (element.componentId === 'button' && String(element.properties.Action ?? '') === 'Open Form')
   const isProductListConnection = element.componentId === 'product-list'
+  const isDonationConnection = element.componentId === 'donation-box'
   const listTitle = element.componentId === 'list' ? element.properties.Title : undefined
   const label = isFormConnection
     ? getElementTitle(element, component?.name ?? 'Form')
@@ -186,8 +187,16 @@ function buildTableConnection(element: CanvasElement, page: AppPage): DataTableC
       ? 'product-form-builder-filled'
       : isProductListConnection
         ? 'cart-shopping-filled'
+        : isDonationConnection
+          ? 'heart-filled'
         : component?.icon ?? 'LayoutGrid',
-    iconCategory: isFormConnection ? 'products' : isProductListConnection ? 'finance' : undefined,
+    iconCategory: isFormConnection
+      ? 'products'
+      : isProductListConnection
+        ? 'finance'
+        : isDonationConnection
+          ? 'general'
+          : undefined,
     isFormElement: element.componentId === 'form',
   }
 }
@@ -242,6 +251,29 @@ function buildProductTable(element: CanvasElement, page: AppPage): DataTable | n
     description: `${page.name} / Products`,
     sourceType: 'Products',
     columns: columnsFromRows(rows, PRODUCT_COLUMN_PRIORITY),
+    rows,
+    connections: [buildTableConnection(element, page)],
+  }
+}
+
+function buildDonationTable(element: CanvasElement, page: AppPage): DataTable {
+  const currency = typeof element.properties['Currency Symbol'] === 'string'
+    ? element.properties['Currency Symbol']
+    : '$'
+  const title = getElementTitle(element, 'Donations')
+  const rows = [
+    { donor: 'Jamie Morgan', amount: `${currency}50`, donatedAt: 'Jul 2, 2026 09:16', status: 'Completed' },
+    { donor: 'Taylor Brooks', amount: `${currency}25`, donatedAt: 'Jul 1, 2026 18:42', status: 'Completed' },
+    { donor: 'Avery Carter', amount: `${currency}100`, donatedAt: 'Jun 30, 2026 12:05', status: 'Completed' },
+    { donor: 'Jordan Ellis', amount: `${currency}75`, donatedAt: 'Jun 29, 2026 08:31', status: 'Completed' },
+  ]
+
+  return {
+    id: element.id,
+    name: `${title} Donations`,
+    description: `${page.name} / Donations`,
+    sourceType: 'Donation',
+    columns: columnsFromRows(rows, ['donor', 'amount', 'donatedAt', 'status']),
     rows,
     connections: [buildTableConnection(element, page)],
   }
@@ -362,6 +394,7 @@ function buildTaskTable(element: CanvasElement, page: AppPage): DataTable {
 function buildTableForElement(element: CanvasElement, page: AppPage): DataTable | null {
   if (element.componentId === 'list') return buildListTable(element, page)
   if (element.componentId === 'product-list') return buildProductTable(element, page)
+  if (element.componentId === 'donation-box') return buildDonationTable(element, page)
   if (element.componentId === 'form' || (element.componentId === 'button' && String(element.properties.Action ?? '') === 'Open Form')) return buildFormTable(element, page)
   if (element.componentId === 'table') return buildWidgetTable(element, page)
   if (element.componentId === 'daily-task-manager') return buildTaskTable(element, page)
