@@ -26,7 +26,6 @@ import { LucideIcon, IconPickerPopover } from './IconPicker'
 import { DEFAULT_PAGE_ICON } from './PageNavigationBar'
 
 export type NavDisplayStyle = 'iconText' | 'icon'
-export type DesktopDisplayStyle = 'iconText' | 'text'
 export type NavAlignment = 'left' | 'center' | 'right'
 // 'top' = full-browser-width bar; 'compact' = app-page-width (760px) floating
 // bar with centre-aligned menu; 'left' = sidebar.
@@ -57,7 +56,6 @@ interface NavigationMenuPanelProps {
   topNavTransparent: boolean
   desktopVariant: DesktopNavVariant
   desktopEnabled: boolean
-  desktopDisplayStyle: DesktopDisplayStyle
   desktopAlignment: NavAlignment
   /** Top-variant only: whether the desktop top nav bar stays pinned on scroll. */
   desktopSticky: boolean
@@ -67,7 +65,6 @@ interface NavigationMenuPanelProps {
   onToggleTopNavEnabled: (enabled: boolean) => void
   onToggleTopNavTransparent: (transparent: boolean) => void
   onToggleDesktopEnabled: (enabled: boolean) => void
-  onChangeDesktopDisplayStyle: (style: DesktopDisplayStyle) => void
   onChangeDesktopAlignment: (align: NavAlignment) => void
   onToggleDesktopSticky: (sticky: boolean) => void
   /** Receives the full pages array reordered (hidden pages keep their positions). */
@@ -173,7 +170,6 @@ export function NavigationMenuPanel({
   topNavTransparent,
   desktopVariant,
   desktopEnabled,
-  desktopDisplayStyle,
   desktopAlignment,
   desktopSticky,
   onChangeDesktopVariant,
@@ -182,7 +178,6 @@ export function NavigationMenuPanel({
   onToggleTopNavEnabled,
   onToggleTopNavTransparent,
   onToggleDesktopEnabled,
-  onChangeDesktopDisplayStyle,
   onChangeDesktopAlignment,
   onToggleDesktopSticky,
   onReorder,
@@ -408,21 +403,6 @@ export function NavigationMenuPanel({
                       { value: 'contained', label: 'Contained' },
                       { value: 'compact', label: 'Compact' },
                       { value: 'left', label: 'Left' },
-                    ]}
-                  />
-                </DSFormField>
-              </div>
-
-              <div className="property-panel__field">
-                <DSFormField title="Display Style" size="md" showDescription={false} showHelpText={false}>
-                  <DSSegmented
-                    accent="apps"
-                    variant="text"
-                    value={desktopDisplayStyle}
-                    onChange={(value) => onChangeDesktopDisplayStyle(value as DesktopDisplayStyle)}
-                    items={[
-                      { value: 'iconText', label: 'Icon & Text' },
-                      { value: 'text', label: 'Text Only' },
                     ]}
                   />
                 </DSFormField>

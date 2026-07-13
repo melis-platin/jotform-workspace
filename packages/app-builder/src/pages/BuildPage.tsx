@@ -2593,22 +2593,13 @@ export function BuildPage({
   // Desktop navigation — independent from the mobile settings above.
   const [desktopNavVariant, setDesktopNavVariant] = useState<'top' | 'contained' | 'compact' | 'left'>('top')
   const [desktopNavEnabled, setDesktopNavEnabled] = useState(true)
-  const [desktopNavDisplayStyle, setDesktopNavDisplayStyle] = useState<'iconText' | 'text'>('text')
   const [desktopNavAlignment, setDesktopNavAlignment] = useState<'left' | 'center' | 'right'>('right')
   // Sticky defaults OFF for every desktop nav variant that exposes the toggle
   // (top / contained / compact); users opt in.
   const [desktopNavSticky, setDesktopNavSticky] = useState(false)
   const handleDesktopNavVariantChange = useCallback((variant: 'top' | 'contained' | 'compact' | 'left') => {
     setDesktopNavVariant(variant)
-    if (variant === 'left') setDesktopNavDisplayStyle('iconText')
   }, [])
-  const handleDesktopNavDisplayStyleChange = useCallback((style: 'iconText' | 'text') => {
-    if (desktopNavVariant === 'left') {
-      setDesktopNavDisplayStyle('iconText')
-      return
-    }
-    setDesktopNavDisplayStyle(style)
-  }, [desktopNavVariant])
   const [propertyTab, setPropertyTab] = useState<string>('general')
   const appHeaderImageInputRef = useRef<HTMLInputElement>(null)
   const appHeaderBgImageInputRef = useRef<HTMLInputElement>(null)
@@ -4909,9 +4900,6 @@ export function BuildPage({
                 tabIndex={desktopFullwidthSearchOpen ? -1 : undefined}
                 onClick={() => navigateToPage(p.id)}
               >
-                {desktopNavDisplayStyle === 'iconText' && (
-                  <AppIcon name={getPageIconName(p, 0)} size={18} />
-                )}
                 <span>{p.name}</span>
               </button>
             ))}
@@ -4949,9 +4937,6 @@ export function BuildPage({
                         className={`live-preview__top-header-nav-menu-item${p.id === activePageId ? ' live-preview__top-header-nav-menu-item--active' : ''}`}
                         onClick={() => navigateToPage(p.id)}
                       >
-                        {desktopNavDisplayStyle === 'iconText' && (
-                          <AppIcon name={getPageIconName(p, 0)} size={18} />
-                        )}
                         <span>{p.name}</span>
                       </button>
                     ))}
@@ -5803,7 +5788,6 @@ export function BuildPage({
                 topNavTransparent={topNavTransparent}
                 desktopVariant={desktopNavVariant}
                 desktopEnabled={desktopNavEnabled}
-                desktopDisplayStyle={desktopNavVariant === 'left' ? 'iconText' : desktopNavDisplayStyle}
                 desktopAlignment={desktopNavAlignment}
                 desktopSticky={desktopNavSticky}
                 onChangeDesktopVariant={handleDesktopNavVariantChange}
@@ -5812,7 +5796,6 @@ export function BuildPage({
                 onToggleTopNavEnabled={setTopNavEnabled}
                 onToggleTopNavTransparent={setTopNavTransparent}
                 onToggleDesktopEnabled={setDesktopNavEnabled}
-                onChangeDesktopDisplayStyle={handleDesktopNavDisplayStyleChange}
                 onChangeDesktopAlignment={setDesktopNavAlignment}
                 onToggleDesktopSticky={setDesktopNavSticky}
                 onReorder={(reordered) => setPages(reordered as AppPage[])}
