@@ -181,8 +181,8 @@ function buildTableConnection(element: CanvasElement, page: AppPage): DataTableC
     label: typeof label === 'string' && label.trim()
       ? label.trim()
       : component?.name ?? titleCase(element.componentId),
-    icon: isFormConnection ? 'cart-shopping-filled' : component?.icon ?? 'LayoutGrid',
-    iconCategory: isFormConnection ? 'finance' : undefined,
+    icon: isFormConnection ? 'product-form-builder-filled' : component?.icon ?? 'LayoutGrid',
+    iconCategory: isFormConnection ? 'products' : undefined,
     isFormElement: element.componentId === 'form',
   }
 }
