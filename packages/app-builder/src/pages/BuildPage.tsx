@@ -2876,7 +2876,7 @@ export function BuildPage({
         const containerRect = scrollContainer.getBoundingClientRect()
         const targetRect = target.getBoundingClientRect()
         const targetTop = scrollContainer.scrollTop + targetRect.top - containerRect.top
-        const targetY = Math.max(0, targetTop - (containerRect.height / 2) + (targetRect.height / 2))
+        const targetY = Math.max(0, targetTop)
         scrollContainer.scrollTo({ top: targetY, behavior: 'smooth' })
         initialElementFocusHandledRef.current = true
       })
