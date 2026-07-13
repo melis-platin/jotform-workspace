@@ -203,16 +203,3 @@
   max-height: 128px;
   margin: 0;
 }
-
-.jf-list__subtitle {
-  font-size: var(--font-size-label-lg);
-  font-weight: var(--font-weight-regular);
-  line-height: var(--line-height-label-lg);
-  color: var(--fg-secondary);
-  overflow: hidden;
-  margin: 0;
-
-  &--empty {
-    display: none;
-  }
-}

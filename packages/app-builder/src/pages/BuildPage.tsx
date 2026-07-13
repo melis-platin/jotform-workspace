@@ -685,36 +685,42 @@ function normalizeBohoNestSharedListSources(pages: AppPage[], preset: AppPreset 
 }
 
 // A List Title owns the visible heading for a list. When presets contain an
-// adjacent Heading, preserve its copy by moving it into the list instead.
+// adjacent Heading, preserve its title by moving it into the list instead.
 function normalizeListTitleHeaders(pages: AppPage[]): AppPage[] {
   return pages.map((page) => {
     let changed = false
     const elements = page.elements.reduce<CanvasElement[]>((result, element) => {
-      const listTitle = element.componentId === 'list'
-        ? String(element.properties.Title ?? '').trim()
-        : ''
+      if (element.componentId !== 'list') {
+        result.push(element)
+        return result
+      }
+
+      const { Subtitle: _legacySubtitle, ...listProperties } = element.properties
+      const list = _legacySubtitle === undefined
+        ? element
+        : { ...element, properties: listProperties }
+      if (_legacySubtitle !== undefined) changed = true
+      const listTitle = String(list.properties.Title ?? '').trim()
       const precedingElement = result.at(-1)
 
       if (!listTitle || precedingElement?.componentId !== 'heading') {
-        result.push(element)
+        result.push(list)
         return result
       }
 
       const headingTitle = String(precedingElement.properties.Heading ?? '').trim()
       if (!headingTitle) {
-        result.push(element)
+        result.push(list)
         return result
       }
 
-      const headingSubtitle = String(precedingElement.properties.Subheading ?? '').trim()
       changed = true
       result.pop()
       result.push({
-        ...element,
+        ...list,
         properties: {
-          ...element.properties,
+          ...list.properties,
           Title: headingTitle,
-          ...(headingSubtitle ? { Subtitle: headingSubtitle } : {}),
         },
       })
       return result
@@ -1520,7 +1526,6 @@ const INLINE_EDITABLE_MAP: Record<string, { selector: string; property: string }
   ],
   list: [
     { selector: '.jf-list__title', property: 'Title' },
-    { selector: '.jf-list__subtitle', property: 'Subtitle' },
   ],
   'product-list': [
     { selector: '.jf-product-list__title', property: 'Title' },

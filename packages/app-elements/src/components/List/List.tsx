@@ -21,7 +21,6 @@ export type CardSize = 'Small' | 'Medium' | 'Large';
 export interface ListProps {
   layout?: ListLayout;
   title?: string;
-  subtitle?: string;
   showHeader?: boolean;
   // Basic layout props
   imageStyle?: ListImageStyle;
@@ -202,7 +201,6 @@ const DEFAULT_ITEMS: ListItemData[] = [
 export const List: FC<ListProps> = ({
   layout = 'Basic',
   title = 'List',
-  subtitle = '',
   imageStyle = 'Square',
   size = 'Regular',
   action = 'None',
@@ -228,7 +226,6 @@ export const List: FC<ListProps> = ({
   const header = hasTitle ? (
     <div className="jf-list__heading">
       <h3 className="jf-list__title">{title}</h3>
-      <p className={`jf-list__subtitle ${!subtitle ? 'jf-list__subtitle--empty' : ''}`}>{subtitle}</p>
     </div>
   ) : null;
 
