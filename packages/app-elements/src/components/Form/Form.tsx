@@ -85,7 +85,7 @@ function parseOpenFormFields(raw?: string): OpenFormField[] | null {
           helpText: value.helpText,
           required: Boolean(value.required),
           labelHidden: Boolean(value.labelHidden),
-          width: value.width === 'full' ? 'full' : 'half',
+          width: value.width === 'full' || value.type === 'textarea' ? 'full' : 'half',
           options: Array.isArray(value.options) ? value.options.filter((option): option is string => typeof option === 'string') : undefined,
         };
       })
@@ -203,6 +203,7 @@ export const Form: FC<FormProps> = ({
               const fieldClasses = [
                 'jf-form-open__field',
                 `jf-form-open__field--${field.width ?? 'half'}`,
+                field.type === 'textarea' && 'jf-form-open__field--textarea',
                 field.type === 'radio' && 'jf-form-open__field--radio-group',
               ].filter(Boolean).join(' ');
               const labelClasses = [

@@ -226,6 +226,10 @@
   grid-column: 1 / -1;
 }
 
+.jf-form-open__field--textarea {
+  grid-column: 1 / -1;
+}
+
 .jf-form-open__field--radio-group {
   border: 0;
   padding: 0;
@@ -286,6 +290,13 @@
 
 .jf-form-open--designed .jf-form-open__input {
   background: var(--bg-fill);
+}
+
+.jf-form-open__input--textarea {
+  min-height: calc(var(--space-20) + var(--space-6));
+  border-radius: var(--radius-lg);
+  align-items: flex-start;
+  resize: vertical;
 }
 
 .jf-form-open__hint {
