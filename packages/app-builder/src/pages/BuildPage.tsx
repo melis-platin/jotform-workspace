@@ -7672,6 +7672,20 @@ export function BuildPage({
                       <div className="property-panel__body">
                         <div className="property-panel__field">
                           <DSFormField
+                            title="List Title"
+                            description="Displayed as a header above the list."
+                            size="md"
+                            showDescription
+                            showHelpText={false}
+                          >
+                            <DSInput
+                              value={String(selectedElement.properties.Title ?? 'List')}
+                              onChange={(e) => handlePropertyChange(selectedElement.id, 'Title', e.target.value)}
+                            />
+                          </DSFormField>
+                        </div>
+                        <div className="property-panel__field">
+                          <DSFormField
                             title="Data Source"
                             description={
                               <>
