@@ -10011,6 +10011,22 @@ body.builder--phone-only {
   margin-right: 0;
 }
 
+// Fullwidth, Contained and Compact desktop headers keep every navigation and
+// utility action on the same 20px rhythm. The Left layout owns a separate
+// sidebar navigation and intentionally retains its existing action spacing.
+.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header-nav {
+  gap: var(--space-5);
+  margin-right: var(--space-5);
+}
+
+.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header-right {
+  gap: var(--space-5);
+}
+
+.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--fullwidth-search-open .live-preview__top-header-nav {
+  margin-right: 0;
+}
+
 .live-preview__top-header-nav--fullwidth-search-hidden {
   max-width: 0;
   opacity: 0;
