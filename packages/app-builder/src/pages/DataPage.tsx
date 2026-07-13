@@ -172,6 +172,7 @@ function buildTableConnection(element: CanvasElement, page: AppPage): DataTableC
     || (element.componentId === 'button' && String(element.properties.Action ?? '') === 'Open Form')
   const isProductListConnection = element.componentId === 'product-list'
   const isDonationConnection = element.componentId === 'donation-box'
+  const isListConnection = element.componentId === 'list'
   const listTitle = element.componentId === 'list' ? element.properties.Title : undefined
   const label = isFormConnection
     ? getElementTitle(element, component?.name ?? 'Form')
@@ -189,6 +190,8 @@ function buildTableConnection(element: CanvasElement, page: AppPage): DataTableC
         ? 'cart-shopping-filled'
         : isDonationConnection
           ? 'heart-filled'
+          : isListConnection
+            ? 'list-bullet'
         : component?.icon ?? 'LayoutGrid',
     iconCategory: isFormConnection
       ? 'products'
@@ -196,6 +199,8 @@ function buildTableConnection(element: CanvasElement, page: AppPage): DataTableC
         ? 'finance'
         : isDonationConnection
           ? 'general'
+          : isListConnection
+            ? 'editor'
           : undefined,
     isFormElement: element.componentId === 'form',
   }
