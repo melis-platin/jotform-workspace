@@ -4883,7 +4883,7 @@ export function BuildPage({
         })()}
         {desktopNavEnabled && desktopNavVariant !== 'left' && !activePageIsDynamic && (
           <nav
-            className={`live-preview__top-header-nav${desktopTopNavUsesConstrainedLayout ? ' live-preview__top-header-nav--contained' : ''}${desktopFullwidthSearchOpen ? ' live-preview__top-header-nav--fullwidth-search-hidden' : ''}`}
+            className={`live-preview__top-header-nav${desktopTopNavUsesConstrainedLayout ? ' live-preview__top-header-nav--contained' : ''}${isDesktopNavMoreOpen ? ' live-preview__top-header-nav--more-open' : ''}${desktopFullwidthSearchOpen ? ' live-preview__top-header-nav--fullwidth-search-hidden' : ''}`}
             aria-hidden={desktopFullwidthSearchOpen}
           >
             {desktopTopNavPages.map((p) => (

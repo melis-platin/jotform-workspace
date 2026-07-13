@@ -9968,6 +9968,13 @@ body.builder--phone-only {
   overflow: visible;
 }
 
+// The Fullwidth navigation normally clips overflowing page labels. When More is
+// open, its page picker needs to extend below the header without being clipped.
+.live-preview__top-header-nav--more-open {
+  overflow: visible;
+  clip-path: none;
+}
+
 // Hide nav on mobile/tablet device frames — bottom nav handles paging there.
 .live-preview__phone-screen .live-preview__top-header-nav,
 .live-preview__tablet-screen .live-preview__top-header-nav {
@@ -10444,16 +10451,16 @@ body.builder--phone-only {
   z-index: 6;
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
-  width: max-content;
-  min-width: 200px;
-  max-width: 260px;
+  gap: 0;
+  width: 314px;
+  max-width: min(314px, calc(100vw - (var(--space-4) * 2)));
   box-sizing: border-box;
-  padding: var(--space-1);
+  padding: 0;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   background: var(--bg-fill);
   box-shadow: var(--shadow-md);
+  overflow: hidden;
 }
 
 .live-preview__top-header-nav-menu-item {
@@ -10461,17 +10468,17 @@ body.builder--phone-only {
   align-items: center;
   gap: var(--space-2);
   width: 100%;
-  min-height: 36px;
+  min-height: 48px;
   box-sizing: border-box;
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-3);
   border: 0;
-  border-radius: var(--radius-sm);
+  border-radius: 0;
   background: transparent;
   color: var(--fg-secondary);
-  font-family: var(--font-family);
-  font-size: 14px;
-  font-weight: var(--font-weight-medium);
-  line-height: 20px;
+  font-family: var(--font-family-shell);
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 24px;
   text-align: left;
   cursor: pointer;
 
