@@ -173,6 +173,7 @@ function buildTableConnection(element: CanvasElement, page: AppPage): DataTableC
   const isProductListConnection = element.componentId === 'product-list'
   const isDonationConnection = element.componentId === 'donation-box'
   const isListConnection = element.componentId === 'list'
+  const isAiWidgetConnection = isSharedTableConsumerId(element.componentId) && !isListConnection
   const listTitle = element.componentId === 'list' ? element.properties.Title : undefined
   const label = isFormConnection
     ? getElementTitle(element, component?.name ?? 'Form')
@@ -192,6 +193,8 @@ function buildTableConnection(element: CanvasElement, page: AppPage): DataTableC
           ? 'heart-filled'
           : isListConnection
             ? 'list-bullet'
+            : isAiWidgetConnection
+              ? 'ai-filled'
         : component?.icon ?? 'LayoutGrid',
     iconCategory: isFormConnection
       ? 'products'
@@ -201,6 +204,8 @@ function buildTableConnection(element: CanvasElement, page: AppPage): DataTableC
           ? 'general'
           : isListConnection
             ? 'editor'
+            : isAiWidgetConnection
+              ? 'ai'
           : undefined,
     isFormElement: element.componentId === 'form',
   }
