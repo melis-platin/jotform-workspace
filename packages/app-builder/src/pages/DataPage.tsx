@@ -165,7 +165,8 @@ function getElementTitle(element: CanvasElement, fallback: string): string {
 
 function buildTableConnection(element: CanvasElement, page: AppPage): DataTableConnection {
   const component = ComponentRegistry.get(element.componentId)
-  const label = element.properties.Label
+  const listTitle = element.componentId === 'list' ? element.properties.Title : undefined
+  const label = listTitle ?? element.properties.Label
 
   return {
     elementId: element.id,
