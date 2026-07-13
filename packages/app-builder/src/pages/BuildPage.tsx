@@ -1398,6 +1398,7 @@ const PROFILE_USER = {
 const HEADER_ACTION_ALLOWED = ['button', 'social-follow', 'image', 'spacer']
 const HEADER_ACTIONS_MAX = 3
 const DESKTOP_FULLWIDTH_NAV_VISIBLE_COUNT = 6
+const DESKTOP_CONSTRAINED_NAV_VISIBLE_COUNT = 2
 // In header context only Button can be shrinked (Social Follow stays full-width)
 const isHeaderShrinkable = (componentId: string): boolean => componentId === 'button'
 
@@ -3113,10 +3114,16 @@ export function BuildPage({
   })
   const hasNavOverflow = navPages.length >= 5
   const visibleNavPages = hasNavOverflow ? navPages.slice(0, 4) : navPages
-  const desktopTopNavUsesCompactOverflow = desktopNavVariant === 'contained' || desktopNavVariant === 'compact'
+  // Compact/contained desktop bars have limited horizontal room: show at most
+  // two page names, then keep the remaining pages under More.
+  const desktopTopNavUsesConstrainedLayout = desktopNavVariant === 'contained' || desktopNavVariant === 'compact'
+  const desktopTopNavUsesConstrainedOverflow = desktopTopNavUsesConstrainedLayout
+    && navPages.length > DESKTOP_CONSTRAINED_NAV_VISIBLE_COUNT
   const desktopTopNavUsesFullwidthOverflow = desktopNavVariant === 'top' && navPages.length > DESKTOP_FULLWIDTH_NAV_VISIBLE_COUNT
-  const desktopTopNavUsesOverflow = desktopTopNavUsesCompactOverflow || desktopTopNavUsesFullwidthOverflow
-  const desktopTopNavVisibleCount = desktopTopNavUsesCompactOverflow ? 2 : DESKTOP_FULLWIDTH_NAV_VISIBLE_COUNT
+  const desktopTopNavUsesOverflow = desktopTopNavUsesConstrainedOverflow || desktopTopNavUsesFullwidthOverflow
+  const desktopTopNavVisibleCount = desktopTopNavUsesConstrainedLayout
+    ? DESKTOP_CONSTRAINED_NAV_VISIBLE_COUNT
+    : DESKTOP_FULLWIDTH_NAV_VISIBLE_COUNT
   const desktopTopNavPages = desktopTopNavUsesOverflow ? navPages.slice(0, desktopTopNavVisibleCount) : navPages
   const desktopTopNavOverflowPages = desktopTopNavUsesOverflow ? navPages.slice(desktopTopNavVisibleCount) : []
   const desktopTopNavMoreActive = desktopTopNavOverflowPages.some((p) => p.id === activePageId)
@@ -4886,7 +4893,7 @@ export function BuildPage({
         })()}
         {desktopNavEnabled && desktopNavVariant !== 'left' && !activePageIsDynamic && (
           <nav
-            className={`live-preview__top-header-nav${desktopTopNavUsesCompactOverflow ? ' live-preview__top-header-nav--contained' : ''}${desktopFullwidthSearchOpen ? ' live-preview__top-header-nav--fullwidth-search-hidden' : ''}`}
+            className={`live-preview__top-header-nav${desktopTopNavUsesConstrainedLayout ? ' live-preview__top-header-nav--contained' : ''}${desktopFullwidthSearchOpen ? ' live-preview__top-header-nav--fullwidth-search-hidden' : ''}`}
             aria-hidden={desktopFullwidthSearchOpen}
           >
             {desktopTopNavPages.map((p) => (
