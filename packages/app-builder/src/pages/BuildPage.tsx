@@ -3841,6 +3841,7 @@ export function BuildPage({
     submitsTo: appHeaderState.ctaSubmitsTo,
   }
   const heroCtaActive = appHeaderIsHero && (appHeaderState.ctaEnabled ?? false)
+  const topHeaderActionIconSize = previewDevice === 'phone' ? 20 : 16
   // Transparent (overlay) mobile top nav — only on the first page while the hero is
   // shown, and only on the phone shell (the 54px status-bar offset is phone-specific).
   // Content follows the hero's resolved text color so it stays legible over the scrim.
@@ -4962,7 +4963,7 @@ export function BuildPage({
         )}
         <div className="live-preview__top-header-right">
           {!isDesktopPreviewSearchOpen && !activePageIsDynamic && hasCartTriggerElement && (
-            <LivePreviewCartButton onClick={() => { setIsNotificationsPageOpen(false); setIsPreviewSearchOpen(false); setIsDesktopPreviewSearchOpen(false); setIsPreviewCartOpen(true) }} />
+            <LivePreviewCartButton iconSize={topHeaderActionIconSize} onClick={() => { setIsNotificationsPageOpen(false); setIsPreviewSearchOpen(false); setIsDesktopPreviewSearchOpen(false); setIsPreviewCartOpen(true) }} />
           )}
           {pushNotificationsEnabled && (
             <LivePreviewNotificationButton
@@ -9264,7 +9265,7 @@ export function BuildPage({
                         })()}
                         <div className="live-preview__top-header-right">
                           {!isDesktopPreviewSearchOpen && !activePageIsDynamic && hasCartTriggerElement && (
-                            <LivePreviewCartButton onClick={() => { setIsNotificationsPageOpen(false); setIsPreviewSearchOpen(false); setIsDesktopPreviewSearchOpen(false); setIsPreviewCartOpen(true) }} />
+                            <LivePreviewCartButton iconSize={20} onClick={() => { setIsNotificationsPageOpen(false); setIsPreviewSearchOpen(false); setIsDesktopPreviewSearchOpen(false); setIsPreviewCartOpen(true) }} />
                           )}
                           {pushNotificationsEnabled && (
                             <LivePreviewNotificationButton
