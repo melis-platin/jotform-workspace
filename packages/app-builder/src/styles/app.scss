@@ -15055,9 +15055,38 @@ body.builder--phone-only {
   position: fixed;
   right: auto;
   z-index: 31;
+  width: 248px;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  border: 0;
+  border-radius: var(--ds-radius-sm, 4px);
+  background: var(--core-navy-600, #252d5b);
   opacity: 1;
   visibility: visible;
   pointer-events: auto;
+}
+
+.data-page__table-context-connections--portal .data-page__connection-menu-item {
+  height: 34px;
+  flex: 0 0 34px;
+  justify-content: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border: 0;
+  border-radius: 2px;
+  background: transparent;
+  color: var(--core-white);
+  font-size: 14px;
+  font-weight: 500;
+
+  &:hover,
+  &:focus-visible {
+    background: var(--core-navy-500, #343c6a);
+  }
+}
+
+.data-page__table-context-connections--portal .data-page__connection-menu-copy {
+  gap: var(--space-2);
 }
 
 .data-page__table-context-copy {

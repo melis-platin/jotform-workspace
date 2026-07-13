@@ -783,7 +783,6 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
                         )}
                         <span>{connection.label}</span>
                       </span>
-                      <Icon name="arrow-up-right-from-square-sm" category="arrows" size={12} />
                     </button>
                   ))}
                 </span>,
