@@ -9763,7 +9763,7 @@ body.builder--phone-only {
     top: 0;
     height: 64px;
     justify-content: flex-start;
-    gap: var(--space-6);
+    gap: var(--space-4);
     // Reveal-on-scroll-up animates; scroll-down hiding is driven imperatively
     // (transform tied to scroll, inline transition cleared) so it tracks content.
     transition: transform 0.25s ease, border-bottom-color 0.15s ease, box-shadow 0.15s ease;
