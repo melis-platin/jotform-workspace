@@ -725,6 +725,7 @@ export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget 
   const [activeTableId, setActiveTableId] = useState(() => tables[0]?.id ?? '')
   const [openConnectionTableId, setOpenConnectionTableId] = useState<string | null>(null)
   const [openTableMenuId, setOpenTableMenuId] = useState<string | null>(null)
+  const [formContextMenuOpen, setFormContextMenuOpen] = useState(false)
   const [openTableContextConnectionId, setOpenTableContextConnectionId] = useState<string | null>(null)
   const [tableContextConnectionAnchor, setTableContextConnectionAnchor] = useState<{ tableId: string; left: number; top: number } | null>(null)
   const tableContextConnectionCloseTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -751,6 +752,7 @@ export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget 
     setActiveTableId(dataTableNavigationTarget.tableId)
     setOpenConnectionTableId(null)
     setOpenTableMenuId(null)
+    setFormContextMenuOpen(false)
     setOpenTableContextConnectionId(null)
     setTableContextConnectionAnchor(null)
   }, [dataTableNavigationTarget, tables])
@@ -782,19 +784,25 @@ export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget 
   useEffect(() => () => clearTableContextConnectionCloseTimer(), [])
 
   useEffect(() => {
-    if (!openTableMenuId) return
+    if (!openTableMenuId && !formContextMenuOpen) return
 
     const handleOutsidePointerDown = (event: PointerEvent) => {
       if (!(event.target instanceof Element)) return
-      if (event.target.closest('.data-page__table-menu, .data-page__table-context-connections--portal')) return
+      if (event.target.closest('.data-page__table-menu, .data-page__table-context-connections--portal, .data-page__form-dropdown')) return
 
       setOpenTableMenuId(null)
+      setFormContextMenuOpen(false)
       closeTableContextConnections()
     }
 
     document.addEventListener('pointerdown', handleOutsidePointerDown)
     return () => document.removeEventListener('pointerdown', handleOutsidePointerDown)
-  }, [openTableMenuId])
+  }, [openTableMenuId, formContextMenuOpen])
+
+  useEffect(() => {
+    if (activeTable?.sourceType === 'Form') return
+    setFormContextMenuOpen(false)
+  }, [activeTable?.sourceType])
 
   const handleAddRow = () => {
     if (!activeTable) return
@@ -896,6 +904,7 @@ export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget 
                   setActiveTableId(table.id)
                   setOpenConnectionTableId(null)
                   setOpenTableMenuId(null)
+                  setFormContextMenuOpen(false)
                   setOpenTableContextConnectionId(null)
                   setTableContextConnectionAnchor(null)
                 }}
@@ -1059,11 +1068,54 @@ export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget 
               <Icon name="angle-down" category="arrows" size={16} />
             </button>
             {activeTable?.sourceType === 'Form' && (
-              <button type="button" className="data-page__form-dropdown-btn">
-                <Icon name="product-form-builder-filled" category="products" size={20} />
-                <span>Form</span>
-                <Icon name="angle-down" category="arrows" size={16} />
-              </button>
+              <span className={`data-page__form-dropdown${formContextMenuOpen ? ' data-page__form-dropdown--open' : ''}`}>
+                <button
+                  type="button"
+                  className="data-page__form-dropdown-btn"
+                  aria-haspopup="menu"
+                  aria-expanded={formContextMenuOpen}
+                  onClick={() => {
+                    setOpenConnectionTableId(null)
+                    setOpenTableMenuId(null)
+                    closeTableContextConnections()
+                    setFormContextMenuOpen((open) => !open)
+                  }}
+                >
+                  <Icon name="product-form-builder-filled" category="products" size={20} />
+                  <span>Form</span>
+                  <Icon name="angle-down" category="arrows" size={16} />
+                </button>
+                <span className="data-page__form-context-menu" role="menu" aria-label="Form options">
+                  <button
+                    type="button"
+                    role="menuitem"
+                    className="data-page__form-context-item"
+                    onClick={() => {
+                      setFormContextMenuOpen(false)
+                      const formConnection = activeTable.connections.find((connection) => connection.isFormElement) ?? activeTable.connections[0]
+                      if (formConnection) onElementNavigate?.(formConnection.pageId, formConnection.elementId)
+                    }}
+                  >
+                    <Icon name="arrow-up-right-from-square-sm" category="arrows" size={16} />
+                    <span>View Form</span>
+                  </button>
+                  <button type="button" role="menuitem" className="data-page__form-context-item" onClick={() => setFormContextMenuOpen(false)}>
+                    <Icon name="users-filled" category="users" size={16} />
+                    <span>Assing Form</span>
+                  </button>
+                  <button type="button" role="menuitem" className="data-page__form-context-item" onClick={() => setFormContextMenuOpen(false)}>
+                    <Icon name="pencil-to-square" category="general" size={16} />
+                    <span>Edit Form</span>
+                  </button>
+                  <button type="button" role="menuitem" className="data-page__form-context-item" onClick={() => setFormContextMenuOpen(false)}>
+                    <span className="data-page__form-context-copy">
+                      <Icon name="trash-clock-filled" category="general" size={16} />
+                      <span>Auto-Delete Submission</span>
+                    </span>
+                    <span className="data-page__form-context-badge">DISABLED</span>
+                  </button>
+                </span>
+              </span>
             )}
             <button type="button" className="data-page__download-btn">
               <Icon name="arrow-down-to-line" category="arrows" size={20} />
