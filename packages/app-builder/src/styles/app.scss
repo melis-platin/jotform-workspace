@@ -11497,7 +11497,7 @@ body.builder--phone-only {
 
 .live-preview__notifications-empty-copy {
   width: 100%;
-  max-width: 360px;
+  max-width: 420px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -11513,6 +11513,7 @@ body.builder--phone-only {
   line-height: var(--line-height-heading-xs);
   letter-spacing: 0;
   text-align: center;
+  white-space: nowrap;
 }
 
 .live-preview__notifications-empty-description {
