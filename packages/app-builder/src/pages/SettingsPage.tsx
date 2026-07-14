@@ -894,9 +894,11 @@ export interface PushNotificationsPanelProps {
   setDeepLink: (deepLink: string) => void
   notificationImage: PushComposerSelectedImage | null
   setNotificationImage: (image: PushComposerSelectedImage | null) => void
+  onViewChange?: (view: PushNotificationPanelView) => void
 }
 
 export type PushNotificationHistoryStatus = 'scheduled' | 'sent'
+export type PushNotificationPanelView = 'composer' | 'history'
 
 export interface PushComposerSelectedImage {
   url: string
@@ -953,7 +955,11 @@ export function PushNotificationsPanel({
   setDeepLink,
   notificationImage,
   setNotificationImage,
+  onViewChange,
 }: PushNotificationsPanelProps) {
+  const [activeView, setActiveView] = useState<PushNotificationPanelView>(() => (
+    historyItems.length > 0 ? 'history' : 'composer'
+  ))
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false)
   const [scheduleDate, setScheduleDate] = useState('')
   const [scheduleTime, setScheduleTime] = useState('')
@@ -1028,6 +1034,10 @@ export function PushNotificationsPanel({
     setScheduleTime('')
     setScheduleQuickPick('custom')
   }
+  const openNotificationComposer = () => {
+    resetNotificationComposer()
+    setActiveView('composer')
+  }
   const createBaseHistoryItem = (status: PushNotificationHistoryStatus) => ({
     id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
     status,
@@ -1063,6 +1073,7 @@ export function PushNotificationsPanel({
     })
     setIsScheduleModalOpen(false)
     resetNotificationComposer()
+    setActiveView('history')
   }
   const sendPushNotificationNow = () => {
     onHistoryItemCreate({
@@ -1071,6 +1082,7 @@ export function PushNotificationsPanel({
       liveInLabel: 'Sent just now',
     })
     resetNotificationComposer()
+    setActiveView('history')
   }
   const openScheduledNotificationEdit = (notification: PushNotificationHistoryItem) => {
     setEditingNotification(notification)
@@ -1120,65 +1132,91 @@ export function PushNotificationsPanel({
     closeScheduledNotificationEdit()
   }
 
+  useEffect(() => {
+    if (historyItems.length === 0 && activeView === 'history') {
+      setActiveView('composer')
+    }
+  }, [activeView, historyItems.length])
+
+  useEffect(() => {
+    onViewChange?.(activeView)
+  }, [activeView, onViewChange])
+
   return (
     <>
-      <PushNotificationComposer
-        titleEditorRef={notificationTitleEditorRef}
-        title={notificationTitle}
-        setTitle={setNotificationTitle}
-        titleFields={notificationTitleFields}
-        setTitleFields={setNotificationTitleFields}
-        onTitleFieldAdd={addNotificationTitleField}
-        titleSuffix={notificationTitleSuffix}
-        setTitleSuffix={setNotificationTitleSuffix}
-        content={notificationContent}
-        setContent={setNotificationContent}
-        contentFields={notificationContentFields}
-        onContentFieldAdd={addNotificationContentField}
-        onContentFieldRemove={removeNotificationContentField}
-        contentSuffix={notificationContentSuffix}
-        setContentSuffix={setNotificationContentSuffix}
-        fieldValues={fieldValues}
-        audience={audience}
-        setAudience={setAudience}
-        appUserRoles={appUserRoles}
-        deepLinkTargets={deepLinkTargets}
-        deepLink={deepLink}
-        setDeepLink={setDeepLink}
-        image={notificationImage}
-        setImage={setNotificationImage}
-      />
-      <div className="push-notification-actions">
-        <Button
-          variant="filled"
-          colorScheme="secondary"
-          disabled={areNotificationActionsDisabled}
-          leftIcon={<Icon name="paper-plane-diagonal-filled" category="communication" size={20} />}
-        >
-          SEND TEST
-        </Button>
-        <div className="push-notification-actions__right">
+      {activeView === 'composer' ? (
+        <>
+          <PushNotificationComposer
+            titleEditorRef={notificationTitleEditorRef}
+            title={notificationTitle}
+            setTitle={setNotificationTitle}
+            titleFields={notificationTitleFields}
+            setTitleFields={setNotificationTitleFields}
+            onTitleFieldAdd={addNotificationTitleField}
+            titleSuffix={notificationTitleSuffix}
+            setTitleSuffix={setNotificationTitleSuffix}
+            content={notificationContent}
+            setContent={setNotificationContent}
+            contentFields={notificationContentFields}
+            onContentFieldAdd={addNotificationContentField}
+            onContentFieldRemove={removeNotificationContentField}
+            contentSuffix={notificationContentSuffix}
+            setContentSuffix={setNotificationContentSuffix}
+            fieldValues={fieldValues}
+            audience={audience}
+            setAudience={setAudience}
+            appUserRoles={appUserRoles}
+            deepLinkTargets={deepLinkTargets}
+            deepLink={deepLink}
+            setDeepLink={setDeepLink}
+            image={notificationImage}
+            setImage={setNotificationImage}
+          />
+          <div className="push-notification-actions">
+            <Button
+              variant="filled"
+              colorScheme="secondary"
+              disabled={areNotificationActionsDisabled}
+              leftIcon={<Icon name="paper-plane-diagonal-filled" category="communication" size={20} />}
+            >
+              SEND TEST
+            </Button>
+            <div className="push-notification-actions__right">
+              <Button
+                colorScheme="primary"
+                disabled={areNotificationActionsDisabled}
+                onClick={() => setIsScheduleModalOpen(true)}
+              >
+                SCHEDULE
+              </Button>
+              <Button
+                colorScheme="constructive"
+                disabled={areNotificationActionsDisabled}
+                onClick={sendPushNotificationNow}
+              >
+                SEND NOW
+              </Button>
+            </div>
+          </div>
+        </>
+      ) : (
+        <section className="push-notification-dashboard" aria-label="Push notifications">
           <Button
+            className="push-notification-dashboard__create"
             colorScheme="primary"
-            disabled={areNotificationActionsDisabled}
-            onClick={() => setIsScheduleModalOpen(true)}
+            leftIcon={<Icon name="plus" category="general" size={16} />}
+            onClick={openNotificationComposer}
           >
-            SCHEDULE
+            Create New
           </Button>
-          <Button
-            colorScheme="constructive"
-            disabled={areNotificationActionsDisabled}
-            onClick={sendPushNotificationNow}
-          >
-            SEND NOW
-          </Button>
-        </div>
-      </div>
-      <PushNotificationHistory
-        notifications={historyItems}
-        onScheduledNotificationEdit={openScheduledNotificationEdit}
-        onScheduledNotificationCancel={openScheduledNotificationCancel}
-      />
+          <span className="push-notification-dashboard__divider" aria-hidden="true" />
+          <PushNotificationHistory
+            notifications={historyItems}
+            onScheduledNotificationEdit={openScheduledNotificationEdit}
+            onScheduledNotificationCancel={openScheduledNotificationCancel}
+          />
+        </section>
+      )}
 
       <Modal
         open={isScheduleModalOpen}

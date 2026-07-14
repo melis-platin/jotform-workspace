@@ -13296,6 +13296,39 @@ body.builder--phone-only {
   gap: var(--spacing-xs);
 }
 
+.push-notification-dashboard {
+  width: 660px;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  margin-top: var(--spacing-xl);
+}
+
+.push-notification-dashboard__create {
+  width: 100%;
+  height: var(--spacing-3xl);
+
+  .jf-btn__icon,
+  svg {
+    width: var(--spacing-md);
+    height: var(--spacing-md);
+  }
+}
+
+.push-notification-dashboard__divider {
+  width: calc(100% - var(--spacing-2xs));
+  height: 1px;
+  display: block;
+  margin-top: var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  background: var(--border-medium);
+}
+
+.push-notification-dashboard .push-notification-history {
+  margin-top: var(--spacing-xl);
+}
+
 .push-notification-history {
   width: 660px;
   max-width: 100%;

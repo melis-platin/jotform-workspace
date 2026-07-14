@@ -27,6 +27,7 @@ import {
   type PushComposerFieldValues,
   type PushComposerSelectedImage,
   type PushNotificationHistoryItem,
+  type PushNotificationPanelView,
 } from './SettingsPage'
 
 const NAV_ITEMS: SideNavItem[] = [
@@ -515,6 +516,9 @@ export function PublishPage({
   const [notificationAudience, setNotificationAudience] = useState<string[]>([ALL_USERS_AUDIENCE_ID])
   const [notificationDeepLink, setNotificationDeepLink] = useState('')
   const [notificationImage, setNotificationImage] = useState<PushComposerSelectedImage | null>(null)
+  const [pushNotificationPanelView, setPushNotificationPanelView] = useState<PushNotificationPanelView>(() => (
+    pushNotificationHistoryItems.length > 0 ? 'history' : 'composer'
+  ))
   const [isPermissionRequestModalOpen, setIsPermissionRequestModalOpen] = useState(false)
   const [permissionRequestTitle, setPermissionRequestTitle] = useState(PUSH_PERMISSION_REQUEST_DEFAULT_TITLE)
   const [permissionRequestContent, setPermissionRequestContent] = useState(PUSH_PERMISSION_REQUEST_DEFAULT_CONTENT)
@@ -522,6 +526,7 @@ export function PublishPage({
   const [inverseColor] = useCssVar('--fg-inverse', '#FFFFFF')
   const active = NAV_ITEMS.find((item) => item.id === activeId) ?? NAV_ITEMS[0]
   const isPushNotificationsOpen = activeId === 'push-notifications'
+  const shouldShowPushPreview = isPushNotificationsOpen && pushNotificationPanelView === 'composer'
   const pushNotificationIconStyle = 'flat'
   const previewNotificationTitle = formatPushNotificationTitle(
     notificationTitle,
@@ -537,7 +542,7 @@ export function PublishPage({
   )
 
   return (
-    <div className={`publish-page${isPushNotificationsOpen ? ' publish-page--with-preview' : ''}`}>
+    <div className={`publish-page${shouldShowPushPreview ? ' publish-page--with-preview' : ''}`}>
       <SideNav items={NAV_ITEMS} activeId={activeId} onChange={setActiveId} />
       <main className="publish-page__content">
         <div className="publish-page__main">
@@ -603,10 +608,11 @@ export function PublishPage({
               setDeepLink={setNotificationDeepLink}
               notificationImage={notificationImage}
               setNotificationImage={setNotificationImage}
+              onViewChange={setPushNotificationPanelView}
             />
           )}
         </div>
-        {isPushNotificationsOpen && (
+        {shouldShowPushPreview && (
           <div className="publish-page__preview">
             <QuickPreview>
               <BasicPhonePreview>
