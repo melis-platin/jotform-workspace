@@ -225,8 +225,8 @@ function inferColumnTypeFromKey(key: string, sampleValues: DataCellValue[] = [])
   if (/\b(amount|age|price|total|count|number|size|inventory|qty|quantity|value|metric|duration|sleep|energy)\b/.test(normalized)) return 'number'
   if (/\b(owner|assignee|assigned|responsible)\b/.test(normalized)) return 'assignee'
   if (/\b(tags?|categories|options|features)\b/.test(normalized)) return 'multipleSelection'
+  if (/\b(description|details?|notes?|message|comment|answer|question|reason|experience|allergies|medications|need|text|body|content|which|what|space)\b/.test(normalized)) return 'longText'
   if (/\b(status|category|session|class|track|type|goal|location)\b/.test(normalized)) return 'singleSelect'
-  if (/\b(description|details?|notes?|message|comment|answer|question|reason|experience|allergies|medications|need|text|body|content)\b/.test(normalized)) return 'longText'
   return 'shortText'
 }
 
