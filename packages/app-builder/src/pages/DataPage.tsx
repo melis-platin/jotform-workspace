@@ -608,8 +608,10 @@ function renderCellValue(column: DataColumn, value: DataCellValue) {
       </span>
     )
   }
-  if (typeof value === 'boolean') return value ? 'Yes' : 'No'
-  return value == null || value === '' ? '' : String(value)
+  const displayValue = typeof value === 'boolean'
+    ? value ? 'Yes' : 'No'
+    : value == null || value === '' ? '' : String(value)
+  return <span className="data-page__cell-text">{displayValue}</span>
 }
 
 function tableConnectionLabel(table: DataTable): string {
@@ -1012,7 +1014,10 @@ export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget 
                       <Icon name="ellipsis-vertical" category="general" size={16} className="data-page__row-more" />
                     </div>
                     {activeTable.columns.map((column) => (
-                      <div key={`${rowIndex}-${column.key}`} className="data-page__grid-cell data-page__grid-cell--body">
+                      <div
+                        key={`${rowIndex}-${column.key}`}
+                        className={`data-page__grid-cell data-page__grid-cell--body${column.type === 'longText' ? ' data-page__grid-cell--long-text' : ''}`}
+                      >
                         {renderCellValue(column, row[column.key])}
                       </div>
                     ))}

@@ -15448,6 +15448,19 @@ body.builder--phone-only {
   background: #fff;
 }
 
+.data-page__grid-cell--body .data-page__cell-text {
+  min-width: 0;
+  max-width: 100%;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.data-page__grid-cell--long-text {
+  min-width: 0;
+}
+
 .data-page__grid-cell--row-index {
   position: relative;
   background: #f3f3fe;
