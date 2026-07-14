@@ -10668,6 +10668,7 @@ body.builder--phone-only {
 }
 
 .live-preview__top-header-search {
+  --live-preview-desktop-search-card-width: 450px;
   --live-preview-search-input-bg: #f3f3fe;
   --live-preview-search-input-border: transparent;
   --live-preview-search-input-text: #343c6a;
@@ -11173,20 +11174,20 @@ body.builder--phone-only {
 
 .live-preview__top-header-search--contained-overlay .live-preview__desktop-search-featured {
   top: calc(100% + 8px);
-  width: min(450px, var(--live-preview-contained-search-max-width, 450px));
+  width: var(--live-preview-desktop-search-card-width);
   min-height: 0;
 }
 
 .live-preview__top-header-search--fullwidth-overlay .live-preview__desktop-search-featured {
   top: calc(100% + 8px);
-  width: 450px;
+  width: var(--live-preview-desktop-search-card-width);
   min-height: 0;
   box-shadow: 0 2px 4px 0 rgba(37, 45, 91, 0.04), 0 8px 16px 0 rgba(84, 95, 111, 0.16);
 }
 
 .live-preview__top-header-search--compact-overlay .live-preview__desktop-search-featured {
   top: calc(100% + 8px);
-  width: min(450px, var(--live-preview-contained-search-max-width, 450px));
+  width: var(--live-preview-desktop-search-card-width);
   min-height: 0;
   box-shadow: none;
 }
