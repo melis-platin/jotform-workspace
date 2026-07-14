@@ -725,6 +725,7 @@ export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget 
   const [activeTableId, setActiveTableId] = useState(() => tables[0]?.id ?? '')
   const [openConnectionTableId, setOpenConnectionTableId] = useState<string | null>(null)
   const [openTableMenuId, setOpenTableMenuId] = useState<string | null>(null)
+  const [columnsAiMenuOpen, setColumnsAiMenuOpen] = useState(false)
   const [formContextMenuOpen, setFormContextMenuOpen] = useState(false)
   const [openTableContextConnectionId, setOpenTableContextConnectionId] = useState<string | null>(null)
   const [tableContextConnectionAnchor, setTableContextConnectionAnchor] = useState<{ tableId: string; left: number; top: number } | null>(null)
@@ -752,6 +753,7 @@ export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget 
     setActiveTableId(dataTableNavigationTarget.tableId)
     setOpenConnectionTableId(null)
     setOpenTableMenuId(null)
+    setColumnsAiMenuOpen(false)
     setFormContextMenuOpen(false)
     setOpenTableContextConnectionId(null)
     setTableContextConnectionAnchor(null)
@@ -784,20 +786,31 @@ export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget 
   useEffect(() => () => clearTableContextConnectionCloseTimer(), [])
 
   useEffect(() => {
-    if (!openTableMenuId && !formContextMenuOpen) return
+    if (!openTableMenuId && !columnsAiMenuOpen && !formContextMenuOpen) return
 
     const handleOutsidePointerDown = (event: PointerEvent) => {
       if (!(event.target instanceof Element)) return
-      if (event.target.closest('.data-page__table-menu, .data-page__table-context-connections--portal, .data-page__form-dropdown')) return
+      if (event.target.closest('.data-page__table-menu, .data-page__table-context-connections--portal, .data-page__columns-ai-dropdown, .data-page__form-dropdown')) return
 
       setOpenTableMenuId(null)
+      setColumnsAiMenuOpen(false)
       setFormContextMenuOpen(false)
       closeTableContextConnections()
     }
 
     document.addEventListener('pointerdown', handleOutsidePointerDown)
     return () => document.removeEventListener('pointerdown', handleOutsidePointerDown)
-  }, [openTableMenuId, formContextMenuOpen])
+  }, [openTableMenuId, columnsAiMenuOpen, formContextMenuOpen])
+
+  const showColumnsAiMenu = Boolean(activeTable && (
+    activeTable.sourceType === 'List'
+    || activeTable.connections.some((connection) => connection.icon === 'ai-filled')
+  ))
+
+  useEffect(() => {
+    if (showColumnsAiMenu) return
+    setColumnsAiMenuOpen(false)
+  }, [showColumnsAiMenu])
 
   useEffect(() => {
     if (activeTable?.sourceType === 'Form') return
@@ -904,6 +917,7 @@ export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget 
                   setActiveTableId(table.id)
                   setOpenConnectionTableId(null)
                   setOpenTableMenuId(null)
+                  setColumnsAiMenuOpen(false)
                   setFormContextMenuOpen(false)
                   setOpenTableContextConnectionId(null)
                   setTableContextConnectionAnchor(null)
@@ -1062,11 +1076,54 @@ export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget 
             </button>
           </div>
           <div className="data-page__toolbar-actions">
-            <button type="button" className="data-page__utility-btn">
-              <DataPageAiSquaresIcon />
-              <span>Columns &amp; AI</span>
-              <Icon name="angle-down" category="arrows" size={16} />
-            </button>
+            <span className={`data-page__columns-ai-dropdown${columnsAiMenuOpen ? ' data-page__columns-ai-dropdown--open' : ''}`}>
+              <button
+                type="button"
+                className="data-page__utility-btn"
+                aria-haspopup={showColumnsAiMenu ? 'menu' : undefined}
+                aria-expanded={showColumnsAiMenu ? columnsAiMenuOpen : undefined}
+                onClick={() => {
+                  if (!showColumnsAiMenu) return
+                  setOpenConnectionTableId(null)
+                  setOpenTableMenuId(null)
+                  setFormContextMenuOpen(false)
+                  closeTableContextConnections()
+                  setColumnsAiMenuOpen((open) => !open)
+                }}
+              >
+                <DataPageAiSquaresIcon />
+                <span>Columns &amp; AI</span>
+                <Icon name="angle-down" category="arrows" size={16} />
+              </button>
+              {showColumnsAiMenu && (
+                <span className="data-page__columns-ai-menu" role="menu" aria-label="Columns and AI options">
+                  <span className="data-page__columns-ai-title">Show Hide Columns</span>
+                  <span className="data-page__columns-ai-search">
+                    <Icon name="magnifying-glass" category="general" size={16} />
+                    <span>Search in columns...</span>
+                  </span>
+                  <button type="button" role="menuitemcheckbox" aria-checked="true" className="data-page__columns-ai-item data-page__columns-ai-item--checked">
+                    <span className="data-page__columns-ai-check" />
+                    <span>Show All</span>
+                  </button>
+                  {['Submission Date', 'Source App', 'Name', 'Address', 'Email'].map((columnName) => (
+                    <button key={columnName} type="button" role="menuitemcheckbox" aria-checked="true" className="data-page__columns-ai-item data-page__columns-ai-item--checked">
+                      <span className="data-page__columns-ai-check" />
+                      <span>{columnName}</span>
+                    </button>
+                  ))}
+                  <span className="data-page__columns-ai-divider" />
+                  <button type="button" role="menuitem" className="data-page__columns-ai-action">
+                    <DataPageAiSquaresIcon />
+                    <span>Add a new AI column</span>
+                  </button>
+                  <button type="button" role="menuitem" className="data-page__columns-ai-action">
+                    <DataPagePlusSquareIcon />
+                    <span>Add a new column</span>
+                  </button>
+                </span>
+              )}
+            </span>
             {activeTable?.sourceType === 'Form' && (
               <span className={`data-page__form-dropdown${formContextMenuOpen ? ' data-page__form-dropdown--open' : ''}`}>
                 <button
@@ -1077,6 +1134,7 @@ export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget 
                   onClick={() => {
                     setOpenConnectionTableId(null)
                     setOpenTableMenuId(null)
+                    setColumnsAiMenuOpen(false)
                     closeTableContextConnections()
                     setFormContextMenuOpen((open) => !open)
                   }}
