@@ -11186,6 +11186,16 @@ body.builder--phone-only {
   min-height: 340px;
 }
 
+.live-preview__top-header-search .live-preview__desktop-search-featured--surface:has(.live-preview__search-page--desktop-context.live-preview__search-page--welcome) {
+  height: 310px;
+  min-height: 310px;
+}
+
+.live-preview__search-page--desktop-context.live-preview__search-page--welcome {
+  height: 310px;
+  min-height: 310px;
+}
+
 .live-preview__desktop-search-featured-hero {
   display: flex;
   flex-direction: column;
