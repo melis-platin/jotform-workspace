@@ -15204,6 +15204,8 @@ body.builder--phone-only {
 
 .data-page__utility-btn .jf-icon:first-child {
   flex: 0 0 var(--space-5);
+  width: var(--space-5);
+  height: var(--space-5);
   color: var(--product-ai-default);
 }
 
@@ -15212,6 +15214,11 @@ body.builder--phone-only {
 .data-page__download-btn .jf-icon,
 .data-page__download-btn .jf-icon svg {
   display: block;
+}
+
+.data-page__utility-btn .jf-icon:first-child svg {
+  width: var(--space-5);
+  height: var(--space-5);
 }
 
 .data-page__download-btn {
