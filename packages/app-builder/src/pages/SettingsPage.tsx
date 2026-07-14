@@ -3431,13 +3431,13 @@ export function SettingsPage({
             description={active.headerDescription ?? active.description}
             iconBg={active.iconBg}
             action={activeId === 'push-notifications' ? (
-              <TextLink
-                className="panel-header__action-link"
-                size="lg"
-                leftIcon={<Icon name="gear-filled" category="general" size={16} />}
+              <button
+                type="button"
+                className="panel-header__action-button"
+                aria-label="Edit push notification message"
               >
-                Settings
-              </TextLink>
+                <Icon name="message-ellipsis-pencil-filled" category="communication" size={16} />
+              </button>
             ) : undefined}
           />
           {activeId === 'app-settings' && (
