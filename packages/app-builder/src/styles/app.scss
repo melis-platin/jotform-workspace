@@ -14772,6 +14772,7 @@ body.builder--phone-only {
 .data-page__table-item {
   width: 100%;
   min-height: 56px;
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   gap: var(--space-1);
