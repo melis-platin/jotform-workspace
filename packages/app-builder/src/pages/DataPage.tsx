@@ -6,11 +6,24 @@ import { type AppPreset, type PresetElement } from '../presets/appPresets'
 import { buildInitialStateFromPreset, type AppPage, type CanvasElement } from './BuildPage'
 
 type DataCellValue = string | number | boolean | null | undefined
+type DataColumnType =
+  | 'shortText'
+  | 'longText'
+  | 'email'
+  | 'dateTime'
+  | 'attachment'
+  | 'starRating'
+  | 'singleSelect'
+  | 'multipleSelection'
+  | 'assignee'
+  | 'number'
+  | 'phoneNumber'
+  | 'checkbox'
 
 interface DataColumn {
   key: string
   label: string
-  type?: 'text' | 'image'
+  type: DataColumnType
 }
 
 interface DataTable {
@@ -46,6 +59,20 @@ const DATA_ELEMENT_IDS = new Set(['list', 'product-list', 'donation-box', 'form'
 const SHARED_TABLE_CONSUMER_IDS = new Set(['list', 'ai-widget'])
 const LIST_COLUMN_PRIORITY = ['title', 'name', 'description', 'image', 'avatar', 'photo', 'price', 'date', 'time', 'duration', 'coach', 'category', 'location', 'details', 'detail']
 const PRODUCT_COLUMN_PRIORITY = ['name', 'title', 'description', 'price', 'image', 'category', 'sku', 'inventory']
+const DATA_COLUMN_ICON_BY_TYPE: Record<DataColumnType, { name: string; category: string }> = {
+  shortText: { name: 'type-square-filled', category: 'editor' },
+  longText: { name: 'text', category: 'general' },
+  email: { name: 'at', category: 'general' },
+  dateTime: { name: 'calendar-filled', category: 'time-date' },
+  attachment: { name: 'paperclip-diagonal', category: 'forms-files' },
+  starRating: { name: 'star-filled', category: 'general' },
+  singleSelect: { name: 'tag-filled', category: 'finance' },
+  multipleSelection: { name: 'tags-filled', category: 'finance' },
+  assignee: { name: 'user-filled', category: 'users' },
+  number: { name: 'number-square-filled', category: 'general' },
+  phoneNumber: { name: 'phone-filled', category: 'communication' },
+  checkbox: { name: 'check-square-filled', category: 'general' },
+}
 const DEFAULT_FORM_FIELDS: FormFieldLike[] = [
   { name: 'fullName', label: 'Full Name', type: 'text' },
   { name: 'email', label: 'Email', type: 'email' },
@@ -178,6 +205,49 @@ function isImageKey(key: string): boolean {
   return normalized.includes('image') || normalized.includes('avatar') || normalized.includes('photo') || normalized.includes('logo')
 }
 
+function normalizeColumnText(value: string): string {
+  return value
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .replace(/[_-]+/g, ' ')
+    .toLowerCase()
+}
+
+function inferColumnTypeFromKey(key: string, sampleValues: DataCellValue[] = []): DataColumnType {
+  const normalized = normalizeColumnText(key)
+  const nonEmptyValues = sampleValues.filter((value) => value != null && value !== '')
+
+  if (nonEmptyValues.some((value) => typeof value === 'boolean')) return 'checkbox'
+  if (isImageKey(key) || /\b(file|attachment|upload|document|pdf)\b/.test(normalized)) return 'attachment'
+  if (/\b(email|e mail|mail)\b/.test(normalized)) return 'email'
+  if (/\b(phone|mobile|tel|telephone)\b/.test(normalized)) return 'phoneNumber'
+  if (/\b(date|time|submitted at|created at|updated|due)\b/.test(normalized)) return 'dateTime'
+  if (/\b(rating|score|stars?)\b/.test(normalized)) return 'starRating'
+  if (/\b(amount|age|price|total|count|number|size|inventory|qty|quantity|value|metric|duration|sleep|energy)\b/.test(normalized)) return 'number'
+  if (/\b(owner|assignee|assigned|responsible)\b/.test(normalized)) return 'assignee'
+  if (/\b(tags?|categories|options|features)\b/.test(normalized)) return 'multipleSelection'
+  if (/\b(status|category|session|class|track|type|goal|location)\b/.test(normalized)) return 'singleSelect'
+  if (/\b(description|details?|notes?|message|comment|answer|question|reason|experience|allergies|medications|need|text|body|content)\b/.test(normalized)) return 'longText'
+  return 'shortText'
+}
+
+function columnTypeFromFormField(field: FormFieldLike): DataColumnType {
+  const normalizedType = String(field.type ?? '').toLowerCase()
+  const key = `${field.name ?? ''} ${field.label ?? ''}`
+
+  if (['textarea', 'longtext', 'long-text', 'paragraph'].includes(normalizedType)) return 'longText'
+  if (normalizedType === 'email') return 'email'
+  if (['date', 'datetime', 'datetime-local', 'time'].includes(normalizedType)) return 'dateTime'
+  if (['file', 'attachment', 'upload'].includes(normalizedType)) return 'attachment'
+  if (['rating', 'star', 'star-rating'].includes(normalizedType)) return 'starRating'
+  if (['select', 'dropdown', 'radio', 'single-select'].includes(normalizedType)) return 'singleSelect'
+  if (['multiselect', 'multi-select', 'checkbox-group', 'multiple-selection'].includes(normalizedType)) return 'multipleSelection'
+  if (['assignee', 'user'].includes(normalizedType)) return 'assignee'
+  if (['number', 'numeric', 'range'].includes(normalizedType)) return 'number'
+  if (['tel', 'phone', 'phone-number'].includes(normalizedType)) return 'phoneNumber'
+  if (['checkbox', 'boolean', 'switch'].includes(normalizedType)) return 'checkbox'
+  return inferColumnTypeFromKey(key)
+}
+
 function orderKeys(keys: string[], priority: string[]): string[] {
   const lowerPriority = priority.map((key) => key.toLowerCase())
   return [...keys].sort((a, b) => {
@@ -197,7 +267,7 @@ function columnsFromRows(rows: Record<string, DataCellValue>[], priority: string
   return orderKeys(keys, priority).map((key) => ({
     key,
     label: titleCase(key),
-    type: isImageKey(key) ? 'image' : 'text',
+    type: inferColumnTypeFromKey(key, rows.map((row) => row[key])),
   }))
 }
 
@@ -341,10 +411,10 @@ function buildFormTable(element: CanvasElement, page: AppPage): DataTable {
     ...usableFields.map((field, index) => ({
       key: field.name || `field${index + 1}`,
       label: field.label || titleCase(field.name || `Field ${index + 1}`),
-      type: 'text' as const,
+      type: columnTypeFromFormField(field),
     })),
-    { key: 'submittedAt', label: 'Submitted At', type: 'text' as const },
-    { key: 'status', label: 'Status', type: 'text' as const },
+    { key: 'submittedAt', label: 'Submitted At', type: 'dateTime' as const },
+    { key: 'status', label: 'Status', type: 'singleSelect' as const },
   ]
   return {
     id: element.id,
@@ -531,7 +601,7 @@ export function collectDataTables(pages: AppPage[]): DataTable[] {
 }
 
 function renderCellValue(column: DataColumn, value: DataCellValue) {
-  if (column.type === 'image' && typeof value === 'string' && value.trim()) {
+  if (column.type === 'attachment' && typeof value === 'string' && value.trim()) {
     return (
       <span className="data-page__image-cell">
         <img src={value} alt="" />
@@ -548,9 +618,7 @@ function tableConnectionLabel(table: DataTable): string {
 }
 
 function columnHeaderIcon(column: DataColumn) {
-  return column.type === 'image'
-    ? { name: 'paperclip-diagonal', category: 'general' }
-    : { name: 'type-square-filled', category: 'general' }
+  return DATA_COLUMN_ICON_BY_TYPE[column.type]
 }
 
 interface DataPageProps {
