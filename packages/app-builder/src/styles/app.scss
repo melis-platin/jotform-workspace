@@ -15388,6 +15388,18 @@ body.builder--phone-only {
   letter-spacing: 0;
 }
 
+.data-page__grid-cell--add-column {
+  width: 86px;
+  min-width: 86px;
+  font-family: var(--ds-font-family);
+  line-height: 16px;
+  text-align: center;
+}
+
+.data-page__grid-cell--add-column .jf-icon {
+  color: #6c73a8;
+}
+
 .data-page__grid-cell--add-row {
   color: #0a1551;
   border-top: 0;
