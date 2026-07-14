@@ -3714,7 +3714,7 @@ export function BuildPage({
 
     const updateContainedSearchWidth = () => {
       if (!desktopConstrainedSearchOpen) {
-        header.style.removeProperty('--live-preview-contained-search-max-width')
+        header.style.removeProperty('--live-preview-contained-search-input-max-width')
         return
       }
 
@@ -3722,10 +3722,11 @@ export function BuildPage({
       const search = header.querySelector<HTMLElement>('.live-preview__top-header-search--contained-overlay, .live-preview__top-header-search--compact-overlay')
       if (!brand || !search) return
 
+      const searchForm = search.querySelector<HTMLElement>('.live-preview__top-header-search-form')
       const brandRect = brand.getBoundingClientRect()
-      const searchRect = search.getBoundingClientRect()
-      const maxWidth = Math.max(0, Math.floor(searchRect.right - brandRect.right - 8))
-      header.style.setProperty('--live-preview-contained-search-max-width', `${maxWidth}px`)
+      const searchRight = (searchForm ?? search).getBoundingClientRect().right
+      const maxWidth = Math.max(0, Math.floor(searchRight - brandRect.right - 8))
+      header.style.setProperty('--live-preview-contained-search-input-max-width', `${maxWidth}px`)
     }
 
     updateContainedSearchWidth()
@@ -3742,9 +3743,9 @@ export function BuildPage({
     return () => {
       resizeObserver.disconnect()
       window.removeEventListener('resize', updateContainedSearchWidth)
-      header.style.removeProperty('--live-preview-contained-search-max-width')
+      header.style.removeProperty('--live-preview-contained-search-input-max-width')
     }
-  }, [appTitle, activePageId, desktopConstrainedSearchOpen])
+  }, [appTitle, activePageId, desktopConstrainedSearchOpen, desktopNavAlignment, desktopNavVariant, previewDevice])
 
   // Single source of truth for the live-preview top-header's left affordance:
   // the Profile system page (back + "Profile") and the dynamic detail page (back

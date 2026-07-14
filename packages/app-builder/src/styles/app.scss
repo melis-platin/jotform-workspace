@@ -10753,7 +10753,7 @@ body.builder--phone-only {
 
 .live-preview__top-header-search--contained-overlay .live-preview__top-header-search-form,
 .live-preview__top-header-search--compact-overlay .live-preview__top-header-search-form {
-  width: min(450px, var(--live-preview-contained-search-max-width, 450px));
+  width: min(450px, var(--live-preview-contained-search-input-max-width, 450px));
 }
 
 .live-preview__top-header-search--fullwidth-nav-replacement {
