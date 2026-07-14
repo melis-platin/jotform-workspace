@@ -12832,15 +12832,6 @@ body.builder--phone-only {
   margin-top: calc(var(--spacing-3xl) + var(--spacing-2xs));
 }
 
-.push-notification-history__title {
-  margin-bottom: var(--spacing-sm);
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-md);
-  letter-spacing: var(--body-letter-spacing);
-  color: var(--text-darkest);
-}
-
 .push-notification-history__list {
   display: flex;
   flex-direction: column;
@@ -12849,68 +12840,6 @@ body.builder--phone-only {
 
 .push-notification-history__show-more {
   margin-top: var(--spacing-sm);
-}
-
-.push-notification-history__empty {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: var(--spacing-xl) 0;
-  background: var(--background-white);
-  border-radius: var(--ds-radius-sm);
-  box-shadow: var(--shadow-xs);
-  overflow: hidden;
-}
-
-.push-notification-history__empty-content {
-  width: 351px;
-  max-width: calc(100% - var(--spacing-4xl));
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-sm);
-  text-align: center;
-}
-
-.push-notification-history__empty-icon {
-  width: calc(var(--spacing-3xl) * 2);
-  height: calc(var(--spacing-3xl) * 2);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: var(--radius-rounded);
-  background: var(--background-light);
-
-  img {
-    width: var(--spacing-3xl);
-    height: var(--spacing-3xl);
-    display: block;
-  }
-}
-
-.push-notification-history__empty-copy {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: var(--spacing-2xs);
-
-  h3 {
-    font-size: var(--font-size-md);
-    font-weight: var(--font-weight-bold);
-    line-height: var(--line-height-md);
-    letter-spacing: var(--body-letter-spacing);
-    color: var(--text-darkest);
-  }
-
-  p {
-    display: flex;
-    flex-direction: column;
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-book);
-    line-height: var(--line-height-sm);
-    letter-spacing: var(--body-sm-letter-spacing);
-    color: var(--text-medium);
-  }
 }
 
 .push-notification-history-card {

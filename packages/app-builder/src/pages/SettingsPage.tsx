@@ -14,7 +14,6 @@ import {
   Toggle,
 } from '@jf/design-system'
 import { compressImageFile } from '@jf/app-elements'
-import historyEmptyIcon from '../assets/push-notifications/history-empty.svg'
 import lockscreenTime from '../assets/push-notifications/lockscreen-time.svg'
 import notificationWallpaper from '../assets/push-notifications/preview-wallpaper.png'
 import { BasicPhonePreview } from '../components/BasicPhonePreview'
@@ -1602,39 +1601,33 @@ function PushNotificationHistory({
   onScheduledNotificationCancel,
 }: PushNotificationHistoryProps) {
   const [visibleCount, setVisibleCount] = useState(5)
+
+  if (notifications.length === 0) return null
+
   const visibleNotifications = notifications.slice(0, visibleCount)
   const hasMoreNotifications = visibleCount < notifications.length
 
   return (
-    <section className="push-notification-history" aria-labelledby="push-notification-history-title">
-      <h2 id="push-notification-history-title" className="push-notification-history__title">
-        PUSH NOTIFICATION HISTORY
-      </h2>
-      {notifications.length > 0 ? (
-        <>
-          <div className="push-notification-history__list">
-            {visibleNotifications.map((notification) => (
-              <PushNotificationHistoryCard
-                key={notification.id}
-                notification={notification}
-                onEdit={onScheduledNotificationEdit}
-                onCancel={onScheduledNotificationCancel}
-              />
-            ))}
-          </div>
-          {hasMoreNotifications && (
-            <Button
-              className="push-notification-history__show-more"
-              variant="filled"
-              colorScheme="secondary"
-              onClick={() => setVisibleCount((count) => count + 5)}
-            >
-              SHOW MORE
-            </Button>
-          )}
-        </>
-      ) : (
-        <PushNotificationHistoryEmptyCard />
+    <section className="push-notification-history" aria-label="Push notification history">
+      <div className="push-notification-history__list">
+        {visibleNotifications.map((notification) => (
+          <PushNotificationHistoryCard
+            key={notification.id}
+            notification={notification}
+            onEdit={onScheduledNotificationEdit}
+            onCancel={onScheduledNotificationCancel}
+          />
+        ))}
+      </div>
+      {hasMoreNotifications && (
+        <Button
+          className="push-notification-history__show-more"
+          variant="filled"
+          colorScheme="secondary"
+          onClick={() => setVisibleCount((count) => count + 5)}
+        >
+          SHOW MORE
+        </Button>
       )}
     </section>
   )
@@ -1835,24 +1828,6 @@ function PushNotificationHistoryCard({ notification, onEdit, onCancel }: PushNot
         document.body
       )}
     </article>
-  )
-}
-
-function PushNotificationHistoryEmptyCard() {
-  return (
-    <div className="push-notification-history__empty">
-      <div className="push-notification-history__empty-content">
-        <span className="push-notification-history__empty-icon" aria-hidden="true">
-          <img src={historyEmptyIcon} alt="" />
-        </span>
-        <div className="push-notification-history__empty-copy">
-          <h3>No notifications yet</h3>
-          <p>
-            <span>Sent notifications will appear here so you can track delivery and engagement.</span>
-          </p>
-        </div>
-      </div>
-    </div>
   )
 }
 
