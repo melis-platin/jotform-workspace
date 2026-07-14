@@ -12371,6 +12371,7 @@ body.builder--phone-only {
 
 .push-composer-token-input {
   gap: var(--spacing-xs);
+  padding: 0 var(--spacing-xs);
   cursor: text;
 }
 
@@ -12408,6 +12409,10 @@ body.builder--phone-only {
 
 .push-composer-token-editor__text--tail {
   flex: 1 1 auto;
+}
+
+.push-composer-token-editor__text--empty {
+  display: none;
 }
 
 .push-composer-token-input--has-fields {
@@ -12469,7 +12474,7 @@ body.builder--phone-only {
   flex-wrap: wrap;
   gap: var(--spacing-xs);
   overflow-y: auto;
-  padding: var(--spacing-sm) var(--spacing-xs) 0 var(--spacing-sm);
+  padding: var(--spacing-xs) var(--spacing-xs) 0;
 
   &::-webkit-scrollbar {
     width: 12px;

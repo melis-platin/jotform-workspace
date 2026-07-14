@@ -2273,26 +2273,39 @@ const PushComposerTokenInput = forwardRef<PushComposerTokenEditorHandle, PushCom
           targetInput?.focus()
         }}
       >
-        {segments.map((segment, index) => (
-          segment.type === 'field' && segment.field ? (
-            <span
-              className="push-composer-field-token"
-              data-push-composer-field={segment.field.value}
-              key={`field-${segment.field.value}-${index}`}
-              onMouseDown={() => {
-                activeOffsetRef.current = getSegmentStart(index) + getPushComposerFieldMarker(segment.field as PushComposerFieldOption).length
-              }}
-            >
-              {segment.field.label}
-            </span>
-          ) : (
+        {segments.map((segment, index) => {
+          if (segment.type === 'field' && segment.field) {
+            return (
+              <span
+                className="push-composer-field-token"
+                data-push-composer-field={segment.field.value}
+                key={`field-${segment.field.value}-${index}`}
+                onMouseDown={() => {
+                  activeOffsetRef.current = getSegmentStart(index) + getPushComposerFieldMarker(segment.field as PushComposerFieldOption).length
+                }}
+              >
+                {segment.field.label}
+              </span>
+            )
+          }
+
+          const segmentText = segment.text ?? ''
+          const isTailSegment = index === segments.length - 1
+          const shouldHideEmptySegment = segmentText.length === 0 && !isTailSegment && !isEmpty
+          const textClassName = [
+            'push-composer-token-editor__text',
+            isTailSegment ? 'push-composer-token-editor__text--tail' : '',
+            shouldHideEmptySegment ? 'push-composer-token-editor__text--empty' : '',
+          ].filter(Boolean).join(' ')
+
+          return (
             <input
               ref={(node) => { textInputRefs.current[index] = node }}
-              className={`push-composer-token-editor__text${index === segments.length - 1 ? ' push-composer-token-editor__text--tail' : ''}`}
+              className={textClassName}
               aria-label={ariaLabel}
-              value={segment.text ?? ''}
+              value={segmentText}
               placeholder={isEmpty ? placeholder : undefined}
-              style={index === segments.length - 1 ? undefined : { width: `${Math.max((segment.text ?? '').length, 1)}ch` }}
+              style={isTailSegment || shouldHideEmptySegment ? undefined : { width: `${segmentText.length}ch` }}
               key={`text-${index}`}
               onChange={(event) => {
                 updateTextSegment(index, event.currentTarget.value, event.currentTarget.selectionStart ?? event.currentTarget.value.length)
@@ -2303,7 +2316,7 @@ const PushComposerTokenInput = forwardRef<PushComposerTokenEditorHandle, PushCom
               onKeyDown={(event) => handleTextKeyDown(index, event)}
             />
           )
-        ))}
+        })}
       </div>
     </div>
   )
