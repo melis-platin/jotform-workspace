@@ -108,6 +108,9 @@ interface PresetUserProfile {
 
 const TABLE_DATE = 'May 22, 2026'
 const PRESET_APP_USER_COUNT = 60
+const PUSH_PERMISSION_REQUEST_DEFAULT_TITLE = 'Stay updated!'
+const PUSH_PERMISSION_REQUEST_DEFAULT_CONTENT = 'Allow app notifications to get the latest news, updates, and exclusive offers delivered directly to your device.'
+const PUSH_PERMISSION_REQUEST_CONTENT_MAX_LENGTH = 400
 
 const OWNER_USER: AppUser = {
   id: 'app-owner',
@@ -512,6 +515,9 @@ export function PublishPage({
   const [notificationAudience, setNotificationAudience] = useState<string[]>([ALL_USERS_AUDIENCE_ID])
   const [notificationDeepLink, setNotificationDeepLink] = useState('')
   const [notificationImage, setNotificationImage] = useState<PushComposerSelectedImage | null>(null)
+  const [isPermissionRequestModalOpen, setIsPermissionRequestModalOpen] = useState(false)
+  const [permissionRequestTitle, setPermissionRequestTitle] = useState(PUSH_PERMISSION_REQUEST_DEFAULT_TITLE)
+  const [permissionRequestContent, setPermissionRequestContent] = useState(PUSH_PERMISSION_REQUEST_DEFAULT_CONTENT)
   const [brandColor] = useCssVar('--fg-brand', '#7D38EF')
   const [inverseColor] = useCssVar('--fg-inverse', '#FFFFFF')
   const active = NAV_ITEMS.find((item) => item.id === activeId) ?? NAV_ITEMS[0]
@@ -546,6 +552,9 @@ export function PublishPage({
                 type="button"
                 className="panel-header__action-button panel-header__action-button--permission-message"
                 aria-label="Edit push notification message"
+                aria-haspopup="dialog"
+                aria-expanded={isPermissionRequestModalOpen}
+                onClick={() => setIsPermissionRequestModalOpen(true)}
               >
                 <Icon name="message-ellipsis-pencil-filled" category="communication" size={16} />
                 <span className="panel-header__action-button-label">Permission Message</span>
@@ -617,7 +626,153 @@ export function PublishPage({
           </div>
         )}
       </main>
+      {isPermissionRequestModalOpen && (
+        <PushPermissionRequestModal
+          title={permissionRequestTitle}
+          content={permissionRequestContent}
+          onClose={() => setIsPermissionRequestModalOpen(false)}
+          onSave={(nextTitle, nextContent) => {
+            setPermissionRequestTitle(nextTitle)
+            setPermissionRequestContent(nextContent)
+            setIsPermissionRequestModalOpen(false)
+          }}
+        />
+      )}
     </div>
+  )
+}
+
+interface PushPermissionRequestModalProps {
+  title: string
+  content: string
+  onClose: () => void
+  onSave: (title: string, content: string) => void
+}
+
+function PushPermissionRequestModal({ title, content, onClose, onSave }: PushPermissionRequestModalProps) {
+  const modalRef = useRef<HTMLElement | null>(null)
+  const [draftTitle, setDraftTitle] = useState(title)
+  const [draftContent, setDraftContent] = useState(content)
+  const isSaveDisabled = draftTitle.trim().length === 0 || draftContent.trim().length === 0
+
+  useEffect(() => {
+    modalRef.current?.focus({ preventScroll: true })
+
+    const previousOverflow = document.body.style.overflow
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.stopPropagation()
+        onClose()
+      }
+    }
+
+    document.body.style.overflow = 'hidden'
+    document.addEventListener('keydown', handleKeyDown, true)
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+      document.removeEventListener('keydown', handleKeyDown, true)
+    }
+  }, [onClose])
+
+  return createPortal(
+    <div
+      className="push-permission-request-modal__backdrop"
+      role="presentation"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) {
+          onClose()
+        }
+      }}
+    >
+      <section
+        ref={modalRef}
+        className="push-permission-request-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="push-permission-request-modal-title"
+        tabIndex={-1}
+        onMouseDown={(event) => event.stopPropagation()}
+      >
+        <header className="push-permission-request-modal__header">
+          <div className="push-permission-request-modal__header-main">
+            <span className="push-permission-request-modal__icon" aria-hidden="true">
+              <Icon name="message-ellipsis-pencil-filled" category="communication" size={24} />
+            </span>
+            <div className="push-permission-request-modal__heading">
+              <h2 id="push-permission-request-modal-title">Edit Permission Request</h2>
+              <p>This message will invite users to opt into receiving notifications from your app.</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            className="push-permission-request-modal__close"
+            aria-label="Close permission request modal"
+            onClick={onClose}
+          >
+            <Icon name="xmark" category="general" size={20} />
+          </button>
+        </header>
+
+        <div className="push-permission-request-modal__body">
+          <label className="push-permission-request-modal__field" htmlFor="push-permission-request-title">
+            <span className="push-permission-request-modal__label-block">
+              <span className="push-permission-request-modal__label">
+                <span>Title</span>
+                <span className="push-permission-request-modal__required">*</span>
+              </span>
+              <span className="push-permission-request-modal__description">Enter a short, descriptive title for your message.</span>
+            </span>
+            <input
+              id="push-permission-request-title"
+              className="push-permission-request-modal__input"
+              value={draftTitle}
+              onChange={(event) => setDraftTitle(event.currentTarget.value)}
+            />
+          </label>
+
+          <label className="push-permission-request-modal__field" htmlFor="push-permission-request-content">
+            <span className="push-permission-request-modal__label-block">
+              <span className="push-permission-request-modal__label">
+                <span>Content</span>
+                <span className="push-permission-request-modal__required">*</span>
+              </span>
+              <span className="push-permission-request-modal__description">Invite users to opt into receiving notifications from your app.</span>
+            </span>
+            <span className="push-permission-request-modal__textarea-control">
+              <textarea
+                id="push-permission-request-content"
+                className="push-permission-request-modal__textarea"
+                value={draftContent}
+                maxLength={PUSH_PERMISSION_REQUEST_CONTENT_MAX_LENGTH}
+                onChange={(event) => setDraftContent(event.currentTarget.value)}
+              />
+              <span className="push-permission-request-modal__count" aria-live="polite">
+                <span>{draftContent.length}</span>
+                <span>/</span>
+                <span>{PUSH_PERMISSION_REQUEST_CONTENT_MAX_LENGTH}</span>
+              </span>
+            </span>
+          </label>
+        </div>
+
+        <footer className="push-permission-request-modal__footer">
+          <button
+            type="button"
+            className="push-permission-request-modal__save"
+            disabled={isSaveDisabled}
+            onClick={() => {
+              if (!isSaveDisabled) {
+                onSave(draftTitle, draftContent)
+              }
+            }}
+          >
+            Save
+          </button>
+        </footer>
+      </section>
+    </div>,
+    document.body
   )
 }
 
