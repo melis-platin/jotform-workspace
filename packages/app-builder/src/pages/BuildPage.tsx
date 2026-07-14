@@ -5090,12 +5090,6 @@ export function BuildPage({
           {!isDesktopPreviewSearchOpen && !activePageIsDynamic && hasCartTriggerElement && (
             <LivePreviewCartButton iconSize={topHeaderActionIconSize} onClick={() => { setIsNotificationsPageOpen(false); setIsPreviewSearchOpen(false); setIsDesktopPreviewSearchOpen(false); setIsPreviewCartOpen(true) }} />
           )}
-          {pushNotificationsEnabled && (
-            <LivePreviewNotificationButton
-              unreadCount={roleScopedUnreadPushNotificationCount}
-              onClick={openNotificationsPage}
-            />
-          )}
           {isPreviewLoggedIn ? (
             <>
               {/* The profile page (mobile/tablet) drops the account avatar from the
@@ -5103,6 +5097,12 @@ export function BuildPage({
               {!(isPreviewProfileOpen && previewDevice !== 'desktop') && (
                 <>
                   {renderTopHeaderSearchButton(previewDevice)}
+                  {pushNotificationsEnabled && (
+                    <LivePreviewNotificationButton
+                      unreadCount={roleScopedUnreadPushNotificationCount}
+                      onClick={openNotificationsPage}
+                    />
+                  )}
                   <button
                     type="button"
                     className="live-preview__top-header-avatar-btn"
@@ -5148,6 +5148,12 @@ export function BuildPage({
           ) : (
             <>
               {renderTopHeaderSearchButton(previewDevice)}
+              {pushNotificationsEnabled && (
+                <LivePreviewNotificationButton
+                  unreadCount={roleScopedUnreadPushNotificationCount}
+                  onClick={openNotificationsPage}
+                />
+              )}
               <button
                 type="button"
                 className="live-preview__top-header-login-btn"
@@ -9385,12 +9391,6 @@ export function BuildPage({
                           {!isDesktopPreviewSearchOpen && !activePageIsDynamic && hasCartTriggerElement && (
                             <LivePreviewCartButton iconSize={20} onClick={() => { setIsNotificationsPageOpen(false); setIsPreviewSearchOpen(false); setIsDesktopPreviewSearchOpen(false); setIsPreviewCartOpen(true) }} />
                           )}
-                          {pushNotificationsEnabled && (
-                            <LivePreviewNotificationButton
-                              unreadCount={roleScopedUnreadPushNotificationCount}
-                              onClick={openNotificationsPage}
-                            />
-                          )}
                           {isPreviewLoggedIn ? (
                             <>
                               {/* Profile page (mobile/tablet): drop the account avatar
@@ -9398,6 +9398,12 @@ export function BuildPage({
                               {!(isPreviewProfileOpen && previewDevice !== 'desktop') && (
                                 <>
                                   {renderTopHeaderSearchButton('phone')}
+                                  {pushNotificationsEnabled && (
+                                    <LivePreviewNotificationButton
+                                      unreadCount={roleScopedUnreadPushNotificationCount}
+                                      onClick={openNotificationsPage}
+                                    />
+                                  )}
                                   <button
                                     type="button"
                                     className="live-preview__top-header-avatar-btn"
@@ -9431,6 +9437,12 @@ export function BuildPage({
                           ) : (
                             <>
                               {renderTopHeaderSearchButton('phone')}
+                              {pushNotificationsEnabled && (
+                                <LivePreviewNotificationButton
+                                  unreadCount={roleScopedUnreadPushNotificationCount}
+                                  onClick={openNotificationsPage}
+                                />
+                              )}
                               <button
                                 type="button"
                                 className="live-preview__top-header-login-btn"

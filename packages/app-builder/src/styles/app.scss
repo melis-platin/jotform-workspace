@@ -1931,6 +1931,7 @@ body {
   color: inherit;
 }
 .live-preview__top-header--transparent:not(.live-preview__top-header--over-content) .live-preview__top-header-search-btn,
+.live-preview__top-header--transparent:not(.live-preview__top-header--over-content) .live-preview__top-header-notification-btn,
 .live-preview__top-header--transparent:not(.live-preview__top-header--over-content) .live-preview__cart-btn {
   background: transparent;
   border: 0;
@@ -11228,14 +11229,15 @@ body.builder--phone-only {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: calc(var(--spacing-xs) - var(--spacing-3xs));
-  border: var(--spacing-3xs) solid var(--app-bg);
+  padding: 0;
+  border: 0;
   border-radius: var(--radius-rounded);
-  background: var(--background-white);
+  background: transparent;
   color: var(--fg-secondary);
   line-height: 0;
   cursor: pointer;
-  backdrop-filter: blur(var(--spacing-3xs));
+  box-shadow: none;
+  backdrop-filter: none;
 }
 
 .live-preview__top-header-notification-btn:focus-visible,
@@ -11253,11 +11255,19 @@ body.builder--phone-only {
 
 .live-preview__top-header-search-btn:hover,
 .live-preview__top-header-search-btn:active,
-.live-preview__top-header-search-btn:focus-visible {
+.live-preview__top-header-search-btn:focus-visible,
+.live-preview__top-header-notification-btn:hover,
+.live-preview__top-header-notification-btn:active,
+.live-preview__top-header-notification-btn:focus-visible {
   border: 0;
   background: transparent;
   box-shadow: none;
   backdrop-filter: none;
+}
+
+.live-preview__top-header-notification-btn svg {
+  width: 20px;
+  height: 20px;
 }
 
 .app-preview-screen__desktop .live-preview__top-header-search:not(.live-preview__top-header-search--persistent) {
