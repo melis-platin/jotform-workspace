@@ -1045,6 +1045,22 @@ export function PushNotificationsPanel({
     setCanReturnToHistory(true)
     setActiveView('composer')
   }
+  const duplicateNotification = (notification: PushNotificationHistoryItem) => {
+    setNotificationTitle(notification.title)
+    setNotificationTitleFields([])
+    setNotificationTitleSuffix('')
+    setNotificationContent(notification.content)
+    setNotificationContentFields([])
+    setNotificationContentSuffix('')
+    setAudience(getHistoryAudienceValue(notification, appUserRoles))
+    setDeepLink(getHistoryDeepLinkValue(notification, deepLinkTargets))
+    setNotificationImage(notification.image ?? null)
+    setScheduleDate('')
+    setScheduleTime('')
+    setScheduleQuickPick('custom')
+    setCanReturnToHistory(true)
+    setActiveView('composer')
+  }
   const returnToNotificationHistory = () => {
     resetNotificationComposer()
     setCanReturnToHistory(false)
@@ -1241,6 +1257,7 @@ export function PushNotificationsPanel({
             notifications={historyItems}
             onScheduledNotificationEdit={openScheduledNotificationEdit}
             onScheduledNotificationCancel={openScheduledNotificationCancel}
+            onNotificationDuplicate={duplicateNotification}
           />
         </section>
       )}
@@ -1648,12 +1665,14 @@ interface PushNotificationHistoryProps {
   notifications: PushNotificationHistoryItem[]
   onScheduledNotificationEdit: (notification: PushNotificationHistoryItem) => void
   onScheduledNotificationCancel: (notification: PushNotificationHistoryItem) => void
+  onNotificationDuplicate: (notification: PushNotificationHistoryItem) => void
 }
 
 function PushNotificationHistory({
   notifications,
   onScheduledNotificationEdit,
   onScheduledNotificationCancel,
+  onNotificationDuplicate,
 }: PushNotificationHistoryProps) {
   const [visibleCount, setVisibleCount] = useState(5)
 
@@ -1671,6 +1690,7 @@ function PushNotificationHistory({
             notification={notification}
             onEdit={onScheduledNotificationEdit}
             onCancel={onScheduledNotificationCancel}
+            onDuplicate={onNotificationDuplicate}
           />
         ))}
       </div>
@@ -1692,9 +1712,10 @@ interface PushNotificationHistoryCardProps {
   notification: PushNotificationHistoryItem
   onEdit: (notification: PushNotificationHistoryItem) => void
   onCancel: (notification: PushNotificationHistoryItem) => void
+  onDuplicate: (notification: PushNotificationHistoryItem) => void
 }
 
-function PushNotificationHistoryCard({ notification, onEdit, onCancel }: PushNotificationHistoryCardProps) {
+function PushNotificationHistoryCard({ notification, onEdit, onCancel, onDuplicate }: PushNotificationHistoryCardProps) {
   const isScheduled = notification.status === 'scheduled'
   const statusBadgeLabel = isScheduled ? notification.statusLabel : 'Send'
   const destinationLabel = getDisplayDeepLinkLabel(notification.deepLinkLabel)
@@ -1869,6 +1890,9 @@ function PushNotificationHistoryCard({ notification, onEdit, onCancel }: PushNot
                 closeActionsMenu()
                 if (item.label === 'Edit') {
                   onEdit(notification)
+                }
+                if (item.label === 'Duplicate') {
+                  onDuplicate(notification)
                 }
                 if (item.label === 'Cancel Notification') {
                   onCancel(notification)
