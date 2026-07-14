@@ -1113,12 +1113,12 @@ export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget 
                     </button>
                   ))}
                   <span className="data-page__columns-ai-divider" />
-                  <button type="button" role="menuitem" className="data-page__columns-ai-action">
-                    <DataPageAiSquaresIcon />
+                  <button type="button" role="menuitem" className="data-page__columns-ai-action data-page__columns-ai-action--ai">
+                    <Icon name="ai-filled" category="ai" size={16} />
                     <span>Add a new AI column</span>
                   </button>
-                  <button type="button" role="menuitem" className="data-page__columns-ai-action">
-                    <DataPagePlusSquareIcon />
+                  <button type="button" role="menuitem" className="data-page__columns-ai-action data-page__columns-ai-action--column">
+                    <Icon name="plus-circle-filled" category="general" size={16} />
                     <span>Add a new column</span>
                   </button>
                 </span>
