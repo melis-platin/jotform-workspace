@@ -528,6 +528,7 @@ function normalizeGymTrainerDynamicPages(pages: AppPage[], preset: AppPreset | u
 
 const CAMP_PINECREST_REQUIRED_PAGES = ['Home', 'Programs', 'Sessions', 'Counselors', 'My Campers', 'Forms', 'Family Hub']
 const CAMP_PINECREST_FORMS_INTRO_HEADINGS = new Set(['forms & documents', 'open forms'])
+const CAMP_PINECREST_PAYMENT_ELEMENT_IDS = new Set(['product-list', 'donation-box'])
 
 function isDynamicListElement(element: CanvasElement): boolean {
   return element.componentId === 'list' && String(element.properties['Click Action'] ?? '') === 'Open Dynamic Page'
@@ -634,12 +635,34 @@ function removeCampPinecrestFormsIntro(pages: AppPage[]): AppPage[] {
   })
 }
 
+function removeCampPinecrestPaymentElements(pages: AppPage[]): AppPage[] {
+  return pages.map((page) => {
+    let changed = false
+    const elements = page.elements.reduce<CanvasElement[]>((result, element) => {
+      if (CAMP_PINECREST_PAYMENT_ELEMENT_IDS.has(element.componentId)) {
+        changed = true
+        return result
+      }
+
+      if (element.componentId === 'spacer' && result.at(-1)?.componentId === 'spacer') {
+        changed = true
+        return result
+      }
+
+      result.push(element)
+      return result
+    }, [])
+
+    return changed ? { ...page, elements } : page
+  })
+}
+
 function normalizeCampPinecrestPages(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {
   if (preset?.id !== 'camp-registration') return pages
   const basePages = hasCampPinecrestStructure(pages)
     ? pages
     : buildAppPagesFromPresetPages(preset.pages, 1).pages
-  return ensureDynamicPagesForOpenDynamicLists(removeCampPinecrestFormsIntro(basePages))
+  return ensureDynamicPagesForOpenDynamicLists(removeCampPinecrestPaymentElements(removeCampPinecrestFormsIntro(basePages)))
 }
 
 function normalizeBohoNestSharedListSources(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {

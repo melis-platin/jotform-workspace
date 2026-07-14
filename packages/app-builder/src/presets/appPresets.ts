@@ -1311,25 +1311,6 @@ export const APP_PRESETS: AppPreset[] = [
           },
           {
             componentId: 'spacer',
-            properties: { Height: 32 },
-          },
-          {
-            componentId: 'donation-box',
-            variants: { Alignment: 'Center', Size: 'Mobile' },
-            properties: {
-              Title: 'Scholarship Fund 2026',
-              Description: 'Every dollar gives a child their first summer adventure.',
-              'Show Goal': true,
-              'Raised Amount': '$3,420',
-              'Goal Amount': '$8,000',
-              'Goal Progress': 43,
-              'Show Custom Amount': true,
-              'Currency Symbol': '$',
-              'Button Label': 'Donate Now',
-            },
-          },
-          {
-            componentId: 'spacer',
             properties: { Height: 24 },
           },
           {
