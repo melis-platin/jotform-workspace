@@ -14849,16 +14849,6 @@ body.builder--phone-only {
   justify-content: center;
 }
 
-.data-page__table-connection::after {
-  content: '';
-  position: absolute;
-  z-index: 19;
-  top: 100%;
-  left: 16px;
-  width: 180px;
-  height: var(--space-1);
-}
-
 .data-page__table-link-badge {
   position: absolute;
   right: 0;
@@ -14875,10 +14865,6 @@ body.builder--phone-only {
   border-radius: var(--radius-rounded, 9999px);
   background: var(--primary-background-white, #fff);
   color: var(--text-dark, #343c6a);
-  cursor: pointer;
-}
-
-.data-page__table-link-badge--static {
   cursor: default;
 }
 
@@ -14898,12 +14884,6 @@ body.builder--phone-only {
   visibility: hidden;
   pointer-events: none;
   transition: opacity 120ms ease, visibility 120ms ease;
-}
-
-.data-page__table-connection--open .data-page__connection-menu {
-  opacity: 1;
-  visibility: visible;
-  pointer-events: auto;
 }
 
 .data-page__connection-menu-item {

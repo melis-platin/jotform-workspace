@@ -692,11 +692,6 @@ function renderCellValue(column: DataColumn, value: DataCellValue, selectionColo
   return <span className="data-page__cell-text">{displayValue}</span>
 }
 
-function tableConnectionLabel(table: DataTable): string {
-  const connectionCount = table.connections.length
-  return `${table.name} is connected to ${connectionCount} ${connectionCount === 1 ? 'element' : 'elements'}`
-}
-
 function columnHeaderIcon(column: DataColumn) {
   return DATA_COLUMN_ICON_BY_TYPE[column.type]
 }
@@ -723,7 +718,6 @@ export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget 
   const initialState = useMemo(() => buildInitialStateFromPreset(preset), [preset])
   const tables = useMemo(() => collectDataTables(initialState.pages), [initialState.pages])
   const [activeTableId, setActiveTableId] = useState(() => tables[0]?.id ?? '')
-  const [openConnectionTableId, setOpenConnectionTableId] = useState<string | null>(null)
   const [openTableMenuId, setOpenTableMenuId] = useState<string | null>(null)
   const [columnsAiMenuOpen, setColumnsAiMenuOpen] = useState(false)
   const [formContextMenuOpen, setFormContextMenuOpen] = useState(false)
@@ -751,7 +745,6 @@ export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget 
     if (!dataTableNavigationTarget) return
     if (!tables.some((table) => table.id === dataTableNavigationTarget.tableId)) return
     setActiveTableId(dataTableNavigationTarget.tableId)
-    setOpenConnectionTableId(null)
     setOpenTableMenuId(null)
     setColumnsAiMenuOpen(false)
     setFormContextMenuOpen(false)
@@ -859,63 +852,19 @@ export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget 
               key={table.id}
               className={`data-page__table-item${table.id === activeTable?.id ? ' data-page__table-item--active' : ''}`}
             >
-              {table.connections.length > 0 ? (
-                <span
-                  className={`data-page__table-connection${openConnectionTableId === table.id ? ' data-page__table-connection--open' : ''}`}
-                  onMouseLeave={() => setOpenConnectionTableId((openTableId) => openTableId === table.id ? null : openTableId)}
-                >
-                  <span className="data-page__table-icon" aria-hidden="true">
-                    <Icon name="product-tables-mono" category="products" size={28} />
-                  </span>
-                  <button
-                    type="button"
-                    className="data-page__table-link-badge"
-                    aria-label={tableConnectionLabel(table)}
-                    aria-haspopup="menu"
-                    aria-expanded={openConnectionTableId === table.id}
-                    onClick={() => setOpenConnectionTableId((openTableId) => openTableId === table.id ? null : table.id)}
-                  >
-                    <Icon name="link-diagonal" category="general" size={12} />
-                  </button>
-                  <span className="data-page__connection-menu" role="menu" aria-label={`Elements connected to ${table.name}`}>
-                    {table.connections.map((connection) => (
-                      <button
-                        key={`${connection.pageId}:${connection.elementId}`}
-                        type="button"
-                        role="menuitem"
-                        className="data-page__connection-menu-item"
-                        onClick={() => onElementNavigate?.(connection.pageId, connection.elementId)}
-                        title={connection.label}
-                      >
-                        <span className="data-page__connection-menu-copy">
-                          {connection.iconCategory ? (
-                            <Icon name={connection.icon} category={connection.iconCategory} size={16} />
-                          ) : (
-                            <AppIcon name={connection.icon} size={16} />
-                          )}
-                          <span>{connection.label}</span>
-                        </span>
-                        <Icon name="arrow-up-right-from-square-sm" category="arrows" size={12} />
-                      </button>
-                    ))}
-                  </span>
+              <span className="data-page__table-connection" aria-hidden="true">
+                <span className="data-page__table-icon">
+                  <Icon name="product-tables-mono" category="products" size={28} />
                 </span>
-              ) : (
-                <span className="data-page__table-connection data-page__table-connection--static" aria-hidden="true">
-                  <span className="data-page__table-icon">
-                    <Icon name="product-tables-mono" category="products" size={28} />
-                  </span>
-                  <span className="data-page__table-link-badge data-page__table-link-badge--static">
-                    <Icon name="link-diagonal" category="general" size={12} />
-                  </span>
+                <span className="data-page__table-link-badge">
+                  <Icon name="link-diagonal" category="general" size={12} />
                 </span>
-              )}
+              </span>
               <button
                 type="button"
                 className="data-page__table-select"
                 onClick={() => {
                   setActiveTableId(table.id)
-                  setOpenConnectionTableId(null)
                   setOpenTableMenuId(null)
                   setColumnsAiMenuOpen(false)
                   setFormContextMenuOpen(false)
@@ -936,7 +885,6 @@ export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget 
                   aria-expanded={openTableMenuId === table.id}
                   onClick={() => {
                     clearTableContextConnectionCloseTimer()
-                    setOpenConnectionTableId(null)
                     setOpenTableContextConnectionId(null)
                     setTableContextConnectionAnchor(null)
                     setOpenTableMenuId((openTableId) => openTableId === table.id ? null : table.id)
@@ -1084,7 +1032,6 @@ export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget 
                 aria-expanded={showColumnsAiMenu ? columnsAiMenuOpen : undefined}
                 onClick={() => {
                   if (!showColumnsAiMenu) return
-                  setOpenConnectionTableId(null)
                   setOpenTableMenuId(null)
                   setFormContextMenuOpen(false)
                   closeTableContextConnections()
@@ -1132,7 +1079,6 @@ export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget 
                   aria-haspopup="menu"
                   aria-expanded={formContextMenuOpen}
                   onClick={() => {
-                    setOpenConnectionTableId(null)
                     setOpenTableMenuId(null)
                     setColumnsAiMenuOpen(false)
                     closeTableContextConnections()
