@@ -544,10 +544,11 @@ export function PublishPage({
             action={isPushNotificationsOpen ? (
               <button
                 type="button"
-                className="panel-header__action-button"
+                className="panel-header__action-button panel-header__action-button--permission-message"
                 aria-label="Edit push notification message"
               >
                 <Icon name="message-ellipsis-pencil-filled" category="communication" size={16} />
+                <span className="panel-header__action-button-label">Permission Message</span>
               </button>
             ) : undefined}
           />

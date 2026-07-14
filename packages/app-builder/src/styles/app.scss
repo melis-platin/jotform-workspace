@@ -8400,6 +8400,39 @@ body {
   }
 }
 
+.panel-header__action-button--permission-message {
+  width: auto;
+  min-width: var(--space-20);
+  padding: 0 var(--space-2);
+  gap: 0;
+  background: var(--purple-400);
+  font-family: var(--ds-font-family);
+  font-size: var(--ds-font-size-xs);
+  font-weight: var(--ds-font-weight-medium);
+  line-height: var(--ds-line-height-xs);
+  letter-spacing: -0.006em;
+
+  .jf-icon,
+  svg {
+    width: var(--space-4);
+    height: var(--space-4);
+    flex: 0 0 var(--space-4);
+  }
+
+  &:hover {
+    background: var(--product-apps-default);
+  }
+}
+
+.panel-header__action-button-label {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--space-4);
+  padding: 0 var(--space-1);
+  white-space: nowrap;
+}
+
 .settings-panel__card {
   width: 661px;
   max-width: 100%;
