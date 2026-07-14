@@ -2904,6 +2904,10 @@ body {
   overflow: hidden;
 }
 
+.live-preview__content-scaler:has(.live-preview__notifications-page--empty) {
+  overflow: hidden;
+}
+
 .live-preview__content {
   width: calc(100% / 0.9);
   flex: 1;

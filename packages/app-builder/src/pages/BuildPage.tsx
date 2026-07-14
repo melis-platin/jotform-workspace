@@ -2611,7 +2611,7 @@ function LivePreviewNotificationsPage({
 
   if (notifications.length === 0) {
     return (
-      <div className="live-preview__notifications-page">
+      <div className="live-preview__notifications-page live-preview__notifications-page--empty">
         <div className="live-preview__notifications-empty" role="status" aria-live="polite">
           <span className="live-preview__notifications-empty-icon" aria-hidden="true">
             <Icon name="bell-diagonal-filled" category="alerts-feedback" size={32} />
