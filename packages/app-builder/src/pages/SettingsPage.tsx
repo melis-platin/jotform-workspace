@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ChangeEventHandler, type KeyboardEvent as ReactKeyboardEvent, type MouseEvent as ReactMouseEvent, type ReactNode, type RefObject } from 'react'
+import { forwardRef, useEffect, useImperativeHandle, useLayoutEffect, useMemo, useRef, useState, type CSSProperties, type ChangeEventHandler, type FocusEvent as ReactFocusEvent, type KeyboardEvent as ReactKeyboardEvent, type MouseEvent as ReactMouseEvent, type ReactNode, type RefObject } from 'react'
 import { createPortal } from 'react-dom'
 import {
   Button,
@@ -1951,6 +1951,58 @@ interface PushComposerTokenEditorHandle {
   insertField: (field: PushComposerFieldOption) => boolean
 }
 
+interface PushComposerTokenEditorTextProps {
+  inputRef: (node: HTMLInputElement | null) => void
+  className: string
+  ariaLabel: string
+  value: string
+  placeholder?: string
+  isTailSegment: boolean
+  shouldHideEmptySegment: boolean
+  onChange: ChangeEventHandler<HTMLInputElement>
+  onFocus: (event: ReactFocusEvent<HTMLInputElement>) => void
+  onClick: (event: ReactMouseEvent<HTMLInputElement>) => void
+  onKeyUp: (event: ReactKeyboardEvent<HTMLInputElement>) => void
+  onKeyDown: (event: ReactKeyboardEvent<HTMLInputElement>) => void
+}
+
+function PushComposerTokenEditorText({
+  inputRef,
+  className,
+  ariaLabel,
+  value,
+  placeholder,
+  isTailSegment,
+  shouldHideEmptySegment,
+  onChange,
+  onFocus,
+  onClick,
+  onKeyUp,
+  onKeyDown,
+}: PushComposerTokenEditorTextProps) {
+  const measuredInputRef = useRef<HTMLInputElement | null>(null)
+  const measuredWidth = useMeasuredInputWidth(value, measuredInputRef)
+
+  return (
+    <input
+      ref={(node) => {
+        measuredInputRef.current = node
+        inputRef(node)
+      }}
+      className={className}
+      aria-label={ariaLabel}
+      value={value}
+      placeholder={placeholder}
+      style={isTailSegment || shouldHideEmptySegment ? undefined : { width: measuredWidth }}
+      onChange={onChange}
+      onFocus={onFocus}
+      onClick={onClick}
+      onKeyUp={onKeyUp}
+      onKeyDown={onKeyDown}
+    />
+  )
+}
+
 interface PushComposerSegment {
   type: 'text' | 'field'
   text?: string
@@ -2299,13 +2351,14 @@ const PushComposerTokenInput = forwardRef<PushComposerTokenEditorHandle, PushCom
           ].filter(Boolean).join(' ')
 
           return (
-            <input
-              ref={(node) => { textInputRefs.current[index] = node }}
+            <PushComposerTokenEditorText
               className={textClassName}
-              aria-label={ariaLabel}
+              inputRef={(node) => { textInputRefs.current[index] = node }}
+              ariaLabel={ariaLabel}
               value={segmentText}
               placeholder={isEmpty ? placeholder : undefined}
-              style={isTailSegment || shouldHideEmptySegment ? undefined : { width: `${segmentText.length}ch` }}
+              isTailSegment={isTailSegment}
+              shouldHideEmptySegment={shouldHideEmptySegment}
               key={`text-${index}`}
               onChange={(event) => {
                 updateTextSegment(index, event.currentTarget.value, event.currentTarget.selectionStart ?? event.currentTarget.value.length)
