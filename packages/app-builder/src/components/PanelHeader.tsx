@@ -7,13 +7,15 @@ interface PanelHeaderProps {
   title: string
   description: string
   iconBg?: string
+  leading?: ReactNode
   action?: ReactNode
 }
 
-export function PanelHeader({ icon, iconCategory, title, description, iconBg, action }: PanelHeaderProps) {
+export function PanelHeader({ icon, iconCategory, title, description, iconBg, leading, action }: PanelHeaderProps) {
   return (
     <header className="panel-header">
       <div className="panel-header__main">
+        {leading && <div className="panel-header__leading">{leading}</div>}
         <span
           className="panel-header__icon"
           style={iconBg ? { background: iconBg } : undefined}

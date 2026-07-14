@@ -895,6 +895,8 @@ export interface PushNotificationsPanelProps {
   notificationImage: PushComposerSelectedImage | null
   setNotificationImage: (image: PushComposerSelectedImage | null) => void
   onViewChange?: (view: PushNotificationPanelView) => void
+  onCanReturnToHistoryChange?: (canReturnToHistory: boolean) => void
+  returnToHistoryRequestId?: number
 }
 
 export type PushNotificationHistoryStatus = 'scheduled' | 'sent'
@@ -956,10 +958,14 @@ export function PushNotificationsPanel({
   notificationImage,
   setNotificationImage,
   onViewChange,
+  onCanReturnToHistoryChange,
+  returnToHistoryRequestId = 0,
 }: PushNotificationsPanelProps) {
   const [activeView, setActiveView] = useState<PushNotificationPanelView>(() => (
     historyItems.length > 0 ? 'history' : 'composer'
   ))
+  const [canReturnToHistory, setCanReturnToHistory] = useState(false)
+  const handledReturnToHistoryRequestIdRef = useRef(returnToHistoryRequestId)
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false)
   const [scheduleDate, setScheduleDate] = useState('')
   const [scheduleTime, setScheduleTime] = useState('')
@@ -1036,7 +1042,13 @@ export function PushNotificationsPanel({
   }
   const openNotificationComposer = () => {
     resetNotificationComposer()
+    setCanReturnToHistory(true)
     setActiveView('composer')
+  }
+  const returnToNotificationHistory = () => {
+    resetNotificationComposer()
+    setCanReturnToHistory(false)
+    setActiveView('history')
   }
   const createBaseHistoryItem = (status: PushNotificationHistoryStatus) => ({
     id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
@@ -1073,6 +1085,7 @@ export function PushNotificationsPanel({
     })
     setIsScheduleModalOpen(false)
     resetNotificationComposer()
+    setCanReturnToHistory(false)
     setActiveView('history')
   }
   const sendPushNotificationNow = () => {
@@ -1082,6 +1095,7 @@ export function PushNotificationsPanel({
       liveInLabel: 'Sent just now',
     })
     resetNotificationComposer()
+    setCanReturnToHistory(false)
     setActiveView('history')
   }
   const openScheduledNotificationEdit = (notification: PushNotificationHistoryItem) => {
@@ -1134,6 +1148,7 @@ export function PushNotificationsPanel({
 
   useEffect(() => {
     if (historyItems.length === 0 && activeView === 'history') {
+      setCanReturnToHistory(false)
       setActiveView('composer')
     }
   }, [activeView, historyItems.length])
@@ -1141,6 +1156,18 @@ export function PushNotificationsPanel({
   useEffect(() => {
     onViewChange?.(activeView)
   }, [activeView, onViewChange])
+
+  useEffect(() => {
+    onCanReturnToHistoryChange?.(activeView === 'composer' && canReturnToHistory)
+  }, [activeView, canReturnToHistory, onCanReturnToHistoryChange])
+
+  useEffect(() => {
+    if (returnToHistoryRequestId === handledReturnToHistoryRequestIdRef.current) return
+
+    handledReturnToHistoryRequestIdRef.current = returnToHistoryRequestId
+
+    if (returnToHistoryRequestId > 0) returnToNotificationHistory()
+  }, [returnToHistoryRequestId])
 
   return (
     <>

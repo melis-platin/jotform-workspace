@@ -519,6 +519,8 @@ export function PublishPage({
   const [pushNotificationPanelView, setPushNotificationPanelView] = useState<PushNotificationPanelView>(() => (
     pushNotificationHistoryItems.length > 0 ? 'history' : 'composer'
   ))
+  const [canReturnToPushHistory, setCanReturnToPushHistory] = useState(false)
+  const [pushHistoryReturnRequestId, setPushHistoryReturnRequestId] = useState(0)
   const [isPermissionRequestModalOpen, setIsPermissionRequestModalOpen] = useState(false)
   const [permissionRequestTitle, setPermissionRequestTitle] = useState(PUSH_PERMISSION_REQUEST_DEFAULT_TITLE)
   const [permissionRequestContent, setPermissionRequestContent] = useState(PUSH_PERMISSION_REQUEST_DEFAULT_CONTENT)
@@ -552,6 +554,16 @@ export function PublishPage({
             title={active.headerTitle ?? active.title}
             description={active.headerDescription ?? active.description}
             iconBg={active.iconBg}
+            leading={isPushNotificationsOpen && canReturnToPushHistory ? (
+              <button
+                type="button"
+                className="panel-header__back-button"
+                aria-label="Back to push notification history"
+                onClick={() => setPushHistoryReturnRequestId((requestId) => requestId + 1)}
+              >
+                <Icon name="chevron-left" category="arrows" size={20} />
+              </button>
+            ) : undefined}
             action={isPushNotificationsOpen ? (
               <button
                 type="button"
@@ -609,6 +621,8 @@ export function PublishPage({
               notificationImage={notificationImage}
               setNotificationImage={setNotificationImage}
               onViewChange={setPushNotificationPanelView}
+              onCanReturnToHistoryChange={setCanReturnToPushHistory}
+              returnToHistoryRequestId={pushHistoryReturnRequestId}
             />
           )}
         </div>
