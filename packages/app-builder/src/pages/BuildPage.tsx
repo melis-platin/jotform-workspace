@@ -4006,7 +4006,7 @@ export function BuildPage({
   // Not while the hamburger menu is open — the menu covers the hero with a solid
   // panel, so the nav reverts to its normal (opaque) bar there (close icon visible,
   // content no longer tucked under the bar).
-  const topNavOverlay = topNavEnabled && topNavTransparent && activeIsFirstPage && appHeaderState.show && previewDevice === 'phone' && !isMorePageOpen && !isPreviewSearchOpen
+  const topNavOverlay = topNavEnabled && topNavTransparent && activeIsFirstPage && appHeaderState.show && previewDevice === 'phone' && !isMorePageOpen && !isPreviewSearchOpen && !isNotificationsPageOpen
   // When the hero uses the theme brand bg (no custom colour/image), resolveHeaderTextColor
   // is undefined and the AppHeader text falls back to --fg-inverse — so the overlay nav
   // (icon already uses --fg-inverse) must too, or the title/menu read dark on the brand.
