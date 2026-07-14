@@ -14860,7 +14860,7 @@ body.builder--phone-only {
   position: absolute;
   z-index: 19;
   top: 100%;
-  right: 0;
+  left: 16px;
   width: 180px;
   height: var(--space-1);
 }
@@ -14892,7 +14892,7 @@ body.builder--phone-only {
   position: absolute;
   z-index: 20;
   top: calc(100% + var(--space-1));
-  right: 0;
+  left: 16px;
   width: 180px;
   display: flex;
   flex-direction: column;
