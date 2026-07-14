@@ -15315,6 +15315,22 @@ body.builder--phone-only {
   text-overflow: ellipsis;
 }
 
+.data-page__grid .jf-icon,
+.data-page__grid .jf-icon svg {
+  display: block;
+}
+
+.data-page__grid .jf-icon {
+  flex: 0 0 var(--space-4);
+  width: var(--space-4);
+  height: var(--space-4);
+}
+
+.data-page__grid .jf-icon svg {
+  width: var(--space-4);
+  height: var(--space-4);
+}
+
 .data-page__grid-cell--corner,
 .data-page__grid-cell--header,
 .data-page__grid-cell--add-column {
@@ -15466,8 +15482,16 @@ body.builder--phone-only {
 }
 
 .data-page__row-star {
+  flex: 0 0 var(--space-5);
+  width: var(--space-5);
+  height: var(--space-5);
   color: #c8ceed;
   transition: color 120ms ease;
+}
+
+.data-page__row-star svg {
+  width: var(--space-5);
+  height: var(--space-5);
 }
 
 .data-page__row-more {
