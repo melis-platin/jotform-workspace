@@ -1058,6 +1058,13 @@ export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget 
               <span>Columns &amp; AI</span>
               <Icon name="angle-down" category="arrows" size={16} />
             </button>
+            {activeTable?.sourceType === 'Form' && (
+              <button type="button" className="data-page__form-dropdown-btn">
+                <Icon name="product-form-builder-filled" category="products" size={20} />
+                <span>Form</span>
+                <Icon name="angle-down" category="arrows" size={16} />
+              </button>
+            )}
             <button type="button" className="data-page__download-btn">
               <Icon name="arrow-down-to-line" category="arrows" size={20} />
               <span>Download All</span>
