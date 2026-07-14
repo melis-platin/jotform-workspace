@@ -73,6 +73,27 @@ function DataPageAiSquaresIcon() {
   )
 }
 
+function DataPagePlusSquareIcon() {
+  return (
+    <span className="jf-icon data-page__plus-square-icon" aria-hidden="true">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M3.33333 1.33333C2.22876 1.33333 1.33333 2.22876 1.33333 3.33333V12.6667C1.33333 13.7712 2.22876 14.6667 3.33333 14.6667H12.6667C13.7712 14.6667 14.6667 13.7712 14.6667 12.6667V3.33333C14.6667 2.22876 13.7712 1.33333 12.6667 1.33333H3.33333ZM8 4.66667C8.36819 4.66667 8.66667 4.96514 8.66667 5.33333V7.33333H10.6667C11.0349 7.33333 11.3333 7.63181 11.3333 8C11.3333 8.36819 11.0349 8.66667 10.6667 8.66667H8.66667V10.6667C8.66667 11.0349 8.36819 11.3333 8 11.3333C7.63181 11.3333 7.33333 11.0349 7.33333 10.6667V8.66667H5.33333C4.96514 8.66667 4.66667 8.36819 4.66667 8C4.66667 7.63181 4.96514 7.33333 5.33333 7.33333H7.33333V5.33333C7.33333 4.96514 7.63181 4.66667 8 4.66667Z"
+          fill="url(#data-page-plus-square-gradient)"
+        />
+        <defs>
+          <linearGradient id="data-page-plus-square-gradient" x1="1.33333" y1="8" x2="14.6667" y2="8" gradientUnits="userSpaceOnUse">
+            <stop offset="0.323411" stopColor="#9747FF" />
+            <stop offset="1" stopColor="#0099FF" />
+          </linearGradient>
+        </defs>
+      </svg>
+    </span>
+  )
+}
+
 export function presetUsesDataElement(preset: AppPreset): boolean {
   return preset.pages.some((page) => page.elements.some(isPresetDataElement))
 }
@@ -908,7 +929,7 @@ export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget 
                   )
                 })}
                 <div className="data-page__grid-cell data-page__grid-cell--add-column">
-                  <Icon name="plus-square-filled" category="general" size={16} />
+                  <DataPagePlusSquareIcon />
                   ADD
                 </div>
 
