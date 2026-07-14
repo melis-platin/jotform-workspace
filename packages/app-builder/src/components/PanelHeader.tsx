@@ -13,7 +13,7 @@ interface PanelHeaderProps {
 
 export function PanelHeader({ icon, iconCategory, title, description, iconBg, leading, action }: PanelHeaderProps) {
   return (
-    <header className="panel-header">
+    <header className={`panel-header${leading ? ' panel-header--with-leading' : ''}`}>
       <div className="panel-header__main">
         {leading && <div className="panel-header__leading">{leading}</div>}
         <span

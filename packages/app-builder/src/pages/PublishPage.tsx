@@ -561,7 +561,7 @@ export function PublishPage({
                 aria-label="Back to push notification history"
                 onClick={() => setPushHistoryReturnRequestId((requestId) => requestId + 1)}
               >
-                <Icon name="chevron-left" category="arrows" size={20} />
+                <Icon name="chevron-left" category="arrows" size={24} />
               </button>
             ) : undefined}
             action={isPushNotificationsOpen ? (
