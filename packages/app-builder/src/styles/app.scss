@@ -9934,42 +9934,6 @@ body.builder--phone-only {
     margin-left: auto;
   }
 
-  // Contained and compact headers keep the app identity visible for signed-in
-  // users. While search is open, its field fills the space between that identity
-  // and the notification/avatar actions, with the tokenized tight gap between.
-  .live-preview__top-header--desktop-profile-search-open {
-    gap: 0;
-
-    .live-preview__top-header-nav {
-      display: none;
-    }
-
-    .live-preview__top-header-right {
-      min-width: 0;
-      flex: 1 1 0;
-      margin-left: var(--space-2);
-    }
-
-    &[data-nav-align] .live-preview__top-header-right {
-      margin-left: var(--space-2);
-    }
-
-    .live-preview__top-header-search {
-      width: auto;
-      min-width: 0;
-      flex: 1 1 0;
-    }
-
-    .live-preview__top-header-search-form {
-      position: relative;
-      top: auto;
-      right: auto;
-      width: 100%;
-      transform: none;
-      transform-origin: left center;
-    }
-  }
-
   // Desktop swaps the avatar icon for paired Login + Sign up buttons
   .live-preview__top-header-login-btn {
     display: none;
@@ -11416,6 +11380,46 @@ body.builder--phone-only {
   width: 32px;
   height: 32px;
   flex: 0 0 32px;
+}
+
+// Signed-in Contained/Compact desktop headers keep the app identity visible.
+// When search opens, the input starts exactly one tight spacing token after the
+// app title and fills the room before notification/avatar actions.
+.app-preview-screen__desktop .live-preview__top-header--desktop-profile-search-open {
+  gap: 0;
+
+  .live-preview__top-header-nav {
+    display: none;
+  }
+
+  .live-preview__top-header-right,
+  &[data-nav-align] .live-preview__top-header-right {
+    min-width: 0;
+    flex: 1 1 0;
+    margin-left: var(--space-2);
+  }
+
+  .live-preview__top-header-search.live-preview__top-header-search--open:is(
+    .live-preview__top-header-search--contained-overlay,
+    .live-preview__top-header-search--compact-overlay
+  ) {
+    width: auto;
+    height: 40px;
+    min-width: 0;
+    flex: 1 1 0;
+  }
+
+  .live-preview__top-header-search.live-preview__top-header-search--open:is(
+    .live-preview__top-header-search--contained-overlay,
+    .live-preview__top-header-search--compact-overlay
+  ) .live-preview__top-header-search-form {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: 100%;
+    transform: none;
+    transform-origin: left center;
+  }
 }
 
 .app-preview-screen__desktop .live-preview__top-header-search-btn {
