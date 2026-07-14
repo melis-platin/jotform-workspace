@@ -14763,11 +14763,20 @@ body.builder--phone-only {
   gap: 0;
   padding: 8px;
   background: #fff;
+  overflow-x: hidden;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.data-page__table-list::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 .data-page__table-item {
-  width: 304px;
+  width: 100%;
   height: 56px;
   display: flex;
   align-items: center;
