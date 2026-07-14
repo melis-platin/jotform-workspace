@@ -52,6 +52,27 @@ const DEFAULT_FORM_FIELDS: FormFieldLike[] = [
   { name: 'message', label: 'Message', type: 'textarea' },
 ]
 
+function DataPageAiSquaresIcon() {
+  return (
+    <span className="jf-icon data-page__ai-squares-icon" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path
+          fillRule="evenodd"
+          clipRule="evenodd"
+          d="M17.9599 6.36973C18.4578 6.18547 18.4578 5.48119 17.9599 5.29694L17.227 5.02575C16.1833 4.63955 15.3604 3.81668 14.9743 2.773L14.7031 2.04012C14.5188 1.54218 13.8145 1.54218 13.6303 2.04012L13.3591 2.773C12.9729 3.81668 12.15 4.63955 11.1063 5.02575L10.3735 5.29694C9.87552 5.48119 9.87552 6.18547 10.3735 6.36973L11.1063 6.64092C12.15 7.02711 12.9729 7.84999 13.3591 8.89367L13.6303 9.62654C13.8145 10.1245 14.5188 10.1245 14.7031 9.62654L14.9743 8.89366C15.3604 7.84999 16.1833 7.02711 17.227 6.64092L17.9599 6.36973ZM2.5 3.33333C2.03976 3.33333 1.66667 3.70643 1.66667 4.16667V9.16667C1.66667 9.6269 2.03976 10 2.5 10H7.5C7.96024 10 8.33333 9.6269 8.33333 9.16667V4.16667C8.33333 3.70643 7.96024 3.33333 7.5 3.33333H2.5ZM2.5 11.6667C2.03976 11.6667 1.66667 12.0398 1.66667 12.5V17.5C1.66667 17.9602 2.03976 18.3333 2.5 18.3333H7.5C7.96024 18.3333 8.33333 17.9602 8.33333 17.5V12.5C8.33333 12.0398 7.96024 11.6667 7.5 11.6667H2.5ZM10 12.5C10 12.0398 10.3731 11.6667 10.8333 11.6667H15.8333C16.2936 11.6667 16.6667 12.0398 16.6667 12.5V17.5C16.6667 17.9602 16.2936 18.3333 15.8333 18.3333H10.8333C10.3731 18.3333 10 17.9602 10 17.5V12.5Z"
+          fill="url(#data-page-ai-squares-gradient)"
+        />
+        <defs>
+          <linearGradient id="data-page-ai-squares-gradient" x1="1.66667" y1="10" x2="18.3333" y2="10" gradientUnits="userSpaceOnUse">
+            <stop offset="0.370192" stopColor="#9747FF" />
+            <stop offset="1" stopColor="#0099FF" />
+          </linearGradient>
+        </defs>
+      </svg>
+    </span>
+  )
+}
+
 export function presetUsesDataElement(preset: AppPreset): boolean {
   return preset.pages.some((page) => page.elements.some(isPresetDataElement))
 }
@@ -855,7 +876,7 @@ export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget 
           </div>
           <div className="data-page__toolbar-actions">
             <button type="button" className="data-page__utility-btn">
-              <Icon name="ai-squares-filled" category="ai" size={20} />
+              <DataPageAiSquaresIcon />
               <span>Columns &amp; AI</span>
               <Icon name="angle-down" category="arrows" size={16} />
             </button>
