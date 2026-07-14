@@ -15185,13 +15185,33 @@ body.builder--phone-only {
   border-left: 0;
   border-radius: 0 var(--ds-radius-sm, 4px) var(--ds-radius-sm, 4px) 0;
   color: var(--text-subtle, #8585a9);
-  gap: 0;
+  gap: var(--space-2);
 }
 
 .data-page__filter-btn span,
 .data-page__utility-btn span,
 .data-page__download-btn span {
   padding: 0 var(--space-2);
+}
+
+.data-page__filter-btn span {
+  padding: 0;
+}
+
+.data-page__filter-btn .jf-icon,
+.data-page__filter-btn .jf-icon svg {
+  display: block;
+}
+
+.data-page__filter-btn .jf-icon {
+  flex: 0 0 var(--space-4);
+  width: var(--space-4);
+  height: var(--space-4);
+}
+
+.data-page__filter-btn .jf-icon svg {
+  width: var(--space-4);
+  height: var(--space-4);
 }
 
 .data-page__utility-btn {
