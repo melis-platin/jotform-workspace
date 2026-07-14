@@ -3716,19 +3716,22 @@ export function BuildPage({
 
     const updateContainedSearchWidth = () => {
       if (!desktopConstrainedSearchOpen) {
-        header.style.removeProperty('--live-preview-contained-search-input-max-width')
+        header.style.removeProperty('--live-preview-contained-search-input-width')
         return
       }
 
-      const brand = header.querySelector<HTMLElement>('.live-preview__top-header-compact, .live-preview__top-header-page')
+      const appName = header.querySelector<HTMLElement>('.live-preview__top-header-compact-title, .live-preview__top-header-page-name')
       const search = header.querySelector<HTMLElement>('.live-preview__top-header-search--contained-overlay, .live-preview__top-header-search--compact-overlay')
-      if (!brand || !search) return
+      if (!appName || !search) return
 
       const searchForm = search.querySelector<HTMLElement>('.live-preview__top-header-search-form')
-      const brandRect = brand.getBoundingClientRect()
+      const appNameRect = appName.getBoundingClientRect()
       const searchRight = (searchForm ?? search).getBoundingClientRect().right
-      const maxWidth = Math.max(0, Math.floor(searchRight - brandRect.right - 8))
-      header.style.setProperty('--live-preview-contained-search-input-max-width', `${maxWidth}px`)
+      const appNameGap = Number.parseFloat(window.getComputedStyle(header).getPropertyValue('--space-2'))
+      if (!Number.isFinite(appNameGap)) return
+
+      const inputWidth = Math.max(0, Math.floor(searchRight - appNameRect.right - appNameGap))
+      header.style.setProperty('--live-preview-contained-search-input-width', `${inputWidth}px`)
     }
 
     updateContainedSearchWidth()
@@ -3736,16 +3739,16 @@ export function BuildPage({
 
     const resizeObserver = new ResizeObserver(updateContainedSearchWidth)
     resizeObserver.observe(header)
-    const brand = header.querySelector<HTMLElement>('.live-preview__top-header-compact, .live-preview__top-header-page')
+    const appName = header.querySelector<HTMLElement>('.live-preview__top-header-compact-title, .live-preview__top-header-page-name')
     const search = header.querySelector<HTMLElement>('.live-preview__top-header-search--contained-overlay, .live-preview__top-header-search--compact-overlay')
-    if (brand) resizeObserver.observe(brand)
+    if (appName) resizeObserver.observe(appName)
     if (search) resizeObserver.observe(search)
     window.addEventListener('resize', updateContainedSearchWidth)
 
     return () => {
       resizeObserver.disconnect()
       window.removeEventListener('resize', updateContainedSearchWidth)
-      header.style.removeProperty('--live-preview-contained-search-input-max-width')
+      header.style.removeProperty('--live-preview-contained-search-input-width')
     }
   }, [appTitle, activePageId, desktopConstrainedSearchOpen, desktopNavAlignment, desktopNavVariant, previewDevice])
 
