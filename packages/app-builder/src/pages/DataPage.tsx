@@ -838,29 +838,14 @@ export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget 
               key={table.id}
               className={`data-page__table-item${table.id === activeTable?.id ? ' data-page__table-item--active' : ''}`}
             >
-              <button
-                type="button"
-                className="data-page__table-select"
-                onClick={() => {
-                  setActiveTableId(table.id)
-                  setOpenConnectionTableId(null)
-                  setOpenTableMenuId(null)
-                  setOpenTableContextConnectionId(null)
-                  setTableContextConnectionAnchor(null)
-                }}
-                aria-label={table.name}
-                title={table.name}
-              >
-                <span className="data-page__table-icon">
-                  <Icon name="product-tables-mono" category="products" size={20} />
-                </span>
-                <span className="data-page__table-name">{table.name}</span>
-              </button>
               {table.connections.length > 0 ? (
                 <span
                   className={`data-page__table-connection${openConnectionTableId === table.id ? ' data-page__table-connection--open' : ''}`}
                   onMouseLeave={() => setOpenConnectionTableId((openTableId) => openTableId === table.id ? null : openTableId)}
                 >
+                  <span className="data-page__table-icon" aria-hidden="true">
+                    <Icon name="product-tables-mono" category="products" size={28} />
+                  </span>
                   <button
                     type="button"
                     className="data-page__table-link-badge"
@@ -895,10 +880,30 @@ export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget 
                   </span>
                 </span>
               ) : (
-                <span className="data-page__table-link-badge data-page__table-link-badge--static" aria-hidden="true">
-                  <Icon name="link-diagonal" category="general" size={12} />
+                <span className="data-page__table-connection data-page__table-connection--static" aria-hidden="true">
+                  <span className="data-page__table-icon">
+                    <Icon name="product-tables-mono" category="products" size={28} />
+                  </span>
+                  <span className="data-page__table-link-badge data-page__table-link-badge--static">
+                    <Icon name="link-diagonal" category="general" size={12} />
+                  </span>
                 </span>
               )}
+              <button
+                type="button"
+                className="data-page__table-select"
+                onClick={() => {
+                  setActiveTableId(table.id)
+                  setOpenConnectionTableId(null)
+                  setOpenTableMenuId(null)
+                  setOpenTableContextConnectionId(null)
+                  setTableContextConnectionAnchor(null)
+                }}
+                aria-label={table.name}
+                title={table.name}
+              >
+                <span className="data-page__table-name">{table.name}</span>
+              </button>
               <span className={`data-page__table-menu${openTableMenuId === table.id ? ' data-page__table-menu--open' : ''}`}>
                 <button
                   type="button"
