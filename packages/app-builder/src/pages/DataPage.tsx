@@ -819,31 +819,6 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
       </aside>
 
       <main className="data-page__main">
-        <div className="data-page__toolbar">
-          <div className="data-page__search-filter">
-            <div className="data-page__search">
-              <Icon name="magnifying-glass" category="general" size={20} />
-              <span>Search</span>
-            </div>
-            <button type="button" className="data-page__filter-btn">
-              <span>Filter</span>
-              <Icon name="funnel-filled" category="general" size={16} />
-            </button>
-          </div>
-          <div className="data-page__toolbar-spacer" />
-          <div className="data-page__toolbar-actions">
-            <button type="button" className="data-page__utility-btn">
-              <Icon name="ai-squares-filled" category="ai" size={20} />
-              <span>Columns &amp; AI</span>
-              <Icon name="angle-down" category="arrows" size={16} />
-            </button>
-            <button type="button" className="data-page__download-btn">
-              <Icon name="arrow-down-to-line" category="arrows" size={20} />
-              <span>Download All</span>
-            </button>
-          </div>
-        </div>
-
         {activeTable ? (
           <>
             <div className="data-page__grid-scroll">
