@@ -118,7 +118,7 @@ export function App() {
   const [activePresetId, setActivePresetId] = useState<string>(initialPresetId)
   const [appUserRoleOptions, setAppUserRoleOptions] = useState<AppRoleOption[]>(() => getAppUserRoleOptionsForPreset(initialPresetId))
   const [appUserTableRoleIds, setAppUserTableRoleIds] = useState<string[]>(() => getAppUserTableRoleIdsForPreset(initialPresetId))
-  const [pushNotificationsEnabled, setPushNotificationsEnabled] = useState(false)
+  const pushNotificationsEnabled = true
   const [searchBarEnabled, setSearchBarEnabledState] = useState(false)
   const [searchableElementCount, setSearchableElementCount] = useState(0)
   const [dataBackedElementCount, setDataBackedElementCount] = useState(0)
@@ -420,8 +420,6 @@ export function App() {
             onAppIconChange={setAppIcon}
             appUserRoles={appUserTableRoleOptions}
             deepLinkTargets={deepLinkTargets}
-            pushNotificationsEnabled={pushNotificationsEnabled}
-            setPushNotificationsEnabled={setPushNotificationsEnabled}
             searchBarEnabled={searchBarEnabled}
             setSearchBarEnabled={handleSearchBarEnabledChange}
             pushNotificationHistoryItems={pushNotificationHistoryItems}

@@ -97,10 +97,6 @@ const LANGUAGE_OPTIONS = [
   { value: 'es', label: 'Español', countryCode: 'es' },
 ]
 
-const PERMISSION_REQUEST_TITLE = 'Stay updated!'
-const PERMISSION_REQUEST_CONTENT =
-  'Allow app notifications to get the latest news, updates, and exclusive offers delivered directly to your device.'
-const PERMISSION_REQUEST_FIGMA_COUNT = 50
 const NOTIFICATION_TITLE_PLACEHOLDER = 'Notification Title'
 const NOTIFICATION_CONTENT_PLACEHOLDER = 'Notification content'
 const NOTIFICATION_CONTENT_MAX_LENGTH = 150
@@ -878,8 +874,6 @@ function SplashScreenPanel({
 }
 
 interface PushNotificationsPanelProps {
-  enabled: boolean
-  setEnabled: (enabled: boolean) => void
   appUserRoles: AppRoleOption[]
   deepLinkTargets: DeepLinkTarget[]
   appIconVariant: AppIconVariant
@@ -939,8 +933,6 @@ export interface PushNotificationHistoryItem {
 }
 
 function PushNotificationsPanel({
-  enabled,
-  setEnabled,
   appUserRoles,
   deepLinkTargets,
   appIconVariant,
@@ -973,10 +965,7 @@ function PushNotificationsPanel({
   notificationImage,
   setNotificationImage,
 }: PushNotificationsPanelProps) {
-  const [isPermissionModalOpen, setIsPermissionModalOpen] = useState(false)
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false)
-  const [permissionTitle, setPermissionTitle] = useState(PERMISSION_REQUEST_TITLE)
-  const [permissionContent, setPermissionContent] = useState(PERMISSION_REQUEST_CONTENT)
   const [scheduleDate, setScheduleDate] = useState('')
   const [scheduleTime, setScheduleTime] = useState('')
   const [scheduleTimezone, setScheduleTimezone] = useState(SCHEDULE_TIMEZONE_OPTIONS[0].value)
@@ -991,10 +980,6 @@ function PushNotificationsPanel({
   const [editScheduleTimezone, setEditScheduleTimezone] = useState(SCHEDULE_TIMEZONE_OPTIONS[0].value)
   const [cancelingNotification, setCancelingNotification] = useState<PushNotificationHistoryItem | null>(null)
   const notificationTitleEditorRef = useRef<PushComposerTokenEditorHandle>(null)
-  const permissionContentCount =
-    permissionContent === PERMISSION_REQUEST_CONTENT
-      ? PERMISSION_REQUEST_FIGMA_COUNT
-      : permissionContent.length
   const areNotificationActionsDisabled =
     (
       notificationTitle.trim().length === 0 &&
@@ -1148,141 +1133,63 @@ function PushNotificationsPanel({
 
   return (
     <>
-      <section className="push-notifications-panel" aria-labelledby="push-notifications-title">
-        <div className="push-notifications-panel__copy">
-          <h2 id="push-notifications-title" className="push-notifications-panel__title">
-            Enable Push Notifications
-          </h2>
-          <p className="push-notifications-panel__description">
-            When enabled, users will receive a message asking them to allow notifications from your
-            app.
-            <TextLink
-              className="push-notifications-panel__link"
-              size="lg"
-              onClick={() => setIsPermissionModalOpen(true)}
-            >
-              Edit Permission Request
-            </TextLink>
-          </p>
-        </div>
-        <Toggle
-          size="lg"
-          className="push-notifications-toggle"
-          aria-label="Enable Push Notifications"
-          checked={enabled}
-          onClick={(event) => setEnabled(event.currentTarget.checked)}
-          onChange={(event) => setEnabled(event.currentTarget.checked)}
-          onInput={(event) => setEnabled(event.currentTarget.checked)}
-        />
-      </section>
-
-      {enabled && (
-        <>
-          <PushNotificationComposer
-            titleEditorRef={notificationTitleEditorRef}
-            title={notificationTitle}
-            setTitle={setNotificationTitle}
-            titleFields={notificationTitleFields}
-            setTitleFields={setNotificationTitleFields}
-            onTitleFieldAdd={addNotificationTitleField}
-            titleSuffix={notificationTitleSuffix}
-            setTitleSuffix={setNotificationTitleSuffix}
-            content={notificationContent}
-            setContent={setNotificationContent}
-            contentFields={notificationContentFields}
-            onContentFieldAdd={addNotificationContentField}
-            onContentFieldRemove={removeNotificationContentField}
-            contentSuffix={notificationContentSuffix}
-            setContentSuffix={setNotificationContentSuffix}
-            fieldValues={fieldValues}
-            audience={audience}
-            setAudience={setAudience}
-            appUserRoles={appUserRoles}
-            deepLinkTargets={deepLinkTargets}
-            deepLink={deepLink}
-            setDeepLink={setDeepLink}
-            image={notificationImage}
-            setImage={setNotificationImage}
-          />
-          <div className="push-notification-actions">
-            <Button
-              variant="filled"
-              colorScheme="secondary"
-              disabled={areNotificationActionsDisabled}
-              leftIcon={<Icon name="paper-plane-diagonal-filled" category="communication" size={20} />}
-            >
-              SEND TEST
-            </Button>
-            <div className="push-notification-actions__right">
-              <Button
-                colorScheme="primary"
-                disabled={areNotificationActionsDisabled}
-                onClick={() => setIsScheduleModalOpen(true)}
-              >
-                SCHEDULE
-              </Button>
-              <Button
-                colorScheme="constructive"
-                disabled={areNotificationActionsDisabled}
-                onClick={sendPushNotificationNow}
-              >
-                SEND NOW
-              </Button>
-            </div>
-          </div>
-          <PushNotificationHistory
-            notifications={historyItems}
-            onScheduledNotificationEdit={openScheduledNotificationEdit}
-            onScheduledNotificationCancel={openScheduledNotificationCancel}
-          />
-        </>
-      )}
-
-      <Modal
-        open={isPermissionModalOpen}
-        onClose={() => setIsPermissionModalOpen(false)}
-        size="lg"
-        icon={<Icon name="message-ellipsis-pencil-filled" category="communication" size={24} />}
-        iconTone="apps"
-        title="Edit Permission Request"
-        description="This message will invite users to opt into receiving notifications from your app."
-        confirmLabel="Save"
-        showCancel={false}
-        onConfirm={() => setIsPermissionModalOpen(false)}
-      >
-        <div className="push-permission-form">
-          <FormField
-            title="Title"
-            description="Enter a short, descriptive title for your message."
-            required
-            showHelpText={false}
+      <PushNotificationComposer
+        titleEditorRef={notificationTitleEditorRef}
+        title={notificationTitle}
+        setTitle={setNotificationTitle}
+        titleFields={notificationTitleFields}
+        setTitleFields={setNotificationTitleFields}
+        onTitleFieldAdd={addNotificationTitleField}
+        titleSuffix={notificationTitleSuffix}
+        setTitleSuffix={setNotificationTitleSuffix}
+        content={notificationContent}
+        setContent={setNotificationContent}
+        contentFields={notificationContentFields}
+        onContentFieldAdd={addNotificationContentField}
+        onContentFieldRemove={removeNotificationContentField}
+        contentSuffix={notificationContentSuffix}
+        setContentSuffix={setNotificationContentSuffix}
+        fieldValues={fieldValues}
+        audience={audience}
+        setAudience={setAudience}
+        appUserRoles={appUserRoles}
+        deepLinkTargets={deepLinkTargets}
+        deepLink={deepLink}
+        setDeepLink={setDeepLink}
+        image={notificationImage}
+        setImage={setNotificationImage}
+      />
+      <div className="push-notification-actions">
+        <Button
+          variant="filled"
+          colorScheme="secondary"
+          disabled={areNotificationActionsDisabled}
+          leftIcon={<Icon name="paper-plane-diagonal-filled" category="communication" size={20} />}
+        >
+          SEND TEST
+        </Button>
+        <div className="push-notification-actions__right">
+          <Button
+            colorScheme="primary"
+            disabled={areNotificationActionsDisabled}
+            onClick={() => setIsScheduleModalOpen(true)}
           >
-            <Input
-              size="lg"
-              aria-label="Permission request title"
-              value={permissionTitle}
-              onChange={(event) => setPermissionTitle(event.currentTarget.value)}
-            />
-          </FormField>
-          <FormField
-            title="Content"
-            description="Invite users to opt into receiving notifications from your app."
-            required
-            showHelpText={false}
+            SCHEDULE
+          </Button>
+          <Button
+            colorScheme="constructive"
+            disabled={areNotificationActionsDisabled}
+            onClick={sendPushNotificationNow}
           >
-            <TextArea
-              size="lg"
-              height="tall"
-              aria-label="Permission request content"
-              value={permissionContent}
-              maxLength={400}
-              countValue={permissionContentCount}
-              showDrag={false}
-              onChange={(event) => setPermissionContent(event.currentTarget.value)}
-            />
-          </FormField>
+            SEND NOW
+          </Button>
         </div>
-      </Modal>
+      </div>
+      <PushNotificationHistory
+        notifications={historyItems}
+        onScheduledNotificationEdit={openScheduledNotificationEdit}
+        onScheduledNotificationCancel={openScheduledNotificationCancel}
+      />
 
       <Modal
         open={isScheduleModalOpen}
@@ -3380,8 +3287,6 @@ interface SettingsPageProps {
   onAppIconChange: (next: AppIconState) => void
   appUserRoles: AppRoleOption[]
   deepLinkTargets: DeepLinkTarget[]
-  pushNotificationsEnabled: boolean
-  setPushNotificationsEnabled: (enabled: boolean) => void
   searchBarEnabled: boolean
   setSearchBarEnabled: (enabled: boolean) => void
   pushNotificationHistoryItems: PushNotificationHistoryItem[]
@@ -3398,8 +3303,6 @@ export function SettingsPage({
   onAppIconChange,
   appUserRoles,
   deepLinkTargets,
-  pushNotificationsEnabled,
-  setPushNotificationsEnabled,
   searchBarEnabled,
   setSearchBarEnabled,
   pushNotificationHistoryItems,
@@ -3470,7 +3373,7 @@ export function SettingsPage({
   const [inverseColor, setInverseColor] = useCssVar('--fg-inverse', '#FFFFFF')
 
   const active = NAV_ITEMS.find((item) => item.id === activeId) ?? NAV_ITEMS[0]
-  const isPushPreviewOpen = activeId === 'push-notifications' && pushNotificationsEnabled
+  const isPushPreviewOpen = activeId === 'push-notifications'
   const showPreview = TABS_WITH_PREVIEW.has(activeId) || isPushPreviewOpen
 
   return (
@@ -3527,8 +3430,6 @@ export function SettingsPage({
           )}
           {activeId === 'push-notifications' && (
             <PushNotificationsPanel
-              enabled={pushNotificationsEnabled}
-              setEnabled={setPushNotificationsEnabled}
               appUserRoles={appUserRoles}
               deepLinkTargets={deepLinkTargets}
               appIconVariant={iconVariant}

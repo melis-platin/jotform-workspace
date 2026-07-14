@@ -11531,58 +11531,6 @@ body.builder--phone-only {
   display: flex;
 }
 
-.push-notifications-panel {
-  width: 660px;
-  max-width: 100%;
-  min-height: 116px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--spacing-xl);
-  padding: var(--spacing-xl);
-  background: var(--background-white);
-  border-radius: var(--ds-radius-sm);
-  box-shadow: var(--shadow-xs);
-}
-
-.push-notifications-panel__copy {
-  flex: 1 1 0;
-  min-width: 0;
-}
-
-.push-notifications-panel__title {
-  margin-bottom: var(--spacing-2xs);
-  font-size: var(--font-size-md);
-  font-weight: var(--font-weight-bold);
-  line-height: var(--line-height-md);
-  letter-spacing: var(--body-letter-spacing);
-  color: var(--text-darkest);
-}
-
-.push-notifications-panel__description {
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-book);
-  line-height: var(--line-height-sm);
-  letter-spacing: var(--body-sm-letter-spacing);
-  color: var(--text-medium);
-}
-
-.push-notifications-panel__link {
-  margin-left: var(--spacing-2xs);
-  vertical-align: baseline;
-}
-
-.push-notifications-toggle {
-  flex: 0 0 auto;
-}
-
-.push-permission-form {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xl);
-}
-
 .push-schedule-modal {
   .jf-modal__footer-actions {
     gap: var(--spacing-md);
