@@ -8610,6 +8610,10 @@ body {
   overflow-x: clip;
 }
 
+.publish-page__preview {
+  @extend .settings-page__preview;
+}
+
 // ============================================
 // Mobile Elements Bottom Sheet
 // ============================================

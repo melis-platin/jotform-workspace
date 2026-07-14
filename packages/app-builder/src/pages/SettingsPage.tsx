@@ -62,16 +62,6 @@ const NAV_ITEMS: SideNavItem[] = [
     iconBg: 'var(--accent-default)',
   },
   {
-    id: 'push-notifications',
-    icon: 'mobile-bell',
-    iconCategory: 'technology',
-    title: 'PUSH NOTIFICATIONS',
-    description: 'Send push notifications.',
-    headerTitle: 'PUSH NOTIFICATION',
-    headerDescription: 'Send messages to mobile, tablet, or desktop devices.',
-    iconBg: 'var(--brand-yellow)',
-  },
-  {
     id: 'ai-chatbot',
     icon: 'ai-message-filled',
     iconCategory: 'ai',
@@ -262,12 +252,12 @@ const getScheduleQuickPickDate = (quickPick: ScheduleQuickPickValue) => {
   return null
 }
 
-interface PushComposerFieldOption {
+export interface PushComposerFieldOption {
   value: string
   label: string
 }
 
-type PushComposerFieldValues = Record<string, string>
+export type PushComposerFieldValues = Record<string, string>
 
 const PUSH_COMPOSER_FIELD_OPTIONS: PushComposerFieldOption[] = [{ value: 'user-name', label: 'User Name' }]
 
@@ -872,7 +862,7 @@ function SplashScreenPanel({
   )
 }
 
-interface PushNotificationsPanelProps {
+export interface PushNotificationsPanelProps {
   appUserRoles: AppRoleOption[]
   deepLinkTargets: DeepLinkTarget[]
   appIconVariant: AppIconVariant
@@ -931,7 +921,7 @@ export interface PushNotificationHistoryItem {
   liveInLabel: string
 }
 
-function PushNotificationsPanel({
+export function PushNotificationsPanel({
   appUserRoles,
   deepLinkTargets,
   appIconVariant,
@@ -2942,7 +2932,7 @@ function PushNotificationComposer({
   )
 }
 
-interface PushNotificationPreviewProps {
+export interface PushNotificationPreviewProps {
   title: string
   content: string
   image?: PushComposerSelectedImage | null
@@ -2980,7 +2970,7 @@ function appendPushComposerPlainText(currentText: string, nextText: string) {
   return `${currentText}${shouldJoinDirectly ? '' : ' '}${normalizedNextText}`
 }
 
-function formatPushComposerText(
+export function formatPushComposerText(
   value: string,
   fields: PushComposerFieldOption[],
   suffix: string,
@@ -2995,7 +2985,7 @@ function formatPushComposerText(
   }, '')
 }
 
-function formatPushNotificationTitle(
+export function formatPushNotificationTitle(
   title: string,
   fields: PushComposerFieldOption[],
   suffix: string,
@@ -3263,7 +3253,7 @@ function PushPreviewNotificationIcon({
   )
 }
 
-function PushNotificationPreview({
+export function PushNotificationPreview({
   title,
   content,
   image = null,
@@ -3328,15 +3318,8 @@ interface SettingsPageProps {
   onAppTitleChange?: (name: string) => void
   appIcon: AppIconState
   onAppIconChange: (next: AppIconState) => void
-  appUserRoles: AppRoleOption[]
-  deepLinkTargets: DeepLinkTarget[]
   searchBarEnabled: boolean
   setSearchBarEnabled: (enabled: boolean) => void
-  pushNotificationHistoryItems: PushNotificationHistoryItem[]
-  onPushNotificationHistoryItemCreate: (item: PushNotificationHistoryItem) => void
-  onPushNotificationHistoryItemUpdate: (item: PushNotificationHistoryItem) => void
-  onPushNotificationHistoryItemDelete: (itemId: string) => void
-  pushComposerFieldValues?: PushComposerFieldValues
 }
 
 export function SettingsPage({
@@ -3344,15 +3327,8 @@ export function SettingsPage({
   onAppTitleChange,
   appIcon,
   onAppIconChange,
-  appUserRoles,
-  deepLinkTargets,
   searchBarEnabled,
   setSearchBarEnabled,
-  pushNotificationHistoryItems,
-  onPushNotificationHistoryItemCreate,
-  onPushNotificationHistoryItemUpdate,
-  onPushNotificationHistoryItemDelete,
-  pushComposerFieldValues = {},
 }: SettingsPageProps) {
   const [activeId, setActiveId] = useState('app-settings')
 
@@ -3375,27 +3351,6 @@ export function SettingsPage({
   const [hoveredIconStyle, setHoveredIconStyle] = useState<IconStyle | null>(null)
   const [hoveredSplashBgStyle, setHoveredSplashBgStyle] = useState<SplashStyle | null>(null)
   const [hoveredSplashAnimation, setHoveredSplashAnimation] = useState<SplashAnimation | null>(null)
-  const [notificationTitle, setNotificationTitle] = useState('')
-  const [notificationTitleFields, setNotificationTitleFields] = useState<PushComposerFieldOption[]>([])
-  const [notificationTitleSuffix, setNotificationTitleSuffix] = useState('')
-  const [notificationContent, setNotificationContent] = useState('')
-  const [notificationContentFields, setNotificationContentFields] = useState<PushComposerFieldOption[]>([])
-  const [notificationContentSuffix, setNotificationContentSuffix] = useState('')
-  const [notificationAudience, setNotificationAudience] = useState<string[]>([ALL_USERS_AUDIENCE_ID])
-  const [notificationDeepLink, setNotificationDeepLink] = useState('')
-  const [notificationImage, setNotificationImage] = useState<PushComposerSelectedImage | null>(null)
-  const previewNotificationTitle = formatPushNotificationTitle(
-    notificationTitle,
-    notificationTitleFields,
-    notificationTitleSuffix,
-    pushComposerFieldValues,
-  )
-  const previewNotificationContent = formatPushComposerText(
-    notificationContent,
-    notificationContentFields,
-    notificationContentSuffix,
-    pushComposerFieldValues,
-  )
   const previewIconStyle = hoveredIconStyle ?? iconStyle
   const previewSplashBgStyle = hoveredSplashBgStyle ?? splashBgStyle
   const previewSplashAnimation = hoveredSplashAnimation ?? splashAnimation
@@ -3416,8 +3371,7 @@ export function SettingsPage({
   const [inverseColor, setInverseColor] = useCssVar('--fg-inverse', '#FFFFFF')
 
   const active = NAV_ITEMS.find((item) => item.id === activeId) ?? NAV_ITEMS[0]
-  const isPushPreviewOpen = activeId === 'push-notifications'
-  const showPreview = TABS_WITH_PREVIEW.has(activeId) || isPushPreviewOpen
+  const showPreview = TABS_WITH_PREVIEW.has(activeId)
 
   return (
     <div className={`settings-page${showPreview ? ' settings-page--with-preview' : ''}`}>
@@ -3430,15 +3384,6 @@ export function SettingsPage({
             title={active.headerTitle ?? active.title}
             description={active.headerDescription ?? active.description}
             iconBg={active.iconBg}
-            action={activeId === 'push-notifications' ? (
-              <button
-                type="button"
-                className="panel-header__action-button"
-                aria-label="Edit push notification message"
-              >
-                <Icon name="message-ellipsis-pencil-filled" category="communication" size={16} />
-              </button>
-            ) : undefined}
           />
           {activeId === 'app-settings' && (
             <AppSettingsPanel
@@ -3480,41 +3425,6 @@ export function SettingsPage({
               onAnimationHover={setHoveredSplashAnimation}
             />
           )}
-          {activeId === 'push-notifications' && (
-            <PushNotificationsPanel
-              appUserRoles={appUserRoles}
-              deepLinkTargets={deepLinkTargets}
-              appIconVariant={iconVariant}
-              appIconImageUrl={appImage.url}
-              appIconName={appHeaderIcon}
-              appIconColor={inverseColor}
-              appIconBg={brandColor}
-              appIconStyle={previewIconStyle}
-              historyItems={pushNotificationHistoryItems}
-              onHistoryItemCreate={onPushNotificationHistoryItemCreate}
-              onHistoryItemUpdate={onPushNotificationHistoryItemUpdate}
-              onHistoryItemDelete={onPushNotificationHistoryItemDelete}
-              fieldValues={pushComposerFieldValues}
-              notificationTitle={notificationTitle}
-              setNotificationTitle={setNotificationTitle}
-              notificationTitleFields={notificationTitleFields}
-              setNotificationTitleFields={setNotificationTitleFields}
-              notificationTitleSuffix={notificationTitleSuffix}
-              setNotificationTitleSuffix={setNotificationTitleSuffix}
-              notificationContent={notificationContent}
-              setNotificationContent={setNotificationContent}
-              notificationContentFields={notificationContentFields}
-              setNotificationContentFields={setNotificationContentFields}
-              notificationContentSuffix={notificationContentSuffix}
-              setNotificationContentSuffix={setNotificationContentSuffix}
-              audience={notificationAudience}
-              setAudience={setNotificationAudience}
-              deepLink={notificationDeepLink}
-              setDeepLink={setNotificationDeepLink}
-              notificationImage={notificationImage}
-              setNotificationImage={setNotificationImage}
-            />
-          )}
         </div>
         {showPreview && (
           <div className="settings-page__preview">
@@ -3543,19 +3453,6 @@ export function SettingsPage({
                     iconBg={inverseColor}
                     appName={appName}
                     animation={previewSplashAnimation}
-                  />
-                )}
-                {activeId === 'push-notifications' && (
-                  <PushNotificationPreview
-                    title={previewNotificationTitle}
-                    content={previewNotificationContent}
-                    image={notificationImage}
-                    appIconVariant={iconVariant}
-                    appIconImageUrl={appImage.url}
-                    appIconName={appHeaderIcon}
-                    appIconColor={inverseColor}
-                    appIconBg={brandColor}
-                    appIconStyle={previewIconStyle}
                   />
                 )}
               </BasicPhonePreview>

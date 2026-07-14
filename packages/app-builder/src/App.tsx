@@ -418,15 +418,8 @@ export function App() {
             onAppTitleChange={setAppTitle}
             appIcon={appIcon}
             onAppIconChange={setAppIcon}
-            appUserRoles={appUserTableRoleOptions}
-            deepLinkTargets={deepLinkTargets}
             searchBarEnabled={searchBarEnabled}
             setSearchBarEnabled={handleSearchBarEnabledChange}
-            pushNotificationHistoryItems={pushNotificationHistoryItems}
-            onPushNotificationHistoryItemCreate={addPushNotificationHistoryItem}
-            onPushNotificationHistoryItemUpdate={updatePushNotificationHistoryItem}
-            onPushNotificationHistoryItemDelete={deletePushNotificationHistoryItem}
-            pushComposerFieldValues={{ 'user-name': getAppUserNameFieldValueForPreset(activePresetId) }}
           />
         )}
         {activePage === 'publish' && (
@@ -434,8 +427,16 @@ export function App() {
             key={`${publishResetKey}:${activePresetId}`}
             presetId={activePresetId}
             roleOptions={appUserRoleOptions}
+            appUserRoles={appUserTableRoleOptions}
             setRoleOptions={setAppUserRoleOptions}
             onAppUserTableRoleIdsChange={setAppUserTableRoleIds}
+            appIcon={appIcon}
+            deepLinkTargets={deepLinkTargets}
+            pushNotificationHistoryItems={pushNotificationHistoryItems}
+            onPushNotificationHistoryItemCreate={addPushNotificationHistoryItem}
+            onPushNotificationHistoryItemUpdate={updatePushNotificationHistoryItem}
+            onPushNotificationHistoryItemDelete={deletePushNotificationHistoryItem}
+            pushComposerFieldValues={{ 'user-name': getAppUserNameFieldValueForPreset(activePresetId) }}
           />
         )}
       </div>

@@ -1,9 +1,12 @@
 import { type Dispatch, type SetStateAction, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Badge, Button, Icon, SearchInput } from '@jf/design-system'
+import { BasicPhonePreview } from '../components/BasicPhonePreview'
 import { PanelHeader } from '../components/PanelHeader'
+import { QuickPreview } from '../components/QuickPreview'
 import { QuickSharePanel } from '../components/QuickSharePanel'
 import { SideNav, type SideNavItem } from '../components/SideNav'
+import { useCssVar } from '../hooks/useCssVar'
 import { EMPTY_PRESET_ID } from '../presets/appPresets'
 import ownerAvatar from '../assets/app-users/melis-platin.png'
 import {
@@ -13,6 +16,18 @@ import {
   ROLE_COLOR_PALETTE,
   type AppRoleOption,
 } from '../state/appUserRoles'
+import type { DeepLinkTarget } from '../state/deepLinkTargets'
+import { ALL_USERS_AUDIENCE_ID } from '../state/pushNotifications'
+import {
+  formatPushComposerText,
+  formatPushNotificationTitle,
+  PushNotificationPreview,
+  PushNotificationsPanel,
+  type PushComposerFieldOption,
+  type PushComposerFieldValues,
+  type PushComposerSelectedImage,
+  type PushNotificationHistoryItem,
+} from './SettingsPage'
 
 const NAV_ITEMS: SideNavItem[] = [
   {
@@ -43,6 +58,16 @@ const NAV_ITEMS: SideNavItem[] = [
     headerDescription: 'Manage users who have access to your app.',
     iconBg: 'var(--app-users-header-icon-bg)',
   },
+  {
+    id: 'push-notifications',
+    icon: 'mobile-bell',
+    iconCategory: 'technology',
+    title: 'PUSH NOTIFICATIONS',
+    description: 'Send push notifications.',
+    headerTitle: 'PUSH NOTIFICATION',
+    headerDescription: 'Send messages to mobile, tablet, or desktop devices.',
+    iconBg: 'var(--brand-yellow)',
+  },
 ]
 
 interface DraftRoleInput {
@@ -65,6 +90,13 @@ interface AppUser {
 interface AppUserRoleProfile {
   emailDomain: string
   roles: AppRoleOption[]
+}
+
+interface PublishAppIconState {
+  variant: 'Icon' | 'Image'
+  icon: string
+  imageUrl: string | null
+  imageName: string | null
 }
 
 type PresetUserGender = 'female' | 'male'
@@ -444,16 +476,62 @@ function getAssignedRole(user: AppUser, assignedRoleId: string, roleById: Map<st
 interface PublishPageProps {
   presetId: string
   roleOptions: AppRoleOption[]
+  appUserRoles: AppRoleOption[]
   setRoleOptions: Dispatch<SetStateAction<AppRoleOption[]>>
   onAppUserTableRoleIdsChange?: (roleIds: string[]) => void
+  appIcon: PublishAppIconState
+  deepLinkTargets: DeepLinkTarget[]
+  pushNotificationHistoryItems: PushNotificationHistoryItem[]
+  onPushNotificationHistoryItemCreate: (item: PushNotificationHistoryItem) => void
+  onPushNotificationHistoryItemUpdate: (item: PushNotificationHistoryItem) => void
+  onPushNotificationHistoryItemDelete: (itemId: string) => void
+  pushComposerFieldValues?: PushComposerFieldValues
 }
 
-export function PublishPage({ presetId, roleOptions, setRoleOptions, onAppUserTableRoleIdsChange }: PublishPageProps) {
+export function PublishPage({
+  presetId,
+  roleOptions,
+  appUserRoles,
+  setRoleOptions,
+  onAppUserTableRoleIdsChange,
+  appIcon,
+  deepLinkTargets,
+  pushNotificationHistoryItems,
+  onPushNotificationHistoryItemCreate,
+  onPushNotificationHistoryItemUpdate,
+  onPushNotificationHistoryItemDelete,
+  pushComposerFieldValues = {},
+}: PublishPageProps) {
   const [activeId, setActiveId] = useState('quick-share')
+  const [notificationTitle, setNotificationTitle] = useState('')
+  const [notificationTitleFields, setNotificationTitleFields] = useState<PushComposerFieldOption[]>([])
+  const [notificationTitleSuffix, setNotificationTitleSuffix] = useState('')
+  const [notificationContent, setNotificationContent] = useState('')
+  const [notificationContentFields, setNotificationContentFields] = useState<PushComposerFieldOption[]>([])
+  const [notificationContentSuffix, setNotificationContentSuffix] = useState('')
+  const [notificationAudience, setNotificationAudience] = useState<string[]>([ALL_USERS_AUDIENCE_ID])
+  const [notificationDeepLink, setNotificationDeepLink] = useState('')
+  const [notificationImage, setNotificationImage] = useState<PushComposerSelectedImage | null>(null)
+  const [brandColor] = useCssVar('--fg-brand', '#7D38EF')
+  const [inverseColor] = useCssVar('--fg-inverse', '#FFFFFF')
   const active = NAV_ITEMS.find((item) => item.id === activeId) ?? NAV_ITEMS[0]
+  const isPushNotificationsOpen = activeId === 'push-notifications'
+  const pushNotificationIconStyle = 'flat'
+  const previewNotificationTitle = formatPushNotificationTitle(
+    notificationTitle,
+    notificationTitleFields,
+    notificationTitleSuffix,
+    pushComposerFieldValues,
+  )
+  const previewNotificationContent = formatPushComposerText(
+    notificationContent,
+    notificationContentFields,
+    notificationContentSuffix,
+    pushComposerFieldValues,
+  )
 
   return (
-    <div className="publish-page">
+    <div className={`publish-page${isPushNotificationsOpen ? ' publish-page--with-preview' : ''}`}>
       <SideNav items={NAV_ITEMS} activeId={activeId} onChange={setActiveId} />
       <main className="publish-page__content">
         <div className="publish-page__main">
@@ -463,6 +541,15 @@ export function PublishPage({ presetId, roleOptions, setRoleOptions, onAppUserTa
             title={active.headerTitle ?? active.title}
             description={active.headerDescription ?? active.description}
             iconBg={active.iconBg}
+            action={isPushNotificationsOpen ? (
+              <button
+                type="button"
+                className="panel-header__action-button"
+                aria-label="Edit push notification message"
+              >
+                <Icon name="message-ellipsis-pencil-filled" category="communication" size={16} />
+              </button>
+            ) : undefined}
           />
           {activeId === 'quick-share' && <QuickSharePanel />}
           {activeId === 'app-users' && (
@@ -473,7 +560,61 @@ export function PublishPage({ presetId, roleOptions, setRoleOptions, onAppUserTa
               onAppUserTableRoleIdsChange={onAppUserTableRoleIdsChange}
             />
           )}
+          {isPushNotificationsOpen && (
+            <PushNotificationsPanel
+              appUserRoles={appUserRoles}
+              deepLinkTargets={deepLinkTargets}
+              appIconVariant={appIcon.variant}
+              appIconImageUrl={appIcon.imageUrl}
+              appIconName={appIcon.icon}
+              appIconColor={inverseColor}
+              appIconBg={brandColor}
+              appIconStyle={pushNotificationIconStyle}
+              historyItems={pushNotificationHistoryItems}
+              onHistoryItemCreate={onPushNotificationHistoryItemCreate}
+              onHistoryItemUpdate={onPushNotificationHistoryItemUpdate}
+              onHistoryItemDelete={onPushNotificationHistoryItemDelete}
+              fieldValues={pushComposerFieldValues}
+              notificationTitle={notificationTitle}
+              setNotificationTitle={setNotificationTitle}
+              notificationTitleFields={notificationTitleFields}
+              setNotificationTitleFields={setNotificationTitleFields}
+              notificationTitleSuffix={notificationTitleSuffix}
+              setNotificationTitleSuffix={setNotificationTitleSuffix}
+              notificationContent={notificationContent}
+              setNotificationContent={setNotificationContent}
+              notificationContentFields={notificationContentFields}
+              setNotificationContentFields={setNotificationContentFields}
+              notificationContentSuffix={notificationContentSuffix}
+              setNotificationContentSuffix={setNotificationContentSuffix}
+              audience={notificationAudience}
+              setAudience={setNotificationAudience}
+              deepLink={notificationDeepLink}
+              setDeepLink={setNotificationDeepLink}
+              notificationImage={notificationImage}
+              setNotificationImage={setNotificationImage}
+            />
+          )}
         </div>
+        {isPushNotificationsOpen && (
+          <div className="publish-page__preview">
+            <QuickPreview>
+              <BasicPhonePreview>
+                <PushNotificationPreview
+                  title={previewNotificationTitle}
+                  content={previewNotificationContent}
+                  image={notificationImage}
+                  appIconVariant={appIcon.variant}
+                  appIconImageUrl={appIcon.imageUrl}
+                  appIconName={appIcon.icon}
+                  appIconColor={inverseColor}
+                  appIconBg={brandColor}
+                  appIconStyle={pushNotificationIconStyle}
+                />
+              </BasicPhonePreview>
+            </QuickPreview>
+          </div>
+        )}
       </main>
     </div>
   )
