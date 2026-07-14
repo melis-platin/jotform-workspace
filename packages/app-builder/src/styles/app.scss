@@ -15199,7 +15199,11 @@ body.builder--phone-only {
   padding: 0 10px;
   border: 1px solid var(--border-medium);
   color: var(--text-dark, #343c6a);
-  gap: 0;
+  gap: var(--space-2);
+}
+
+.data-page__utility-btn span {
+  padding: 0;
 }
 
 .data-page__utility-btn .jf-icon:first-child {
