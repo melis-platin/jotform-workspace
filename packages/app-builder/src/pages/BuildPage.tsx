@@ -3710,48 +3710,6 @@ export function BuildPage({
   const desktopAuthSearchOpen = desktopContainedOrCompactSearchOpen && !isPreviewLoggedIn
   const desktopConstrainedSearchOpen = desktopContainedOrCompactSearchOpen && isPreviewLoggedIn
 
-  useLayoutEffect(() => {
-    const header = previewTopHeaderRef.current
-    if (!header) return
-
-    const updateContainedSearchWidth = () => {
-      if (!desktopConstrainedSearchOpen) {
-        header.style.removeProperty('--live-preview-contained-search-input-width')
-        return
-      }
-
-      const appName = header.querySelector<HTMLElement>('.live-preview__top-header-compact-title, .live-preview__top-header-page-name')
-      const search = header.querySelector<HTMLElement>('.live-preview__top-header-search--contained-overlay, .live-preview__top-header-search--compact-overlay')
-      if (!appName || !search) return
-
-      const searchForm = search.querySelector<HTMLElement>('.live-preview__top-header-search-form')
-      const appNameRect = appName.getBoundingClientRect()
-      const searchRight = (searchForm ?? search).getBoundingClientRect().right
-      const appNameGap = Number.parseFloat(window.getComputedStyle(header).getPropertyValue('--space-2'))
-      if (!Number.isFinite(appNameGap)) return
-
-      const inputWidth = Math.max(0, Math.floor(searchRight - appNameRect.right - appNameGap))
-      header.style.setProperty('--live-preview-contained-search-input-width', `${inputWidth}px`)
-    }
-
-    updateContainedSearchWidth()
-    if (!desktopConstrainedSearchOpen) return
-
-    const resizeObserver = new ResizeObserver(updateContainedSearchWidth)
-    resizeObserver.observe(header)
-    const appName = header.querySelector<HTMLElement>('.live-preview__top-header-compact-title, .live-preview__top-header-page-name')
-    const search = header.querySelector<HTMLElement>('.live-preview__top-header-search--contained-overlay, .live-preview__top-header-search--compact-overlay')
-    if (appName) resizeObserver.observe(appName)
-    if (search) resizeObserver.observe(search)
-    window.addEventListener('resize', updateContainedSearchWidth)
-
-    return () => {
-      resizeObserver.disconnect()
-      window.removeEventListener('resize', updateContainedSearchWidth)
-      header.style.removeProperty('--live-preview-contained-search-input-width')
-    }
-  }, [appTitle, activePageId, desktopConstrainedSearchOpen, desktopNavAlignment, desktopNavVariant, previewDevice])
-
   // Single source of truth for the live-preview top-header's left affordance:
   // the Profile system page (back + "Profile") and the dynamic detail page (back
   // only; labelled "Back" on desktop). Returns null when neither applies (the
@@ -5051,7 +5009,7 @@ export function BuildPage({
           }}
         />
       )}
-      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${topHeaderShowsPageName && isPreviewContentScrolled ? ' live-preview__top-header--page-scrolled' : ''}${desktopNavVariant === 'compact' ? ' live-preview__top-header--compact' : ''}${desktopNavVariant === 'contained' ? ' live-preview__top-header--contained' : ''}${desktopFullwidthSearchOpen ? ' live-preview__top-header--fullwidth-search-open' : ''}${desktopAuthSearchOpen ? ' live-preview__top-header--desktop-auth-search-open' : ''}${isDesktopPreviewSearchOpen ? ' live-preview__top-header--desktop-search-open' : ''}${topNavOverlay ? ' live-preview__top-header--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__top-header--over-content' : ''}${topHeaderHidden ? ' live-preview__top-header--hidden' : ''}`} style={topNavOverlay && topNavOverHero ? { color: topNavOverlayFg } : undefined} data-nav-align={desktopNavAlignment}>
+      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${topHeaderShowsPageName && isPreviewContentScrolled ? ' live-preview__top-header--page-scrolled' : ''}${desktopNavVariant === 'compact' ? ' live-preview__top-header--compact' : ''}${desktopNavVariant === 'contained' ? ' live-preview__top-header--contained' : ''}${desktopFullwidthSearchOpen ? ' live-preview__top-header--fullwidth-search-open' : ''}${desktopConstrainedSearchOpen ? ' live-preview__top-header--desktop-profile-search-open' : ''}${desktopAuthSearchOpen ? ' live-preview__top-header--desktop-auth-search-open' : ''}${isDesktopPreviewSearchOpen ? ' live-preview__top-header--desktop-search-open' : ''}${topNavOverlay ? ' live-preview__top-header--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__top-header--over-content' : ''}${topHeaderHidden ? ' live-preview__top-header--hidden' : ''}`} style={topNavOverlay && topNavOverHero ? { color: topNavOverlayFg } : undefined} data-nav-align={desktopNavAlignment}>
         {(() => {
           // Profile / dynamic-detail back affordance — shared with the right-panel
           // preview via renderTopHeaderBack so the two never diverge.

@@ -9934,6 +9934,42 @@ body.builder--phone-only {
     margin-left: auto;
   }
 
+  // Contained and compact headers keep the app identity visible for signed-in
+  // users. While search is open, its field fills the space between that identity
+  // and the notification/avatar actions, with the tokenized tight gap between.
+  .live-preview__top-header--desktop-profile-search-open {
+    gap: 0;
+
+    .live-preview__top-header-nav {
+      display: none;
+    }
+
+    .live-preview__top-header-right {
+      min-width: 0;
+      flex: 1 1 0;
+      margin-left: var(--space-2);
+    }
+
+    &[data-nav-align] .live-preview__top-header-right {
+      margin-left: var(--space-2);
+    }
+
+    .live-preview__top-header-search {
+      width: auto;
+      min-width: 0;
+      flex: 1 1 0;
+    }
+
+    .live-preview__top-header-search-form {
+      position: relative;
+      top: auto;
+      right: auto;
+      width: 100%;
+      transform: none;
+      transform-origin: left center;
+    }
+  }
+
   // Desktop swaps the avatar icon for paired Login + Sign up buttons
   .live-preview__top-header-login-btn {
     display: none;
@@ -10749,11 +10785,6 @@ body.builder--phone-only {
   transform: none;
   transform-origin: center;
   clip-path: inset(0);
-}
-
-.live-preview__top-header-search--contained-overlay .live-preview__top-header-search-form,
-.live-preview__top-header-search--compact-overlay .live-preview__top-header-search-form {
-  width: var(--live-preview-contained-search-input-width, 450px);
 }
 
 .live-preview__top-header-search--fullwidth-nav-replacement {
