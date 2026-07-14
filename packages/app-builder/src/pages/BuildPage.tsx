@@ -3765,7 +3765,6 @@ export function BuildPage({
             <AppIcon name="ChevronLeft" size={24} />
             {device === 'desktop' && <span className="live-preview__top-header-back-label">Back</span>}
           </button>
-          {device !== 'desktop' && <span className="live-preview__top-header-page-name">Notifications</span>}
         </div>
       )
     }
