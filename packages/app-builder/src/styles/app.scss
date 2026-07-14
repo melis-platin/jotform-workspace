@@ -15461,6 +15461,42 @@ body.builder--phone-only {
   min-width: 0;
 }
 
+.data-page__grid-cell--selection {
+  min-width: 0;
+}
+
+.data-page__selection-badges {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2xs);
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+.data-page__selection-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  max-width: 100%;
+  padding: 6px var(--spacing-xs);
+  border-radius: var(--ds-radius-sm);
+  background: var(--data-page-selection-badge-bg, var(--app-users-role-admin-bg));
+  color: var(--text-darkest);
+  font-family: var(--ds-font-family);
+  font-size: var(--ds-font-size-xs);
+  font-weight: var(--ds-font-weight-bold);
+  line-height: var(--ds-line-height-xs);
+}
+
+.data-page__selection-badge-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .data-page__grid-cell--row-index {
   position: relative;
   background: #f3f3fe;

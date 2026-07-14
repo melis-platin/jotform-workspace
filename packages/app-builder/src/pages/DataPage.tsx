@@ -1,8 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { type CSSProperties, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { AppIcon, ComponentRegistry } from '@jf/app-elements'
 import { Icon } from '@jf/design-system'
 import { type AppPreset, type PresetElement } from '../presets/appPresets'
+import { ROLE_COLOR_PALETTE } from '../state/appUserRoles'
 import { buildInitialStateFromPreset, type AppPage, type CanvasElement } from './BuildPage'
 
 type DataCellValue = string | number | boolean | null | undefined
@@ -59,6 +60,7 @@ const DATA_ELEMENT_IDS = new Set(['list', 'product-list', 'donation-box', 'form'
 const SHARED_TABLE_CONSUMER_IDS = new Set(['list', 'ai-widget'])
 const LIST_COLUMN_PRIORITY = ['title', 'name', 'description', 'image', 'avatar', 'photo', 'price', 'date', 'time', 'duration', 'coach', 'category', 'location', 'details', 'detail']
 const PRODUCT_COLUMN_PRIORITY = ['name', 'title', 'description', 'price', 'image', 'category', 'sku', 'inventory']
+const SELECTION_BADGE_COLOR_ORDER = [0, 2, 1, 3, 17, 18, 19, 15, 7, 8, 9, 20, 23, 24, 25]
 const DATA_COLUMN_ICON_BY_TYPE: Record<DataColumnType, { name: string; category: string }> = {
   shortText: { name: 'type-square-filled', category: 'editor' },
   longText: { name: 'text', category: 'general' },
@@ -246,6 +248,64 @@ function columnTypeFromFormField(field: FormFieldLike): DataColumnType {
   if (['tel', 'phone', 'phone-number'].includes(normalizedType)) return 'phoneNumber'
   if (['checkbox', 'boolean', 'switch'].includes(normalizedType)) return 'checkbox'
   return inferColumnTypeFromKey(key)
+}
+
+function isSelectionColumn(column: DataColumn): boolean {
+  return column.type === 'singleSelect' || column.type === 'multipleSelection'
+}
+
+function parseSelectionArray(value: string): string[] | null {
+  const trimmedValue = value.trim()
+  if (!trimmedValue.startsWith('[')) return null
+
+  try {
+    const parsed = JSON.parse(trimmedValue)
+    return Array.isArray(parsed)
+      ? parsed
+        .map((option) => typeof option === 'string' || typeof option === 'number' || typeof option === 'boolean' ? String(option).trim() : '')
+        .filter(Boolean)
+      : null
+  } catch {
+    return null
+  }
+}
+
+function getSelectionValues(column: DataColumn, value: DataCellValue): string[] {
+  if (value == null || value === '') return []
+  const displayValue = String(value).trim()
+  if (!displayValue) return []
+
+  if (column.type === 'multipleSelection') {
+    const parsedValues = parseSelectionArray(displayValue)
+    if (parsedValues) return parsedValues
+    return displayValue
+      .split(/\s*[,;]\s*/)
+      .map((option) => option.trim())
+      .filter(Boolean)
+  }
+
+  return [displayValue]
+}
+
+function buildSelectionColorMap(columns: DataColumn[], rows: Record<string, DataCellValue>[]) {
+  return columns.reduce<Record<string, Record<string, string>>>((selectionColorsByColumn, column) => {
+    if (!isSelectionColumn(column)) return selectionColorsByColumn
+
+    const columnColors: Record<string, string> = {}
+    rows.forEach((row) => {
+      getSelectionValues(column, row[column.key]).forEach((option) => {
+        if (columnColors[option]) return
+        const colorIndex = SELECTION_BADGE_COLOR_ORDER[Object.keys(columnColors).length % SELECTION_BADGE_COLOR_ORDER.length] ?? 0
+        columnColors[option] = ROLE_COLOR_PALETTE[colorIndex] ?? ROLE_COLOR_PALETTE[0]
+      })
+    })
+    selectionColorsByColumn[column.key] = columnColors
+    return selectionColorsByColumn
+  }, {})
+}
+
+function getSelectionBadgeStyle(color?: string): CSSProperties {
+  return { '--data-page-selection-badge-bg': color ?? ROLE_COLOR_PALETTE[0] } as CSSProperties
 }
 
 function orderKeys(keys: string[], priority: string[]): string[] {
@@ -600,11 +660,29 @@ export function collectDataTables(pages: AppPage[]): DataTable[] {
   return tables
 }
 
-function renderCellValue(column: DataColumn, value: DataCellValue) {
+function renderCellValue(column: DataColumn, value: DataCellValue, selectionColors?: Record<string, string>) {
   if (column.type === 'attachment' && typeof value === 'string' && value.trim()) {
     return (
       <span className="data-page__image-cell">
         <img src={value} alt="" />
+      </span>
+    )
+  }
+  if (isSelectionColumn(column)) {
+    const selectionValues = getSelectionValues(column, value)
+    if (selectionValues.length === 0) return <span className="data-page__cell-text" />
+
+    return (
+      <span className="data-page__selection-badges">
+        {selectionValues.map((selectionValue) => (
+          <span
+            key={selectionValue}
+            className="data-page__selection-badge"
+            style={getSelectionBadgeStyle(selectionColors?.[selectionValue])}
+          >
+            <span className="data-page__selection-badge-label">{selectionValue}</span>
+          </span>
+        ))}
       </span>
     )
   }
@@ -653,6 +731,10 @@ export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget 
   const [tableRowsById, setTableRowsById] = useState<Record<string, Record<string, DataCellValue>[]>>({})
   const activeTable = tables.find((table) => table.id === activeTableId) ?? tables[0] ?? null
   const activeRows = activeTable ? tableRowsById[activeTable.id] ?? activeTable.rows : []
+  const selectionColorMap = useMemo(
+    () => activeTable ? buildSelectionColorMap(activeTable.columns, activeRows) : {},
+    [activeRows, activeTable]
+  )
 
   useEffect(() => {
     if (!activeTable || activeTable.id === activeTableId) return
@@ -1016,9 +1098,9 @@ export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget 
                     {activeTable.columns.map((column) => (
                       <div
                         key={`${rowIndex}-${column.key}`}
-                        className={`data-page__grid-cell data-page__grid-cell--body${column.type === 'longText' ? ' data-page__grid-cell--long-text' : ''}`}
+                        className={`data-page__grid-cell data-page__grid-cell--body${column.type === 'longText' ? ' data-page__grid-cell--long-text' : ''}${isSelectionColumn(column) ? ' data-page__grid-cell--selection' : ''}`}
                       >
-                        {renderCellValue(column, row[column.key])}
+                        {renderCellValue(column, row[column.key], selectionColorMap[column.key])}
                       </div>
                     ))}
                     <div className="data-page__grid-cell data-page__grid-cell--row-tail" />
