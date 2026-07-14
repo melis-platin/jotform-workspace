@@ -12411,6 +12411,19 @@ body.builder--phone-only {
   flex: 1 1 auto;
 }
 
+.push-composer-token-editor__text--content {
+  width: var(--push-composer-token-text-width, auto);
+  min-width: 0;
+  appearance: none;
+}
+
+@supports (field-sizing: content) {
+  .push-composer-token-editor__text--content {
+    width: auto;
+    field-sizing: content;
+  }
+}
+
 .push-composer-token-editor__text--empty {
   display: none;
 }

@@ -1932,8 +1932,7 @@ interface PushComposerTokenEditorTextProps {
   ariaLabel: string
   value: string
   placeholder?: string
-  isTailSegment: boolean
-  shouldHideEmptySegment: boolean
+  usesContentWidth: boolean
   onChange: ChangeEventHandler<HTMLInputElement>
   onFocus: (event: ReactFocusEvent<HTMLInputElement>) => void
   onClick: (event: ReactMouseEvent<HTMLInputElement>) => void
@@ -1947,8 +1946,7 @@ function PushComposerTokenEditorText({
   ariaLabel,
   value,
   placeholder,
-  isTailSegment,
-  shouldHideEmptySegment,
+  usesContentWidth,
   onChange,
   onFocus,
   onClick,
@@ -1957,6 +1955,9 @@ function PushComposerTokenEditorText({
 }: PushComposerTokenEditorTextProps) {
   const measuredInputRef = useRef<HTMLInputElement | null>(null)
   const measuredWidth = useMeasuredInputWidth(value, measuredInputRef)
+  const inputStyle = usesContentWidth
+    ? ({ '--push-composer-token-text-width': measuredWidth } as CSSProperties)
+    : undefined
 
   return (
     <input
@@ -1968,7 +1969,7 @@ function PushComposerTokenEditorText({
       aria-label={ariaLabel}
       value={value}
       placeholder={placeholder}
-      style={isTailSegment || shouldHideEmptySegment ? undefined : { width: measuredWidth }}
+      style={inputStyle}
       onChange={onChange}
       onFocus={onFocus}
       onClick={onClick}
@@ -2319,10 +2320,12 @@ const PushComposerTokenInput = forwardRef<PushComposerTokenEditorHandle, PushCom
           const segmentText = segment.text ?? ''
           const isTailSegment = index === segments.length - 1
           const shouldHideEmptySegment = segmentText.length === 0 && !isTailSegment && !isEmpty
+          const usesContentWidth = !isTailSegment && !shouldHideEmptySegment
           const textClassName = [
             'push-composer-token-editor__text',
             isTailSegment ? 'push-composer-token-editor__text--tail' : '',
             shouldHideEmptySegment ? 'push-composer-token-editor__text--empty' : '',
+            usesContentWidth ? 'push-composer-token-editor__text--content' : '',
           ].filter(Boolean).join(' ')
 
           return (
@@ -2332,8 +2335,7 @@ const PushComposerTokenInput = forwardRef<PushComposerTokenEditorHandle, PushCom
               ariaLabel={ariaLabel}
               value={segmentText}
               placeholder={isEmpty ? placeholder : undefined}
-              isTailSegment={isTailSegment}
-              shouldHideEmptySegment={shouldHideEmptySegment}
+              usesContentWidth={usesContentWidth}
               key={`text-${index}`}
               onChange={(event) => {
                 updateTextSegment(index, event.currentTarget.value, event.currentTarget.selectionStart ?? event.currentTarget.value.length)
