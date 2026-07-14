@@ -14912,7 +14912,7 @@ body.builder--phone-only {
   border: 0;
   border-bottom: 1px solid var(--core-navy-400, #454e80);
   background: var(--core-navy-600, #252d5b);
-  color: var(--core-navy-100, #c8ceed);
+  color: var(--core-navy-10, #f9f9ff);
   font-family: var(--ds-font-family);
   font-size: 12px;
   font-weight: 400;
@@ -14933,6 +14933,7 @@ body.builder--phone-only {
 
 .data-page__connection-menu-copy {
   min-width: 0;
+  flex: 1 1 auto;
   display: flex;
   align-items: center;
   gap: 6px;
@@ -14941,7 +14942,7 @@ body.builder--phone-only {
     flex: 0 0 16px;
     width: 16px;
     height: 16px;
-    color: var(--core-navy-100, #c8ceed);
+    color: var(--core-navy-10, #f9f9ff);
   }
 
   > .jf-icon svg {
@@ -14951,6 +14952,9 @@ body.builder--phone-only {
 
   > svg {
     flex: 0 0 16px;
+    width: 16px;
+    height: 16px;
+    color: var(--core-navy-10, #f9f9ff);
   }
 
   > span {
@@ -14965,7 +14969,7 @@ body.builder--phone-only {
   flex: 0 0 12px;
   width: 12px;
   height: 12px;
-  color: var(--core-navy-100, #c8ceed);
+  color: var(--core-navy-10, #f9f9ff);
 }
 
 .data-page__connection-menu-item > .jf-icon svg {
