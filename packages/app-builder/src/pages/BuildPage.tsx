@@ -2612,12 +2612,16 @@ function LivePreviewNotificationsPage({
   if (notifications.length === 0) {
     return (
       <div className="live-preview__notifications-page">
-        <div className="live-preview__notifications-empty-card">
-          <span className="live-preview__notifications-card-icon">
-            <AppIcon name={appHeader.icon} size={20} />
+        <div className="live-preview__notifications-empty" role="status" aria-live="polite">
+          <span className="live-preview__notifications-empty-icon" aria-hidden="true">
+            <Icon name="bell-diagonal-filled" category="alerts-feedback" size={32} />
           </span>
-          <strong>No notifications yet</strong>
-          <span>Sent notifications will appear here.</span>
+          <div className="live-preview__notifications-empty-copy">
+            <h2 className="live-preview__notifications-empty-title">You don't have any notifications.</h2>
+            <p className="live-preview__notifications-empty-description">
+              Notifications from this app will appear here when there are updates to review.
+            </p>
+          </div>
         </div>
       </div>
     )
