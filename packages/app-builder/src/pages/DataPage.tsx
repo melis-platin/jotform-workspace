@@ -833,7 +833,7 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
           <div className="data-page__toolbar-spacer" />
           <div className="data-page__toolbar-actions">
             <button type="button" className="data-page__utility-btn">
-              <Icon name="ai-squares-filled-color" category="ai" size={20} />
+              <Icon name="ai-squares-filled" category="ai" size={20} />
               <span>Columns &amp; AI</span>
               <Icon name="angle-down" category="arrows" size={16} />
             </button>
