@@ -3430,6 +3430,15 @@ export function SettingsPage({
             title={active.headerTitle ?? active.title}
             description={active.headerDescription ?? active.description}
             iconBg={active.iconBg}
+            action={activeId === 'push-notifications' ? (
+              <TextLink
+                className="panel-header__action-link"
+                size="lg"
+                leftIcon={<Icon name="gear-filled" category="general" size={16} />}
+              >
+                Settings
+              </TextLink>
+            ) : undefined}
           />
           {activeId === 'app-settings' && (
             <AppSettingsPanel

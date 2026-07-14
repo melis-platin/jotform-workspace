@@ -1,4 +1,5 @@
 import { Icon } from '@jf/design-system'
+import type { ReactNode } from 'react'
 
 interface PanelHeaderProps {
   icon: string
@@ -6,9 +7,10 @@ interface PanelHeaderProps {
   title: string
   description: string
   iconBg?: string
+  action?: ReactNode
 }
 
-export function PanelHeader({ icon, iconCategory, title, description, iconBg }: PanelHeaderProps) {
+export function PanelHeader({ icon, iconCategory, title, description, iconBg, action }: PanelHeaderProps) {
   return (
     <header className="panel-header">
       <span
@@ -21,6 +23,7 @@ export function PanelHeader({ icon, iconCategory, title, description, iconBg }: 
         <p className="panel-header__title">{title}</p>
         <p className="panel-header__desc">{description}</p>
       </div>
+      {action && <div className="panel-header__action">{action}</div>}
     </header>
   )
 }
