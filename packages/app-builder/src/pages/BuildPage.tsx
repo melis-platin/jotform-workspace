@@ -2501,6 +2501,7 @@ interface BuildPageProps {
   onDeepLinkTargetsChange?: (targets: DeepLinkTarget[]) => void
   onSearchableElementCountChange?: (count: number) => void
   onDataBackedElementCountChange?: (count: number) => void
+  onOpenDataTableForElement?: (elementId: string) => void
   searchBarEnabled?: boolean
   pushNotificationsEnabled?: boolean
   pushNotifications?: LivePreviewPushNotification[]
@@ -2665,6 +2666,7 @@ export function BuildPage({
   onDeepLinkTargetsChange,
   onSearchableElementCountChange,
   onDataBackedElementCountChange,
+  onOpenDataTableForElement,
   searchBarEnabled = true,
   pushNotificationsEnabled = false,
   pushNotifications = [],
@@ -7747,6 +7749,10 @@ export function BuildPage({
                                   href="#"
                                   size="sm"
                                   rightIcon={<Icon name="arrow-up-right-from-square" category="arrows" size={14} />}
+                                  onClick={(event) => {
+                                    event.preventDefault()
+                                    onOpenDataTableForElement?.(selectedElement.id)
+                                  }}
                                 >
                                   Open
                                 </DSLink>

@@ -412,7 +412,7 @@ function buildTableForElement(element: CanvasElement, page: AppPage): DataTable 
   return null
 }
 
-function collectDataTables(pages: AppPage[]): DataTable[] {
+export function collectDataTables(pages: AppPage[]): DataTable[] {
   const elementTables = pages
     .filter((page) => !page.dynamic)
     .flatMap((page) => page.elements
@@ -514,9 +514,22 @@ function columnHeaderIcon(column: DataColumn) {
 interface DataPageProps {
   preset: AppPreset
   onElementNavigate?: (pageId: string, elementId: string) => void
+  dataTableNavigationTarget?: {
+    tableId: string
+    requestId: number
+  } | null
 }
 
-export function DataPage({ preset, onElementNavigate }: DataPageProps) {
+export function findDataTableIdForElement(preset: AppPreset, elementId: string): string | null {
+  const initialState = buildInitialStateFromPreset(preset)
+  const tables = collectDataTables(initialState.pages)
+  return tables.find((table) => (
+    table.id === elementId
+    || table.connections.some((connection) => connection.elementId === elementId)
+  ))?.id ?? null
+}
+
+export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget }: DataPageProps) {
   const initialState = useMemo(() => buildInitialStateFromPreset(preset), [preset])
   const tables = useMemo(() => collectDataTables(initialState.pages), [initialState.pages])
   const [activeTableId, setActiveTableId] = useState(() => tables[0]?.id ?? '')
@@ -537,6 +550,16 @@ export function DataPage({ preset, onElementNavigate }: DataPageProps) {
   useEffect(() => {
     setTableRowsById({})
   }, [tables])
+
+  useEffect(() => {
+    if (!dataTableNavigationTarget) return
+    if (!tables.some((table) => table.id === dataTableNavigationTarget.tableId)) return
+    setActiveTableId(dataTableNavigationTarget.tableId)
+    setOpenConnectionTableId(null)
+    setOpenTableMenuId(null)
+    setOpenTableContextConnectionId(null)
+    setTableContextConnectionAnchor(null)
+  }, [dataTableNavigationTarget, tables])
 
   const clearTableContextConnectionCloseTimer = () => {
     if (tableContextConnectionCloseTimer.current == null) return

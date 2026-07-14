@@ -2,7 +2,7 @@ import { useState, useMemo, useEffect, useSyncExternalStore, useCallback, useRef
 import { IconLibraryProvider } from '@jf/app-elements'
 import { TopBar } from './shell/TopBar.tsx'
 import { BuildPage } from './pages/BuildPage.tsx'
-import { DataPage, presetUsesDataElement } from './pages/DataPage.tsx'
+import { DataPage, findDataTableIdForElement, presetUsesDataElement } from './pages/DataPage.tsx'
 import { SettingsPage, type PushNotificationHistoryItem } from './pages/SettingsPage.tsx'
 import {
   getAppUserNameFieldValueForPreset,
@@ -23,6 +23,11 @@ type Page = 'build' | 'data' | 'settings' | 'publish'
 interface BuildNavigationTarget {
   pageId: string
   elementId: string
+  requestId: number
+}
+
+interface DataNavigationTarget {
+  tableId: string
   requestId: number
 }
 
@@ -122,9 +127,11 @@ export function App() {
   const previousUrlPresetRef = useRef(urlPreset)
   const presetChangeRequestRef = useRef(0)
   const buildNavigationRequestRef = useRef(0)
+  const dataNavigationRequestRef = useRef(0)
   const [pushNotificationHistoryItems, setPushNotificationHistoryItems] = useState<PushNotificationHistoryItem[]>([])
   const [readPushNotificationDeliveryIds, setReadPushNotificationDeliveryIds] = useState<Set<string>>(() => new Set())
   const [buildNavigationTarget, setBuildNavigationTarget] = useState<BuildNavigationTarget | null>(null)
+  const [dataNavigationTarget, setDataNavigationTarget] = useState<DataNavigationTarget | null>(null)
   const preset = useMemo(() => getPresetById(activePresetId), [activePresetId])
   const showDataTab = useMemo(() => presetUsesDataElement(preset) || dataBackedElementCount > 0, [dataBackedElementCount, preset])
   const [deepLinkTargets, setDeepLinkTargets] = useState<DeepLinkTarget[]>(() =>
@@ -175,6 +182,7 @@ export function App() {
     previousUrlPresetRef.current = urlPreset
     if (presetChanged) presetChangeRequestRef.current += 1
     if (presetChanged) setBuildNavigationTarget(null)
+    if (presetChanged) setDataNavigationTarget(null)
     setActivePresetId((prev) => (prev === urlPreset ? prev : urlPreset))
     setAppTitle(titleForPreset(urlPreset))
     setAppIcon(defaultAppIcon(urlPreset))
@@ -249,6 +257,7 @@ export function App() {
     if (presetChangeRequestRef.current !== requestId) return
     setActivePresetId(id)
     setBuildNavigationTarget(null)
+    setDataNavigationTarget(null)
     setAppTitle(titleForPreset(id))
     setAppIcon(defaultAppIcon(id))
     setDeepLinkTargets(createDeepLinkTargetsFromPreset(getPresetById(id)))
@@ -271,6 +280,15 @@ export function App() {
     setPreviewMode(false)
     setActivePage('build')
   }, [])
+
+  const handleOpenDataTableForElement = useCallback((elementId: string) => {
+    const tableId = findDataTableIdForElement(preset, elementId)
+    if (!tableId) return
+    dataNavigationRequestRef.current += 1
+    setDataNavigationTarget({ tableId, requestId: dataNavigationRequestRef.current })
+    setPreviewMode(false)
+    setActivePage('data')
+  }, [preset])
 
   const addPushNotificationHistoryItem = (item: PushNotificationHistoryItem) => {
     setPushNotificationHistoryItems((currentItems) => [item, ...currentItems])
@@ -379,6 +397,7 @@ export function App() {
             onDeepLinkTargetsChange={setDeepLinkTargets}
             onSearchableElementCountChange={handleSearchableElementCountChange}
             onDataBackedElementCountChange={setDataBackedElementCount}
+            onOpenDataTableForElement={handleOpenDataTableForElement}
             pushNotificationsEnabled={pushNotificationsEnabled}
             searchBarEnabled={searchBarEnabled}
             pushNotifications={livePreviewPushNotifications}
@@ -387,7 +406,11 @@ export function App() {
           />
         )}
         {activePage === 'data' && (
-          <DataPage preset={preset} onElementNavigate={handleDataElementNavigate} />
+          <DataPage
+            preset={preset}
+            onElementNavigate={handleDataElementNavigate}
+            dataTableNavigationTarget={dataNavigationTarget}
+          />
         )}
         {activePage === 'settings' && (
           <SettingsPage
