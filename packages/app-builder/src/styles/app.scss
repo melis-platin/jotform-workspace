@@ -12188,7 +12188,7 @@ body.builder--phone-only {
   flex-direction: column;
   gap: var(--spacing-xl);
   margin-top: var(--spacing-xl);
-  padding: var(--spacing-xl) 0;
+  padding: var(--spacing-xl);
   background: var(--background-white);
   border-radius: var(--ds-radius-sm);
   box-shadow: var(--shadow-xs);
@@ -12258,13 +12258,13 @@ body.builder--phone-only {
 }
 
 .push-composer-panel__fields {
-  width: 612px;
-  max-width: calc(100% - var(--spacing-4xl));
+  width: 100%;
+  max-width: none;
   min-width: 0;
   display: flex;
   flex-direction: column;
   gap: var(--spacing-xl);
-  margin: 0 auto;
+  margin: 0;
 }
 
 .push-composer-field {
@@ -12787,13 +12787,13 @@ body.builder--phone-only {
 .push-composer-panel__dropdown-row {
   position: relative;
   z-index: 2;
-  width: 612px;
-  max-width: calc(100% - var(--spacing-4xl));
+  width: 100%;
+  max-width: none;
   display: flex;
   align-items: flex-end;
   flex-wrap: wrap;
   gap: var(--spacing-xl);
-  margin: 0 auto;
+  margin: 0;
 
   .push-composer-dropdown {
     flex: 1 1 240px;
