@@ -12260,6 +12260,11 @@ body.builder--phone-only {
   padding-right: 0;
 }
 
+.live-preview__desktop-notifications-card .live-preview__notifications-page--desktop .live-preview__notifications-card--with-image .live-preview__notifications-card-header time {
+  top: 0;
+  right: 0;
+}
+
 .live-preview__desktop-notifications-card .live-preview__notifications-page--desktop .live-preview__notifications-card--with-image .live-preview__notifications-card-media {
   top: var(--space-10);
   right: 0;
