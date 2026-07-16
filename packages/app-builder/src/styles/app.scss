@@ -11898,9 +11898,7 @@ body.builder--phone-only {
 // Image notifications use the fixed full-page list row from the mobile design:
 // a 44px thumbnail sits beside two title and three description lines.
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card--with-image {
-  height: calc(var(--space-20) + var(--space-16));
   min-height: calc(var(--space-20) + var(--space-16));
-  overflow: hidden;
 }
 
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card--expanded {
@@ -11912,17 +11910,11 @@ body.builder--phone-only {
 }
 
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card--with-image .live-preview__notifications-card-text {
-  display: -webkit-box;
-  overflow: hidden;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
+  overflow: visible;
 }
 
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card--with-image .live-preview__notifications-card-header strong {
-  display: -webkit-box;
-  overflow: hidden;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  overflow: visible;
 }
 
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card--with-image .live-preview__notifications-card-media {
@@ -13938,9 +13930,7 @@ body.builder--phone-only {
 .push-notification-history-card__title {
   min-width: 0;
   margin: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
   font-size: var(--font-size-md);
   font-weight: var(--font-weight-bold);
   line-height: var(--line-height-md);
@@ -13970,10 +13960,6 @@ body.builder--phone-only {
   width: 100%;
   max-width: 100%;
   margin: 0;
-  display: -webkit-box;
-  overflow: hidden;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
   overflow-wrap: anywhere;
   word-break: break-word;
   font-size: var(--font-size-sm);
@@ -14316,18 +14302,18 @@ body.builder--phone-only {
   bottom: var(--spacing-4xl);
   width: 328px;
   max-width: calc(100% - (var(--spacing-md) * 2));
-  height: var(--spacing-4xl);
+  min-height: var(--spacing-4xl);
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
   padding: var(--spacing-sm);
   border-radius: var(--radius-md);
   background: rgb(255 255 255 / 0.8);
-  overflow: hidden;
+  overflow: visible;
 }
 
 .push-preview-phone__notification--with-image {
-  height: calc(var(--spacing-4xl) + var(--spacing-xl));
+  min-height: calc(var(--spacing-4xl) + var(--spacing-xl));
   flex-direction: row;
   align-items: flex-start;
   gap: var(--spacing-sm);
@@ -14405,9 +14391,7 @@ body.builder--phone-only {
 
   p {
     min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    overflow-wrap: anywhere;
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-sm);
@@ -14498,9 +14482,7 @@ body.builder--phone-only {
 }
 
 .push-preview-phone__notification-text {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-book);
   line-height: 1;
@@ -14510,13 +14492,9 @@ body.builder--phone-only {
 .push-preview-phone__notification--with-image .push-preview-phone__notification-text {
   flex: 1 1 0;
   min-width: 0;
-  display: -webkit-box;
-  overflow: hidden;
   white-space: normal;
   line-height: 1.2;
-  text-overflow: ellipsis;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
+  overflow-wrap: anywhere;
 }
 
 .push-preview-phone__notification-image {
