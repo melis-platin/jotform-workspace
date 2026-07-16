@@ -12128,8 +12128,7 @@ body.builder--phone-only {
 .live-preview__desktop-notifications-header {
   display: flex;
   align-items: center;
-  min-height: calc(var(--space-12) + var(--space-6) + var(--space-1));
-  padding: 0 var(--space-6);
+  padding: var(--space-6);
   border-bottom: 1px solid var(--border-light);
   box-sizing: border-box;
 }
@@ -12138,9 +12137,9 @@ body.builder--phone-only {
   margin: 0;
   color: var(--fg-primary);
   font-family: var(--font-family-heading);
-  font-size: var(--font-size-heading-xs);
-  font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-heading-xs);
+  font-size: 20px;
+  font-weight: var(--font-weight-bold);
+  line-height: 28px;
   letter-spacing: var(--letter-spacing-heading);
 }
 
