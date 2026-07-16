@@ -5099,13 +5099,6 @@ body {
   font-size: var(--font-size-heading-xs);
 }
 
-// Divider between menu page items — app-elements --border token (matches the
-// rest of the live-preview chrome separators). Not after the last item. Applies
-// to both the landing hamburger menu (--lg) and the bottom-nav "More" overflow.
-.live-preview__more-pages-list li:not(:last-child) {
-  border-bottom: 1px solid var(--border);
-}
-
 .live-preview__more-pages-auth {
   display: flex;
   flex-direction: column;
