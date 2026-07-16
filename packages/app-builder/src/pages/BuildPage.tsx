@@ -2564,6 +2564,15 @@ interface LivePreviewPushNotification {
   unread?: boolean
 }
 
+const MOBILE_NOTIFICATION_SCREEN_PLACEHOLDERS: LivePreviewPushNotification[] = [
+  { id: 'mobile-preview-1', title: 'Notification Title', content: 'Notification content', audience: [], sentAtLabel: '09:41 AM', readByRoleIds: [], unread: true },
+  { id: 'mobile-preview-2', title: 'Lorem ipsum dolor sit amet', content: 'Lorem ipsum dolor sit amet lorem ipsum dolor sit amet', audience: [], sentAtLabel: '09:41 AM', readByRoleIds: [], unread: true },
+  { id: 'mobile-preview-3', title: 'Lorem ipsum dolor sit amet lorem ispum dolor sit', content: 'Lorem ipsum dolor sit amet lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet lorem ipsum dolor sit amet', audience: [], sentAtLabel: '09:41 AM', readByRoleIds: [] },
+  { id: 'mobile-preview-4', title: 'Notification Title', content: 'Notification content', audience: [], sentAtLabel: '09:41 AM', readByRoleIds: [] },
+  { id: 'mobile-preview-5', title: 'Lorem ipsum dolor sit amet', content: 'Lorem ipsum dolor sit amet lorem ipsum dolor sit amet', audience: [], sentAtLabel: '09:41 AM', readByRoleIds: [] },
+  { id: 'mobile-preview-6', title: 'Lorem ipsum dolor sit amet lorem ispum dolor sit', content: 'Lorem ipsum dolor sit amet lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet lorem ipsum dolor sit amet', audience: [], sentAtLabel: '09:41 AM', readByRoleIds: [] },
+]
+
 function isLivePreviewNotificationVisibleForRole(notification: LivePreviewPushNotification, roleId: string) {
   return notification.audience.includes(ALL_USERS_AUDIENCE_ID) || notification.audience.includes(roleId)
 }
@@ -2629,18 +2638,23 @@ function LivePreviewNotificationsPage({
   notifications,
   appHeader,
   useJotformIcon = false,
+  showMobileLayout = false,
   onNotificationRead,
   onNotificationOpen,
 }: {
   notifications: LivePreviewPushNotification[]
   appHeader: AppHeaderState
   useJotformIcon?: boolean
+  showMobileLayout?: boolean
   onNotificationRead?: (notificationId: string) => void
   onNotificationOpen?: (notification: LivePreviewPushNotification) => void
 }) {
   const hasCustomImage = appHeader.imageStyle === 'Image' && Boolean(appHeader.imageUrl)
+  const usesPlaceholderNotifications = showMobileLayout && notifications.length === 0
+  const displayedNotifications = usesPlaceholderNotifications ? MOBILE_NOTIFICATION_SCREEN_PLACEHOLDERS : notifications
+  const unreadCount = displayedNotifications.filter((notification) => notification.unread).length
 
-  if (notifications.length === 0) {
+  if (displayedNotifications.length === 0) {
     return (
       <div className="live-preview__notifications-page live-preview__notifications-page--empty">
         <div className="live-preview__notifications-empty" role="status" aria-live="polite">
@@ -2659,9 +2673,26 @@ function LivePreviewNotificationsPage({
   }
 
   return (
-    <div className="live-preview__notifications-page">
+    <div className={`live-preview__notifications-page${showMobileLayout ? ' live-preview__notifications-page--mobile' : ''}`}>
+      {showMobileLayout && (
+        <div className="live-preview__notifications-page-header">
+          <h2>Notification ({unreadCount})</h2>
+          <button
+            type="button"
+            className="live-preview__notifications-mark-read"
+            onClick={() => {
+              if (usesPlaceholderNotifications) return
+              displayedNotifications
+                .filter((notification) => notification.unread)
+                .forEach((notification) => onNotificationRead?.(notification.id))
+            }}
+          >
+            Mark all as read
+          </button>
+        </div>
+      )}
       <div className="live-preview__notifications-list" role="list" aria-label="Notifications">
-        {notifications.map((notification) => {
+        {displayedNotifications.map((notification) => {
           const hasNotificationImage = Boolean(notification.image?.url)
           const isExpandedNotification = notification.title.length > 36 && notification.content.length > 90
 
@@ -2671,7 +2702,7 @@ function LivePreviewNotificationsPage({
               type="button"
               className={`live-preview__notifications-card${notification.unread ? ' live-preview__notifications-card--unread' : ''}${hasNotificationImage ? ' live-preview__notifications-card--with-image' : ''}${isExpandedNotification ? ' live-preview__notifications-card--expanded' : ''}`}
               onClick={() => {
-                if (notification.unread) onNotificationRead?.(notification.id)
+                if (!usesPlaceholderNotifications && notification.unread) onNotificationRead?.(notification.id)
                 onNotificationOpen?.(notification)
               }}
             >
@@ -5447,6 +5478,8 @@ export function BuildPage({
             <LivePreviewNotificationsPage
               notifications={roleScopedPushNotifications}
               appHeader={appHeaderState}
+              useJotformIcon
+              showMobileLayout
               onNotificationRead={markRoleScopedPushNotificationRead}
               onNotificationOpen={handleLivePreviewNotificationOpen}
             />
@@ -9599,6 +9632,8 @@ export function BuildPage({
                             <LivePreviewNotificationsPage
                               notifications={roleScopedPushNotifications}
                               appHeader={appHeaderState}
+                              useJotformIcon
+                              showMobileLayout
                               onNotificationRead={markRoleScopedPushNotificationRead}
                               onNotificationOpen={handleLivePreviewNotificationOpen}
                             />

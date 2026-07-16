@@ -11891,7 +11891,15 @@ body.builder--phone-only {
 }
 
 .live-preview__phone-screen .live-preview__top-header--notifications-page .live-preview__top-header-right {
-  gap: var(--space-1);
+  gap: var(--space-3);
+}
+
+.live-preview__phone-screen .live-preview__top-header--notifications-page .live-preview__cart-btn {
+  display: none;
+}
+
+.live-preview__phone-screen .live-preview__top-header--notifications-page .live-preview__top-header-search-btn {
+  margin-right: calc(var(--space-2) * -1);
 }
 
 .live-preview__phone-screen .live-preview__top-header--notifications-page .live-preview__top-header-notification-btn svg {
@@ -11899,8 +11907,46 @@ body.builder--phone-only {
   height: var(--space-5);
 }
 
-.live-preview__phone-screen .live-preview__notifications-page {
-  padding: var(--space-4);
+.live-preview__phone-screen .live-preview__notifications-page--mobile {
+  padding: var(--space-4) var(--space-4) 0;
+}
+
+.live-preview__phone-screen .live-preview__notifications-page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.live-preview__phone-screen .live-preview__notifications-page-header h2 {
+  margin: 0;
+  color: var(--fg-primary);
+  font-family: var(--font-family-circular);
+  font-size: var(--font-size-heading-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-heading-xs);
+  letter-spacing: var(--letter-spacing-heading);
+}
+
+.live-preview__notifications-mark-read {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--fg-brand);
+  font-family: var(--font-family-circular);
+  font-size: var(--font-size-label-lg);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-label-lg);
+  cursor: pointer;
+}
+
+.live-preview__notifications-mark-read:hover,
+.live-preview__notifications-mark-read:focus-visible {
+  color: var(--fg-brand-hover);
+}
+
+.live-preview__phone-screen .live-preview__notifications-page--mobile .live-preview__notifications-list {
+  gap: 0;
 }
 
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-list {
@@ -11915,6 +11961,16 @@ body.builder--phone-only {
   border-radius: 0;
   background: transparent;
   box-shadow: none;
+}
+
+.live-preview__phone-screen .live-preview__notifications-page--mobile .live-preview__notifications-card:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: calc(var(--space-4) * -1);
+  bottom: 0;
+  left: calc(var(--space-4) * -1);
+  height: 1px;
+  background: var(--border-light);
 }
 
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card:hover {
