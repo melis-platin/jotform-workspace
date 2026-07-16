@@ -2642,6 +2642,7 @@ function LivePreviewNotificationsPage({
 }) {
   const hasCustomImage = appHeader.imageStyle === 'Image' && Boolean(appHeader.imageUrl)
   const displayedNotifications = notifications
+  const unreadNotificationsCount = displayedNotifications.filter((notification) => notification.unread).length
 
   if (displayedNotifications.length === 0) {
     return (
@@ -2662,7 +2663,14 @@ function LivePreviewNotificationsPage({
   }
 
   return (
-    <div className={`live-preview__notifications-page${showMobileLayout ? ' live-preview__notifications-page--mobile' : ''}`}>
+    <div className={`live-preview__notifications-page${showMobileLayout ? ' live-preview__notifications-page--mobile' : ' live-preview__notifications-page--desktop'}`}>
+      {!showMobileLayout && (
+        <div className="live-preview__desktop-notifications-header">
+          <h2>
+            Notifications{unreadNotificationsCount > 0 ? ` (${unreadNotificationsCount})` : ''}
+          </h2>
+        </div>
+      )}
       <div className="live-preview__notifications-list" role="list" aria-label="Notifications">
         {displayedNotifications.map((notification) => {
           const hasNotificationImage = Boolean(notification.image?.url)

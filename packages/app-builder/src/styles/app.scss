@@ -12115,6 +12115,126 @@ body.builder--phone-only {
   right: 0;
 }
 
+// Desktop navigation uses the same notification data and read states as the
+// phone preview, presented as the 450px Figma popover: a fixed heading followed
+// by full-width, divider-separated rows. These overrides are deliberately
+// scoped to the desktop popover so the mobile notification page stays intact.
+.live-preview__desktop-notifications-card .live-preview__notifications-page--desktop {
+  display: block;
+  padding: 0;
+  overflow-y: auto;
+}
+
+.live-preview__desktop-notifications-header {
+  display: flex;
+  align-items: center;
+  min-height: calc(var(--space-12) + var(--space-6) + var(--space-1));
+  padding: 0 var(--space-6);
+  border-bottom: 1px solid var(--border-light);
+  box-sizing: border-box;
+}
+
+.live-preview__desktop-notifications-header h2 {
+  margin: 0;
+  color: var(--fg-primary);
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-heading-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-heading-xs);
+  letter-spacing: var(--letter-spacing-heading);
+}
+
+.live-preview__desktop-notifications-card .live-preview__notifications-page--desktop .live-preview__notifications-list {
+  gap: 0;
+}
+
+.live-preview__desktop-notifications-card .live-preview__notifications-page--desktop .live-preview__notifications-card {
+  min-height: calc(var(--space-16) + var(--space-6) + var(--space-1));
+  padding: var(--space-4) var(--space-6);
+  border-bottom: 1px solid var(--border-light);
+  box-sizing: border-box;
+}
+
+.live-preview__desktop-notifications-card .live-preview__notifications-page--desktop .live-preview__notifications-card:last-child {
+  border-bottom: 0;
+}
+
+.live-preview__desktop-notifications-card .live-preview__notifications-page--desktop .live-preview__notifications-card-icon {
+  width: calc(var(--space-12) + var(--space-3));
+  height: calc(var(--space-12) + var(--space-3));
+  flex-basis: calc(var(--space-12) + var(--space-3));
+  margin-right: var(--space-4);
+  border-radius: var(--radius-sm);
+}
+
+.live-preview__desktop-notifications-card .live-preview__notifications-page--desktop .live-preview__notifications-card-icon svg {
+  width: var(--space-8);
+  height: var(--space-8);
+}
+
+.live-preview__desktop-notifications-card .live-preview__notifications-page--desktop .live-preview__notifications-card-copy {
+  gap: var(--space-1);
+  padding-right: 0;
+}
+
+.live-preview__desktop-notifications-card .live-preview__notifications-page--desktop .live-preview__notifications-card-header {
+  gap: var(--space-1);
+}
+
+.live-preview__desktop-notifications-card .live-preview__notifications-page--desktop .live-preview__notifications-card-header strong {
+  padding-right: calc(var(--space-12) + var(--space-4));
+  font-size: var(--font-size-paragraph-lg);
+  line-height: var(--line-height-label-lg);
+}
+
+.live-preview__desktop-notifications-card .live-preview__notifications-page--desktop .live-preview__notifications-card-header time {
+  top: var(--space-4);
+  right: var(--space-6);
+  font-size: var(--font-size-label-sm);
+  line-height: var(--line-height-label-sm);
+  letter-spacing: var(--letter-spacing-label);
+}
+
+.live-preview__desktop-notifications-card .live-preview__notifications-page--desktop .live-preview__notifications-card-text {
+  font-size: var(--font-size-paragraph-sm);
+  line-height: var(--line-height-paragraph-sm);
+}
+
+.live-preview__desktop-notifications-card .live-preview__notifications-page--desktop .live-preview__notifications-card--unread {
+  padding-left: calc(var(--space-6) + var(--space-6));
+}
+
+.live-preview__desktop-notifications-card .live-preview__notifications-page--desktop .live-preview__notifications-card--unread .live-preview__notifications-unread-dot {
+  position: absolute;
+  top: calc(var(--space-10) + var(--space-1));
+  left: var(--space-2);
+  margin: 0;
+}
+
+.live-preview__desktop-notifications-card .live-preview__notifications-page--desktop .live-preview__notifications-card--expanded,
+.live-preview__desktop-notifications-card .live-preview__notifications-page--desktop .live-preview__notifications-card--with-image {
+  min-height: calc(var(--space-20) + var(--space-16) + var(--space-1));
+}
+
+.live-preview__desktop-notifications-card .live-preview__notifications-page--desktop .live-preview__notifications-card--expanded .live-preview__notifications-card-header time,
+.live-preview__desktop-notifications-card .live-preview__notifications-page--desktop .live-preview__notifications-card--with-image .live-preview__notifications-card-header time {
+  font-size: var(--font-size-label-xs);
+  letter-spacing: 0.1px;
+}
+
+.live-preview__desktop-notifications-card .live-preview__notifications-page--desktop .live-preview__notifications-card--with-image .live-preview__notifications-card-copy {
+  padding-right: calc(var(--space-12) + var(--space-5));
+}
+
+.live-preview__desktop-notifications-card .live-preview__notifications-page--desktop .live-preview__notifications-card--with-image .live-preview__notifications-card-header strong {
+  padding-right: 0;
+}
+
+.live-preview__desktop-notifications-card .live-preview__notifications-page--desktop .live-preview__notifications-card--with-image .live-preview__notifications-card-media {
+  top: calc(var(--space-6) + var(--space-5));
+  right: var(--space-6);
+}
+
 .live-preview__notifications-empty {
   width: 100%;
   min-height: calc(100% - var(--space-12));
