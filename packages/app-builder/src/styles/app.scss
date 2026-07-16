@@ -9918,8 +9918,8 @@ body.builder--phone-only {
     top: var(--space-4);
     left: var(--space-0);
     right: var(--space-0);
-    width: auto;
-    max-width: none;
+    width: min(760px, calc(100% - (var(--space-4) * 2)));
+    max-width: calc(100% - (var(--space-4) * 2));
     margin-left: var(--space-0);
     margin-right: var(--space-0);
     justify-content: center;
