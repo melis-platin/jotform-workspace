@@ -10175,7 +10175,11 @@ body.builder--phone-only {
 }
 
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--compact .live-preview__top-header-right {
-  margin-left: var(--space-0);
+  // Keep the trailing action inside the same 12px inset as the leading logo.
+  // The auto margin assigns the remaining compact-header space before actions,
+  // while the inner padding reserves the trailing inset for the Sign up button.
+  margin-left: auto;
+  padding-right: var(--space-3);
 }
 
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--compact .live-preview__top-header-compact-icon:not(.live-preview__top-header-compact-icon--image) {
