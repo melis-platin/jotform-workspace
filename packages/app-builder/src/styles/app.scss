@@ -10191,6 +10191,25 @@ body.builder--phone-only {
   font-family: var(--font-family-circular);
 }
 
+// Figma's signed-in compact header uses a 12px action rhythm and a 40px
+// profile image; the logged-out header keeps its own paired-button spacing.
+.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--compact.live-preview__top-header--logged-in .live-preview__top-header-nav {
+  margin-left: auto;
+  margin-right: var(--space-3);
+}
+
+.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--compact.live-preview__top-header--logged-in .live-preview__top-header-right {
+  gap: var(--space-3);
+  margin-left: var(--space-0);
+  padding-right: var(--space-0);
+}
+
+.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--compact.live-preview__top-header--logged-in :is(.live-preview__top-header-avatar, .live-preview__top-header-avatar-btn) {
+  width: var(--space-10);
+  height: var(--space-10);
+  flex-basis: var(--space-10);
+}
+
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--fullwidth-search-open .live-preview__top-header-nav {
   margin-right: 0;
 }
