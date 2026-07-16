@@ -53,7 +53,7 @@ export function LivePreviewAvatarPopover({
           <li key={item.id}>
             <button
               type="button"
-              className="live-preview__avatar-popover-item"
+              className={`live-preview__avatar-popover-item${item.id === 'navigation' ? ' live-preview__avatar-popover-item--navigation' : ''}`}
               onClick={() => {
                 if (item.id === 'logout') {
                   onLogout?.()
