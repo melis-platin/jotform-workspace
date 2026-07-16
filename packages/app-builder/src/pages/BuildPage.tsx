@@ -2656,12 +2656,13 @@ function LivePreviewNotificationsPage({
       <div className="live-preview__notifications-list" role="list" aria-label="Notifications">
         {notifications.map((notification) => {
           const hasNotificationImage = Boolean(notification.image?.url)
+          const isExpandedNotification = notification.title.length > 36 && notification.content.length > 90
 
           return (
             <button
               key={notification.id}
               type="button"
-              className={`live-preview__notifications-card${notification.unread ? ' live-preview__notifications-card--unread' : ''}${hasNotificationImage ? ' live-preview__notifications-card--with-image' : ''}`}
+              className={`live-preview__notifications-card${notification.unread ? ' live-preview__notifications-card--unread' : ''}${hasNotificationImage ? ' live-preview__notifications-card--with-image' : ''}${isExpandedNotification ? ' live-preview__notifications-card--expanded' : ''}`}
               onClick={() => {
                 if (notification.unread) onNotificationRead?.(notification.id)
                 onNotificationOpen?.(notification)

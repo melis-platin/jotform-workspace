@@ -11863,7 +11863,7 @@ body.builder--phone-only {
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card-header time {
   position: absolute;
   top: var(--space-4);
-  right: 0;
+  right: var(--space-4);
   font-size: var(--font-size-label-sm);
   line-height: var(--line-height-label-sm);
   letter-spacing: 0.1px;
@@ -11899,6 +11899,10 @@ body.builder--phone-only {
 // copy column, matching the app's full-page notification list treatment.
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card--with-image {
   min-height: calc(var(--space-20) + var(--space-10));
+}
+
+:is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card--expanded {
+  min-height: calc(var(--space-20) + var(--space-16));
 }
 
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card--with-image .live-preview__notifications-card-copy {
