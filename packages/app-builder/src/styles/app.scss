@@ -2276,7 +2276,7 @@ body {
 .live-preview__top-header-right {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-1);
   flex-shrink: 0;
 }
 
@@ -2832,6 +2832,7 @@ body {
   flex: 0 0 var(--spacing-3xl);
   padding: 0;
   border: 0;
+  border-radius: var(--radius-none);
   background: transparent;
   color: var(--fg-secondary);
   cursor: pointer;
@@ -10155,7 +10156,7 @@ body.builder--phone-only {
 }
 
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header-right {
-  gap: var(--space-2);
+  gap: var(--space-1);
 }
 
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--fullwidth-search-open .live-preview__top-header-nav {
@@ -11424,7 +11425,7 @@ body.builder--phone-only {
   justify-content: center;
   padding: 0;
   border: 0;
-  border-radius: var(--radius-rounded);
+  border-radius: var(--radius-none);
   background: transparent;
   color: var(--fg-secondary);
   line-height: 0;
@@ -11576,7 +11577,7 @@ body.builder--phone-only {
   height: 32px;
   flex: 0 0 32px;
   padding: 0;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-none);
   color: var(--fg-secondary);
 }
 
@@ -11794,11 +11795,7 @@ body.builder--phone-only {
 }
 
 .live-preview__phone-screen .live-preview__top-header--notifications-page .live-preview__top-header-right {
-  gap: var(--space-3);
-}
-
-.live-preview__phone-screen .live-preview__top-header--notifications-page .live-preview__top-header-search + .live-preview__top-header-notification {
-  margin-left: calc(var(--space-1) - var(--space-3));
+  gap: var(--space-1);
 }
 
 .live-preview__phone-screen .live-preview__top-header--notifications-page .live-preview__top-header-notification-btn svg {
