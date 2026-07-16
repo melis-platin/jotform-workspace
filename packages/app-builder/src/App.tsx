@@ -20,6 +20,11 @@ import { SEARCH_BAR_AUTO_ENABLE_THRESHOLD } from './state/searchableElements.ts'
 
 type Page = 'build' | 'data' | 'settings' | 'publish'
 
+type PushNotificationHistoryByPreset = Record<string, PushNotificationHistoryItem[]>
+type ReadPushNotificationDeliveryIdsByPreset = Record<string, Set<string>>
+
+const EMPTY_READ_PUSH_NOTIFICATION_DELIVERY_IDS = new Set<string>()
+
 interface BuildNavigationTarget {
   pageId: string
   elementId: string
@@ -128,11 +133,14 @@ export function App() {
   const presetChangeRequestRef = useRef(0)
   const buildNavigationRequestRef = useRef(0)
   const dataNavigationRequestRef = useRef(0)
-  const [pushNotificationHistoryItems, setPushNotificationHistoryItems] = useState<PushNotificationHistoryItem[]>([])
-  const [readPushNotificationDeliveryIds, setReadPushNotificationDeliveryIds] = useState<Set<string>>(() => new Set())
+  const [pushNotificationHistoryItemsByPreset, setPushNotificationHistoryItemsByPreset] = useState<PushNotificationHistoryByPreset>({})
+  const [readPushNotificationDeliveryIdsByPreset, setReadPushNotificationDeliveryIdsByPreset] = useState<ReadPushNotificationDeliveryIdsByPreset>({})
   const [buildNavigationTarget, setBuildNavigationTarget] = useState<BuildNavigationTarget | null>(null)
   const [dataNavigationTarget, setDataNavigationTarget] = useState<DataNavigationTarget | null>(null)
   const preset = useMemo(() => getPresetById(activePresetId), [activePresetId])
+  const pushNotificationHistoryItems = pushNotificationHistoryItemsByPreset[activePresetId] ?? []
+  const readPushNotificationDeliveryIds = readPushNotificationDeliveryIdsByPreset[activePresetId]
+    ?? EMPTY_READ_PUSH_NOTIFICATION_DELIVERY_IDS
   const showDataTab = useMemo(() => presetUsesDataElement(preset) || dataBackedElementCount > 0, [dataBackedElementCount, preset])
   const [deepLinkTargets, setDeepLinkTargets] = useState<DeepLinkTarget[]>(() =>
     createDeepLinkTargetsFromPreset(getPresetById(urlPreset ?? EMPTY_PRESET_ID)),
@@ -291,7 +299,10 @@ export function App() {
   }, [preset])
 
   const addPushNotificationHistoryItem = (item: PushNotificationHistoryItem) => {
-    setPushNotificationHistoryItems((currentItems) => [item, ...currentItems])
+    setPushNotificationHistoryItemsByPreset((currentItemsByPreset) => ({
+      ...currentItemsByPreset,
+      [activePresetId]: [item, ...(currentItemsByPreset[activePresetId] ?? [])],
+    }))
   }
 
   const getPushNotificationDeliveryId = (notificationId: string, roleId: string) => `${notificationId}:${roleId}`
@@ -315,27 +326,40 @@ export function App() {
 
   const markPushNotificationRead = (itemId: string, roleId: string) => {
     const deliveryId = getPushNotificationDeliveryId(itemId, roleId)
-    setReadPushNotificationDeliveryIds((currentIds) => {
-      if (currentIds.has(deliveryId)) return currentIds
+    setReadPushNotificationDeliveryIdsByPreset((currentIdsByPreset) => {
+      const currentIds = currentIdsByPreset[activePresetId] ?? EMPTY_READ_PUSH_NOTIFICATION_DELIVERY_IDS
+      if (currentIds.has(deliveryId)) return currentIdsByPreset
       const nextIds = new Set(currentIds)
       nextIds.add(deliveryId)
-      return nextIds
+      return {
+        ...currentIdsByPreset,
+        [activePresetId]: nextIds,
+      }
     })
   }
 
   const updatePushNotificationHistoryItem = (updatedItem: PushNotificationHistoryItem) => {
-    setPushNotificationHistoryItems((currentItems) => (
-      currentItems.map((item) => (item.id === updatedItem.id ? updatedItem : item))
-    ))
+    setPushNotificationHistoryItemsByPreset((currentItemsByPreset) => ({
+      ...currentItemsByPreset,
+      [activePresetId]: (currentItemsByPreset[activePresetId] ?? [])
+        .map((item) => (item.id === updatedItem.id ? updatedItem : item)),
+    }))
   }
 
   const deletePushNotificationHistoryItem = (itemId: string) => {
-    setPushNotificationHistoryItems((currentItems) => (
-      currentItems.filter((item) => item.id !== itemId)
-    ))
-    setReadPushNotificationDeliveryIds((currentIds) => {
+    setPushNotificationHistoryItemsByPreset((currentItemsByPreset) => ({
+      ...currentItemsByPreset,
+      [activePresetId]: (currentItemsByPreset[activePresetId] ?? [])
+        .filter((item) => item.id !== itemId),
+    }))
+    setReadPushNotificationDeliveryIdsByPreset((currentIdsByPreset) => {
+      const currentIds = currentIdsByPreset[activePresetId] ?? EMPTY_READ_PUSH_NOTIFICATION_DELIVERY_IDS
       const nextIds = new Set(Array.from(currentIds).filter((deliveryId) => !deliveryId.startsWith(`${itemId}:`)))
-      return nextIds.size === currentIds.size ? currentIds : nextIds
+      if (nextIds.size === currentIds.size) return currentIdsByPreset
+      return {
+        ...currentIdsByPreset,
+        [activePresetId]: nextIds,
+      }
     })
   }
 
