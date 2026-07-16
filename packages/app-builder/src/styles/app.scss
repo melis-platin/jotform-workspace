@@ -9905,33 +9905,26 @@ body.builder--phone-only {
     transition: transform 0.25s ease, border-bottom-color 0.15s ease, box-shadow 0.15s ease;
   }
 
-  // Contained variant: full-bleed bar (bg + bottom border span the page) but the
-  // content (logo · links · actions) is capped to the page width (760px) and
-  // centred, so it lines up with the page card below. Built on the full-bleed top
-  // bar — only the horizontal padding changes (min --space-4 on narrow widths).
+  // Contained variant: the bar stays full-width, while its content forms a
+  // centred, intrinsic group (brand · links · actions).
   .live-preview__top-header--contained {
-    padding-left: max(var(--space-4), calc((100% - 760px) / 2));
-    padding-right: max(var(--space-4), calc((100% - 760px) / 2));
+    justify-content: center;
+    column-gap: var(--space-3);
+    padding: var(--space-0);
   }
 
-  // Compact variant: a floating, app-page-width (760px) bar that lines up with
-  // the page card below it (logo left · links centre · CTAs right — centre is
-  // forced via data-nav-align in BuildPage). Rounded-rect to match the card;
-  // floats 24px from the top with a soft shadow. Background + dark-mode inherit
-  // from the base .live-preview__top-header rules.
+  // Compact variant: the same centred, intrinsic group sits in a floating shell.
   .live-preview__top-header--compact {
     top: var(--space-4);
-    left: 0;
-    right: 0;
-    width: auto;
-    max-width: 760px;
+    left: auto;
+    right: auto;
+    width: fit-content;
+    max-width: calc(100% - (var(--space-4) * 2));
     margin-left: auto;
     margin-right: auto;
-    // Keep the 65px bar height — its vertical breathing was right — and only match
-    // the horizontal padding to it. The tallest content (Small buttons, 40px)
-    // centred in the 65px bar leaves ~12px above/below, so use --space-3 (12px)
-    // left/right for an even inset all round.
-    padding: 0 var(--space-3);
+    justify-content: center;
+    column-gap: var(--space-3);
+    padding: 0 var(--space-4);
     border: none;
     border-radius: var(--radius-xl);
     box-shadow: var(--shadow-md);
@@ -10000,6 +9993,7 @@ body.builder--phone-only {
   .live-preview__top-header-compact {
     flex: 0 0 auto;
     max-width: 240px;
+    gap: var(--space-2);
     padding-right: 0;
   }
 
@@ -10147,16 +10141,31 @@ body.builder--phone-only {
   margin-right: 0;
 }
 
-// Fullwidth, Contained and Compact desktop headers keep page navigation on a
-// 4px rhythm. Their Cart and Search actions form an 8px group, with a 12px
-// visible separation from the page names. The Left layout retains its spacing.
+// Fullwidth, contained and compact desktop headers use adjacent navigation
+// labels and a token-based action group. The Left layout retains its spacing.
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header-nav {
-  gap: var(--space-1);
-  margin-right: var(--space-1);
+  gap: var(--space-0);
+  margin-right: var(--space-0);
 }
 
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header-right {
-  gap: var(--space-1);
+  gap: var(--space-3);
+}
+
+// Fullwidth keeps navigation and actions flush to one another at the right edge.
+// The contained and compact variants use a centred intrinsic group: 32px of
+// breathing room after the brand and the token gap between navigation/actions.
+.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header:not(.live-preview__top-header--contained):not(.live-preview__top-header--compact) {
+  column-gap: var(--space-0);
+}
+
+.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) :is(
+  .live-preview__top-header--contained,
+  .live-preview__top-header--compact
+) .live-preview__top-header-nav {
+  flex: 0 0 auto;
+  margin-left: var(--space-8);
+  margin-right: var(--space-0);
 }
 
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--fullwidth-search-open .live-preview__top-header-nav {
@@ -10518,7 +10527,7 @@ body.builder--phone-only {
   background: transparent;
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
-  padding: 0 var(--space-3);
+  padding: 0 var(--space-4);
   font-family: var(--font-family);
   font-size: 16px;
   font-weight: 500;
@@ -10590,6 +10599,7 @@ body.builder--phone-only {
 
 .live-preview__top-header-nav-more-btn {
   gap: var(--space-1);
+  padding-right: var(--space-0);
 
   svg {
     flex-shrink: 0;
@@ -11441,6 +11451,7 @@ body.builder--phone-only {
   z-index: 2;
   display: inline-flex;
   align-items: center;
+  align-self: stretch;
   flex: 0 0 auto;
 }
 

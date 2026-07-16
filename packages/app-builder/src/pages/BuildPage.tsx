@@ -1526,7 +1526,10 @@ const PROFILE_USER = {
 // so the drop logic only offers top/bottom edges for them.
 const HEADER_ACTION_ALLOWED = ['button', 'social-follow', 'image', 'spacer']
 const HEADER_ACTIONS_MAX = 3
-const DESKTOP_TOP_NAV_VISIBLE_COUNT = 2
+const DESKTOP_TOP_NAV_VISIBLE_COUNT = {
+  fullwidth: 5,
+  constrained: 3,
+} as const
 const CART_TRIGGER_COMPONENT_IDS = new Set(['product-list', 'donation-box'])
 // In header context only Button can be shrinked (Social Follow stays full-width)
 const isHeaderShrinkable = (componentId: string): boolean => componentId === 'button'
@@ -2747,6 +2750,8 @@ export function BuildPage({
   const [desktopNavSticky, setDesktopNavSticky] = useState(false)
   const handleDesktopNavVariantChange = useCallback((variant: 'top' | 'contained' | 'compact' | 'left') => {
     setDesktopNavVariant(variant)
+    if (variant === 'top') setDesktopNavAlignment('right')
+    if (variant === 'contained' || variant === 'compact') setDesktopNavAlignment('center')
   }, [])
   const [propertyTab, setPropertyTab] = useState<string>('general')
   const appHeaderImageInputRef = useRef<HTMLInputElement>(null)
@@ -3299,11 +3304,16 @@ export function BuildPage({
   })
   const hasNavOverflow = navPages.length >= 5
   const visibleNavPages = hasNavOverflow ? navPages.slice(0, 4) : navPages
-  // Desktop top headers show two page names; the rest live under More.
+  // The fullwidth header keeps five page names visible. Contained and compact
+  // layouts preserve their balanced centre composition by showing three before
+  // the remaining pages move under More.
   const desktopTopNavUsesConstrainedLayout = desktopNavVariant === 'contained' || desktopNavVariant === 'compact'
-  const desktopTopNavUsesOverflow = desktopNavVariant !== 'left' && navPages.length > DESKTOP_TOP_NAV_VISIBLE_COUNT
-  const desktopTopNavPages = desktopTopNavUsesOverflow ? navPages.slice(0, DESKTOP_TOP_NAV_VISIBLE_COUNT) : navPages
-  const desktopTopNavOverflowPages = desktopTopNavUsesOverflow ? navPages.slice(DESKTOP_TOP_NAV_VISIBLE_COUNT) : []
+  const desktopTopNavVisibleCount = desktopTopNavUsesConstrainedLayout
+    ? DESKTOP_TOP_NAV_VISIBLE_COUNT.constrained
+    : DESKTOP_TOP_NAV_VISIBLE_COUNT.fullwidth
+  const desktopTopNavUsesOverflow = desktopNavVariant !== 'left' && navPages.length > desktopTopNavVisibleCount
+  const desktopTopNavPages = desktopTopNavUsesOverflow ? navPages.slice(0, desktopTopNavVisibleCount) : navPages
+  const desktopTopNavOverflowPages = desktopTopNavUsesOverflow ? navPages.slice(desktopTopNavVisibleCount) : []
   const desktopTopNavActiveOverflowPage = desktopTopNavOverflowPages.find((p) => p.id === activePageId)
   const desktopTopNavMoreActive = Boolean(desktopTopNavActiveOverflowPage)
   const desktopTopNavMoreLabel = desktopTopNavActiveOverflowPage?.name ?? 'More'
@@ -5147,7 +5157,7 @@ export function BuildPage({
                   }}
                 >
                   <span>{desktopTopNavMoreLabel}</span>
-                  <AppIcon name={isDesktopNavMoreOpen ? 'ChevronUp' : 'ChevronDown'} size={16} />
+                  <AppIcon name={isDesktopNavMoreOpen ? 'ChevronUp' : 'ChevronDown'} size={12} />
                 </button>
                 {isDesktopNavMoreOpen && (
                   <div className="live-preview__top-header-nav-menu" role="menu" aria-label="More pages">
