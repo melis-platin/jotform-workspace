@@ -552,8 +552,13 @@ function hasCampPinecrestStructure(pages: AppPage[]): boolean {
   return hasAllPages && dynamicListCount >= 5
 }
 
-function getDynamicDetailPageName(hostPageName: string): string {
+function getDynamicDetailPageName(hostPageName: string, preset?: AppPreset): string {
   const name = hostPageName.trim().toLowerCase()
+  if (preset?.id === 'boho-nest') {
+    if (name === 'home' || name === 'guide') return 'Style Guide Detail'
+    if (name === 'blog') return 'Decor Story Detail'
+    return `${hostPageName} Detail`
+  }
   if (name === 'classes') return 'Class Detail'
   if (name === 'programs') return 'Program Detail'
   if (name === 'trainers') return 'Trainer Detail'
@@ -567,7 +572,7 @@ function getDynamicDetailPageName(hostPageName: string): string {
   return `${hostPageName} Detail`
 }
 
-function ensureDynamicPagesForOpenDynamicLists(pages: AppPage[]): AppPage[] {
+function ensureDynamicPagesForOpenDynamicLists(pages: AppPage[], preset?: AppPreset): AppPage[] {
   const sourceListIds = new Set(
     pages
       .filter((page) => !page.dynamic)
@@ -592,7 +597,7 @@ function ensureDynamicPagesForOpenDynamicLists(pages: AppPage[]): AppPage[] {
       const dynamicPage = existingDynamic
         ? {
           ...existingDynamic,
-          name: getDynamicDetailPageName(page.name),
+          name: getDynamicDetailPageName(page.name, preset),
           dynamic: true,
           dynamicSourceElementId: element.id,
         }
@@ -602,7 +607,7 @@ function ensureDynamicPagesForOpenDynamicLists(pages: AppPage[]): AppPage[] {
             nextNumericId('page', usedPageIds),
             nextNumericIds('element', usedElementIds, 3),
           ),
-          name: getDynamicDetailPageName(page.name),
+          name: getDynamicDetailPageName(page.name, preset),
         }
 
       usedPageIds.push(dynamicPage.id)
@@ -662,7 +667,7 @@ function normalizeCampPinecrestPages(pages: AppPage[], preset: AppPreset | undef
   const basePages = hasCampPinecrestStructure(pages)
     ? pages
     : buildAppPagesFromPresetPages(preset.pages, 1).pages
-  return ensureDynamicPagesForOpenDynamicLists(removeCampPinecrestPaymentElements(removeCampPinecrestFormsIntro(basePages)))
+  return ensureDynamicPagesForOpenDynamicLists(removeCampPinecrestPaymentElements(removeCampPinecrestFormsIntro(basePages)), preset)
 }
 
 function normalizeBohoNestSharedListSources(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {
@@ -705,6 +710,11 @@ function normalizeBohoNestSharedListSources(pages: AppPage[], preset: AppPreset 
         : element
     )),
   }))
+}
+
+function normalizeBohoNestPages(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {
+  if (preset?.id !== 'boho-nest') return pages
+  return ensureDynamicPagesForOpenDynamicLists(normalizeBohoNestSharedListSources(pages, preset), preset)
 }
 
 // A List Title owns the visible heading for a list. When presets contain an
@@ -754,13 +764,15 @@ function normalizeListTitleHeaders(pages: AppPage[]): AppPage[] {
 }
 
 function normalizePresetPages(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {
-  return normalizeListTitleHeaders(normalizeBohoNestSharedListSources(
-    normalizeCampPinecrestPages(
-      normalizeGymTrainerDynamicPages(pages, preset),
+  return normalizeListTitleHeaders(
+    normalizeBohoNestPages(
+      normalizeCampPinecrestPages(
+        normalizeGymTrainerDynamicPages(pages, preset),
+        preset,
+      ),
       preset,
     ),
-    preset,
-  ))
+  )
 }
 
 function arePagesEqual(a: AppPage[], b: AppPage[]): boolean {
