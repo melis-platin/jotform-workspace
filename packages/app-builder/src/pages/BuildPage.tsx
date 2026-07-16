@@ -3392,7 +3392,7 @@ export function BuildPage({
   }, [desktopNavEnabled])
 
   useEffect(() => {
-    if (previewDevice === 'desktop') {
+    if (previewDevice !== 'phone') {
       setIsPreviewSearchOpen(false)
     } else {
       setIsDesktopNotificationsCardOpen(false)
@@ -3414,7 +3414,7 @@ export function BuildPage({
 
   const openNotificationsPage = () => {
     const usesDesktopNotificationCard =
-      previewDevice === 'desktop' &&
+      previewDevice !== 'phone' &&
       desktopNavEnabled &&
       (desktopNavVariant === 'top' || desktopNavVariant === 'contained' || desktopNavVariant === 'compact')
 
@@ -3820,7 +3820,7 @@ export function BuildPage({
     if (!pushNotificationsEnabled) return null
 
     const usesDesktopNotificationCard =
-      device === 'desktop' &&
+      device !== 'phone' &&
       desktopNavEnabled &&
       (desktopNavVariant === 'top' || desktopNavVariant === 'contained' || desktopNavVariant === 'compact')
     const showDesktopNotificationCard = usesDesktopNotificationCard && isDesktopNotificationsCardOpen
@@ -5243,7 +5243,7 @@ export function BuildPage({
           onClick={closeDesktopPreviewSearch}
         />
       )}
-      {previewDevice === 'desktop' && isDesktopNotificationsCardOpen && (
+      {previewDevice !== 'phone' && isDesktopNotificationsCardOpen && (
         <button
           type="button"
           className="live-preview__desktop-notifications-scrim"
