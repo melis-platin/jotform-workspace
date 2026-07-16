@@ -516,6 +516,7 @@ export function PublishPage({
   const [notificationAudience, setNotificationAudience] = useState<string[]>([ALL_USERS_AUDIENCE_ID])
   const [notificationDeepLink, setNotificationDeepLink] = useState('')
   const [notificationImage, setNotificationImage] = useState<PushComposerSelectedImage | null>(null)
+  const [arePushNotificationsDisabled, setArePushNotificationsDisabled] = useState(false)
   const [pushNotificationPanelView, setPushNotificationPanelView] = useState<PushNotificationPanelView>(() => (
     pushNotificationHistoryItems.length > 0 ? 'history' : 'composer'
   ))
@@ -528,7 +529,7 @@ export function PublishPage({
   const [inverseColor] = useCssVar('--fg-inverse', '#FFFFFF')
   const active = NAV_ITEMS.find((item) => item.id === activeId) ?? NAV_ITEMS[0]
   const isPushNotificationsOpen = activeId === 'push-notifications'
-  const shouldShowPushPreview = isPushNotificationsOpen && pushNotificationPanelView === 'composer'
+  const shouldShowPushPreview = isPushNotificationsOpen && pushNotificationPanelView === 'composer' && !arePushNotificationsDisabled
   const pushNotificationIconStyle = 'flat'
   const previewNotificationTitle = formatPushNotificationTitle(
     notificationTitle,
@@ -607,6 +608,8 @@ export function PublishPage({
               setDeepLink={setNotificationDeepLink}
               notificationImage={notificationImage}
               setNotificationImage={setNotificationImage}
+              isDisabled={arePushNotificationsDisabled}
+              onDisable={() => setArePushNotificationsDisabled(true)}
               onPermissionMessageEdit={() => setIsPermissionRequestModalOpen(true)}
               onViewChange={setPushNotificationPanelView}
               onCanReturnToHistoryChange={setCanReturnToPushHistory}

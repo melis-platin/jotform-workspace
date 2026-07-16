@@ -894,6 +894,8 @@ export interface PushNotificationsPanelProps {
   setDeepLink: (deepLink: string) => void
   notificationImage: PushComposerSelectedImage | null
   setNotificationImage: (image: PushComposerSelectedImage | null) => void
+  isDisabled: boolean
+  onDisable: () => void
   onPermissionMessageEdit?: () => void
   onViewChange?: (view: PushNotificationPanelView) => void
   onCanReturnToHistoryChange?: (canReturnToHistory: boolean) => void
@@ -958,6 +960,8 @@ export function PushNotificationsPanel({
   setDeepLink,
   notificationImage,
   setNotificationImage,
+  isDisabled,
+  onDisable,
   onPermissionMessageEdit,
   onViewChange,
   onCanReturnToHistoryChange,
@@ -1216,9 +1220,11 @@ export function PushNotificationsPanel({
             setDeepLink={setDeepLink}
             image={notificationImage}
             setImage={setNotificationImage}
+            isDisabled={isDisabled}
+            onDisable={onDisable}
             onPermissionMessageEdit={onPermissionMessageEdit}
           />
-          <div className="push-notification-actions">
+          {!isDisabled && <div className="push-notification-actions">
             <Button
               variant="filled"
               colorScheme="secondary"
@@ -1243,7 +1249,7 @@ export function PushNotificationsPanel({
                 SEND NOW
               </Button>
             </div>
-          </div>
+          </div>}
         </>
       ) : (
         <section className="push-notification-dashboard" aria-label="Push notifications">
@@ -2631,6 +2637,8 @@ interface PushNotificationComposerProps {
   setDeepLink: (deepLink: string) => void
   image: PushComposerSelectedImage | null
   setImage: (image: PushComposerSelectedImage | null) => void
+  isDisabled: boolean
+  onDisable: () => void
   onPermissionMessageEdit?: () => void
 }
 
@@ -2911,6 +2919,8 @@ function PushNotificationComposer({
   setDeepLink,
   image,
   setImage,
+  isDisabled,
+  onDisable,
   onPermissionMessageEdit,
 }: PushNotificationComposerProps) {
   const imageInputRef = useRef<HTMLInputElement>(null)
@@ -2948,7 +2958,9 @@ function PushNotificationComposer({
           </p>
         </div>
         <div className="push-composer-panel__intro-actions" ref={contextMenuRef}>
-          <span className="push-composer-panel__status">Active</span>
+          <span className={`push-composer-panel__status${isDisabled ? ' push-composer-panel__status--disabled' : ''}`}>
+            {isDisabled ? 'Disabled' : 'Active'}
+          </span>
           <Button
             className={`push-composer-panel__more-button${isContextMenuOpen ? ' push-composer-panel__more-button--open' : ''}`}
             variant="ghost"
@@ -2967,7 +2979,10 @@ function PushNotificationComposer({
                 type="button"
                 className="push-composer-panel__context-menu-item"
                 role="menuitem"
-                onClick={() => setIsContextMenuOpen(false)}
+                onClick={() => {
+                  setIsContextMenuOpen(false)
+                  onDisable()
+                }}
               >
                 <Icon name="pause-filled" category="media" size={18} />
                 <span>Disable</span>
@@ -2988,6 +3003,7 @@ function PushNotificationComposer({
           )}
         </div>
       </div>
+      {!isDisabled && <>
       <div className="push-composer-panel__content">
         <div className="push-composer-panel__fields">
           <div className="push-composer-field">
@@ -3096,6 +3112,7 @@ function PushNotificationComposer({
           <DeepLinkDropdown value={deepLink} onChange={setDeepLink} targets={deepLinkTargets} />
         </div>
       </div>
+      </>}
     </section>
   )
 }

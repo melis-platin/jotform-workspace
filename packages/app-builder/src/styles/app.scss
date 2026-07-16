@@ -12996,7 +12996,7 @@ body.builder--phone-only {
 
 .push-composer-panel__context-menu {
   position: absolute;
-  top: calc(100% - var(--spacing-2xs));
+  top: calc(100% + var(--spacing-2xs));
   right: 0;
   z-index: 1002;
   width: max-content;
@@ -13052,6 +13052,11 @@ body.builder--phone-only {
   font-weight: var(--font-weight-book);
   line-height: var(--line-height-xs);
   white-space: nowrap;
+}
+
+.push-composer-panel__status--disabled {
+  background: var(--background-lightest);
+  color: var(--text-dark);
 }
 
 .push-image-uploader {
