@@ -1765,10 +1765,10 @@ body {
   // Above the top-header (z-index 4) so the nav bar tucks UNDER the safe-area
   // status bar as it scroll-hides (mirrors the phone shell).
   z-index: 5;
-  background: var(--bg-surface);
+  background: var(--background-white, #fff);
 
   [data-theme='dark'] & {
-    background: var(--bg-surface-hover);
+    background: var(--bg-surface);
   }
 }
 
@@ -1795,10 +1795,10 @@ body {
   // Above the top-header (z-index 4) so the nav bar tucks UNDER the safe-area
   // status bar as it scroll-hides, instead of sliding over the clock/battery.
   z-index: 5;
-  background: var(--bg-surface);
+  background: var(--background-white, #fff);
 
   [data-theme='dark'] & {
-    background: var(--bg-surface-hover);
+    background: var(--bg-surface);
   }
 }
 
@@ -1830,7 +1830,7 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 0 var(--space-4);
-  background: var(--bg-surface);
+  background: var(--background-white, #fff);
   color: var(--fg-primary);
   border-bottom: 1px solid transparent;
   box-shadow: none;
@@ -1841,7 +1841,7 @@ body {
   transition: transform 0.25s ease, background-color 0.2s ease, color 0.2s ease, border-bottom-color 0.15s ease, box-shadow 0.15s ease;
 
   [data-theme='dark'] & {
-    background: var(--bg-surface-hover);
+    background: var(--bg-surface);
   }
 
   &--scrolled {
