@@ -2959,7 +2959,7 @@ function PushNotificationComposer({
 
   return (
     <section className={`push-composer-panel${isInitialPushNotification ? ' push-composer-panel--initial' : ''}`} aria-label="Push notification composer">
-      <div className="push-composer-panel__intro-card">
+      <div className={`push-composer-panel__intro-card${isDisabled ? ' push-composer-panel__intro-card--disabled' : ''}`}>
         <div className="push-composer-panel__intro">
           <div className="push-composer-panel__intro-copy">
             <h2 className="push-composer-panel__intro-title">Create a push notification</h2>
@@ -3014,7 +3014,7 @@ function PushNotificationComposer({
           )}
           </div>
         </div>
-        {isInitialPushNotification && !isDisabled && (
+        {isInitialPushNotification && (
           <div className="push-composer-panel__device-notice" role="status">
             <Icon name="exclamation-circle-filled" category="general" size={16} />
             <span>0 devices have opted into receiving notifications.</span>

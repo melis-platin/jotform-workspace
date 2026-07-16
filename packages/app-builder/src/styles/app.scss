@@ -13194,6 +13194,10 @@ body.builder--phone-only {
   overflow: visible;
 }
 
+.push-composer-panel--initial .push-composer-panel__intro-card--disabled {
+  gap: 10px;
+}
+
 .push-composer-panel--initial .push-composer-panel__intro {
   padding: 0;
 }
