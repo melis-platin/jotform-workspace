@@ -11555,7 +11555,8 @@ body.builder--phone-only {
 .live-preview__desktop-notifications-card--fullwidth {
   --live-preview-desktop-notifications-card-width: 482px;
 
-  height: min(768px, calc(100vh - var(--space-16)));
+  height: auto;
+  max-height: min(768px, calc(100vh - var(--space-16)));
 }
 
 .live-preview__desktop-notifications-card--fullwidth .live-preview__notifications-page {
