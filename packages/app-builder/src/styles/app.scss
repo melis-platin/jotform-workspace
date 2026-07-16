@@ -11870,6 +11870,23 @@ body.builder--phone-only {
   line-height: var(--line-height-paragraph-sm);
 }
 
+// New notifications keep the regular row surface while reserving a leading
+// indicator column, so the app icon and copy align with the unread Figma state.
+:is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card--unread {
+  padding-left: var(--space-2);
+}
+
+:is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card--unread .live-preview__notifications-unread-dot {
+  width: var(--space-2);
+  height: var(--space-2);
+  flex-basis: var(--space-2);
+  display: block;
+  margin-top: calc(var(--spacing-xl) + var(--spacing-3xs));
+  margin-right: var(--space-2);
+  border-radius: var(--radius-rounded);
+  background: var(--fg-primary);
+}
+
 // Image notifications reserve a compact visual slot at the lower-right of the
 // copy column, matching the app's full-page notification list treatment.
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card--with-image {
