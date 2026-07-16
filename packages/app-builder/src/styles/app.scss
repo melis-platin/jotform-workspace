@@ -12913,7 +12913,7 @@ body.builder--phone-only {
   background: var(--background-white);
   border-radius: var(--ds-radius-sm);
   box-shadow: var(--shadow-xs);
-  overflow: clip;
+  overflow: visible;
 }
 
 .push-composer-panel__intro {
