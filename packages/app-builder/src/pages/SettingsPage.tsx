@@ -1069,7 +1069,7 @@ export function PushNotificationsPanel({
     setScheduleTime('')
     setScheduleQuickPick('custom')
     setCanReturnToHistory(true)
-    setUsesInitialComposerLayout(false)
+    setUsesInitialComposerLayout(true)
     setActiveView('composer')
   }
   const returnToNotificationHistory = () => {
