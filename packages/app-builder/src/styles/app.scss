@@ -9891,11 +9891,11 @@ body.builder--phone-only {
     display: none;
   }
 
-  // Top-header: 64px tall, left-aligned content (compact + nav), right group
+  // Top-header: 65px tall, left-aligned content (compact + nav), right group
   // pinned far right via margin-left:auto.
   .live-preview__top-header {
     top: 0;
-    height: 64px;
+    height: 65px;
     justify-content: flex-start;
     gap: var(--space-4);
     // Reveal-on-scroll-up animates; scroll-down hiding is driven imperatively
@@ -9925,9 +9925,9 @@ body.builder--phone-only {
     max-width: 760px;
     margin-left: auto;
     margin-right: auto;
-    // Keep the 64px bar height — its vertical breathing was right — and only match
+    // Keep the 65px bar height — its vertical breathing was right — and only match
     // the horizontal padding to it. The tallest content (Small buttons, 40px)
-    // centred in the 64px bar leaves ~12px above/below, so use --space-3 (12px)
+    // centred in the 65px bar leaves ~12px above/below, so use --space-3 (12px)
     // left/right for an even inset all round.
     padding: 0 var(--space-3);
     border: none;
@@ -9935,11 +9935,11 @@ body.builder--phone-only {
     box-shadow: var(--shadow-md);
   }
 
-  // Clear exactly the floating bar's footprint (top 16 + height 64 = 80px) so the
+  // Clear exactly the floating bar's footprint (top 16 + height 65 = 81px) so the
   // app header (home page) meets the bar FLUSH — no gap — exactly as the full-bleed
   // bar meets the header. (top-header and content-scaler are siblings in the screen.)
   .live-preview__top-header--compact ~ .live-preview__content-scaler {
-    padding-top: calc(var(--space-4) + 64px);
+    padding-top: calc(var(--space-4) + 65px);
   }
 
   // Pages without an app header keep a gap below the bar (like the full-bleed
@@ -9955,15 +9955,15 @@ body.builder--phone-only {
     padding-top: 0;
   }
 
-  // …then re-pad the header itself by the bar footprint (top 16 + height 64) on
+  // …then re-pad the header itself by the bar footprint (top 16 + height 65) on
   // top of its own padding, so its vertically-centred content sits in the visible
   // area BELOW the bar (centred between the bar and the first page), not behind it.
   .live-preview__top-header--compact ~ .live-preview__content-scaler .live-preview__app-header-slot .jf-app-header {
-    padding-top: calc(var(--app-header-content-y) + var(--space-4) + 64px);
+    padding-top: calc(var(--app-header-content-y) + var(--space-4) + 65px);
   }
 
   .live-preview__content-scaler {
-    padding-top: 64px;
+    padding-top: 65px;
     padding-bottom: 16px;
     background: var(--bg-page, #f3f3fe);
   }
@@ -10021,11 +10021,11 @@ body.builder--phone-only {
   // Login popover stays mobile-width and anchors to the right (under the Login
   // button) instead of stretching across the desktop viewport.
   .live-preview__login-popover {
-    top: calc(64px + 10px);
+    top: calc(65px + 10px);
     left: auto;
     right: var(--space-4);
     width: min(400px, calc(100% - var(--space-8)));
-    max-height: calc(100% - 64px - 10px - var(--space-10));
+    max-height: calc(100% - 65px - 10px - var(--space-10));
   }
 
   // Position the popover arrow under whichever button opened it.
@@ -11457,17 +11457,14 @@ body.builder--phone-only {
   max-width: calc(100vw - var(--space-8));
   box-sizing: border-box;
   overflow: hidden;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   background: var(--background-white, #fff);
   color: var(--fg-primary);
   box-shadow: 0 2px 4px 0 rgba(37, 45, 91, 0.04), 0 8px 16px 0 rgba(84, 95, 111, 0.16);
 }
 
-.live-preview__desktop-notifications-card--compact {
-  box-shadow: none;
-}
-
 .live-preview__desktop-notifications-card .live-preview__notifications-page {
+  display: flex;
   min-height: 0;
   padding: var(--space-6);
   overflow-y: auto;
@@ -11475,6 +11472,26 @@ body.builder--phone-only {
 
 .live-preview__desktop-notifications-card .live-preview__notifications-page--empty {
   overflow: hidden;
+}
+
+.live-preview__desktop-notifications-card .live-preview__notifications-empty {
+  min-height: 100%;
+  gap: var(--space-6);
+  padding: 0;
+}
+
+.live-preview__desktop-notifications-card .live-preview__notifications-empty-copy {
+  gap: var(--space-1);
+}
+
+.live-preview__desktop-notifications-card .live-preview__notifications-empty-title {
+  font-size: 24px;
+  line-height: 32px;
+}
+
+.live-preview__desktop-notifications-card .live-preview__notifications-empty-description {
+  font-size: 18px;
+  line-height: 24px;
 }
 
 .live-preview__top-header-notification-btn:focus-visible,

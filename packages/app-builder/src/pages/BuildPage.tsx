@@ -3177,14 +3177,14 @@ export function BuildPage({
       resetHeader.style.transform = ''
     }
     // Distance to fully scroll the bar off the top. The compact bar floats 16px
-    // (--space-4) below the top, so it needs that extra travel (16 + 64) to clear
+    // (--space-4) below the top, so it needs that extra travel (16 + 65) to clear
     // — otherwise its bottom edge stays pinned at the float offset.
     // Phone: hide the bar by its full footprint (offset top + height); desktop
     // uses the known bar heights (compact floats 16px below the top).
     const headerEl = previewTopHeaderRef.current
     const HEADER_H = previewDevice === 'phone'
       ? (headerEl ? headerEl.offsetTop + headerEl.offsetHeight : 102)
-      : (desktopNavVariant === 'compact' ? 80 : 64)
+      : (desktopNavVariant === 'compact' ? 81 : 65)
     let lastScrollTop = previewContentScalerEl.scrollTop
     let offset = 0
     const onScroll = () => {
