@@ -11567,6 +11567,11 @@ body.builder--phone-only {
   height: 16px;
 }
 
+:is(.app-preview-screen__desktop, .app-preview-screen__tablet) .live-preview__top-header-notification-btn svg {
+  width: var(--space-4);
+  height: var(--space-4);
+}
+
 .live-preview__top-header-notification-badge {
   position: absolute;
   top: calc(var(--spacing-2xs) * -1);
