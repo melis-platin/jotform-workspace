@@ -11890,6 +11890,20 @@ body.builder--phone-only {
   margin: 0;
 }
 
+.live-preview__phone-screen .live-preview__top-header--notifications-page .live-preview__top-header-page {
+  gap: var(--space-1);
+}
+
+.live-preview__top-header-notifications-title {
+  color: var(--fg-primary);
+  font-family: var(--font-family-circular);
+  font-size: var(--font-size-heading-md);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--spacing-3xl);
+  letter-spacing: var(--letter-spacing-heading);
+  white-space: nowrap;
+}
+
 .live-preview__phone-screen .live-preview__top-header--notifications-page .live-preview__top-header-right {
   gap: var(--space-3);
 }
@@ -11909,40 +11923,6 @@ body.builder--phone-only {
 
 .live-preview__phone-screen .live-preview__notifications-page--mobile {
   padding: var(--space-4) var(--space-4) 0;
-}
-
-.live-preview__phone-screen .live-preview__notifications-page-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--space-4);
-}
-
-.live-preview__phone-screen .live-preview__notifications-page-header h2 {
-  margin: 0;
-  color: var(--fg-primary);
-  font-family: var(--font-family-circular);
-  font-size: var(--font-size-heading-xs);
-  font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-heading-xs);
-  letter-spacing: var(--letter-spacing-heading);
-}
-
-.live-preview__notifications-mark-read {
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: var(--fg-brand);
-  font-family: var(--font-family-circular);
-  font-size: var(--font-size-label-lg);
-  font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-label-lg);
-  cursor: pointer;
-}
-
-.live-preview__notifications-mark-read:hover,
-.live-preview__notifications-mark-read:focus-visible {
-  color: var(--fg-brand-hover);
 }
 
 .live-preview__phone-screen .live-preview__notifications-page--mobile .live-preview__notifications-list {

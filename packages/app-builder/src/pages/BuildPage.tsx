@@ -2652,7 +2652,6 @@ function LivePreviewNotificationsPage({
   const hasCustomImage = appHeader.imageStyle === 'Image' && Boolean(appHeader.imageUrl)
   const usesPlaceholderNotifications = showMobileLayout && notifications.length === 0
   const displayedNotifications = usesPlaceholderNotifications ? MOBILE_NOTIFICATION_SCREEN_PLACEHOLDERS : notifications
-  const unreadCount = displayedNotifications.filter((notification) => notification.unread).length
 
   if (displayedNotifications.length === 0) {
     return (
@@ -2674,23 +2673,6 @@ function LivePreviewNotificationsPage({
 
   return (
     <div className={`live-preview__notifications-page${showMobileLayout ? ' live-preview__notifications-page--mobile' : ''}`}>
-      {showMobileLayout && (
-        <div className="live-preview__notifications-page-header">
-          <h2>Notification ({unreadCount})</h2>
-          <button
-            type="button"
-            className="live-preview__notifications-mark-read"
-            onClick={() => {
-              if (usesPlaceholderNotifications) return
-              displayedNotifications
-                .filter((notification) => notification.unread)
-                .forEach((notification) => onNotificationRead?.(notification.id))
-            }}
-          >
-            Mark all as read
-          </button>
-        </div>
-      )}
       <div className="live-preview__notifications-list" role="list" aria-label="Notifications">
         {displayedNotifications.map((notification) => {
           const hasNotificationImage = Boolean(notification.image?.url)
@@ -3115,6 +3097,9 @@ export function BuildPage({
   const roleScopedUnreadPushNotificationCount = useMemo(() => (
     roleScopedPushNotifications.filter((notification) => notification.unread).length
   ), [roleScopedPushNotifications])
+  const mobileNotificationScreenCount = roleScopedPushNotifications.length === 0
+    ? MOBILE_NOTIFICATION_SCREEN_PLACEHOLDERS.filter((notification) => notification.unread).length
+    : roleScopedUnreadPushNotificationCount
   const markRoleScopedPushNotificationRead = useCallback((notificationId: string) => {
     onPushNotificationRead?.(notificationId, viewingAsRole)
   }, [onPushNotificationRead, viewingAsRole])
@@ -3836,6 +3821,11 @@ export function BuildPage({
             <AppIcon name="ChevronLeft" size={24} />
             {device === 'desktop' && <span className="live-preview__top-header-back-label">Back</span>}
           </button>
+          {device !== 'desktop' && (
+            <span className="live-preview__top-header-notifications-title">
+              Notification ({mobileNotificationScreenCount})
+            </span>
+          )}
         </div>
       )
     }
@@ -5218,7 +5208,7 @@ export function BuildPage({
           </nav>
         )}
         <div className="live-preview__top-header-right">
-          {!isDesktopPreviewSearchOpen && !activePageIsDynamic && hasCartTriggerElement && (
+          {!isNotificationsPageOpen && !isDesktopPreviewSearchOpen && !activePageIsDynamic && hasCartTriggerElement && (
             <LivePreviewCartButton iconSize={topHeaderActionIconSize} onClick={() => { setIsNotificationsPageOpen(false); setIsPreviewSearchOpen(false); setIsDesktopPreviewSearchOpen(false); setIsPreviewCartOpen(true) }} />
           )}
           {isPreviewLoggedIn ? (
@@ -9519,7 +9509,7 @@ export function BuildPage({
                           return renderTopHeaderBrand()
                         })()}
                         <div className="live-preview__top-header-right">
-                          {!isDesktopPreviewSearchOpen && !activePageIsDynamic && hasCartTriggerElement && (
+                          {!isNotificationsPageOpen && !isDesktopPreviewSearchOpen && !activePageIsDynamic && hasCartTriggerElement && (
                             <LivePreviewCartButton iconSize={20} onClick={() => { setIsNotificationsPageOpen(false); setIsPreviewSearchOpen(false); setIsDesktopPreviewSearchOpen(false); setIsPreviewCartOpen(true) }} />
                           )}
                           {isPreviewLoggedIn ? (
