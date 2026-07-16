@@ -2845,7 +2845,7 @@ function DeepLinkDropdown({ value, onChange, targets }: DeepLinkDropdownProps) {
     <div className="jf-dropdown-wrapper push-composer-dropdown push-deep-link-dropdown">
       <div className="jf-dropdown-wrapper__label">
         <div className="jf-dropdown-wrapper__title">
-          <span className="jf-dropdown-wrapper__title-text">Page to open</span>
+          <span className="jf-dropdown-wrapper__title-text">Deep link</span>
         </div>
       </div>
 
@@ -2938,110 +2938,114 @@ function PushNotificationComposer({
           />
         </div>
       </div>
-      <div className="push-composer-panel__fields">
-        <div className="push-composer-field">
-          <PushComposerFieldLabel
-            htmlFor="push-notification-title"
-            required
-            showAddField
-            onAddField={onTitleFieldAdd}
-          >
-            Notification Title
-          </PushComposerFieldLabel>
-          <PushComposerTokenInput
-            ref={titleEditorRef}
-            id="push-notification-title"
-            aria-label="Notification Title"
-            value={title}
-            suffixValue={titleSuffix}
-            fields={titleFields}
-            placeholder={NOTIFICATION_TITLE_PLACEHOLDER}
-            onChange={setTitle}
-            onFieldsChange={setTitleFields}
-            onSuffixChange={setTitleSuffix}
-          />
-        </div>
-        <div className="push-composer-field push-composer-field--content">
-          <PushComposerFieldLabel
-            htmlFor="push-notification-content"
-            required
-            showAddField
-            onAddField={onContentFieldAdd}
-          >
-            Notification Content
-          </PushComposerFieldLabel>
-          <PushComposerTokenTextArea
-            id="push-notification-content"
-            aria-label="Notification Content"
-            value={content}
-            suffixValue={contentSuffix}
-            fields={contentFields}
-            fieldValues={fieldValues}
-            placeholder={NOTIFICATION_CONTENT_PLACEHOLDER}
-            maxLength={NOTIFICATION_CONTENT_MAX_LENGTH}
-            onChange={setContent}
-            onSuffixChange={setContentSuffix}
-            onRemoveField={onContentFieldRemove}
-          />
-        </div>
-        <div className="push-composer-image-field">
-          <span className="push-composer-image-field__label">Image</span>
-          <input
-            ref={imageInputRef}
-            type="file"
-            accept="image/*"
-            hidden
-            onChange={(event) => {
-              const file = event.target.files?.[0]
-              event.currentTarget.value = ''
-
-              if (!file) return
-
-              compressImageFile(file).then((url) => {
-                setImage({ url, name: file.name })
-              })
-            }}
-          />
-          {image ? (
-            <div className="push-composer-image-field__preview">
-              <img
-                className="push-composer-image-field__thumbnail"
-                src={image.url}
-                alt=""
-              />
-              <div className="push-composer-image-field__details">
-                <span className="push-composer-image-field__name" title={image.name}>
-                  {image.name}
-                </span>
-                <Button
-                  className="push-composer-image-field__remove"
-                  variant="filled"
-                  colorScheme="secondary"
-                  size="sm"
-                  leftIcon={<Icon name="trash-filled" category="general" size={16} />}
-                  onClick={() => setImage(null)}
-                >
-                  Remove Image
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <Button
-              className="push-composer-image-field__button"
-              variant="filled"
-              colorScheme="secondary"
-              leftIcon={<Icon name="image-plus-filled" category="media" size={20} />}
-              onClick={() => imageInputRef.current?.click()}
+      <div className="push-composer-panel__content">
+        <div className="push-composer-panel__fields">
+          <div className="push-composer-field">
+            <PushComposerFieldLabel
+              htmlFor="push-notification-title"
+              required
+              showAddField
+              onAddField={onTitleFieldAdd}
             >
-              Upload Image
-            </Button>
-          )}
+              Notification Title
+            </PushComposerFieldLabel>
+            <PushComposerTokenInput
+              ref={titleEditorRef}
+              id="push-notification-title"
+              aria-label="Notification Title"
+              value={title}
+              suffixValue={titleSuffix}
+              fields={titleFields}
+              placeholder={NOTIFICATION_TITLE_PLACEHOLDER}
+              onChange={setTitle}
+              onFieldsChange={setTitleFields}
+              onSuffixChange={setTitleSuffix}
+            />
+          </div>
+          <div className="push-composer-field push-composer-field--content">
+            <PushComposerFieldLabel
+              htmlFor="push-notification-content"
+              required
+              showAddField
+              onAddField={onContentFieldAdd}
+            >
+              Notification Content
+            </PushComposerFieldLabel>
+            <PushComposerTokenTextArea
+              id="push-notification-content"
+              aria-label="Notification Content"
+              value={content}
+              suffixValue={contentSuffix}
+              fields={contentFields}
+              fieldValues={fieldValues}
+              placeholder={NOTIFICATION_CONTENT_PLACEHOLDER}
+              maxLength={NOTIFICATION_CONTENT_MAX_LENGTH}
+              onChange={setContent}
+              onSuffixChange={setContentSuffix}
+              onRemoveField={onContentFieldRemove}
+            />
+          </div>
+          <div className="push-composer-image-field">
+            <span className="push-composer-image-field__label">Image</span>
+            <input
+              ref={imageInputRef}
+              type="file"
+              accept="image/*"
+              hidden
+              onChange={(event) => {
+                const file = event.target.files?.[0]
+                event.currentTarget.value = ''
+
+                if (!file) return
+
+                compressImageFile(file).then((url) => {
+                  setImage({ url, name: file.name })
+                })
+              }}
+            />
+            {image ? (
+              <div className="push-composer-image-field__preview">
+                <img
+                  className="push-composer-image-field__thumbnail"
+                  src={image.url}
+                  alt=""
+                />
+                <div className="push-composer-image-field__details">
+                  <span className="push-composer-image-field__name" title={image.name}>
+                    {image.name}
+                  </span>
+                  <Button
+                    className="push-composer-image-field__remove"
+                    variant="filled"
+                    colorScheme="secondary"
+                    size="sm"
+                    leftIcon={<Icon name="trash-filled" category="general" size={16} />}
+                    onClick={() => setImage(null)}
+                  >
+                    Remove Image
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <Button
+                className="push-composer-image-field__button"
+                variant="filled"
+                colorScheme="secondary"
+                leftIcon={<Icon name="image-plus-filled" category="media" size={20} />}
+                onClick={() => imageInputRef.current?.click()}
+              >
+                Upload Image
+              </Button>
+            )}
+          </div>
         </div>
       </div>
       <div className="push-composer-panel__divider" />
-      <div className="push-composer-panel__dropdown-row">
-        <AudienceDropdown value={audience} onChange={setAudience} roles={appUserRoles} />
-        <DeepLinkDropdown value={deepLink} onChange={setDeepLink} targets={deepLinkTargets} />
+      <div className="push-composer-panel__selection">
+        <div className="push-composer-panel__dropdown-row">
+          <AudienceDropdown value={audience} onChange={setAudience} roles={appUserRoles} />
+          <DeepLinkDropdown value={deepLink} onChange={setDeepLink} targets={deepLinkTargets} />
+        </div>
       </div>
     </section>
   )
