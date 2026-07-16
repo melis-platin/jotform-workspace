@@ -5168,7 +5168,7 @@ export function BuildPage({
           </nav>
         )}
         <div className="live-preview__top-header-right">
-          {!isNotificationsPageOpen && !isDesktopPreviewSearchOpen && !activePageIsDynamic && hasCartTriggerElement && (
+          {!isDesktopPreviewSearchOpen && !activePageIsDynamic && hasCartTriggerElement && (
             <LivePreviewCartButton iconSize={topHeaderActionIconSize} onClick={() => { setIsNotificationsPageOpen(false); setIsPreviewSearchOpen(false); setIsDesktopPreviewSearchOpen(false); setIsPreviewCartOpen(true) }} />
           )}
           {isPreviewLoggedIn ? (
@@ -9467,7 +9467,7 @@ export function BuildPage({
                           return renderTopHeaderBrand()
                         })()}
                         <div className="live-preview__top-header-right">
-                          {!isNotificationsPageOpen && !isDesktopPreviewSearchOpen && !activePageIsDynamic && hasCartTriggerElement && (
+                          {!isDesktopPreviewSearchOpen && !activePageIsDynamic && hasCartTriggerElement && (
                             <LivePreviewCartButton iconSize={20} onClick={() => { setIsNotificationsPageOpen(false); setIsPreviewSearchOpen(false); setIsDesktopPreviewSearchOpen(false); setIsPreviewCartOpen(true) }} />
                           )}
                           {isPreviewLoggedIn ? (
