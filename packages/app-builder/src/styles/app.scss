@@ -2906,6 +2906,7 @@ body {
 
 .live-preview__content-scaler:has(.live-preview__notifications-page--empty) {
   overflow: hidden;
+  background: var(--background-white, #fff);
 }
 
 .live-preview__content {
@@ -11539,6 +11540,11 @@ body.builder--phone-only {
   background: var(--background-white, #fff);
   color: var(--fg-primary);
   font-family: var(--font-family, var(--font-family-circular));
+}
+
+[data-theme='dark'] .live-preview__content-scaler:has(.live-preview__notifications-page--empty),
+[data-theme='dark'] .live-preview__notifications-page {
+  background: var(--bg-fill, var(--bg-surface));
 }
 
 .live-preview__notifications-list {
