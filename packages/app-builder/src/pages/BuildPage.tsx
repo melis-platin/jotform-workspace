@@ -5460,7 +5460,6 @@ export function BuildPage({
             <LivePreviewNotificationsPage
               notifications={roleScopedPushNotifications}
               appHeader={appHeaderState}
-              useJotformIcon
               showMobileLayout
               onNotificationRead={markRoleScopedPushNotificationRead}
               onNotificationOpen={handleLivePreviewNotificationOpen}
@@ -9614,7 +9613,6 @@ export function BuildPage({
                             <LivePreviewNotificationsPage
                               notifications={roleScopedPushNotifications}
                               appHeader={appHeaderState}
-                              useJotformIcon
                               showMobileLayout
                               onNotificationRead={markRoleScopedPushNotificationRead}
                               onNotificationOpen={handleLivePreviewNotificationOpen}
