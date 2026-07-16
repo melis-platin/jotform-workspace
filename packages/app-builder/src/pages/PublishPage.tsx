@@ -28,7 +28,6 @@ import {
   type PushComposerFieldValues,
   type PushComposerSelectedImage,
   type PushNotificationHistoryItem,
-  type PushNotificationPanelView,
 } from './SettingsPage'
 
 const NAV_ITEMS: SideNavItem[] = [
@@ -518,9 +517,6 @@ export function PublishPage({
   const [notificationDeepLink, setNotificationDeepLink] = useState('')
   const [notificationImage, setNotificationImage] = useState<PushComposerSelectedImage | null>(null)
   const [arePushNotificationsDisabled, setArePushNotificationsDisabled] = useState(false)
-  const [pushNotificationPanelView, setPushNotificationPanelView] = useState<PushNotificationPanelView>(() => (
-    pushNotificationHistoryItems.length > 0 ? 'history' : 'composer'
-  ))
   const [canReturnToPushHistory, setCanReturnToPushHistory] = useState(false)
   const [pushHistoryReturnRequestId, setPushHistoryReturnRequestId] = useState(0)
   const [isPermissionRequestModalOpen, setIsPermissionRequestModalOpen] = useState(false)
@@ -532,7 +528,7 @@ export function PublishPage({
   const [inverseColor] = useCssVar('--fg-inverse', '#FFFFFF')
   const active = NAV_ITEMS.find((item) => item.id === activeId) ?? NAV_ITEMS[0]
   const isPushNotificationsOpen = activeId === 'push-notifications'
-  const shouldShowPushPreview = isPushNotificationsOpen && pushNotificationPanelView === 'composer' && !arePushNotificationsDisabled
+  const shouldShowPushPreview = isPushNotificationsOpen && !arePushNotificationsDisabled
   const pushNotificationIconStyle = 'flat'
   const previewNotificationTitle = formatPushNotificationTitle(
     notificationTitle,
@@ -637,7 +633,6 @@ export function PublishPage({
                     setPermissionRequestPreviewContent(permissionRequestContent)
                     setIsPermissionRequestModalOpen(true)
                   }}
-                  onViewChange={setPushNotificationPanelView}
                   onCanReturnToHistoryChange={setCanReturnToPushHistory}
                   returnToHistoryRequestId={pushHistoryReturnRequestId}
                 />
