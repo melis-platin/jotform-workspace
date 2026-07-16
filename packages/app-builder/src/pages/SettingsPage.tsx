@@ -2914,6 +2914,29 @@ function PushNotificationComposer({
   onPermissionMessageEdit,
 }: PushNotificationComposerProps) {
   const imageInputRef = useRef<HTMLInputElement>(null)
+  const contextMenuRef = useRef<HTMLDivElement>(null)
+  const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
+
+  useEffect(() => {
+    if (!isContextMenuOpen) return
+
+    const closeContextMenu = (event: MouseEvent) => {
+      if (event.target instanceof Node && !contextMenuRef.current?.contains(event.target)) {
+        setIsContextMenuOpen(false)
+      }
+    }
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsContextMenuOpen(false)
+    }
+
+    document.addEventListener('mousedown', closeContextMenu)
+    document.addEventListener('keydown', closeOnEscape)
+
+    return () => {
+      document.removeEventListener('mousedown', closeContextMenu)
+      document.removeEventListener('keydown', closeOnEscape)
+    }
+  }, [isContextMenuOpen])
 
   return (
     <section className="push-composer-panel" aria-label="Push notification composer">
@@ -2924,18 +2947,45 @@ function PushNotificationComposer({
             Reach your users instantly with a personalized push notification.
           </p>
         </div>
-        <div className="push-composer-panel__intro-actions">
+        <div className="push-composer-panel__intro-actions" ref={contextMenuRef}>
           <span className="push-composer-panel__status">Active</span>
           <Button
+            className={`push-composer-panel__more-button${isContextMenuOpen ? ' push-composer-panel__more-button--open' : ''}`}
             variant="ghost"
             colorScheme="secondary"
             size="sm"
             iconOnly
             leftIcon={<Icon name="ellipsis-vertical" category="general" size={16} />}
             aria-label="Edit push notification permission message"
-            aria-haspopup="dialog"
-            onClick={onPermissionMessageEdit}
+            aria-haspopup="menu"
+            aria-expanded={isContextMenuOpen}
+            onClick={() => setIsContextMenuOpen((open) => !open)}
           />
+          {isContextMenuOpen && (
+            <div className="push-composer-panel__context-menu" role="menu">
+              <button
+                type="button"
+                className="push-composer-panel__context-menu-item"
+                role="menuitem"
+                onClick={() => setIsContextMenuOpen(false)}
+              >
+                <Icon name="pause-filled" category="media" size={18} />
+                <span>Disable</span>
+              </button>
+              <button
+                type="button"
+                className="push-composer-panel__context-menu-item"
+                role="menuitem"
+                onClick={() => {
+                  setIsContextMenuOpen(false)
+                  onPermissionMessageEdit?.()
+                }}
+              >
+                <Icon name="pencil-to-square" category="general" size={18} />
+                <span>Edit Permission Message</span>
+              </button>
+            </div>
+          )}
         </div>
       </div>
       <div className="push-composer-panel__content">
