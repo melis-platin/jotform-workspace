@@ -9918,10 +9918,10 @@ body.builder--phone-only {
     top: var(--space-4);
     left: var(--space-0);
     right: var(--space-0);
-    width: fit-content;
-    max-width: calc(100% - (var(--space-4) * 2));
-    margin-left: auto;
-    margin-right: auto;
+    width: auto;
+    max-width: none;
+    margin-left: var(--space-0);
+    margin-right: var(--space-0);
     justify-content: center;
     column-gap: var(--space-3);
     padding: 0 var(--space-4);
