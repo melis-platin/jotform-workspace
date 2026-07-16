@@ -6,7 +6,7 @@ import './Button.scss';
 // Types
 // ============================================
 export type ButtonVariant = 'Default' | 'Secondary' | 'Outlined' | 'Disabled';
-export type ButtonCorner = 'Default' | 'Rounded';
+export type ButtonCorner = 'Default' | 'Large' | 'Rounded';
 export type ButtonState = 'Default' | 'Hovered' | 'Disabled';
 export type ButtonSize = 'Default' | 'Small';
 
@@ -33,6 +33,10 @@ export interface ButtonProps {
   width?: 'Auto' | 'Full';
   /** Where the button sits inside its full-width slot when width is 'Auto'. */
   align?: 'Left' | 'Center' | 'Right';
+  /** Optional minimum width for compact product surfaces such as app navigation. */
+  minWidth?: number;
+  /** Overrides the Small button label weight without changing the shared default. */
+  labelWeight?: 'Medium' | 'Bold';
   onClick?: () => void;
 }
 
@@ -58,6 +62,8 @@ export const Button: React.FC<ButtonProps> = ({
   fullWidth = false,
   width,
   align = 'Center',
+  minWidth,
+  labelWeight,
   onClick,
 }) => {
   const isDisabled = state === 'Disabled' || variant === 'Disabled';
@@ -104,6 +110,7 @@ export const Button: React.FC<ButtonProps> = ({
     `jf-btn--${variant.toLowerCase()}`,
     `jf-btn--corner-${corner.toLowerCase()}`,
     `jf-btn--size-${size.toLowerCase()}`,
+    labelWeight && `jf-btn--label-${labelWeight.toLowerCase()}`,
     state === 'Hovered' && 'jf-btn--hovered',
     isDisabled && 'jf-btn--disabled',
     selected && 'jf-btn--selected',
@@ -118,7 +125,7 @@ export const Button: React.FC<ButtonProps> = ({
   const iconSize = size === 'Small' ? 16 : 20;
 
   return (
-    <button className={classes} disabled={isDisabled} onClick={onClick}>
+    <button className={classes} style={minWidth ? { minWidth } : undefined} disabled={isDisabled} onClick={onClick}>
       {hasLeftIcon && <Icon name={leftIcon} className="jf-btn__icon" size={iconSize} />}
       <span className="jf-btn__label">{label}</span>
       {hasRightIcon && <Icon name={rightIcon} className="jf-btn__icon" size={iconSize} />}

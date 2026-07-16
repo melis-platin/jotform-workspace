@@ -5220,8 +5220,8 @@ export function BuildPage({
           ) : activePageIsDynamic ? null : showLandingNav ? (
             previewDevice === 'desktop' ? (
               <div className="live-preview__top-header-auth">
-                <AppButton variant="Outlined" size="Small" leftIcon="none" rightIcon="none" label="Login" onClick={() => { setIsDesktopPreviewSearchOpen(false); setLoginPopoverView('login'); setIsLoginPopoverOpen(true) }} />
-                <AppButton variant="Default" size="Small" leftIcon="none" rightIcon="none" label="Sign up" onClick={() => { setIsDesktopPreviewSearchOpen(false); setLoginPopoverView('signup'); setIsLoginPopoverOpen(true) }} />
+                <AppButton variant="Outlined" corner="Large" size="Small" minWidth={96} labelWeight="Medium" leftIcon="none" rightIcon="none" label="Login" onClick={() => { setIsDesktopPreviewSearchOpen(false); setLoginPopoverView('login'); setIsLoginPopoverOpen(true) }} />
+                <AppButton variant="Default" corner="Large" size="Small" minWidth={96} labelWeight="Medium" leftIcon="none" rightIcon="none" label="Sign up" onClick={() => { setIsDesktopPreviewSearchOpen(false); setLoginPopoverView('signup'); setIsLoginPopoverOpen(true) }} />
               </div>
             ) : (
               <button
@@ -5249,8 +5249,8 @@ export function BuildPage({
                 </span>
               </button>
               <div className="live-preview__top-header-auth">
-                <AppButton variant="Outlined" size="Small" leftIcon="none" rightIcon="none" label="Login" onClick={() => { setIsDesktopPreviewSearchOpen(false); setLoginPopoverView('login'); setIsLoginPopoverOpen(true) }} />
-                <AppButton variant="Default" size="Small" leftIcon="none" rightIcon="none" label="Sign up" onClick={() => { setIsDesktopPreviewSearchOpen(false); setLoginPopoverView('signup'); setIsLoginPopoverOpen(true) }} />
+                <AppButton variant="Outlined" corner="Large" size="Small" minWidth={96} labelWeight="Medium" leftIcon="none" rightIcon="none" label="Login" onClick={() => { setIsDesktopPreviewSearchOpen(false); setLoginPopoverView('login'); setIsLoginPopoverOpen(true) }} />
+                <AppButton variant="Default" corner="Large" size="Small" minWidth={96} labelWeight="Medium" leftIcon="none" rightIcon="none" label="Sign up" onClick={() => { setIsDesktopPreviewSearchOpen(false); setLoginPopoverView('signup'); setIsLoginPopoverOpen(true) }} />
               </div>
             </>
           )}

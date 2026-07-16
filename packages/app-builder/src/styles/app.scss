@@ -10170,12 +10170,21 @@ body.builder--phone-only {
 }
 
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--compact .live-preview__top-header-nav {
-  margin-left: auto;
+  margin-left: calc(var(--space-6) + var(--space-1));
   margin-right: var(--space-3);
 }
 
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--compact .live-preview__top-header-right {
   margin-left: var(--space-0);
+}
+
+.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--compact .live-preview__top-header-compact-icon:not(.live-preview__top-header-compact-icon--image) {
+  border-radius: var(--radius-sm);
+  background: var(--bg-page);
+}
+
+.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--compact .live-preview__top-header-auth :is(.jf-btn, .jf-btn__label) {
+  font-family: var(--font-family-circular);
 }
 
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--fullwidth-search-open .live-preview__top-header-nav {

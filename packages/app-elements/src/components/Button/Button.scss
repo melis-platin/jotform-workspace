@@ -82,6 +82,14 @@
     border-radius: var(--radius-rounded);
   }
 
+  &--corner-large {
+    border-radius: var(--radius-lg);
+  }
+
+  &--label-medium .jf-btn__label {
+    font-weight: var(--font-weight-medium);
+  }
+
   // =========================================
   // Variant: Default (Primary)
   // =========================================
