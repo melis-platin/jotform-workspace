@@ -896,6 +896,7 @@ export interface PushNotificationsPanelProps {
   setNotificationImage: (image: PushComposerSelectedImage | null) => void
   isDisabled: boolean
   onDisable: () => void
+  onEnable: () => void
   onPermissionMessageEdit?: () => void
   onViewChange?: (view: PushNotificationPanelView) => void
   onCanReturnToHistoryChange?: (canReturnToHistory: boolean) => void
@@ -962,6 +963,7 @@ export function PushNotificationsPanel({
   setNotificationImage,
   isDisabled,
   onDisable,
+  onEnable,
   onPermissionMessageEdit,
   onViewChange,
   onCanReturnToHistoryChange,
@@ -1222,6 +1224,7 @@ export function PushNotificationsPanel({
             setImage={setNotificationImage}
             isDisabled={isDisabled}
             onDisable={onDisable}
+            onEnable={onEnable}
             onPermissionMessageEdit={onPermissionMessageEdit}
           />
           {!isDisabled && <div className="push-notification-actions">
@@ -2639,6 +2642,7 @@ interface PushNotificationComposerProps {
   setImage: (image: PushComposerSelectedImage | null) => void
   isDisabled: boolean
   onDisable: () => void
+  onEnable: () => void
   onPermissionMessageEdit?: () => void
 }
 
@@ -2921,6 +2925,7 @@ function PushNotificationComposer({
   setImage,
   isDisabled,
   onDisable,
+  onEnable,
   onPermissionMessageEdit,
 }: PushNotificationComposerProps) {
   const imageInputRef = useRef<HTMLInputElement>(null)
@@ -2981,11 +2986,12 @@ function PushNotificationComposer({
                 role="menuitem"
                 onClick={() => {
                   setIsContextMenuOpen(false)
-                  onDisable()
+                  if (isDisabled) onEnable()
+                  else onDisable()
                 }}
               >
-                <Icon name="pause-filled" category="media" size={18} />
-                <span>Disable</span>
+                <Icon name={isDisabled ? 'play-filled' : 'pause-filled'} category="media" size={18} />
+                <span>{isDisabled ? 'Enable' : 'Disable'}</span>
               </button>
               <button
                 type="button"

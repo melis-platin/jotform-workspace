@@ -610,6 +610,7 @@ export function PublishPage({
               setNotificationImage={setNotificationImage}
               isDisabled={arePushNotificationsDisabled}
               onDisable={() => setArePushNotificationsDisabled(true)}
+              onEnable={() => setArePushNotificationsDisabled(false)}
               onPermissionMessageEdit={() => setIsPermissionRequestModalOpen(true)}
               onViewChange={setPushNotificationPanelView}
               onCanReturnToHistoryChange={setCanReturnToPushHistory}
