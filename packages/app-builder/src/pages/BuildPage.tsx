@@ -2575,6 +2575,7 @@ function LivePreviewNotificationButton({
   popover?: React.ReactNode
 }) {
   const hasUnreadBadge = unreadCount > 0
+  const hasWideUnreadBadge = unreadCount > 9
   const visibleUnreadCount = unreadCount > 99 ? '99+' : String(unreadCount)
 
   return (
@@ -2589,7 +2590,9 @@ function LivePreviewNotificationButton({
       >
         <Icon name="bell-diagonal-filled" category="alerts-feedback" size={24} />
         {hasUnreadBadge && (
-          <span className="live-preview__top-header-notification-badge">{visibleUnreadCount}</span>
+          <span className={`live-preview__top-header-notification-badge${hasWideUnreadBadge ? ' live-preview__top-header-notification-badge--wide' : ''}`}>
+            {visibleUnreadCount}
+          </span>
         )}
       </button>
       {popover}

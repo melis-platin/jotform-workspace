@@ -11588,6 +11588,11 @@ body.builder--phone-only {
   pointer-events: none;
 }
 
+.live-preview__top-header-notification-badge--wide {
+  top: 0;
+  left: var(--space-3);
+}
+
 .live-preview__notifications-page {
   flex: 1;
   min-height: 100%;
