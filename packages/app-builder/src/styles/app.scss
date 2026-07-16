@@ -11549,6 +11549,48 @@ body.builder--phone-only {
   line-height: 24px;
 }
 
+// Fullwidth desktop notifications use the fixed Jotform panel from the desktop
+// navigation reference. Its content remains data-driven; only the presentation
+// is shared by every notification instance.
+.live-preview__desktop-notifications-card--fullwidth {
+  --live-preview-desktop-notifications-card-width: 482px;
+
+  height: min(768px, calc(100vh - var(--space-16)));
+}
+
+.live-preview__desktop-notifications-card--fullwidth .live-preview__notifications-page {
+  padding: var(--space-6);
+  color: var(--ds-text-dark);
+  font-family: var(--font-family-circular);
+}
+
+.live-preview__desktop-notifications-card--fullwidth .live-preview__notifications-list {
+  gap: var(--space-4);
+}
+
+.live-preview__desktop-notifications-card--fullwidth .live-preview__notifications-card {
+  color: var(--ds-text-dark);
+  font-family: var(--font-family-circular);
+}
+
+.live-preview__desktop-notifications-card--fullwidth .live-preview__notifications-card-icon--jotform {
+  background: var(--ds-bg-page);
+  color: inherit;
+}
+
+.live-preview__desktop-notifications-card--fullwidth .live-preview__notifications-card-header strong {
+  color: var(--ds-text-dark);
+  font-family: var(--font-family-circular);
+}
+
+.live-preview__desktop-notifications-card--fullwidth :is(
+  .live-preview__notifications-card-header time,
+  .live-preview__notifications-card-text
+) {
+  color: var(--ds-text-medium);
+  font-family: var(--font-family-circular);
+}
+
 .live-preview__top-header-notification-btn:focus-visible,
 .live-preview__top-header-search-btn:focus-visible {
   outline: none;

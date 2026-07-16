@@ -43,6 +43,7 @@ import { Icon, Button as DSButton, Tabs as DSTabs, Segmented, Input as DSInput, 
 import phoneHomeIndicator from '@jf/design-system/src/assets/phone-home-indicator.svg'
 import previewUserAvatar from '../assets/preview-user-avatar.jpg'
 import previewHeaderAvatar from '../assets/app-users/melis-platin.png'
+import pushNotificationJotformIcon from '../assets/push-notifications/jotform-icon-white.svg'
 import { PhoneStatusBar } from '../components/PhoneStatusBar'
 import { PageNavigationBar, getPageIconName } from '../components/PageNavigationBar'
 import { CanvasPageLabel } from '../components/CanvasPageLabel'
@@ -2627,11 +2628,13 @@ function getLivePreviewDeepLinkTarget(deepLink?: string) {
 function LivePreviewNotificationsPage({
   notifications,
   appHeader,
+  useJotformIcon = false,
   onNotificationRead,
   onNotificationOpen,
 }: {
   notifications: LivePreviewPushNotification[]
   appHeader: AppHeaderState
+  useJotformIcon?: boolean
   onNotificationRead?: (notificationId: string) => void
   onNotificationOpen?: (notification: LivePreviewPushNotification) => void
 }) {
@@ -2675,8 +2678,10 @@ function LivePreviewNotificationsPage({
               {notification.unread && (
                 <span className="live-preview__notifications-unread-dot" aria-hidden="true" />
               )}
-              <span className={`live-preview__notifications-card-icon${hasCustomImage ? ' live-preview__notifications-card-icon--image' : ''}`} aria-hidden="true">
-                {hasCustomImage && appHeader.imageUrl ? (
+              <span className={`live-preview__notifications-card-icon${useJotformIcon ? ' live-preview__notifications-card-icon--jotform' : hasCustomImage ? ' live-preview__notifications-card-icon--image' : ''}`} aria-hidden="true">
+                {useJotformIcon ? (
+                  <img src={pushNotificationJotformIcon} alt="" />
+                ) : hasCustomImage && appHeader.imageUrl ? (
                   <img src={appHeader.imageUrl} alt="" />
                 ) : (
                   <AppIcon name={appHeader.icon} size={20} />
@@ -3860,6 +3865,7 @@ export function BuildPage({
             <LivePreviewNotificationsPage
               notifications={roleScopedPushNotifications}
               appHeader={appHeaderState}
+              useJotformIcon={desktopNavVariant === 'top'}
               onNotificationRead={markRoleScopedPushNotificationRead}
               onNotificationOpen={handleLivePreviewNotificationOpen}
             />
