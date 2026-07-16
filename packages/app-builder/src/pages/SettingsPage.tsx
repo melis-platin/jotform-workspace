@@ -3495,6 +3495,32 @@ export function PushNotificationPreview({
   )
 }
 
+export function PushPermissionRequestPreview({ title, content }: { title: string; content: string }) {
+  return (
+    <div className="push-preview-phone">
+      <img className="push-preview-phone__wallpaper" src={notificationWallpaper} alt="" />
+      <div className="push-preview-phone__overlay" />
+      <div className="push-preview-phone__status" aria-hidden="true">
+        <span className="push-preview-phone__status-time">9:41</span>
+        <span className="push-preview-phone__island" />
+        <PushPreviewStatusIndicators />
+      </div>
+      <div className="push-preview-phone__clock" aria-hidden="true">
+        <p>Monday, June 6</p>
+        <img className="push-preview-phone__clock-time" src={lockscreenTime} alt="" />
+      </div>
+      <section className="push-permission-preview" aria-label="Push notification permission request preview">
+        <h2>{title}</h2>
+        <p>{content}</p>
+        <div className="push-permission-preview__actions">
+          <button type="button">Dismiss</button>
+          <button type="button">Allow</button>
+        </div>
+      </section>
+    </div>
+  )
+}
+
 const TABS_WITH_PREVIEW = new Set(['app-name-icon', 'splash-screen'])
 
 interface AppIconState {

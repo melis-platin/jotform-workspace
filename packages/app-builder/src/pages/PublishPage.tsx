@@ -22,6 +22,7 @@ import {
   formatPushComposerText,
   formatPushNotificationTitle,
   PushNotificationPreview,
+  PushPermissionRequestPreview,
   PushNotificationsPanel,
   type PushComposerFieldOption,
   type PushComposerFieldValues,
@@ -525,6 +526,8 @@ export function PublishPage({
   const [isPermissionRequestModalOpen, setIsPermissionRequestModalOpen] = useState(false)
   const [permissionRequestTitle, setPermissionRequestTitle] = useState(PUSH_PERMISSION_REQUEST_DEFAULT_TITLE)
   const [permissionRequestContent, setPermissionRequestContent] = useState(PUSH_PERMISSION_REQUEST_DEFAULT_CONTENT)
+  const [permissionRequestPreviewTitle, setPermissionRequestPreviewTitle] = useState(PUSH_PERMISSION_REQUEST_DEFAULT_TITLE)
+  const [permissionRequestPreviewContent, setPermissionRequestPreviewContent] = useState(PUSH_PERMISSION_REQUEST_DEFAULT_CONTENT)
   const [brandColor] = useCssVar('--fg-brand', '#7D38EF')
   const [inverseColor] = useCssVar('--fg-inverse', '#FFFFFF')
   const active = NAV_ITEMS.find((item) => item.id === activeId) ?? NAV_ITEMS[0]
@@ -543,248 +546,229 @@ export function PublishPage({
     notificationContentSuffix,
     pushComposerFieldValues,
   )
+  const shouldShowPreview = shouldShowPushPreview || isPermissionRequestModalOpen
 
   return (
-    <div className={`publish-page${shouldShowPushPreview ? ' publish-page--with-preview' : ''}`}>
+    <div className={`publish-page${shouldShowPreview ? ' publish-page--with-preview' : ''}`}>
       <SideNav items={NAV_ITEMS} activeId={activeId} onChange={setActiveId} />
       <main className="publish-page__content">
         <div className="publish-page__main">
-          <PanelHeader
-            icon={active.icon}
-            iconCategory={active.iconCategory}
-            title={active.headerTitle ?? active.title}
-            description={active.headerDescription ?? active.description}
-            iconBg={active.iconBg}
-            leading={isPushNotificationsOpen && canReturnToPushHistory ? (
-              <button
-                type="button"
-                className="panel-header__back-button"
-                aria-label="Back to push notification history"
-                onClick={() => setPushHistoryReturnRequestId((requestId) => requestId + 1)}
-              >
-                <Icon name="chevron-left" category="arrows" size={24} />
-              </button>
-            ) : undefined}
-          />
-          {activeId === 'quick-share' && <QuickSharePanel />}
-          {activeId === 'app-users' && (
-            <AppUsersPanel
-              presetId={presetId}
-              roleOptions={roleOptions}
-              setRoleOptions={setRoleOptions}
-              onAppUserTableRoleIdsChange={onAppUserTableRoleIdsChange}
+          {isPermissionRequestModalOpen ? (
+            <PushPermissionMessageEditor
+              title={permissionRequestTitle}
+              content={permissionRequestContent}
+              onPreviewChange={(nextTitle, nextContent) => {
+                setPermissionRequestPreviewTitle(nextTitle)
+                setPermissionRequestPreviewContent(nextContent)
+              }}
+              onBack={() => setIsPermissionRequestModalOpen(false)}
+              onSave={(nextTitle, nextContent) => {
+                setPermissionRequestTitle(nextTitle)
+                setPermissionRequestContent(nextContent)
+                setIsPermissionRequestModalOpen(false)
+              }}
             />
-          )}
-          {isPushNotificationsOpen && (
-            <PushNotificationsPanel
-              appUserRoles={appUserRoles}
-              deepLinkTargets={deepLinkTargets}
-              appIconVariant={appIcon.variant}
-              appIconImageUrl={appIcon.imageUrl}
-              appIconName={appIcon.icon}
-              appIconColor={inverseColor}
-              appIconBg={brandColor}
-              appIconStyle={pushNotificationIconStyle}
-              historyItems={pushNotificationHistoryItems}
-              onHistoryItemCreate={onPushNotificationHistoryItemCreate}
-              onHistoryItemUpdate={onPushNotificationHistoryItemUpdate}
-              onHistoryItemDelete={onPushNotificationHistoryItemDelete}
-              fieldValues={pushComposerFieldValues}
-              notificationTitle={notificationTitle}
-              setNotificationTitle={setNotificationTitle}
-              notificationTitleFields={notificationTitleFields}
-              setNotificationTitleFields={setNotificationTitleFields}
-              notificationTitleSuffix={notificationTitleSuffix}
-              setNotificationTitleSuffix={setNotificationTitleSuffix}
-              notificationContent={notificationContent}
-              setNotificationContent={setNotificationContent}
-              notificationContentFields={notificationContentFields}
-              setNotificationContentFields={setNotificationContentFields}
-              notificationContentSuffix={notificationContentSuffix}
-              setNotificationContentSuffix={setNotificationContentSuffix}
-              audience={notificationAudience}
-              setAudience={setNotificationAudience}
-              deepLink={notificationDeepLink}
-              setDeepLink={setNotificationDeepLink}
-              notificationImage={notificationImage}
-              setNotificationImage={setNotificationImage}
-              isDisabled={arePushNotificationsDisabled}
-              onDisable={() => setArePushNotificationsDisabled(true)}
-              onEnable={() => setArePushNotificationsDisabled(false)}
-              onPermissionMessageEdit={() => setIsPermissionRequestModalOpen(true)}
-              onViewChange={setPushNotificationPanelView}
-              onCanReturnToHistoryChange={setCanReturnToPushHistory}
-              returnToHistoryRequestId={pushHistoryReturnRequestId}
-            />
-          )}
-        </div>
-        {shouldShowPushPreview && (
-          <div className="publish-page__preview">
-            <QuickPreview>
-              <BasicPhonePreview>
-                <PushNotificationPreview
-                  title={previewNotificationTitle}
-                  content={previewNotificationContent}
-                  image={notificationImage}
+          ) : (
+            <>
+              <PanelHeader
+                icon={active.icon}
+                iconCategory={active.iconCategory}
+                title={active.headerTitle ?? active.title}
+                description={active.headerDescription ?? active.description}
+                iconBg={active.iconBg}
+                leading={isPushNotificationsOpen && canReturnToPushHistory ? (
+                  <button
+                    type="button"
+                    className="panel-header__back-button"
+                    aria-label="Back to push notification history"
+                    onClick={() => setPushHistoryReturnRequestId((requestId) => requestId + 1)}
+                  >
+                    <Icon name="chevron-left" category="arrows" size={24} />
+                  </button>
+                ) : undefined}
+              />
+              {activeId === 'quick-share' && <QuickSharePanel />}
+              {activeId === 'app-users' && (
+                <AppUsersPanel
+                  presetId={presetId}
+                  roleOptions={roleOptions}
+                  setRoleOptions={setRoleOptions}
+                  onAppUserTableRoleIdsChange={onAppUserTableRoleIdsChange}
+                />
+              )}
+              {isPushNotificationsOpen && (
+                <PushNotificationsPanel
+                  appUserRoles={appUserRoles}
+                  deepLinkTargets={deepLinkTargets}
                   appIconVariant={appIcon.variant}
                   appIconImageUrl={appIcon.imageUrl}
                   appIconName={appIcon.icon}
                   appIconColor={inverseColor}
                   appIconBg={brandColor}
                   appIconStyle={pushNotificationIconStyle}
+                  historyItems={pushNotificationHistoryItems}
+                  onHistoryItemCreate={onPushNotificationHistoryItemCreate}
+                  onHistoryItemUpdate={onPushNotificationHistoryItemUpdate}
+                  onHistoryItemDelete={onPushNotificationHistoryItemDelete}
+                  fieldValues={pushComposerFieldValues}
+                  notificationTitle={notificationTitle}
+                  setNotificationTitle={setNotificationTitle}
+                  notificationTitleFields={notificationTitleFields}
+                  setNotificationTitleFields={setNotificationTitleFields}
+                  notificationTitleSuffix={notificationTitleSuffix}
+                  setNotificationTitleSuffix={setNotificationTitleSuffix}
+                  notificationContent={notificationContent}
+                  setNotificationContent={setNotificationContent}
+                  notificationContentFields={notificationContentFields}
+                  setNotificationContentFields={setNotificationContentFields}
+                  notificationContentSuffix={notificationContentSuffix}
+                  setNotificationContentSuffix={setNotificationContentSuffix}
+                  audience={notificationAudience}
+                  setAudience={setNotificationAudience}
+                  deepLink={notificationDeepLink}
+                  setDeepLink={setNotificationDeepLink}
+                  notificationImage={notificationImage}
+                  setNotificationImage={setNotificationImage}
+                  isDisabled={arePushNotificationsDisabled}
+                  onDisable={() => setArePushNotificationsDisabled(true)}
+                  onEnable={() => setArePushNotificationsDisabled(false)}
+                  onPermissionMessageEdit={() => {
+                    setPermissionRequestPreviewTitle(permissionRequestTitle)
+                    setPermissionRequestPreviewContent(permissionRequestContent)
+                    setIsPermissionRequestModalOpen(true)
+                  }}
+                  onViewChange={setPushNotificationPanelView}
+                  onCanReturnToHistoryChange={setCanReturnToPushHistory}
+                  returnToHistoryRequestId={pushHistoryReturnRequestId}
                 />
+              )}
+            </>
+          )}
+        </div>
+        {shouldShowPreview && (
+          <div className="publish-page__preview">
+            <QuickPreview>
+              <BasicPhonePreview>
+                {isPermissionRequestModalOpen ? (
+                  <PushPermissionRequestPreview
+                    title={permissionRequestPreviewTitle}
+                    content={permissionRequestPreviewContent}
+                  />
+                ) : (
+                  <PushNotificationPreview
+                    title={previewNotificationTitle}
+                    content={previewNotificationContent}
+                    image={notificationImage}
+                    appIconVariant={appIcon.variant}
+                    appIconImageUrl={appIcon.imageUrl}
+                    appIconName={appIcon.icon}
+                    appIconColor={inverseColor}
+                    appIconBg={brandColor}
+                    appIconStyle={pushNotificationIconStyle}
+                  />
+                )}
               </BasicPhonePreview>
             </QuickPreview>
           </div>
         )}
       </main>
-      {isPermissionRequestModalOpen && (
-        <PushPermissionRequestModal
-          title={permissionRequestTitle}
-          content={permissionRequestContent}
-          onClose={() => setIsPermissionRequestModalOpen(false)}
-          onSave={(nextTitle, nextContent) => {
-            setPermissionRequestTitle(nextTitle)
-            setPermissionRequestContent(nextContent)
-            setIsPermissionRequestModalOpen(false)
-          }}
-        />
-      )}
     </div>
   )
 }
 
-interface PushPermissionRequestModalProps {
+interface PushPermissionMessageEditorProps {
   title: string
   content: string
-  onClose: () => void
+  onPreviewChange: (title: string, content: string) => void
+  onBack: () => void
   onSave: (title: string, content: string) => void
 }
 
-function PushPermissionRequestModal({ title, content, onClose, onSave }: PushPermissionRequestModalProps) {
-  const modalRef = useRef<HTMLElement | null>(null)
+function PushPermissionMessageEditor({ title, content, onPreviewChange, onBack, onSave }: PushPermissionMessageEditorProps) {
   const [draftTitle, setDraftTitle] = useState(title)
   const [draftContent, setDraftContent] = useState(content)
   const isSaveDisabled = draftTitle.trim().length === 0 || draftContent.trim().length === 0
 
-  useEffect(() => {
-    modalRef.current?.focus({ preventScroll: true })
-
-    const previousOverflow = document.body.style.overflow
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        event.stopPropagation()
-        onClose()
-      }
-    }
-
-    document.body.style.overflow = 'hidden'
-    document.addEventListener('keydown', handleKeyDown, true)
-
-    return () => {
-      document.body.style.overflow = previousOverflow
-      document.removeEventListener('keydown', handleKeyDown, true)
-    }
-  }, [onClose])
-
-  return createPortal(
-    <div
-      className="push-permission-request-modal__backdrop"
-      role="presentation"
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget) {
-          onClose()
-        }
-      }}
-    >
-      <section
-        ref={modalRef}
-        className="push-permission-request-modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="push-permission-request-modal-title"
-        tabIndex={-1}
-        onMouseDown={(event) => event.stopPropagation()}
-      >
-        <header className="push-permission-request-modal__header">
-          <div className="push-permission-request-modal__header-main">
-            <span className="push-permission-request-modal__icon" aria-hidden="true">
-              <Icon name="message-ellipsis-pencil-filled" category="communication" size={24} />
-            </span>
-            <div className="push-permission-request-modal__heading">
-              <h2 id="push-permission-request-modal-title">Edit Permission Request</h2>
-              <p>This message will invite users to opt into receiving notifications from your app.</p>
-            </div>
-          </div>
+  return (
+    <>
+      <PanelHeader
+        icon="message-ellipsis-pencil-filled"
+        iconCategory="communication"
+        title="EDIT PERMISSION MESSAGE"
+        description="This message will invite users to opt into receiving notifications from your app."
+        iconBg="var(--purple-400)"
+        leading={(
           <button
             type="button"
-            className="push-permission-request-modal__close"
-            aria-label="Close permission request modal"
-            onClick={onClose}
+            className="panel-header__back-button"
+            aria-label="Back to push notification composer"
+            onClick={onBack}
           >
-            <Icon name="xmark" category="general" size={20} />
+            <Icon name="chevron-left" category="arrows" size={24} />
           </button>
-        </header>
-
-        <div className="push-permission-request-modal__body">
-          <label className="push-permission-request-modal__field" htmlFor="push-permission-request-title">
-            <span className="push-permission-request-modal__label-block">
-              <span className="push-permission-request-modal__label">
-                <span>Title</span>
-                <span className="push-permission-request-modal__required">*</span>
-              </span>
-              <span className="push-permission-request-modal__description">Enter a short, descriptive title for your message.</span>
+        )}
+      />
+      <section className="push-permission-editor" aria-label="Edit permission message">
+        <label className="push-permission-editor__field" htmlFor="push-permission-request-title">
+          <span className="push-permission-editor__label-block">
+            <span className="push-permission-editor__label">
+              <span>Title</span>
+              <span className="push-permission-editor__required">*</span>
             </span>
-            <input
-              id="push-permission-request-title"
-              className="push-permission-request-modal__input"
-              value={draftTitle}
-              onChange={(event) => setDraftTitle(event.currentTarget.value)}
-            />
-          </label>
-
-          <label className="push-permission-request-modal__field" htmlFor="push-permission-request-content">
-            <span className="push-permission-request-modal__label-block">
-              <span className="push-permission-request-modal__label">
-                <span>Content</span>
-                <span className="push-permission-request-modal__required">*</span>
-              </span>
-              <span className="push-permission-request-modal__description">Invite users to opt into receiving notifications from your app.</span>
-            </span>
-            <span className="push-permission-request-modal__textarea-control">
-              <textarea
-                id="push-permission-request-content"
-                className="push-permission-request-modal__textarea"
-                value={draftContent}
-                maxLength={PUSH_PERMISSION_REQUEST_CONTENT_MAX_LENGTH}
-                onChange={(event) => setDraftContent(event.currentTarget.value)}
-              />
-              <span className="push-permission-request-modal__count" aria-live="polite">
-                <span>{draftContent.length}</span>
-                <span>/</span>
-                <span>{PUSH_PERMISSION_REQUEST_CONTENT_MAX_LENGTH}</span>
-              </span>
-            </span>
-          </label>
-        </div>
-
-        <footer className="push-permission-request-modal__footer">
-          <button
-            type="button"
-            className="push-permission-request-modal__save"
-            disabled={isSaveDisabled}
-            onClick={() => {
-              if (!isSaveDisabled) {
-                onSave(draftTitle, draftContent)
-              }
+            <span className="push-permission-editor__description">Enter a short, descriptive title for your message.</span>
+          </span>
+          <input
+            id="push-permission-request-title"
+            className="push-permission-editor__input"
+            value={draftTitle}
+            onChange={(event) => {
+              const nextTitle = event.currentTarget.value
+              setDraftTitle(nextTitle)
+              onPreviewChange(nextTitle, draftContent)
             }}
-          >
-            Save
-          </button>
-        </footer>
+          />
+        </label>
+
+        <label className="push-permission-editor__field" htmlFor="push-permission-request-content">
+          <span className="push-permission-editor__label-block">
+            <span className="push-permission-editor__label">
+              <span>Content</span>
+              <span className="push-permission-editor__required">*</span>
+            </span>
+            <span className="push-permission-editor__description">Invite users to opt into receiving notifications from your app.</span>
+          </span>
+          <span className="push-permission-editor__textarea-control">
+            <textarea
+              id="push-permission-request-content"
+              className="push-permission-editor__textarea"
+              value={draftContent}
+              maxLength={PUSH_PERMISSION_REQUEST_CONTENT_MAX_LENGTH}
+              onChange={(event) => {
+                const nextContent = event.currentTarget.value
+                setDraftContent(nextContent)
+                onPreviewChange(draftTitle, nextContent)
+              }}
+            />
+            <span className="push-permission-editor__count" aria-live="polite">
+              <span>{draftContent.length}</span>
+              <span>/</span>
+              <span>{PUSH_PERMISSION_REQUEST_CONTENT_MAX_LENGTH}</span>
+            </span>
+          </span>
+        </label>
       </section>
-    </div>,
-    document.body
+      <div className="push-permission-editor__actions">
+        <Button
+          colorScheme="constructive"
+          disabled={isSaveDisabled}
+          onClick={() => {
+            if (!isSaveDisabled) onSave(draftTitle, draftContent)
+          }}
+        >
+          SAVE
+        </Button>
+      </div>
+    </>
   )
 }
 
