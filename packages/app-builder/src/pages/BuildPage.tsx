@@ -2566,11 +2566,7 @@ interface LivePreviewPushNotification {
 
 const MOBILE_NOTIFICATION_SCREEN_PLACEHOLDERS: LivePreviewPushNotification[] = [
   { id: 'mobile-preview-1', title: 'Notification Title', content: 'Notification content', audience: [], sentAtLabel: '09:41 AM', readByRoleIds: [], unread: true },
-  { id: 'mobile-preview-2', title: 'Lorem ipsum dolor sit amet', content: 'Lorem ipsum dolor sit amet lorem ipsum dolor sit amet', audience: [], sentAtLabel: '09:41 AM', readByRoleIds: [], unread: true },
-  { id: 'mobile-preview-3', title: 'Lorem ipsum dolor sit amet lorem ispum dolor sit', content: 'Lorem ipsum dolor sit amet lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet lorem ipsum dolor sit amet', audience: [], sentAtLabel: '09:41 AM', readByRoleIds: [] },
-  { id: 'mobile-preview-4', title: 'Notification Title', content: 'Notification content', audience: [], sentAtLabel: '09:41 AM', readByRoleIds: [] },
-  { id: 'mobile-preview-5', title: 'Lorem ipsum dolor sit amet', content: 'Lorem ipsum dolor sit amet lorem ipsum dolor sit amet', audience: [], sentAtLabel: '09:41 AM', readByRoleIds: [] },
-  { id: 'mobile-preview-6', title: 'Lorem ipsum dolor sit amet lorem ispum dolor sit', content: 'Lorem ipsum dolor sit amet lorem ipsum dolor sit amet. Lorem ipsum dolor sit amet lorem ipsum dolor sit amet', audience: [], sentAtLabel: '09:41 AM', readByRoleIds: [] },
+  { id: 'mobile-preview-2', title: 'Notification Title', content: 'Notification content', audience: [], sentAtLabel: '09:41 AM', readByRoleIds: [], unread: true },
 ]
 
 function isLivePreviewNotificationVisibleForRole(notification: LivePreviewPushNotification, roleId: string) {
