@@ -2564,11 +2564,6 @@ interface LivePreviewPushNotification {
   unread?: boolean
 }
 
-const MOBILE_NOTIFICATION_SCREEN_PLACEHOLDERS: LivePreviewPushNotification[] = [
-  { id: 'mobile-preview-1', title: 'Notification Title', content: 'Notification content', audience: [], sentAtLabel: '09:41 AM', readByRoleIds: [], unread: true },
-  { id: 'mobile-preview-2', title: 'Notification Title', content: 'Notification content', audience: [], sentAtLabel: '09:41 AM', readByRoleIds: [], unread: true },
-]
-
 function isLivePreviewNotificationVisibleForRole(notification: LivePreviewPushNotification, roleId: string) {
   return notification.audience.includes(ALL_USERS_AUDIENCE_ID) || notification.audience.includes(roleId)
 }
@@ -2636,8 +2631,6 @@ function LivePreviewNotificationsPage({
   useJotformIcon = false,
   showMobileLayout = false,
   onNotificationRead,
-  locallyReadNotificationIds = [],
-  onLocalNotificationRead,
   onNotificationOpen,
 }: {
   notifications: LivePreviewPushNotification[]
@@ -2645,13 +2638,10 @@ function LivePreviewNotificationsPage({
   useJotformIcon?: boolean
   showMobileLayout?: boolean
   onNotificationRead?: (notificationId: string) => void
-  locallyReadNotificationIds?: string[]
-  onLocalNotificationRead?: (notificationId: string) => void
   onNotificationOpen?: (notification: LivePreviewPushNotification) => void
 }) {
   const hasCustomImage = appHeader.imageStyle === 'Image' && Boolean(appHeader.imageUrl)
-  const usesPlaceholderNotifications = showMobileLayout && notifications.length === 0
-  const displayedNotifications = usesPlaceholderNotifications ? MOBILE_NOTIFICATION_SCREEN_PLACEHOLDERS : notifications
+  const displayedNotifications = notifications
 
   if (displayedNotifications.length === 0) {
     return (
@@ -2677,7 +2667,7 @@ function LivePreviewNotificationsPage({
         {displayedNotifications.map((notification) => {
           const hasNotificationImage = Boolean(notification.image?.url)
           const isExpandedNotification = notification.title.length > 36 && notification.content.length > 90
-          const isUnread = notification.unread && !locallyReadNotificationIds.includes(notification.id)
+          const isUnread = notification.unread
 
           return (
             <button
@@ -2685,10 +2675,7 @@ function LivePreviewNotificationsPage({
               type="button"
               className={`live-preview__notifications-card${isUnread ? ' live-preview__notifications-card--unread' : ''}${hasNotificationImage ? ' live-preview__notifications-card--with-image' : ''}${isExpandedNotification ? ' live-preview__notifications-card--expanded' : ''}`}
               onClick={() => {
-                if (isUnread) {
-                  if (usesPlaceholderNotifications) onLocalNotificationRead?.(notification.id)
-                  else onNotificationRead?.(notification.id)
-                }
+                if (isUnread) onNotificationRead?.(notification.id)
                 onNotificationOpen?.(notification)
               }}
             >
@@ -3101,20 +3088,10 @@ export function BuildPage({
   const roleScopedUnreadPushNotificationCount = useMemo(() => (
     roleScopedPushNotifications.filter((notification) => notification.unread).length
   ), [roleScopedPushNotifications])
-  const [locallyReadMobilePreviewNotificationIds, setLocallyReadMobilePreviewNotificationIds] = useState<string[]>([])
-  const mobileNotificationScreenCount = roleScopedPushNotifications.length === 0
-    ? MOBILE_NOTIFICATION_SCREEN_PLACEHOLDERS.filter((notification) => (
-      notification.unread && !locallyReadMobilePreviewNotificationIds.includes(notification.id)
-    )).length
-    : roleScopedUnreadPushNotificationCount
+  const mobileNotificationScreenCount = roleScopedUnreadPushNotificationCount
   const markRoleScopedPushNotificationRead = useCallback((notificationId: string) => {
     onPushNotificationRead?.(notificationId, viewingAsRole)
   }, [onPushNotificationRead, viewingAsRole])
-  const markMobilePreviewNotificationRead = useCallback((notificationId: string) => {
-    setLocallyReadMobilePreviewNotificationIds((readNotificationIds) => (
-      readNotificationIds.includes(notificationId) ? readNotificationIds : [...readNotificationIds, notificationId]
-    ))
-  }, [])
   const [previewDevice, setPreviewDevice] = useState<'phone' | 'tablet' | 'desktop'>('phone')
   const [isLivePreviewVisible, setIsLivePreviewVisible] = useState(true)
   const previewSearchInteractionsEnabled =
@@ -5486,8 +5463,6 @@ export function BuildPage({
               useJotformIcon
               showMobileLayout
               onNotificationRead={markRoleScopedPushNotificationRead}
-              locallyReadNotificationIds={locallyReadMobilePreviewNotificationIds}
-              onLocalNotificationRead={markMobilePreviewNotificationRead}
               onNotificationOpen={handleLivePreviewNotificationOpen}
             />
           ) : (() => {
@@ -9642,8 +9617,6 @@ export function BuildPage({
                               useJotformIcon
                               showMobileLayout
                               onNotificationRead={markRoleScopedPushNotificationRead}
-                              locallyReadNotificationIds={locallyReadMobilePreviewNotificationIds}
-                              onLocalNotificationRead={markMobilePreviewNotificationRead}
                               onNotificationOpen={handleLivePreviewNotificationOpen}
                             />
                           ) : (() => {
