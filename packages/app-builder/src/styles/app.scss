@@ -12241,9 +12241,14 @@ body.builder--phone-only {
   margin: 0;
 }
 
-.live-preview__desktop-notifications-card .live-preview__notifications-page--desktop .live-preview__notifications-card--expanded,
-.live-preview__desktop-notifications-card .live-preview__notifications-page--desktop .live-preview__notifications-card--with-image {
-  min-height: calc(var(--space-20) + var(--space-16) + var(--space-1));
+// Every desktop row uses a consistent 16px inset above and below its actual
+// content. Long copy expands naturally; media alone must not create spare space
+// before the following divider.
+.live-preview__desktop-notifications-card .live-preview__notifications-page--desktop :is(
+  .live-preview__notifications-card--expanded,
+  .live-preview__notifications-card--with-image
+) {
+  min-height: calc(var(--space-16) + var(--space-6) + var(--space-1));
 }
 
 .live-preview__desktop-notifications-card .live-preview__notifications-page--desktop .live-preview__notifications-card--expanded .live-preview__notifications-card-header time,
