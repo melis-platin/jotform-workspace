@@ -12261,8 +12261,8 @@ body.builder--phone-only {
 }
 
 .live-preview__desktop-notifications-card .live-preview__notifications-page--desktop .live-preview__notifications-card--with-image .live-preview__notifications-card-media {
-  top: calc(var(--space-6) + var(--space-5));
-  right: var(--space-6);
+  top: var(--space-10);
+  right: 0;
 }
 
 .live-preview__notifications-empty {
