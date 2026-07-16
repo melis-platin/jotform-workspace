@@ -11979,6 +11979,12 @@ body.builder--phone-only {
   padding-right: var(--space-16);
 }
 
+// The timestamp only shares the title row. Let the body copy use the remaining
+// row width so longer notification content does not wrap prematurely.
+.live-preview__phone-screen .live-preview__notifications-card-copy {
+  padding-right: 0;
+}
+
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card-header {
   gap: var(--space-1);
 }
@@ -11990,6 +11996,10 @@ body.builder--phone-only {
   text-overflow: clip;
   white-space: normal;
   overflow-wrap: anywhere;
+}
+
+.live-preview__phone-screen .live-preview__notifications-card-header strong {
+  padding-right: var(--space-16);
 }
 
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card-header time {
