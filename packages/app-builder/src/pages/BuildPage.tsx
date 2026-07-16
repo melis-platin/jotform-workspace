@@ -1528,7 +1528,8 @@ const HEADER_ACTION_ALLOWED = ['button', 'social-follow', 'image', 'spacer']
 const HEADER_ACTIONS_MAX = 3
 const DESKTOP_TOP_NAV_VISIBLE_COUNT = {
   fullwidth: 5,
-  constrained: 3,
+  contained: 3,
+  compact: 2,
 } as const
 const CART_TRIGGER_COMPONENT_IDS = new Set(['product-list', 'donation-box'])
 // In header context only Button can be shrinked (Social Follow stays full-width)
@@ -3304,13 +3305,14 @@ export function BuildPage({
   })
   const hasNavOverflow = navPages.length >= 5
   const visibleNavPages = hasNavOverflow ? navPages.slice(0, 4) : navPages
-  // The fullwidth header keeps five page names visible. Contained and compact
-  // layouts preserve their balanced centre composition by showing three before
-  // the remaining pages move under More.
+  // Fullwidth keeps five page names visible; contained keeps three and compact
+  // keeps two before remaining pages move under More.
   const desktopTopNavUsesConstrainedLayout = desktopNavVariant === 'contained' || desktopNavVariant === 'compact'
-  const desktopTopNavVisibleCount = desktopTopNavUsesConstrainedLayout
-    ? DESKTOP_TOP_NAV_VISIBLE_COUNT.constrained
-    : DESKTOP_TOP_NAV_VISIBLE_COUNT.fullwidth
+  const desktopTopNavVisibleCount = desktopNavVariant === 'contained'
+    ? DESKTOP_TOP_NAV_VISIBLE_COUNT.contained
+    : desktopNavVariant === 'compact'
+      ? DESKTOP_TOP_NAV_VISIBLE_COUNT.compact
+      : DESKTOP_TOP_NAV_VISIBLE_COUNT.fullwidth
   const desktopTopNavUsesOverflow = desktopNavVariant !== 'left' && navPages.length > desktopTopNavVisibleCount
   const desktopTopNavPages = desktopTopNavUsesOverflow ? navPages.slice(0, desktopTopNavVisibleCount) : navPages
   const desktopTopNavOverflowPages = desktopTopNavUsesOverflow ? navPages.slice(desktopTopNavVisibleCount) : []
