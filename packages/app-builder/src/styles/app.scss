@@ -11557,6 +11557,17 @@ body.builder--phone-only {
   max-height: min(768px, calc(100vh - var(--space-16)));
 }
 
+// Constrained desktop headers preserve three standard 92px notification rows
+// below the 76px title area. Additional notifications remain available through
+// an intentionally hidden scrollbar inside the card.
+.live-preview__desktop-notifications-card:is(
+  .live-preview__desktop-notifications-card--contained,
+  .live-preview__desktop-notifications-card--compact
+) {
+  height: auto;
+  max-height: min(352px, calc(100vh - var(--space-16)));
+}
+
 // With no delivered notifications, all desktop navigation variants begin on
 // the same fixed empty-state card (450 × 310). The radius, color and type
 // variables are inherited from the enclosing .app-scope, so App Designer
@@ -12123,6 +12134,12 @@ body.builder--phone-only {
   display: block;
   padding: 0;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.live-preview__desktop-notifications-card .live-preview__notifications-page--desktop::-webkit-scrollbar {
+  display: none;
 }
 
 .live-preview__desktop-notifications-header {
