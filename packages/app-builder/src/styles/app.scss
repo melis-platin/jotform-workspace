@@ -14704,7 +14704,7 @@ body.builder--phone-only {
   overflow-wrap: anywhere;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-book);
-  line-height: 1;
+  line-height: var(--line-height-xs);
   color: var(--text-medium);
 }
 
