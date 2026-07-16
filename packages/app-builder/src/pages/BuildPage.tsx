@@ -2675,13 +2675,14 @@ function LivePreviewNotificationsPage({
         {displayedNotifications.map((notification) => {
           const hasNotificationImage = Boolean(notification.image?.url)
           const isExpandedNotification = notification.title.length > 36 && notification.content.length > 90
+          const isCompactNotification = notification.title.length <= 24 && notification.content.length <= 24
           const isUnread = notification.unread
 
           return (
             <button
               key={notification.id}
               type="button"
-              className={`live-preview__notifications-card${isUnread ? ' live-preview__notifications-card--unread' : ''}${hasNotificationImage ? ' live-preview__notifications-card--with-image' : ''}${isExpandedNotification ? ' live-preview__notifications-card--expanded' : ''}`}
+              className={`live-preview__notifications-card${isUnread ? ' live-preview__notifications-card--unread' : ''}${hasNotificationImage ? ' live-preview__notifications-card--with-image' : ''}${isExpandedNotification ? ' live-preview__notifications-card--expanded' : ''}${isCompactNotification ? ' live-preview__notifications-card--compact' : ''}`}
               onClick={() => {
                 if (isUnread) onNotificationRead?.(notification.id)
                 onNotificationOpen?.(notification)
