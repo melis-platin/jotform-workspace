@@ -318,9 +318,8 @@ export function App() {
         audience: item.audience && item.audience.length > 0 ? item.audience : [ALL_USERS_AUDIENCE_ID],
         deepLink: item.deepLink,
         sentAtLabel: item.scheduledAtLabel,
-        readByRoleIds: appUserRoleOptions
-          .filter((role) => readPushNotificationDeliveryIds.has(getPushNotificationDeliveryId(item.id, role.id)))
-          .map((role) => role.id),
+        readByRoleIds: ['anyone', ...appUserRoleOptions.map((role) => role.id)]
+          .filter((roleId) => readPushNotificationDeliveryIds.has(getPushNotificationDeliveryId(item.id, roleId))),
       }))
   ), [appUserRoleOptions, pushNotificationHistoryItems, readPushNotificationDeliveryIds])
 
