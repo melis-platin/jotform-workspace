@@ -3090,7 +3090,6 @@ function PushNotificationComposer({
           </div>
         </div>
       </div>
-      <div className="push-composer-panel__divider" />
       <div className="push-composer-panel__selection">
         <div className="push-composer-panel__dropdown-row">
           <AudienceDropdown value={audience} onChange={setAudience} roles={appUserRoles} />

@@ -13444,12 +13444,6 @@ body.builder--phone-only {
   align-self: flex-start;
 }
 
-.push-composer-panel__divider {
-  width: 100%;
-  height: 1px;
-  background: color-mix(in srgb, var(--border-medium) 50%, transparent);
-}
-
 .push-composer-dropdown {
   width: 612px;
   max-width: calc(100% - var(--spacing-4xl));
