@@ -12046,7 +12046,7 @@ body.builder--phone-only {
 }
 
 // Image notifications use the fixed full-page list row from the mobile design:
-// a 44px thumbnail sits beside two title and three description lines.
+// a 44px thumbnail sits below the timestamp on the trailing edge.
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card--with-image {
   min-height: calc(var(--space-20) + var(--space-16));
 }
@@ -12074,16 +12074,16 @@ body.builder--phone-only {
   align-self: baseline;
 }
 
-.live-preview__phone-screen .live-preview__notifications-card--with-image .live-preview__notifications-card-copy,
-.live-preview__phone-screen .live-preview__notifications-card--with-image .live-preview__notifications-card-header,
-.live-preview__phone-screen .live-preview__notifications-card--with-image .live-preview__notifications-card-body {
-  gap: var(--space-2);
+.live-preview__phone-screen .live-preview__notifications-card--with-image .live-preview__notifications-card-header time {
+  position: absolute;
+  top: 0;
+  right: 0;
+  align-self: auto;
 }
 
-.live-preview__phone-screen .live-preview__notifications-card--with-image .live-preview__notifications-card-media {
-  position: static;
-  order: -1;
-  flex: 0 0 calc(var(--space-10) + var(--space-1));
+.live-preview__phone-screen .live-preview__notifications-card--with-image .live-preview__notifications-card-header strong,
+.live-preview__phone-screen .live-preview__notifications-card--with-image .live-preview__notifications-card-body {
+  padding-right: calc(var(--space-12) + var(--space-2));
 }
 
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card--with-image .live-preview__notifications-card-text {
@@ -12102,6 +12102,11 @@ body.builder--phone-only {
   top: calc(var(--line-height-label-sm) + var(--space-1));
   right: var(--space-4);
   border-radius: var(--radius-sm);
+}
+
+.live-preview__phone-screen .live-preview__notifications-card--with-image .live-preview__notifications-card-media {
+  top: calc(var(--line-height-label-sm) + var(--space-2));
+  right: 0;
 }
 
 .live-preview__notifications-empty {
