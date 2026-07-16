@@ -14427,6 +14427,12 @@ body.builder--phone-only {
   background: var(--background-white);
   color: var(--text-darkest);
 
+  &__copy {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2xs);
+  }
+
   h2,
   p {
     margin: 0;

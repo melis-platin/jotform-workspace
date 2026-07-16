@@ -3510,8 +3510,10 @@ export function PushPermissionRequestPreview({ title, content }: { title: string
         <img className="push-preview-phone__clock-time" src={lockscreenTime} alt="" />
       </div>
       <section className="push-permission-preview" aria-label="Push notification permission request preview">
-        <h2>{title}</h2>
-        <p>{content}</p>
+        <div className="push-permission-preview__copy">
+          <h2>{title}</h2>
+          <p>{content}</p>
+        </div>
         <div className="push-permission-preview__actions">
           <button type="button">Dismiss</button>
           <button type="button">Allow</button>
