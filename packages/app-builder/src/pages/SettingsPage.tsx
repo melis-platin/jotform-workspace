@@ -1226,6 +1226,7 @@ export function PushNotificationsPanel({
             onDisable={onDisable}
             onEnable={onEnable}
             onPermissionMessageEdit={onPermissionMessageEdit}
+            isInitialPushNotification={historyItems.length === 0 && !canReturnToHistory}
           />
           {!isDisabled && <div className="push-notification-actions">
             <Button
@@ -1240,6 +1241,7 @@ export function PushNotificationsPanel({
               <Button
                 colorScheme="primary"
                 disabled={areNotificationActionsDisabled}
+                leftIcon={<Icon name="calendar-event" category="time-date" size={20} />}
                 onClick={() => setIsScheduleModalOpen(true)}
               >
                 SCHEDULE
@@ -2644,6 +2646,7 @@ interface PushNotificationComposerProps {
   onDisable: () => void
   onEnable: () => void
   onPermissionMessageEdit?: () => void
+  isInitialPushNotification?: boolean
 }
 
 interface AudienceDropdownOption {
@@ -2927,6 +2930,7 @@ function PushNotificationComposer({
   onDisable,
   onEnable,
   onPermissionMessageEdit,
+  isInitialPushNotification = false,
 }: PushNotificationComposerProps) {
   const imageInputRef = useRef<HTMLInputElement>(null)
   const contextMenuRef = useRef<HTMLDivElement>(null)
@@ -2954,15 +2958,16 @@ function PushNotificationComposer({
   }, [isContextMenuOpen])
 
   return (
-    <section className="push-composer-panel" aria-label="Push notification composer">
-      <div className="push-composer-panel__intro">
-        <div className="push-composer-panel__intro-copy">
-          <h2 className="push-composer-panel__intro-title">Create a push notification</h2>
-          <p className="push-composer-panel__intro-description">
-            Reach your users instantly with a personalized push notification.
-          </p>
-        </div>
-        <div className="push-composer-panel__intro-actions" ref={contextMenuRef}>
+    <section className={`push-composer-panel${isInitialPushNotification ? ' push-composer-panel--initial' : ''}`} aria-label="Push notification composer">
+      <div className="push-composer-panel__intro-card">
+        <div className="push-composer-panel__intro">
+          <div className="push-composer-panel__intro-copy">
+            <h2 className="push-composer-panel__intro-title">Create a push notification</h2>
+            <p className="push-composer-panel__intro-description">
+              Reach your users instantly with a personalized push notification.
+            </p>
+          </div>
+          <div className="push-composer-panel__intro-actions" ref={contextMenuRef}>
           <span className={`push-composer-panel__status${isDisabled ? ' push-composer-panel__status--disabled' : ''}`}>
             {isDisabled ? 'Disabled' : 'Active'}
           </span>
@@ -3007,9 +3012,16 @@ function PushNotificationComposer({
               </button>
             </div>
           )}
+          </div>
         </div>
+        {isInitialPushNotification && !isDisabled && (
+          <div className="push-composer-panel__device-notice" role="status">
+            <Icon name="exclamation-circle-filled" category="alerts-feedback" size={16} />
+            <span>0 devices have opted into receiving notifications.</span>
+          </div>
+        )}
       </div>
-      {!isDisabled && <>
+      {!isDisabled && <div className="push-composer-panel__form-card">
       <div className="push-composer-panel__content">
         <div className="push-composer-panel__fields">
           <div className="push-composer-field">
@@ -3118,7 +3130,7 @@ function PushNotificationComposer({
           <DeepLinkDropdown value={deepLink} onChange={setDeepLink} targets={deepLinkTargets} />
         </div>
       </div>
-      </>}
+      </div>}
     </section>
   )
 }

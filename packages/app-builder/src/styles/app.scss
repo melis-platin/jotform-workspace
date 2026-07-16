@@ -13162,6 +13162,75 @@ body.builder--phone-only {
   overflow: visible;
 }
 
+// A first-time push notification has no history to return to. Match the
+// dedicated empty-history composer: an intro card with the device notice and
+// a separate message form card beneath it.
+.push-composer-panel--initial {
+  margin-top: 0;
+  background: transparent;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.push-composer-panel__intro-card,
+.push-composer-panel__form-card {
+  width: 100%;
+}
+
+.push-composer-panel--initial .push-composer-panel__intro-card,
+.push-composer-panel--initial .push-composer-panel__form-card {
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--background-white);
+  box-shadow: var(--shadow-xs);
+}
+
+.push-composer-panel--initial .push-composer-panel__intro {
+  padding: var(--space-6);
+}
+
+.push-composer-panel__device-notice {
+  display: inline-flex;
+  align-items: center;
+  align-self: flex-start;
+  gap: var(--space-2);
+  margin: var(--space-2) var(--space-6) var(--space-6);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--background-lightest);
+  color: var(--text-medium);
+  font-family: var(--font-family-circular);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-book);
+  line-height: var(--line-height-xs);
+}
+
+.push-composer-panel__device-notice .jf-icon {
+  flex: 0 0 auto;
+  color: var(--text-medium);
+}
+
+.push-composer-panel--initial .push-composer-panel__form-card {
+  margin-top: var(--space-6);
+}
+
+.push-composer-panel--initial .push-composer-panel__content {
+  padding: var(--space-3) var(--space-6) var(--space-6);
+}
+
+.push-composer-panel--initial .push-composer-panel__selection {
+  padding: 0 var(--space-6) var(--space-6);
+}
+
+.push-composer-panel--initial .push-composer-panel__fields,
+.push-composer-panel--initial .push-composer-panel__dropdown-row {
+  gap: var(--space-6);
+}
+
+.push-composer-panel--initial + .push-notification-actions {
+  margin-top: var(--space-4);
+}
+
 .push-composer-panel__intro {
   width: 100%;
   display: flex;
