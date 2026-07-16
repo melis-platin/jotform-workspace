@@ -39,7 +39,7 @@ export function LivePreviewAvatarPopover({
 
   const items = [
     { id: 'profile', label: 'Profile' },
-    ...(showNavigation ? [{ id: 'navigation', label: 'Navigation' }] : []),
+    ...(showNavigation ? [{ id: 'navigation', label: 'Notification' }] : []),
     { id: 'logout', label: 'Log out' },
   ]
 
