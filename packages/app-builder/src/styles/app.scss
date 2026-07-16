@@ -11943,6 +11943,10 @@ body.builder--phone-only {
   box-shadow: none;
 }
 
+.live-preview__phone-screen .live-preview__notifications-page--mobile .live-preview__notifications-card {
+  padding-bottom: var(--space-4);
+}
+
 .live-preview__phone-screen .live-preview__notifications-page--mobile .live-preview__notifications-card:not(:last-child)::after {
   content: '';
   position: absolute;
