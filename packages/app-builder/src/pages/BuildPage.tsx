@@ -3871,7 +3871,7 @@ export function BuildPage({
         open={showDesktopNotificationCard}
         popover={showDesktopNotificationCard ? (
           <div
-            className={`live-preview__desktop-notifications-card live-preview__desktop-notifications-card--${desktopNavVariant === 'top' ? 'fullwidth' : desktopNavVariant}`}
+            className={`live-preview__desktop-notifications-card live-preview__desktop-notifications-card--${desktopNavVariant === 'top' ? 'fullwidth' : desktopNavVariant}${roleScopedPushNotifications.length === 0 ? ' live-preview__desktop-notifications-card--empty' : ''}`}
             role="dialog"
             aria-label="Notifications"
           >

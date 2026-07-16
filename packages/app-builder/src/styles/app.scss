@@ -11549,14 +11549,20 @@ body.builder--phone-only {
   line-height: 24px;
 }
 
-// Fullwidth desktop notifications use the fixed Jotform panel from the desktop
-// navigation reference. Its content remains data-driven; only the presentation
-// is shared by every notification instance.
+// Fullwidth desktop notifications use the same 450px card as the Figma desktop
+// navigation reference. Content stays data-driven; only the presentation is
+// shared by every notification instance.
 .live-preview__desktop-notifications-card--fullwidth {
-  --live-preview-desktop-notifications-card-width: 482px;
-
   height: auto;
   max-height: min(768px, calc(100vh - var(--space-16)));
+}
+
+// With no delivered notifications, all desktop navigation variants begin on
+// the same fixed empty-state card (450 × 310). The radius, color and type
+// variables are inherited from the enclosing .app-scope, so App Designer
+// changes remain reflected without a layout-specific override.
+.live-preview__desktop-notifications-card--empty {
+  height: 310px;
 }
 
 .live-preview__desktop-notifications-card--fullwidth .live-preview__notifications-page {
