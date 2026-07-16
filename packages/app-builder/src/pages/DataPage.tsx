@@ -767,8 +767,9 @@ export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget 
   const openTableContextConnections = (tableId: string, anchorElement: HTMLElement) => {
     clearTableContextConnectionCloseTimer()
     const anchor = anchorElement.getBoundingClientRect()
+    const menu = anchorElement.closest('.data-page__table-context-menu')?.getBoundingClientRect()
     setOpenTableContextConnectionId(tableId)
-    setTableContextConnectionAnchor({ tableId, left: anchor.right + 4, top: anchor.top })
+    setTableContextConnectionAnchor({ tableId, left: (menu?.right ?? anchor.right) + 4, top: anchor.top })
   }
 
   const scheduleTableContextConnectionsClose = () => {
