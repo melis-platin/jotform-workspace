@@ -11870,6 +11870,30 @@ body.builder--phone-only {
   line-height: var(--line-height-paragraph-sm);
 }
 
+// Image notifications reserve a compact visual slot at the lower-right of the
+// copy column, matching the app's full-page notification list treatment.
+:is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card--with-image {
+  min-height: calc(var(--space-20) + var(--space-10));
+}
+
+:is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card--with-image .live-preview__notifications-card-copy {
+  position: relative;
+}
+
+:is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card--with-image .live-preview__notifications-card-text {
+  max-width: calc(100% - var(--space-12) - var(--space-1));
+}
+
+:is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card--with-image .live-preview__notifications-card-media {
+  width: calc(var(--space-10) + var(--space-1));
+  height: calc(var(--space-10) + var(--space-1));
+  flex-basis: calc(var(--space-10) + var(--space-1));
+  position: absolute;
+  top: calc(var(--space-6) + var(--space-1));
+  right: 0;
+  border-radius: var(--radius-sm);
+}
+
 .live-preview__notifications-empty {
   width: 100%;
   min-height: calc(100% - var(--space-12));
