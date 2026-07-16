@@ -1529,7 +1529,7 @@ const HEADER_ACTION_ALLOWED = ['button', 'social-follow', 'image', 'spacer']
 const HEADER_ACTIONS_MAX = 3
 const DESKTOP_TOP_NAV_VISIBLE_COUNT = {
   fullwidth: 5,
-  contained: 3,
+  contained: 2,
   compact: 2,
 } as const
 const CART_TRIGGER_COMPONENT_IDS = new Set(['product-list', 'donation-box'])
@@ -3318,8 +3318,8 @@ export function BuildPage({
   })
   const hasNavOverflow = navPages.length >= 5
   const visibleNavPages = hasNavOverflow ? navPages.slice(0, 4) : navPages
-  // Fullwidth keeps five page names visible; contained keeps three and compact
-  // keeps two before remaining pages move under More.
+  // Fullwidth keeps five page names visible; contained and compact keep two
+  // before remaining pages move under More.
   const desktopTopNavUsesConstrainedLayout = desktopNavVariant === 'contained' || desktopNavVariant === 'compact'
   const desktopTopNavVisibleCount = desktopNavVariant === 'contained'
     ? DESKTOP_TOP_NAV_VISIBLE_COUNT.contained
