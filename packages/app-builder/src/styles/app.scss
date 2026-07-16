@@ -9913,7 +9913,8 @@ body.builder--phone-only {
     padding: var(--space-0);
   }
 
-  // Compact variant: the same centred, intrinsic group sits in a floating shell.
+  // Compact variant: Figma's 760px App-Top shell keeps the brand left and the
+  // page/action group together on the right.
   .live-preview__top-header--compact {
     top: var(--space-4);
     left: var(--space-0);
@@ -9922,12 +9923,12 @@ body.builder--phone-only {
     max-width: calc(100% - (var(--space-4) * 2));
     margin-left: auto;
     margin-right: auto;
-    justify-content: center;
-    column-gap: var(--space-3);
-    padding: 0 var(--space-4);
+    justify-content: flex-start;
+    column-gap: var(--space-0);
+    padding: var(--space-0) var(--space-3);
     border: none;
-    border-radius: var(--radius-xl);
-    box-shadow: var(--shadow-md);
+    border-radius: var(--radius-lg);
+    box-shadow: none;
   }
 
   // Clear exactly the floating bar's footprint (top 16 + height 65 = 81px) so the
@@ -10153,8 +10154,8 @@ body.builder--phone-only {
 }
 
 // Fullwidth keeps navigation and actions flush to one another at the right edge.
-// The contained and compact variants use a centred intrinsic group: 32px of
-// breathing room after the brand and the token gap between navigation/actions.
+// Contained uses a centred intrinsic group; compact keeps page links and actions
+// together as one right-aligned group.
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header:not(.live-preview__top-header--contained):not(.live-preview__top-header--compact) {
   column-gap: var(--space-0);
 }
@@ -10166,6 +10167,15 @@ body.builder--phone-only {
   flex: 0 0 auto;
   margin-left: var(--space-8);
   margin-right: var(--space-0);
+}
+
+.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--compact .live-preview__top-header-nav {
+  margin-left: auto;
+  margin-right: var(--space-3);
+}
+
+.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--compact .live-preview__top-header-right {
+  margin-left: var(--space-0);
 }
 
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--fullwidth-search-open .live-preview__top-header-nav {
