@@ -3016,7 +3016,7 @@ function PushNotificationComposer({
         </div>
         {isInitialPushNotification && !isDisabled && (
           <div className="push-composer-panel__device-notice" role="status">
-            <Icon name="exclamation-circle-filled" category="alerts-feedback" size={16} />
+            <Icon name="exclamation-circle-filled" category="general" size={16} />
             <span>0 devices have opted into receiving notifications.</span>
           </div>
         )}
