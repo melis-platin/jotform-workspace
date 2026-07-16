@@ -973,6 +973,7 @@ export function PushNotificationsPanel({
     historyItems.length > 0 ? 'history' : 'composer'
   ))
   const [canReturnToHistory, setCanReturnToHistory] = useState(false)
+  const [usesInitialComposerLayout, setUsesInitialComposerLayout] = useState(() => historyItems.length === 0)
   const handledReturnToHistoryRequestIdRef = useRef(returnToHistoryRequestId)
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false)
   const [scheduleDate, setScheduleDate] = useState('')
@@ -1051,6 +1052,7 @@ export function PushNotificationsPanel({
   const openNotificationComposer = () => {
     resetNotificationComposer()
     setCanReturnToHistory(true)
+    setUsesInitialComposerLayout(true)
     setActiveView('composer')
   }
   const duplicateNotification = (notification: PushNotificationHistoryItem) => {
@@ -1067,11 +1069,13 @@ export function PushNotificationsPanel({
     setScheduleTime('')
     setScheduleQuickPick('custom')
     setCanReturnToHistory(true)
+    setUsesInitialComposerLayout(false)
     setActiveView('composer')
   }
   const returnToNotificationHistory = () => {
     resetNotificationComposer()
     setCanReturnToHistory(false)
+    setUsesInitialComposerLayout(false)
     setActiveView('history')
   }
   const createBaseHistoryItem = (status: PushNotificationHistoryStatus) => ({
@@ -1173,6 +1177,7 @@ export function PushNotificationsPanel({
   useEffect(() => {
     if (historyItems.length === 0 && activeView === 'history') {
       setCanReturnToHistory(false)
+      setUsesInitialComposerLayout(true)
       setActiveView('composer')
     }
   }, [activeView, historyItems.length])
@@ -1182,8 +1187,8 @@ export function PushNotificationsPanel({
   }, [activeView, onViewChange])
 
   useEffect(() => {
-    onCanReturnToHistoryChange?.(activeView === 'composer' && canReturnToHistory)
-  }, [activeView, canReturnToHistory, onCanReturnToHistoryChange])
+    onCanReturnToHistoryChange?.(activeView === 'composer' && canReturnToHistory && !usesInitialComposerLayout)
+  }, [activeView, canReturnToHistory, onCanReturnToHistoryChange, usesInitialComposerLayout])
 
   useEffect(() => {
     if (returnToHistoryRequestId === handledReturnToHistoryRequestIdRef.current) return
@@ -1226,7 +1231,7 @@ export function PushNotificationsPanel({
             onDisable={onDisable}
             onEnable={onEnable}
             onPermissionMessageEdit={onPermissionMessageEdit}
-            isInitialPushNotification={historyItems.length === 0 && !canReturnToHistory}
+            isInitialPushNotification={usesInitialComposerLayout}
           />
           {!isDisabled && <div className="push-notification-actions">
             <Button
