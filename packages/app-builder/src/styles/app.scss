@@ -11895,10 +11895,12 @@ body.builder--phone-only {
   background: var(--fg-primary);
 }
 
-// Image notifications reserve a compact visual slot at the lower-right of the
-// copy column, matching the app's full-page notification list treatment.
+// Image notifications use the fixed full-page list row from the mobile design:
+// a 44px thumbnail sits beside two title and three description lines.
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card--with-image {
-  min-height: calc(var(--space-20) + var(--space-10));
+  height: calc(var(--space-20) + var(--space-16));
+  min-height: calc(var(--space-20) + var(--space-16));
+  overflow: hidden;
 }
 
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card--expanded {
@@ -11910,7 +11912,17 @@ body.builder--phone-only {
 }
 
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card--with-image .live-preview__notifications-card-text {
-  max-width: calc(100% - var(--space-10) - var(--space-1) - var(--space-3));
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+}
+
+:is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card--with-image .live-preview__notifications-card-header strong {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card--with-image .live-preview__notifications-card-media {
@@ -11919,7 +11931,7 @@ body.builder--phone-only {
   flex-basis: calc(var(--space-10) + var(--space-1));
   position: absolute;
   top: calc(var(--space-6) + var(--space-1));
-  right: 0;
+  right: var(--space-4);
   border-radius: var(--radius-sm);
 }
 
