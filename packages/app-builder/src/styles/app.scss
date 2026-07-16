@@ -10934,6 +10934,17 @@ body.builder--phone-only {
   background: #08090b99;
 }
 
+.live-preview__desktop-notifications-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: default;
+}
+
 .live-preview__left-search-modal {
   --live-preview-left-search-surface: var(--background-white, var(--neutral-0, #fff));
   --live-preview-left-search-fill: var(--bg-fill);
@@ -11419,6 +11430,51 @@ body.builder--phone-only {
   cursor: pointer;
   box-shadow: none;
   backdrop-filter: none;
+}
+
+.live-preview__top-header-notification {
+  --live-preview-desktop-notifications-card-width: 450px;
+
+  position: relative;
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  flex: 0 0 auto;
+}
+
+.live-preview__top-header-notification--open {
+  z-index: 5;
+}
+
+.live-preview__desktop-notifications-card {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  right: 0;
+  z-index: 4;
+  display: flex;
+  width: var(--live-preview-desktop-notifications-card-width);
+  height: min(310px, calc(100vh - var(--space-16)));
+  max-width: calc(100vw - var(--space-8));
+  box-sizing: border-box;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--background-white, #fff);
+  color: var(--fg-primary);
+  box-shadow: 0 2px 4px 0 rgba(37, 45, 91, 0.04), 0 8px 16px 0 rgba(84, 95, 111, 0.16);
+}
+
+.live-preview__desktop-notifications-card--compact {
+  box-shadow: none;
+}
+
+.live-preview__desktop-notifications-card .live-preview__notifications-page {
+  min-height: 0;
+  padding: var(--space-6);
+  overflow-y: auto;
+}
+
+.live-preview__desktop-notifications-card .live-preview__notifications-page--empty {
+  overflow: hidden;
 }
 
 .live-preview__top-header-notification-btn:focus-visible,

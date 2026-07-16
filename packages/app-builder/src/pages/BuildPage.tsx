@@ -2566,25 +2566,34 @@ function isLivePreviewNotificationVisibleForRole(notification: LivePreviewPushNo
 function LivePreviewNotificationButton({
   unreadCount,
   onClick,
+  open = false,
+  popover,
 }: {
   unreadCount: number
   onClick?: () => void
+  open?: boolean
+  popover?: React.ReactNode
 }) {
   const hasUnreadBadge = unreadCount > 0
   const visibleUnreadCount = unreadCount > 99 ? '99+' : String(unreadCount)
 
   return (
-    <button
-      type="button"
-      className="live-preview__top-header-notification-btn"
-      aria-label={hasUnreadBadge ? `${unreadCount} unread notifications` : 'Notifications'}
-      onClick={onClick}
-    >
-      <Icon name="bell-diagonal-filled" category="alerts-feedback" size={20} />
-      {hasUnreadBadge && (
-        <span className="live-preview__top-header-notification-badge">{visibleUnreadCount}</span>
-      )}
-    </button>
+    <div className={`live-preview__top-header-notification${open ? ' live-preview__top-header-notification--open' : ''}`}>
+      <button
+        type="button"
+        className="live-preview__top-header-notification-btn"
+        aria-label={hasUnreadBadge ? `${unreadCount} unread notifications` : 'Notifications'}
+        aria-expanded={popover ? open : undefined}
+        aria-haspopup={popover ? 'dialog' : undefined}
+        onClick={onClick}
+      >
+        <Icon name="bell-diagonal-filled" category="alerts-feedback" size={20} />
+        {hasUnreadBadge && (
+          <span className="live-preview__top-header-notification-badge">{visibleUnreadCount}</span>
+        )}
+      </button>
+      {popover}
+    </div>
   )
 }
 
@@ -2994,6 +3003,7 @@ export function BuildPage({
   }, [pages, preset])
   const [isMorePageOpen, setIsMorePageOpen] = useState(false)
   const [isNotificationsPageOpen, setIsNotificationsPageOpen] = useState(false)
+  const [isDesktopNotificationsCardOpen, setIsDesktopNotificationsCardOpen] = useState(false)
   const [isPreviewSearchOpen, setIsPreviewSearchOpen] = useState(false)
   const [isDesktopPreviewSearchOpen, setIsDesktopPreviewSearchOpen] = useState(false)
   const [desktopPreviewSearchQuery, setDesktopPreviewSearchQuery] = useState('')
@@ -3317,6 +3327,7 @@ export function BuildPage({
       setIsMorePageOpen(false)
       setIsDesktopNavMoreOpen(false)
       setIsNotificationsPageOpen(false)
+      setIsDesktopNotificationsCardOpen(false)
       setIsPreviewSearchOpen(false)
       setIsDesktopPreviewSearchOpen(false)
       setPreviewAuthView('login')
@@ -3325,6 +3336,7 @@ export function BuildPage({
     setIsPreviewProfileOpen(false)
     setIsAvatarPopoverOpen(false)
     setIsNotificationsPageOpen(false)
+    setIsDesktopNotificationsCardOpen(false)
     setIsPreviewSearchOpen(false)
     setIsDesktopPreviewSearchOpen(false)
     setIsDesktopNavMoreOpen(false)
@@ -3335,6 +3347,7 @@ export function BuildPage({
     if (hasNavOverflow && index === visibleNavPages.length) {
       setIsMorePageOpen(true)
       setIsNotificationsPageOpen(false)
+      setIsDesktopNotificationsCardOpen(false)
       setIsPreviewSearchOpen(false)
       setIsDesktopPreviewSearchOpen(false)
       return
@@ -3350,6 +3363,7 @@ export function BuildPage({
   useEffect(() => {
     if (pushNotificationsEnabled) return
     setIsNotificationsPageOpen(false)
+    setIsDesktopNotificationsCardOpen(false)
   }, [pushNotificationsEnabled])
 
   useEffect(() => {
@@ -3366,14 +3380,22 @@ export function BuildPage({
   }, [previewSearchInteractionsEnabled])
 
   useEffect(() => {
+    setIsDesktopNotificationsCardOpen(false)
     setIsDesktopPreviewSearchOpen(false)
     setDesktopPreviewSearchQuery('')
     setIsDesktopNavMoreOpen(false)
   }, [desktopNavVariant])
 
   useEffect(() => {
+    if (desktopNavEnabled) return
+    setIsDesktopNotificationsCardOpen(false)
+  }, [desktopNavEnabled])
+
+  useEffect(() => {
     if (previewDevice === 'desktop') {
       setIsPreviewSearchOpen(false)
+    } else {
+      setIsDesktopNotificationsCardOpen(false)
     }
     if (previewDevice === 'phone' || isPreviewSearchOpen) {
       setIsDesktopPreviewSearchOpen(false)
@@ -3391,7 +3413,18 @@ export function BuildPage({
   }, [isDesktopPreviewSearchOpen])
 
   const openNotificationsPage = () => {
-    setIsNotificationsPageOpen(true)
+    const usesDesktopNotificationCard =
+      previewDevice === 'desktop' &&
+      desktopNavEnabled &&
+      (desktopNavVariant === 'top' || desktopNavVariant === 'contained' || desktopNavVariant === 'compact')
+
+    if (usesDesktopNotificationCard) {
+      setIsDesktopNotificationsCardOpen((open) => !open)
+      setIsNotificationsPageOpen(false)
+    } else {
+      setIsNotificationsPageOpen(true)
+      setIsDesktopNotificationsCardOpen(false)
+    }
     setIsPreviewSearchOpen(false)
     setIsDesktopPreviewSearchOpen(false)
     setIsMorePageOpen(false)
@@ -3403,6 +3436,7 @@ export function BuildPage({
 
   const closeNotificationsPage = () => {
     setIsNotificationsPageOpen(false)
+    setIsDesktopNotificationsCardOpen(false)
   }
 
   const handleLivePreviewNotificationOpen = (notification: LivePreviewPushNotification) => {
@@ -3417,6 +3451,7 @@ export function BuildPage({
 
     setActivePageId(targetPageId)
     setIsNotificationsPageOpen(false)
+    setIsDesktopNotificationsCardOpen(false)
     setIsPreviewSearchOpen(false)
     setIsMorePageOpen(false)
     setIsDesktopNavMoreOpen(false)
@@ -3655,6 +3690,7 @@ export function BuildPage({
     setIsDesktopPreviewSearchOpen(false)
     setDesktopPreviewSearchQuery('')
     setIsNotificationsPageOpen(false)
+    setIsDesktopNotificationsCardOpen(false)
     setIsMorePageOpen(false)
     setIsDesktopNavMoreOpen(false)
     setIsPreviewCartOpen(false)
@@ -3668,6 +3704,7 @@ export function BuildPage({
     setDesktopPreviewSearchQuery(nextQuery)
     if (!previewSearchInteractionsEnabled) return
     setIsDesktopPreviewSearchOpen(true)
+    setIsDesktopNotificationsCardOpen(false)
   }, [previewSearchInteractionsEnabled])
 
   const openDesktopPreviewSearch = useCallback((options?: { resetQuery?: boolean; initialQuery?: string }) => {
@@ -3679,6 +3716,7 @@ export function BuildPage({
     setIsPreviewSearchOpen(false)
     setIsDesktopPreviewSearchOpen(true)
     setIsNotificationsPageOpen(false)
+    setIsDesktopNotificationsCardOpen(false)
     setIsMorePageOpen(false)
     setIsDesktopNavMoreOpen(false)
     setIsPreviewCartOpen(false)
@@ -3776,6 +3814,38 @@ export function BuildPage({
       )
     }
     return null
+  }
+
+  const renderTopHeaderNotificationButton = (device: 'phone' | 'tablet' | 'desktop' = previewDevice) => {
+    if (!pushNotificationsEnabled) return null
+
+    const usesDesktopNotificationCard =
+      device === 'desktop' &&
+      desktopNavEnabled &&
+      (desktopNavVariant === 'top' || desktopNavVariant === 'contained' || desktopNavVariant === 'compact')
+    const showDesktopNotificationCard = usesDesktopNotificationCard && isDesktopNotificationsCardOpen
+
+    return (
+      <LivePreviewNotificationButton
+        unreadCount={roleScopedUnreadPushNotificationCount}
+        onClick={openNotificationsPage}
+        open={showDesktopNotificationCard}
+        popover={showDesktopNotificationCard ? (
+          <div
+            className={`live-preview__desktop-notifications-card live-preview__desktop-notifications-card--${desktopNavVariant === 'top' ? 'fullwidth' : desktopNavVariant}`}
+            role="dialog"
+            aria-label="Notifications"
+          >
+            <LivePreviewNotificationsPage
+              notifications={roleScopedPushNotifications}
+              appHeader={appHeaderState}
+              onNotificationRead={markRoleScopedPushNotificationRead}
+              onNotificationOpen={handleLivePreviewNotificationOpen}
+            />
+          </div>
+        ) : undefined}
+      />
+    )
   }
 
   const renderTopHeaderSearchButton = (device: 'phone' | 'tablet' | 'desktop' = previewDevice) => {
@@ -5058,6 +5128,7 @@ export function BuildPage({
                     setIsPreviewSearchOpen(false)
                     setIsDesktopPreviewSearchOpen(false)
                     setIsNotificationsPageOpen(false)
+                    setIsDesktopNotificationsCardOpen(false)
                     setIsMorePageOpen(false)
                     setIsPreviewCartOpen(false)
                     setIsPreviewCheckoutOpen(false)
@@ -5099,12 +5170,7 @@ export function BuildPage({
               {!(isPreviewProfileOpen && previewDevice !== 'desktop') && (
                 <>
                   {renderTopHeaderSearchButton(previewDevice)}
-                  {pushNotificationsEnabled && (
-                    <LivePreviewNotificationButton
-                      unreadCount={roleScopedUnreadPushNotificationCount}
-                      onClick={openNotificationsPage}
-                    />
-                  )}
+                  {renderTopHeaderNotificationButton(previewDevice)}
                   <button
                     type="button"
                     className="live-preview__top-header-avatar-btn"
@@ -5150,12 +5216,7 @@ export function BuildPage({
           ) : (
             <>
               {renderTopHeaderSearchButton(previewDevice)}
-              {pushNotificationsEnabled && (
-                <LivePreviewNotificationButton
-                  unreadCount={roleScopedUnreadPushNotificationCount}
-                  onClick={openNotificationsPage}
-                />
-              )}
+              {renderTopHeaderNotificationButton(previewDevice)}
               <button
                 type="button"
                 className="live-preview__top-header-login-btn"
@@ -5180,6 +5241,14 @@ export function BuildPage({
           className={`live-preview__desktop-search-scrim${desktopNavVariant === 'left' ? ' live-preview__desktop-search-scrim--modal' : ''}`}
           aria-label="Close search"
           onClick={closeDesktopPreviewSearch}
+        />
+      )}
+      {previewDevice === 'desktop' && isDesktopNotificationsCardOpen && (
+        <button
+          type="button"
+          className="live-preview__desktop-notifications-scrim"
+          aria-label="Close notifications"
+          onClick={() => setIsDesktopNotificationsCardOpen(false)}
         />
       )}
       {previewSearchInteractionsEnabled && previewDevice === 'desktop' && desktopNavVariant === 'left' && isDesktopPreviewSearchOpen && (
@@ -9400,12 +9469,7 @@ export function BuildPage({
                               {!(isPreviewProfileOpen && previewDevice !== 'desktop') && (
                                 <>
                                   {renderTopHeaderSearchButton('phone')}
-                                  {pushNotificationsEnabled && (
-                                    <LivePreviewNotificationButton
-                                      unreadCount={roleScopedUnreadPushNotificationCount}
-                                      onClick={openNotificationsPage}
-                                    />
-                                  )}
+                                  {renderTopHeaderNotificationButton('phone')}
                                   <button
                                     type="button"
                                     className="live-preview__top-header-avatar-btn"
@@ -9439,12 +9503,7 @@ export function BuildPage({
                           ) : (
                             <>
                               {renderTopHeaderSearchButton('phone')}
-                              {pushNotificationsEnabled && (
-                                <LivePreviewNotificationButton
-                                  unreadCount={roleScopedUnreadPushNotificationCount}
-                                  onClick={openNotificationsPage}
-                                />
-                              )}
+                              {renderTopHeaderNotificationButton('phone')}
                               <button
                                 type="button"
                                 className="live-preview__top-header-login-btn"
