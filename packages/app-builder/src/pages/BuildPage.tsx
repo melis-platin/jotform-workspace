@@ -3444,13 +3444,18 @@ export function BuildPage({
 
   const handleLivePreviewNotificationOpen = (notification: LivePreviewPushNotification) => {
     const target = getLivePreviewDeepLinkTarget(notification.deepLink)
-    if (!target) return
+    const homePageId = pages.find((page) => !page.hidden && !page.dynamic)?.id
 
-    const targetPageId = target.type === 'page'
-      ? target.id
-      : pages.find((page) => page.elements.some((element) => element.id === target.id))?.id
+    const deepLinkTargetPageId = target
+      ? target.type === 'page'
+        ? target.id
+        : pages.find((page) => page.elements.some((element) => element.id === target.id))?.id
+      : undefined
+    const targetPageId = deepLinkTargetPageId && pages.some((page) => page.id === deepLinkTargetPageId)
+      ? deepLinkTargetPageId
+      : homePageId
 
-    if (!targetPageId || !pages.some((page) => page.id === targetPageId)) return
+    if (!targetPageId) return
 
     setActivePageId(targetPageId)
     setIsNotificationsPageOpen(false)

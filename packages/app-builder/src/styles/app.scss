@@ -11852,11 +11852,12 @@ body.builder--phone-only {
 }
 
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card-header strong {
-  overflow: hidden;
+  overflow: visible;
   font-size: var(--font-size-paragraph-lg);
   line-height: var(--line-height-label-lg);
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  text-overflow: clip;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card-header time {
@@ -11866,8 +11867,12 @@ body.builder--phone-only {
 }
 
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card-text {
+  overflow: visible;
   font-size: var(--font-size-paragraph-sm);
   line-height: var(--line-height-paragraph-sm);
+  text-overflow: clip;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 // New notifications keep the regular row surface while reserving a leading
