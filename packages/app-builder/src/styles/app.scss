@@ -13191,6 +13191,7 @@ body.builder--phone-only {
   align-items: flex-start;
   gap: var(--space-2);
   padding: var(--space-6);
+  overflow: visible;
 }
 
 .push-composer-panel--initial .push-composer-panel__intro {
