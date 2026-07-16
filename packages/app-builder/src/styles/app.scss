@@ -11812,6 +11812,7 @@ body.builder--phone-only {
 }
 
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card {
+  position: relative;
   min-height: calc(var(--space-20) + var(--space-3));
   padding: var(--space-4) 0 var(--space-2);
   border: 0;
@@ -11843,6 +11844,7 @@ body.builder--phone-only {
 
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card-copy {
   gap: var(--space-1);
+  padding-right: var(--space-16);
 }
 
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card-header {
@@ -11859,6 +11861,9 @@ body.builder--phone-only {
 }
 
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card-header time {
+  position: absolute;
+  top: var(--space-4);
+  right: 0;
   font-size: var(--font-size-label-xs);
   line-height: var(--line-height-label-sm);
   letter-spacing: 0.1px;
