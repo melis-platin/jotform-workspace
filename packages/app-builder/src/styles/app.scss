@@ -12998,7 +12998,7 @@ body.builder--phone-only {
   position: absolute;
   top: calc(100% - var(--spacing-2xs));
   right: 0;
-  z-index: 3;
+  z-index: 1002;
   width: max-content;
   display: flex;
   flex-direction: column;
