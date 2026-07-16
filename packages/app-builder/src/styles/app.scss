@@ -11503,8 +11503,8 @@ body.builder--phone-only {
 }
 
 .live-preview__top-header-notification-btn svg {
-  width: 20px;
-  height: 20px;
+  width: var(--space-6);
+  height: var(--space-6);
 }
 
 .app-preview-screen__desktop .live-preview__top-header-search:not(.live-preview__top-header-search--persistent) {
@@ -11570,18 +11570,18 @@ body.builder--phone-only {
 .live-preview__top-header-notification-badge {
   position: absolute;
   top: calc(var(--spacing-2xs) * -1);
-  right: calc(var(--spacing-2xs) * -1);
+  left: var(--space-6);
   min-width: var(--spacing-lg);
   height: var(--spacing-lg);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 0 var(--spacing-2xs);
-  border: var(--spacing-3xs) solid var(--background-white);
+  padding: 0 calc((var(--spacing-xs) + var(--spacing-2xs)) / 2);
+  border: 0;
   border-radius: var(--radius-rounded);
   background: var(--bg-fill-brand);
   color: var(--fg-inverse);
-  font-family: var(--font-family-circular);
+  font-family: var(--font-family);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-bold);
   line-height: 1;
