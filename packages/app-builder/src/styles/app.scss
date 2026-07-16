@@ -11909,6 +11909,11 @@ body.builder--phone-only {
   position: relative;
 }
 
+:is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card--with-image .live-preview__notifications-card-header time {
+  top: 0;
+  right: var(--space-4);
+}
+
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card--with-image .live-preview__notifications-card-text {
   overflow: visible;
 }
@@ -11922,7 +11927,7 @@ body.builder--phone-only {
   height: calc(var(--space-10) + var(--space-1));
   flex-basis: calc(var(--space-10) + var(--space-1));
   position: absolute;
-  top: calc(var(--space-6) + var(--space-1));
+  top: calc(var(--line-height-label-sm) + var(--space-1));
   right: var(--space-4);
   border-radius: var(--radius-sm);
 }
