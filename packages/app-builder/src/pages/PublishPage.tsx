@@ -564,19 +564,6 @@ export function PublishPage({
                 <Icon name="chevron-left" category="arrows" size={24} />
               </button>
             ) : undefined}
-            action={isPushNotificationsOpen ? (
-              <button
-                type="button"
-                className="panel-header__action-button panel-header__action-button--permission-message"
-                aria-label="Edit push notification message"
-                aria-haspopup="dialog"
-                aria-expanded={isPermissionRequestModalOpen}
-                onClick={() => setIsPermissionRequestModalOpen(true)}
-              >
-                <Icon name="message-ellipsis-pencil-filled" category="communication" size={16} />
-                <span className="panel-header__action-button-label">Permission Message</span>
-              </button>
-            ) : undefined}
           />
           {activeId === 'quick-share' && <QuickSharePanel />}
           {activeId === 'app-users' && (
@@ -620,6 +607,7 @@ export function PublishPage({
               setDeepLink={setNotificationDeepLink}
               notificationImage={notificationImage}
               setNotificationImage={setNotificationImage}
+              onPermissionMessageEdit={() => setIsPermissionRequestModalOpen(true)}
               onViewChange={setPushNotificationPanelView}
               onCanReturnToHistoryChange={setCanReturnToPushHistory}
               returnToHistoryRequestId={pushHistoryReturnRequestId}

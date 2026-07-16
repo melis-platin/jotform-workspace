@@ -894,6 +894,7 @@ export interface PushNotificationsPanelProps {
   setDeepLink: (deepLink: string) => void
   notificationImage: PushComposerSelectedImage | null
   setNotificationImage: (image: PushComposerSelectedImage | null) => void
+  onPermissionMessageEdit?: () => void
   onViewChange?: (view: PushNotificationPanelView) => void
   onCanReturnToHistoryChange?: (canReturnToHistory: boolean) => void
   returnToHistoryRequestId?: number
@@ -957,6 +958,7 @@ export function PushNotificationsPanel({
   setDeepLink,
   notificationImage,
   setNotificationImage,
+  onPermissionMessageEdit,
   onViewChange,
   onCanReturnToHistoryChange,
   returnToHistoryRequestId = 0,
@@ -1214,6 +1216,7 @@ export function PushNotificationsPanel({
             setDeepLink={setDeepLink}
             image={notificationImage}
             setImage={setNotificationImage}
+            onPermissionMessageEdit={onPermissionMessageEdit}
           />
           <div className="push-notification-actions">
             <Button
@@ -2628,6 +2631,7 @@ interface PushNotificationComposerProps {
   setDeepLink: (deepLink: string) => void
   image: PushComposerSelectedImage | null
   setImage: (image: PushComposerSelectedImage | null) => void
+  onPermissionMessageEdit?: () => void
 }
 
 interface AudienceDropdownOption {
@@ -2907,11 +2911,33 @@ function PushNotificationComposer({
   setDeepLink,
   image,
   setImage,
+  onPermissionMessageEdit,
 }: PushNotificationComposerProps) {
   const imageInputRef = useRef<HTMLInputElement>(null)
 
   return (
     <section className="push-composer-panel" aria-label="Push notification composer">
+      <div className="push-composer-panel__intro">
+        <div className="push-composer-panel__intro-copy">
+          <h2 className="push-composer-panel__intro-title">Create a push notification</h2>
+          <p className="push-composer-panel__intro-description">
+            Reach your users instantly with a personalized push notification.
+          </p>
+        </div>
+        <div className="push-composer-panel__intro-actions">
+          <span className="push-composer-panel__status">Active</span>
+          <Button
+            variant="ghost"
+            colorScheme="secondary"
+            size="sm"
+            iconOnly
+            leftIcon={<Icon name="ellipsis-vertical" category="general" size={16} />}
+            aria-label="Edit push notification permission message"
+            aria-haspopup="dialog"
+            onClick={onPermissionMessageEdit}
+          />
+        </div>
+      </div>
       <div className="push-composer-panel__fields">
         <div className="push-composer-field">
           <PushComposerFieldLabel
