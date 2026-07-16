@@ -3193,7 +3193,10 @@ export function BuildPage({
         !desktopNavSticky) ||
       // Landing on phone behaves like the desktop top nav: the bar scrolls away
       // with the content instead of staying pinned over the hero.
-      (previewDevice === 'phone' && !!pages[0]?.landing && !isPreviewLoggedIn)
+      (previewDevice === 'phone' && (
+        isNotificationsPageOpen ||
+        (!!pages[0]?.landing && !isPreviewLoggedIn)
+      ))
     // Clear any leftover transform when auto-hide isn't active (e.g. sticky on).
     const resetHeader = previewTopHeaderRef.current
     if (resetHeader && !autoHide) {
@@ -3259,7 +3262,7 @@ export function BuildPage({
     onScroll()
     previewContentScalerEl.addEventListener('scroll', onScroll, { passive: true })
     return () => previewContentScalerEl.removeEventListener('scroll', onScroll)
-  }, [previewContentScalerEl, previewDevice, desktopNavVariant, desktopNavSticky, pages, activePageId, isPreviewLoggedIn, topNavEnabled, topNavTransparent, appHeaderState.show, isMorePageOpen, isPreviewSearchOpen])
+  }, [previewContentScalerEl, previewDevice, desktopNavVariant, desktopNavSticky, pages, activePageId, isPreviewLoggedIn, topNavEnabled, topNavTransparent, appHeaderState.show, isMorePageOpen, isPreviewSearchOpen, isNotificationsPageOpen])
 
   // While the Navigation Properties panel is open, mirror its tab onto the canvas
   // preview device. Pages + Desktop preview on desktop (the default), Mobile on phone.
