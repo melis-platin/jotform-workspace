@@ -5,6 +5,7 @@ interface LivePreviewAvatarPopoverProps {
   onClose: () => void
   onLogout?: () => void
   onProfile?: () => void
+  onNotification?: () => void
   showNavigation?: boolean
   userName?: string
 }
@@ -14,6 +15,7 @@ export function LivePreviewAvatarPopover({
   onClose,
   onLogout,
   onProfile,
+  onNotification,
   showNavigation = false,
   userName = 'Melis Platin',
 }: LivePreviewAvatarPopoverProps) {
@@ -61,6 +63,7 @@ export function LivePreviewAvatarPopover({
                   return
                 }
                 if (item.id === 'profile') onProfile?.()
+                if (item.id === 'navigation') onNotification?.()
                 onClose()
               }}
             >

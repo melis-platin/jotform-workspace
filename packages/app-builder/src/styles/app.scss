@@ -12279,6 +12279,159 @@ body.builder--phone-only {
   right: 0;
 }
 
+// The Left desktop navigation opens notifications as a system page instead of a
+// top-header popover. Keep this treatment deliberately separate from the
+// phone and popover selectors above: the side nav remains in place while the
+// app header and authored page content are replaced by the same max-width page
+// column used elsewhere in the desktop app preview.
+.app-preview-screen__desktop:has(.live-preview__notifications-page--left-desktop) .live-preview__content-scaler {
+  padding-bottom: 0;
+  background: var(--background-white, #fff);
+}
+
+.app-preview-screen__desktop:has(.live-preview__notifications-page--left-desktop) .live-preview__content {
+  min-height: 100%;
+  justify-content: flex-start;
+  background: var(--background-white, #fff);
+}
+
+.live-preview__notifications-page--left-desktop {
+  width: min(var(--app-header-max), 100%);
+  min-height: 100%;
+  align-self: center;
+  padding: 0;
+  border-radius: var(--radius-sm);
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  background: var(--background-white, #fff);
+}
+
+.live-preview__notifications-page--left-desktop::-webkit-scrollbar {
+  display: none;
+}
+
+.live-preview__notifications-page--left-desktop .live-preview__desktop-notifications-header {
+  display: flex;
+  align-items: center;
+  min-height: calc(var(--space-16) + var(--space-3));
+  padding: var(--space-6);
+  border-bottom: 1px solid var(--border-light);
+  box-sizing: border-box;
+}
+
+.live-preview__notifications-page--left-desktop .live-preview__desktop-notifications-header h2 {
+  margin: 0;
+  color: var(--fg-primary);
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-heading-xs);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-heading-xs);
+  letter-spacing: var(--letter-spacing-heading);
+}
+
+.live-preview__notifications-page--left-desktop .live-preview__notifications-list {
+  gap: 0;
+}
+
+.live-preview__notifications-page--left-desktop .live-preview__notifications-card {
+  position: relative;
+  width: calc(100% - (var(--space-6) * 2));
+  min-height: calc(var(--space-16) + var(--space-6) + var(--space-1));
+  margin: 0 var(--space-6);
+  padding: var(--space-4) 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  box-sizing: border-box;
+}
+
+.live-preview__notifications-page--left-desktop .live-preview__notifications-card:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  right: calc(var(--space-6) * -1);
+  bottom: 0;
+  left: calc(var(--space-6) * -1);
+  height: 1px;
+  background: var(--border-light);
+}
+
+.live-preview__notifications-page--left-desktop .live-preview__notifications-card-icon {
+  width: calc(var(--space-12) + var(--space-3));
+  height: calc(var(--space-12) + var(--space-3));
+  flex-basis: calc(var(--space-12) + var(--space-3));
+  margin-right: var(--space-4);
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  color: var(--fg-brand);
+}
+
+.live-preview__notifications-page--left-desktop .live-preview__notifications-card-icon svg {
+  width: var(--space-8);
+  height: var(--space-8);
+}
+
+.live-preview__notifications-page--left-desktop .live-preview__notifications-card-copy {
+  gap: var(--space-1);
+  padding-right: calc(var(--space-12) + var(--space-3));
+}
+
+.live-preview__notifications-page--left-desktop .live-preview__notifications-card-header strong {
+  padding-right: 0;
+  font-size: var(--font-size-paragraph-lg);
+  line-height: var(--line-height-label-lg);
+  letter-spacing: -0.014em;
+}
+
+.live-preview__notifications-page--left-desktop .live-preview__notifications-card-header time {
+  position: absolute;
+  top: var(--space-4);
+  right: var(--space-4);
+  font-size: var(--font-size-label-sm);
+  line-height: var(--line-height-label-sm);
+  letter-spacing: var(--letter-spacing-label);
+}
+
+.live-preview__notifications-page--left-desktop .live-preview__notifications-card-text {
+  font-size: var(--font-size-paragraph-sm);
+  line-height: var(--line-height-paragraph-sm);
+  letter-spacing: -0.006em;
+}
+
+.live-preview__notifications-page--left-desktop .live-preview__notifications-card--unread {
+  padding-left: var(--space-6);
+}
+
+.live-preview__notifications-page--left-desktop .live-preview__notifications-card--unread .live-preview__notifications-unread-dot {
+  position: absolute;
+  top: calc(var(--space-10) + var(--spacing-2xs));
+  left: var(--space-2);
+  display: block;
+  margin: 0;
+}
+
+.live-preview__notifications-page--left-desktop .live-preview__notifications-card--with-image .live-preview__notifications-card-media {
+  position: absolute;
+  top: calc(var(--space-10) + var(--space-1));
+  right: var(--space-4);
+  width: calc(var(--space-10) + var(--space-1));
+  height: calc(var(--space-10) + var(--space-1));
+  flex-basis: calc(var(--space-10) + var(--space-1));
+  border-radius: var(--radius-sm);
+}
+
+.live-preview__notifications-page--left-desktop .live-preview__notifications-page--empty,
+.live-preview__notifications-page--left-desktop.live-preview__notifications-page--empty {
+  display: flex;
+  flex-direction: column;
+}
+
+.live-preview__notifications-page--left-desktop .live-preview__notifications-empty {
+  min-height: 0;
+  flex: 1;
+}
+
 .live-preview__notifications-empty {
   width: 100%;
   min-height: calc(100% - var(--space-12));

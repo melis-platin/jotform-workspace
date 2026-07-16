@@ -2628,12 +2628,14 @@ function LivePreviewNotificationsPage({
   notifications,
   appHeader,
   showMobileLayout = false,
+  showLeftDesktopPage = false,
   onNotificationRead,
   onNotificationOpen,
 }: {
   notifications: LivePreviewPushNotification[]
   appHeader: AppHeaderState
   showMobileLayout?: boolean
+  showLeftDesktopPage?: boolean
   onNotificationRead?: (notificationId: string) => void
   onNotificationOpen?: (notification: LivePreviewPushNotification) => void
 }) {
@@ -2643,7 +2645,12 @@ function LivePreviewNotificationsPage({
 
   if (displayedNotifications.length === 0) {
     return (
-      <div className="live-preview__notifications-page live-preview__notifications-page--empty">
+      <div className={`live-preview__notifications-page live-preview__notifications-page--empty${showLeftDesktopPage ? ' live-preview__notifications-page--left-desktop' : ''}`}>
+        {showLeftDesktopPage && (
+          <div className="live-preview__desktop-notifications-header">
+            <h2>Notifications</h2>
+          </div>
+        )}
         <div className="live-preview__notifications-empty" role="status" aria-live="polite">
           <span className="live-preview__notifications-empty-icon" aria-hidden="true">
             <Icon name="bell-diagonal-filled" category="alerts-feedback" size={32} />
@@ -2660,7 +2667,7 @@ function LivePreviewNotificationsPage({
   }
 
   return (
-    <div className={`live-preview__notifications-page${showMobileLayout ? ' live-preview__notifications-page--mobile' : ' live-preview__notifications-page--desktop'}`}>
+    <div className={`live-preview__notifications-page${showMobileLayout ? ' live-preview__notifications-page--mobile' : showLeftDesktopPage ? ' live-preview__notifications-page--left-desktop' : ' live-preview__notifications-page--desktop'}`}>
       {!showMobileLayout && (
         <div className="live-preview__desktop-notifications-header">
           <h2>
@@ -3026,6 +3033,7 @@ export function BuildPage({
   }, [pages, preset])
   const [isMorePageOpen, setIsMorePageOpen] = useState(false)
   const [isNotificationsPageOpen, setIsNotificationsPageOpen] = useState(false)
+  const [isLeftDesktopNotificationsPageOpen, setIsLeftDesktopNotificationsPageOpen] = useState(false)
   const [isDesktopNotificationsCardOpen, setIsDesktopNotificationsCardOpen] = useState(false)
   const [isPreviewSearchOpen, setIsPreviewSearchOpen] = useState(false)
   const [isDesktopPreviewSearchOpen, setIsDesktopPreviewSearchOpen] = useState(false)
@@ -3360,6 +3368,7 @@ export function BuildPage({
       setIsMorePageOpen(false)
       setIsDesktopNavMoreOpen(false)
       setIsNotificationsPageOpen(false)
+      setIsLeftDesktopNotificationsPageOpen(false)
       setIsDesktopNotificationsCardOpen(false)
       setIsPreviewSearchOpen(false)
       setIsDesktopPreviewSearchOpen(false)
@@ -3369,6 +3378,7 @@ export function BuildPage({
     setIsPreviewProfileOpen(false)
     setIsAvatarPopoverOpen(false)
     setIsNotificationsPageOpen(false)
+    setIsLeftDesktopNotificationsPageOpen(false)
     setIsDesktopNotificationsCardOpen(false)
     setIsPreviewSearchOpen(false)
     setIsDesktopPreviewSearchOpen(false)
@@ -3396,8 +3406,14 @@ export function BuildPage({
   useEffect(() => {
     if (pushNotificationsEnabled) return
     setIsNotificationsPageOpen(false)
+    setIsLeftDesktopNotificationsPageOpen(false)
     setIsDesktopNotificationsCardOpen(false)
   }, [pushNotificationsEnabled])
+
+  useEffect(() => {
+    if (previewDevice === 'desktop' && desktopNavVariant === 'left') return
+    setIsLeftDesktopNotificationsPageOpen(false)
+  }, [desktopNavVariant, previewDevice])
 
   useEffect(() => {
     if (searchBarEnabled) return
@@ -3446,16 +3462,26 @@ export function BuildPage({
   }, [isDesktopPreviewSearchOpen])
 
   const openNotificationsPage = () => {
+    const usesLeftDesktopNotificationsPage =
+      previewDevice === 'desktop' &&
+      desktopNavEnabled &&
+      desktopNavVariant === 'left'
     const usesDesktopNotificationCard =
       previewDevice !== 'phone' &&
       desktopNavEnabled &&
       (desktopNavVariant === 'top' || desktopNavVariant === 'contained' || desktopNavVariant === 'compact')
 
-    if (usesDesktopNotificationCard) {
+    if (usesLeftDesktopNotificationsPage) {
+      setIsLeftDesktopNotificationsPageOpen(true)
+      setIsNotificationsPageOpen(false)
+      setIsDesktopNotificationsCardOpen(false)
+    } else if (usesDesktopNotificationCard) {
       setIsDesktopNotificationsCardOpen((open) => !open)
       setIsNotificationsPageOpen(false)
+      setIsLeftDesktopNotificationsPageOpen(false)
     } else {
       setIsNotificationsPageOpen(true)
+      setIsLeftDesktopNotificationsPageOpen(false)
       setIsDesktopNotificationsCardOpen(false)
     }
     setIsPreviewSearchOpen(false)
@@ -3469,6 +3495,7 @@ export function BuildPage({
 
   const closeNotificationsPage = () => {
     setIsNotificationsPageOpen(false)
+    setIsLeftDesktopNotificationsPageOpen(false)
     setIsDesktopNotificationsCardOpen(false)
   }
 
@@ -3489,6 +3516,7 @@ export function BuildPage({
 
     setActivePageId(targetPageId)
     setIsNotificationsPageOpen(false)
+    setIsLeftDesktopNotificationsPageOpen(false)
     setIsDesktopNotificationsCardOpen(false)
     setIsPreviewSearchOpen(false)
     setIsMorePageOpen(false)
@@ -5234,7 +5262,10 @@ export function BuildPage({
                   open={isAvatarPopoverOpen}
                   onClose={() => setIsAvatarPopoverOpen(false)}
                   onLogout={handlePreviewLogout}
-                  onProfile={() => setIsPreviewProfileOpen(true)}
+                  onProfile={() => {
+                    setIsLeftDesktopNotificationsPageOpen(false)
+                    setIsPreviewProfileOpen(true)
+                  }}
                   userName={PROFILE_USER.name}
                 />
               )}
@@ -5401,6 +5432,17 @@ export function BuildPage({
                   onClose={() => setIsAvatarPopoverOpen(false)}
                   onLogout={handlePreviewLogout}
                   onProfile={() => setIsPreviewProfileOpen(true)}
+                  onNotification={() => {
+                    setIsPreviewProfileOpen(false)
+                    setIsLeftDesktopNotificationsPageOpen(true)
+                    setIsNotificationsPageOpen(false)
+                    setIsDesktopNotificationsCardOpen(false)
+                    setIsPreviewSearchOpen(false)
+                    setIsDesktopPreviewSearchOpen(false)
+                    setIsMorePageOpen(false)
+                    setIsPreviewCartOpen(false)
+                    setIsPreviewCheckoutOpen(false)
+                  }}
                   showNavigation
                   userName={PROFILE_USER.name}
                 />
@@ -5451,6 +5493,14 @@ export function BuildPage({
                 </div>
               </div>
             </>
+          ) : isLeftDesktopNotificationsPageOpen ? (
+            <LivePreviewNotificationsPage
+              notifications={roleScopedPushNotifications}
+              appHeader={appHeaderState}
+              showLeftDesktopPage
+              onNotificationRead={markRoleScopedPushNotificationRead}
+              onNotificationOpen={handleLivePreviewNotificationOpen}
+            />
           ) : isMorePageOpen ? (
             <LivePreviewMorePagesView
               pages={navPages}
