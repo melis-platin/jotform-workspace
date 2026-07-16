@@ -12074,6 +12074,18 @@ body.builder--phone-only {
   align-self: baseline;
 }
 
+.live-preview__phone-screen .live-preview__notifications-card--with-image .live-preview__notifications-card-copy,
+.live-preview__phone-screen .live-preview__notifications-card--with-image .live-preview__notifications-card-header,
+.live-preview__phone-screen .live-preview__notifications-card--with-image .live-preview__notifications-card-body {
+  gap: var(--space-2);
+}
+
+.live-preview__phone-screen .live-preview__notifications-card--with-image .live-preview__notifications-card-media {
+  position: static;
+  order: -1;
+  flex: 0 0 calc(var(--space-10) + var(--space-1));
+}
+
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card--with-image .live-preview__notifications-card-text {
   overflow: visible;
 }
