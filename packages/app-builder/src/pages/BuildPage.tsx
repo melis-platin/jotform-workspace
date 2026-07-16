@@ -5401,6 +5401,7 @@ export function BuildPage({
                   onClose={() => setIsAvatarPopoverOpen(false)}
                   onLogout={handlePreviewLogout}
                   onProfile={() => setIsPreviewProfileOpen(true)}
+                  showNavigation
                   userName={PROFILE_USER.name}
                 />
               </div>

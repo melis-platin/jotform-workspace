@@ -5,19 +5,16 @@ interface LivePreviewAvatarPopoverProps {
   onClose: () => void
   onLogout?: () => void
   onProfile?: () => void
+  showNavigation?: boolean
   userName?: string
 }
-
-const ITEMS = [
-  { id: 'profile', label: 'Profile' },
-  { id: 'logout', label: 'Log out' },
-]
 
 export function LivePreviewAvatarPopover({
   open,
   onClose,
   onLogout,
   onProfile,
+  showNavigation = false,
   userName = 'Melis Platin',
 }: LivePreviewAvatarPopoverProps) {
   const ref = useRef<HTMLDivElement>(null)
@@ -40,13 +37,19 @@ export function LivePreviewAvatarPopover({
 
   if (!open) return null
 
+  const items = [
+    { id: 'profile', label: 'Profile' },
+    ...(showNavigation ? [{ id: 'navigation', label: 'Navigation' }] : []),
+    { id: 'logout', label: 'Log out' },
+  ]
+
   return (
     <div ref={ref} className="live-preview__avatar-popover app-scope" role="menu">
       <div className="live-preview__avatar-popover-greeting">
         Hello, <strong>{userName}</strong>
       </div>
       <ul className="live-preview__avatar-popover-list">
-        {ITEMS.map((item) => (
+        {items.map((item) => (
           <li key={item.id}>
             <button
               type="button"
