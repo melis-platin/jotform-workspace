@@ -5094,7 +5094,7 @@ export function BuildPage({
           }}
         />
       )}
-      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${topHeaderShowsPageName && isPreviewContentScrolled ? ' live-preview__top-header--page-scrolled' : ''}${desktopNavVariant === 'compact' ? ' live-preview__top-header--compact' : ''}${desktopNavVariant === 'contained' ? ' live-preview__top-header--contained' : ''}${desktopFullwidthSearchOpen ? ' live-preview__top-header--fullwidth-search-open' : ''}${desktopConstrainedSearchOpen ? ' live-preview__top-header--desktop-profile-search-open' : ''}${desktopAuthSearchOpen ? ' live-preview__top-header--desktop-auth-search-open' : ''}${isDesktopPreviewSearchOpen ? ' live-preview__top-header--desktop-search-open' : ''}${topNavOverlay ? ' live-preview__top-header--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__top-header--over-content' : ''}${topHeaderHidden ? ' live-preview__top-header--hidden' : ''}`} style={topNavOverlay && topNavOverHero ? { color: topNavOverlayFg } : undefined} data-nav-align={desktopNavAlignment}>
+      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${topHeaderShowsPageName && isPreviewContentScrolled ? ' live-preview__top-header--page-scrolled' : ''}${isNotificationsPageOpen ? ' live-preview__top-header--notifications-page' : ''}${desktopNavVariant === 'compact' ? ' live-preview__top-header--compact' : ''}${desktopNavVariant === 'contained' ? ' live-preview__top-header--contained' : ''}${desktopFullwidthSearchOpen ? ' live-preview__top-header--fullwidth-search-open' : ''}${desktopConstrainedSearchOpen ? ' live-preview__top-header--desktop-profile-search-open' : ''}${desktopAuthSearchOpen ? ' live-preview__top-header--desktop-auth-search-open' : ''}${isDesktopPreviewSearchOpen ? ' live-preview__top-header--desktop-search-open' : ''}${topNavOverlay ? ' live-preview__top-header--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__top-header--over-content' : ''}${topHeaderHidden ? ' live-preview__top-header--hidden' : ''}`} style={topNavOverlay && topNavOverHero ? { color: topNavOverlayFg } : undefined} data-nav-align={desktopNavAlignment}>
         {(() => {
           // Profile / dynamic-detail back affordance — shared with the right-panel
           // preview via renderTopHeaderBack so the two never diverge.
@@ -5163,7 +5163,7 @@ export function BuildPage({
           </nav>
         )}
         <div className="live-preview__top-header-right">
-          {!isDesktopPreviewSearchOpen && !activePageIsDynamic && hasCartTriggerElement && (
+          {!isNotificationsPageOpen && !isDesktopPreviewSearchOpen && !activePageIsDynamic && hasCartTriggerElement && (
             <LivePreviewCartButton iconSize={topHeaderActionIconSize} onClick={() => { setIsNotificationsPageOpen(false); setIsPreviewSearchOpen(false); setIsDesktopPreviewSearchOpen(false); setIsPreviewCartOpen(true) }} />
           )}
           {isPreviewLoggedIn ? (
@@ -9452,7 +9452,7 @@ export function BuildPage({
                           }}
                         />
                       )}
-                      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${topHeaderShowsPageName && isPreviewContentScrolled ? ' live-preview__top-header--page-scrolled' : ''}${isDesktopPreviewSearchOpen ? ' live-preview__top-header--desktop-search-open' : ''}${topNavOverlay ? ' live-preview__top-header--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__top-header--over-content' : ''}${topHeaderHidden ? ' live-preview__top-header--hidden' : ''}`} style={topNavOverlay && topNavOverHero ? { color: topNavOverlayFg } : undefined} data-nav-align={desktopNavAlignment}>
+                      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${topHeaderShowsPageName && isPreviewContentScrolled ? ' live-preview__top-header--page-scrolled' : ''}${isNotificationsPageOpen ? ' live-preview__top-header--notifications-page' : ''}${isDesktopPreviewSearchOpen ? ' live-preview__top-header--desktop-search-open' : ''}${topNavOverlay ? ' live-preview__top-header--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__top-header--over-content' : ''}${topHeaderHidden ? ' live-preview__top-header--hidden' : ''}`} style={topNavOverlay && topNavOverHero ? { color: topNavOverlayFg } : undefined} data-nav-align={desktopNavAlignment}>
                         {(() => {
                           // Profile / dynamic-detail back affordance — shared with the
                           // full-screen preview. The right-panel preview always renders a
@@ -9462,7 +9462,7 @@ export function BuildPage({
                           return renderTopHeaderBrand()
                         })()}
                         <div className="live-preview__top-header-right">
-                          {!isDesktopPreviewSearchOpen && !activePageIsDynamic && hasCartTriggerElement && (
+                          {!isNotificationsPageOpen && !isDesktopPreviewSearchOpen && !activePageIsDynamic && hasCartTriggerElement && (
                             <LivePreviewCartButton iconSize={20} onClick={() => { setIsNotificationsPageOpen(false); setIsPreviewSearchOpen(false); setIsDesktopPreviewSearchOpen(false); setIsPreviewCartOpen(true) }} />
                           )}
                           {isPreviewLoggedIn ? (
