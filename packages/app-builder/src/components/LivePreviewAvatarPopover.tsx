@@ -56,14 +56,23 @@ export function LivePreviewAvatarPopover({
             <button
               type="button"
               className={`live-preview__avatar-popover-item${item.id === 'navigation' ? ' live-preview__avatar-popover-item--navigation' : ''}`}
+              onPointerDown={(event) => {
+                // The desktop side-nav popover closes on outside pointer events.
+                // Open the notification system page at pointer-down so this action
+                // cannot be swallowed while the popover is being dismissed.
+                if (item.id !== 'navigation') return
+                event.preventDefault()
+                onNotification?.()
+                onClose()
+              }}
               onClick={() => {
+                if (item.id === 'navigation') return
                 if (item.id === 'logout') {
                   onLogout?.()
                   onClose()
                   return
                 }
                 if (item.id === 'profile') onProfile?.()
-                if (item.id === 'navigation') onNotification?.()
                 onClose()
               }}
             >
