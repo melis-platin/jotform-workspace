@@ -11580,6 +11580,16 @@ body.builder--phone-only {
   height: 310px;
 }
 
+// The constrained-layout selector above has higher specificity than the base
+// empty-state rule. Keep its empty card at the exact same height as fullwidth
+// instead of allowing the flex content to collapse it.
+.live-preview__desktop-notifications-card:is(
+  .live-preview__desktop-notifications-card--contained,
+  .live-preview__desktop-notifications-card--compact
+).live-preview__desktop-notifications-card--empty {
+  height: min(310px, calc(100vh - var(--space-16)));
+}
+
 .live-preview__desktop-notifications-card--fullwidth .live-preview__notifications-page {
   padding: var(--space-6);
   color: var(--ds-text-dark);
