@@ -12432,6 +12432,17 @@ body.builder--phone-only {
   border-radius: var(--radius-sm);
 }
 
+// Reserve the 16px bottom inset below a trailing image before the row divider.
+// This only applies to the left desktop notification system page; the phone
+// preview and top-navigation notification cards retain their own row sizing.
+.live-preview__notifications-page--left-desktop .live-preview__notifications-card--with-image {
+  min-height: calc(
+    var(--space-10) + var(--space-1) +
+    var(--space-10) + var(--space-1) +
+    var(--space-4)
+  );
+}
+
 .live-preview__notifications-page--left-desktop .live-preview__notifications-page--empty,
 .live-preview__notifications-page--left-desktop.live-preview__notifications-page--empty {
   display: flex;
