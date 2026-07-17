@@ -3461,6 +3461,25 @@ export function BuildPage({
     return () => window.cancelAnimationFrame(frame)
   }, [isDesktopPreviewSearchOpen])
 
+  // The left desktop navigation exposes Notifications from the account menu as
+  // a full system page. Clear every authored-page overlay before switching so
+  // the notification surface is the only main-area content that remains.
+  const openLeftDesktopNotificationsPage = () => {
+    setIsAvatarPopoverOpen(false)
+    setIsPreviewProfileOpen(false)
+    setIsLeftDesktopNotificationsPageOpen(true)
+    setIsNotificationsPageOpen(false)
+    setIsDesktopNotificationsCardOpen(false)
+    setIsPreviewSearchOpen(false)
+    setIsDesktopPreviewSearchOpen(false)
+    setIsMorePageOpen(false)
+    setIsDesktopNavMoreOpen(false)
+    setIsPreviewCartOpen(false)
+    setIsPreviewCheckoutOpen(false)
+    setIsPreviewDetailOpen(false)
+    setPreviewAuthView(null)
+  }
+
   const openNotificationsPage = () => {
     const usesLeftDesktopNotificationsPage =
       previewDevice === 'desktop' &&
@@ -3472,9 +3491,7 @@ export function BuildPage({
       (desktopNavVariant === 'top' || desktopNavVariant === 'contained' || desktopNavVariant === 'compact')
 
     if (usesLeftDesktopNotificationsPage) {
-      setIsLeftDesktopNotificationsPageOpen(true)
-      setIsNotificationsPageOpen(false)
-      setIsDesktopNotificationsCardOpen(false)
+      openLeftDesktopNotificationsPage()
     } else if (usesDesktopNotificationCard) {
       setIsDesktopNotificationsCardOpen((open) => !open)
       setIsNotificationsPageOpen(false)
@@ -5431,18 +5448,11 @@ export function BuildPage({
                   open={isAvatarPopoverOpen}
                   onClose={() => setIsAvatarPopoverOpen(false)}
                   onLogout={handlePreviewLogout}
-                  onProfile={() => setIsPreviewProfileOpen(true)}
-                  onNotification={() => {
-                    setIsPreviewProfileOpen(false)
-                    setIsLeftDesktopNotificationsPageOpen(true)
-                    setIsNotificationsPageOpen(false)
-                    setIsDesktopNotificationsCardOpen(false)
-                    setIsPreviewSearchOpen(false)
-                    setIsDesktopPreviewSearchOpen(false)
-                    setIsMorePageOpen(false)
-                    setIsPreviewCartOpen(false)
-                    setIsPreviewCheckoutOpen(false)
+                  onProfile={() => {
+                    setIsLeftDesktopNotificationsPageOpen(false)
+                    setIsPreviewProfileOpen(true)
                   }}
+                  onNotification={openLeftDesktopNotificationsPage}
                   showNavigation
                   userName={PROFILE_USER.name}
                 />
