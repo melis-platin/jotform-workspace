@@ -452,6 +452,143 @@ function createCampPinecrestDetailPage(
   return { id: pageId, name: 'Dynamic Page', dynamic: true, dynamicSourceElementId: listId, elements }
 }
 
+type NorthstarDetailContent = {
+  sectionTitle: string
+  sectionDescription: string
+  cards: Array<{ title: string; description: string; icon: string }>
+  nextTitle: string
+  nextDescription: string
+  noteTitle: string
+  noteDescription: string
+  noteIcon: string
+}
+
+function getNorthstarDetailContent(hostPageName: string): NorthstarDetailContent {
+  switch (hostPageName.trim().toLowerCase()) {
+    case 'appointments':
+      return {
+        sectionTitle: 'Plan a better visit',
+        sectionDescription: 'A few small steps before and after your appointment help your care team focus on what matters most.',
+        cards: [
+          { title: 'Bring your questions', description: 'Keep symptoms, goals, and medication changes in one short list for your clinician.', icon: 'MessageCircleQuestion' },
+          { title: 'Arrive prepared', description: 'Check in 10 minutes early with your insurance card, medication list, and any recent readings.', icon: 'ClipboardCheck' },
+          { title: 'Know the next step', description: 'Your visit summary, referrals, and follow-up reminders will appear in your care plan.', icon: 'Route' },
+        ],
+        nextTitle: 'After your visit',
+        nextDescription: 'Use the care plan to track recommendations, review results, and send a non-urgent question to the Northstar team when something is unclear.',
+        noteTitle: 'Need appointment support?',
+        noteDescription: 'The care coordination desk can help with timing, accessibility needs, records, and referrals.',
+        noteIcon: 'CalendarClock',
+      }
+    case 'patients':
+      return {
+        sectionTitle: 'Care details that travel with you',
+        sectionDescription: 'Keep a clear picture of each family member’s everyday care information and preferences.',
+        cards: [
+          { title: 'Everyday essentials', description: 'Store preferred contact details, language needs, and practical notes that help visits run smoothly.', icon: 'ContactRound' },
+          { title: 'Shared family context', description: 'Connected profiles help caregivers stay aligned while keeping each person’s care private and focused.', icon: 'Users' },
+          { title: 'Ready for the next step', description: 'Use this profile when booking visits, reviewing reminders, or preparing a question for the care team.', icon: 'CircleCheck' },
+        ],
+        nextTitle: 'A calmer way to coordinate',
+        nextDescription: 'Northstar keeps the practical pieces of family care together so appointments feel less like paperwork and more like progress.',
+        noteTitle: 'Profile updates',
+        noteDescription: 'Tell the team whenever contact details, insurance, care preferences, or an authorized caregiver changes.',
+        noteIcon: 'PencilLine',
+      }
+    default:
+      return {
+        sectionTitle: 'What this care pathway includes',
+        sectionDescription: 'Every Northstar service combines clinical expertise with clear, coordinated next steps.',
+        cards: [
+          { title: 'Start with the right clinician', description: 'We match your concern with the provider, visit type, and preparation that make the most sense.', icon: 'Stethoscope' },
+          { title: 'A connected care plan', description: 'Recommendations, referrals, and care-team notes stay organized after the visit.', icon: 'HeartPulse' },
+          { title: 'Follow through with confidence', description: 'Get plain-language guidance for results, follow-ups, and when to contact us again.', icon: 'ShieldCheck' },
+        ],
+        nextTitle: 'From first question to next step',
+        nextDescription: 'Your care team will explain what happens next, who is involved, and how to prepare—so there are no surprises after you leave the clinic.',
+        noteTitle: 'Not sure where to start?',
+        noteDescription: 'Share a few details with Northstar and we’ll guide you to the right service and clinician.',
+        noteIcon: 'MessagesSquare',
+      }
+  }
+}
+
+function createNorthstarFamilyClinicDetailPage(
+  listId: string,
+  hostPageName: string,
+  pageId: string,
+  elementIds: string[],
+): AppPage {
+  const content = getNorthstarDetailContent(hostPageName)
+  const elements: CanvasElement[] = []
+  let index = 0
+  const add = (componentId: string, configure: (element: CanvasElement) => void) => {
+    const component = ComponentRegistry.get(componentId)
+    const elementId = elementIds[index]
+    index += 1
+    if (!component || !elementId) return
+    const element = createCanvasElement(component, elementId)
+    configure(element)
+    elements.push(element)
+  }
+
+  add('heading', (element) => {
+    element.variants.Size = 'Large'
+    element.properties['Heading Tokens'] = JSON.stringify([
+      { type: 'field', value: 'Title', label: 'Title', icon: 'type-square-filled', iconCategory: 'editor' },
+    ])
+    element.properties['Subheading Tokens'] = JSON.stringify([])
+  })
+  add('image', (element) => {
+    element.properties['Image Source'] = 'Image'
+  })
+  add('paragraph', (element) => {
+    element.properties[DYNAMIC_BIND_KEY] = 'description'
+  })
+  add('spacer', (element) => {
+    element.properties.Height = 24
+  })
+  add('heading', (element) => {
+    element.variants.Size = 'Medium'
+    element.variants.Alignment = 'Left'
+    element.properties.Heading = content.sectionTitle
+    element.properties.Subheading = content.sectionDescription
+  })
+  for (const card of content.cards) {
+    add('card', (element) => {
+      element.variants['Image Style'] = 'Icon'
+      element.variants.Layout = 'Vertical'
+      element.variants.Action = 'None'
+      element.properties.Title = card.title
+      element.properties.Description = card.description
+      element.properties.Icon = card.icon
+      element.properties.Shrinked = true
+    })
+  }
+  add('spacer', (element) => {
+    element.properties.Height = 24
+  })
+  add('heading', (element) => {
+    element.variants.Size = 'Small'
+    element.variants.Alignment = 'Left'
+    element.properties.Heading = content.nextTitle
+    element.properties.Subheading = ''
+  })
+  add('paragraph', (element) => {
+    element.properties.Text = content.nextDescription
+  })
+  add('card', (element) => {
+    element.variants['Image Style'] = 'Icon'
+    element.variants.Layout = 'Vertical'
+    element.variants.Action = 'None'
+    element.properties.Title = content.noteTitle
+    element.properties.Description = content.noteDescription
+    element.properties.Icon = content.noteIcon
+  })
+
+  return { id: pageId, name: 'Dynamic Page', dynamic: true, dynamicSourceElementId: listId, elements }
+}
+
 // Pure helpers shared by the (duplicated) live-preview render paths.
 function getDynamicPreviewItem(
   activePage: AppPage | undefined,
@@ -709,6 +846,11 @@ function hasCampPinecrestStructure(pages: AppPage[]): boolean {
 
 function getDynamicDetailPageName(hostPageName: string, preset?: AppPreset): string {
   const name = hostPageName.trim().toLowerCase()
+  if (preset?.id === 'healthcare') {
+    if (name === 'appointments') return 'Appointment Details'
+    if (name === 'patients') return 'Family Member Details'
+    if (name === 'services') return 'Care Pathway Details'
+  }
   if (preset?.id === 'boho-nest') {
     if (name === 'home' || name === 'guide') return 'Style Guide Detail'
     if (name === 'blog') return 'Decor Story Detail'
@@ -744,6 +886,7 @@ function ensureDynamicPagesForOpenDynamicLists(pages: AppPage[], preset?: AppPre
   const usedElementIds = pages.flatMap((page) => page.elements.map((element) => element.id))
   const result: AppPage[] = []
   const isCampPinecrest = preset?.id === 'camp-registration'
+  const isNorthstarFamilyClinic = preset?.id === 'healthcare'
 
   for (const page of pages.filter((candidate) => !candidate.dynamic)) {
     result.push(page)
@@ -754,15 +897,17 @@ function ensureDynamicPagesForOpenDynamicLists(pages: AppPage[], preset?: AppPre
       const dynamicElementIds = nextNumericIds(
         'element',
         usedElementIds,
-        isCampPinecrest ? 12 : 3,
+        isCampPinecrest || isNorthstarFamilyClinic ? 12 : 3,
       )
       const generatedDynamic = isCampPinecrest
         ? createCampPinecrestDetailPage(element.id, page.name, dynamicPageId, dynamicElementIds)
+        : isNorthstarFamilyClinic
+          ? createNorthstarFamilyClinicDetailPage(element.id, page.name, dynamicPageId, dynamicElementIds)
         : createDynamicDetailPage(element.id, dynamicPageId, dynamicElementIds)
       const dynamicPage = existingDynamic
         ? {
           ...existingDynamic,
-          ...(isCampPinecrest ? { elements: generatedDynamic.elements } : {}),
+          ...((isCampPinecrest || isNorthstarFamilyClinic) ? { elements: generatedDynamic.elements } : {}),
           name: getDynamicDetailPageName(page.name, preset),
           dynamic: true,
           dynamicSourceElementId: element.id,
@@ -4712,6 +4857,7 @@ export function BuildPage({
       if (prev.some((p) => p.dynamic && p.dynamicSourceElementId === listId)) return
       const hostIdx = prev.findIndex((p) => p.elements.some((el) => el.id === listId))
       if (hostIdx === -1) return
+      const hostPage = prev[hostIdx]
       const stashed = dynamicStashRef.current[listId]
       let page: AppPage
       if (stashed) {
@@ -4726,8 +4872,12 @@ export function BuildPage({
           ...prev.flatMap((p) => p.elements.map((el) => el.id)),
           ...headerActionsRef.current.map((el) => el.id),
           ...Object.values(dynamicStashRef.current).flatMap((p) => p.elements.map((el) => el.id)),
-        ], 3)
-        page = createDynamicDetailPage(listId, pageId, elementIds)
+        ], preset?.id === 'camp-registration' || preset?.id === 'healthcare' ? 12 : 3)
+        page = preset?.id === 'camp-registration'
+          ? createCampPinecrestDetailPage(listId, hostPage.name, pageId, elementIds)
+          : preset?.id === 'healthcare'
+            ? createNorthstarFamilyClinicDetailPage(listId, hostPage.name, pageId, elementIds)
+            : createDynamicDetailPage(listId, pageId, elementIds)
       }
       setPages((prevPages) => {
         if (prevPages.some((p) => p.dynamic && p.dynamicSourceElementId === listId)) return prevPages

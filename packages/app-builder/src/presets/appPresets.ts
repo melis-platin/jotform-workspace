@@ -225,6 +225,20 @@ const CAMP_CALLBACK_FIELDS = [
   { name: 'topic', label: 'Question', type: 'textarea', placeholder: 'Tell us what you would like to discuss' },
 ]
 
+const NORTHSTAR_APPOINTMENT_FIELDS = [
+  { name: 'patientName', label: 'Patient name', type: 'text', placeholder: 'Who is this visit for?' },
+  { name: 'reason', label: 'Reason for visit', type: 'textarea', placeholder: 'Share the main concern or care goal' },
+  { name: 'preferredDate', label: 'Preferred date', type: 'text', placeholder: 'e.g. April 14, morning' },
+  { name: 'contact', label: 'Best contact', type: 'text', placeholder: 'Phone or email for confirmation' },
+]
+
+const NORTHSTAR_FAMILY_MEMBER_FIELDS = [
+  { name: 'fullName', label: 'Full name', type: 'text', placeholder: 'Family member name' },
+  { name: 'relationship', label: 'Relationship', type: 'text', placeholder: 'e.g. Child, spouse, parent' },
+  { name: 'dateOfBirth', label: 'Date of birth', type: 'text', placeholder: 'MM/DD/YYYY' },
+  { name: 'notes', label: 'Care notes', type: 'textarea', placeholder: 'Optional accessibility, language, or care preferences' },
+]
+
 const CAMP_FAQ_ITEMS = [
   { question: 'What ages can attend Camp Pinecrest?', answer: 'Day camp is built for campers ages 8-16. Cabin groups and activity progressions are organized by age and comfort level.' },
   { question: 'What should campers bring each day?', answer: 'Campers should bring a backpack, refillable water bottle, swimsuit, towel, sunscreen, closed-toe shoes, and a packed lunch unless lunch service is selected.' },
@@ -1998,9 +2012,17 @@ const ALL_APP_PRESETS: AppPreset[] = [
   },
   {
     id: 'healthcare',
-    name: 'Healthcare Clinic',
-    appTitle: 'HealthCare Clinic',
-    appSubtitle: 'Quality healthcare you can trust',
+    name: 'Northstar Family Clinic',
+    appTitle: 'Northstar Family Clinic',
+    appSubtitle: 'Thoughtful primary and specialty care for every chapter of family life.',
+    appHeader: {
+      show: true,
+      title: 'Care that knows your family',
+      subtitle: 'Same-day needs, preventive care, and trusted specialists—all connected in one place.',
+      icon: 'HeartPulse',
+      backgroundImageUrl: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=1200&h=700&fit=crop',
+      backgroundImageName: 'northstar-family-clinic',
+    },
     pages: [
       {
         id: 'page-1',
@@ -2011,15 +2033,15 @@ const ALL_APP_PRESETS: AppPreset[] = [
             componentId: 'heading',
             variants: { Size: 'Large', Alignment: 'Center' },
             properties: {
-              Heading: 'Welcome to Our Clinic',
-              Subheading: '',
+              Heading: 'Care that starts with listening',
+              Subheading: 'A connected care home for routine checkups, urgent questions, and the people you love.',
             },
           },
           {
             componentId: 'paragraph',
             variants: { Size: 'Medium', Alignment: 'Center' },
             properties: {
-              Text: 'Delivering high-quality care with skilled and trusted professionals — focused on your comfort and confidence at every step.',
+              Text: 'Northstar brings primary care, specialty referrals, family records, and visit planning into one calm, easy-to-use place.',
             },
           },
           {
@@ -2033,6 +2055,12 @@ const ALL_APP_PRESETS: AppPreset[] = [
               Label: 'Book Appointment',
               'Left Icon': 'CalendarPlus',
               'Full Width': true,
+              Action: 'Open Form',
+              'Form Title': 'Request an appointment',
+              'Form Description': 'Tell us what you need and the Northstar team will confirm the best visit type and time.',
+              'Form Submit Label': 'Send appointment request',
+              'Form Fields': JSON.stringify(NORTHSTAR_APPOINTMENT_FIELDS),
+              'Submits To': 'appointmentRequests',
             },
           },
           {
@@ -2062,22 +2090,22 @@ const ALL_APP_PRESETS: AppPreset[] = [
           {
             componentId: 'card',
             variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' },
-            properties: { Title: 'Trusted Doctors', Description: 'Board-certified specialists', Icon: 'Stethoscope', Shrinked: true },
+            properties: { Title: 'A familiar care team', Description: 'Primary care that coordinates with trusted specialists.', Icon: 'Stethoscope', Shrinked: true },
           },
           {
             componentId: 'card',
             variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' },
-            properties: { Title: 'Quick Care', Description: 'Same-day visits available', Icon: 'Zap', Shrinked: true },
+            properties: { Title: 'Support when plans change', Description: 'Same-day guidance and clear next steps for urgent needs.', Icon: 'Zap', Shrinked: true },
           },
           {
             componentId: 'card',
             variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' },
-            properties: { Title: 'Modern Facilities', Description: 'State-of-the-art equipment', Icon: 'Building2', Shrinked: true },
+            properties: { Title: 'Clear, connected records', Description: 'Visit details and family information stay organized together.', Icon: 'ClipboardCheck', Shrinked: true },
           },
           {
             componentId: 'card',
             variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' },
-            properties: { Title: 'Family Friendly', Description: 'All ages welcome', Icon: 'HeartHandshake', Shrinked: true },
+            properties: { Title: 'Built around families', Description: 'Care plans that make sense for children, adults, and caregivers.', Icon: 'HeartHandshake', Shrinked: true },
           },
         ],
       },
@@ -2090,8 +2118,8 @@ const ALL_APP_PRESETS: AppPreset[] = [
             componentId: 'heading',
             variants: { Size: 'Large', Alignment: 'Left' },
             properties: {
-              Heading: 'My Appointments',
-              Subheading: '',
+              Heading: 'Visits & care plan',
+              Subheading: 'Review upcoming visits, prepare questions, and revisit your care notes in one place.',
             },
           },
           {
@@ -2105,12 +2133,26 @@ const ALL_APP_PRESETS: AppPreset[] = [
           },
           {
             componentId: 'card',
-            variants: { 'Image Style': 'Square', Layout: 'Vertical', Action: 'Button' },
+            variants: { 'Image Style': 'Square', Layout: 'Vertical', Action: 'None' },
             properties: {
               Title: 'Dr. Sarah Patel · Cardiology',
-              Description: 'Mon Apr 6 · 10:30 AM · Suite 204. Annual check-up.',
-              'Button Label': 'View Details',
+              Description: 'Mon Apr 6 · 10:30 AM · Suite 204. Bring your medication list and any home blood-pressure readings.',
               'Image URL': 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=700&h=380&fit=crop',
+            },
+          },
+          {
+            componentId: 'button',
+            variants: { Type: 'Standard', Variant: 'Secondary', Corner: 'Rounded', Width: 'Full' },
+            properties: {
+              Label: 'Manage this appointment',
+              'Left Icon': 'CalendarClock',
+              'Full Width': true,
+              Action: 'Open Form',
+              'Form Title': 'Appointment support',
+              'Form Description': 'Request a change, ask a question, or tell us what you need before your visit.',
+              'Form Submit Label': 'Send request',
+              'Form Fields': JSON.stringify(NORTHSTAR_APPOINTMENT_FIELDS),
+              'Submits To': 'appointmentSupport',
             },
           },
           {
@@ -2127,6 +2169,7 @@ const ALL_APP_PRESETS: AppPreset[] = [
             variants: { Layout: 'Basic', 'Image Style': 'Circle', Size: 'Regular', Action: 'Icon' },
             properties: {
               'Show Header': false,
+              'Click Action': 'Open Dynamic Page',
               Items: JSON.stringify([
                 { title: 'Dr. Marcus Lee', description: 'Dermatology · Wed Apr 22 · 2:00 PM', image: 'https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=200&h=200&fit=crop' },
                 { title: 'Dr. Anna Rivera', description: 'Internal Medicine · Mon May 5 · 9:00 AM', image: 'https://images.unsplash.com/photo-1545996124-0501ebae84d0?w=200&h=200&fit=crop' },
@@ -2147,6 +2190,7 @@ const ALL_APP_PRESETS: AppPreset[] = [
             variants: { Layout: 'Basic', 'Image Style': 'Circle', Size: 'Compact', Action: 'Icon' },
             properties: {
               'Show Header': false,
+              'Click Action': 'Open Dynamic Page',
               Items: JSON.stringify([
                 { title: 'Dr. Sarah Patel', description: 'Mar 5 · Routine check-up', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop' },
                 { title: 'Dr. James Chen', description: 'Feb 18 · Lab review', image: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=200&h=200&fit=crop' },
@@ -2164,7 +2208,7 @@ const ALL_APP_PRESETS: AppPreset[] = [
           {
             componentId: 'heading',
             variants: { Size: 'Large', Alignment: 'Center' },
-            properties: { Heading: 'Profile', Subheading: '' },
+            properties: { Heading: 'Your family profile', Subheading: 'Key care details for the people connected to your Northstar account.' },
           },
           {
             componentId: 'image',
@@ -2220,6 +2264,7 @@ const ALL_APP_PRESETS: AppPreset[] = [
             variants: { Layout: 'Basic', 'Image Style': 'Circle', Size: 'Regular', Action: 'Icon' },
             properties: {
               'Show Header': false,
+              'Click Action': 'Open Dynamic Page',
               Items: JSON.stringify([
                 { title: 'Emma Reed', description: 'Spouse · 39 · Patient since 2022', image: 'https://images.unsplash.com/photo-1545996124-0501ebae84d0?w=200&h=200&fit=crop' },
                 { title: 'Lily Reed', description: 'Daughter · 8 · Patient since 2024', image: 'https://images.unsplash.com/photo-1604881988758-f76ad2f7aac1?w=200&h=200&fit=crop' },
@@ -2237,6 +2282,12 @@ const ALL_APP_PRESETS: AppPreset[] = [
               Label: 'Add Family Member',
               'Left Icon': 'Plus',
               'Full Width': true,
+              Action: 'Open Form',
+              'Form Title': 'Add a family member',
+              'Form Description': 'Create a connected profile so care details stay easy to find.',
+              'Form Submit Label': 'Add family member',
+              'Form Fields': JSON.stringify(NORTHSTAR_FAMILY_MEMBER_FIELDS),
+              'Submits To': 'familyMembers',
             },
           },
         ],
@@ -2270,10 +2321,12 @@ const ALL_APP_PRESETS: AppPreset[] = [
               'Card Image Style': 'Square',
               'Card Layout': 'Vertical',
               'Card Size': 'Medium',
-              'Card Action': 'None',
+              'Card Action': 'Button',
             },
             properties: {
               'Show Header': false,
+              'Button Label': 'Explore care',
+              'Click Action': 'Open Dynamic Page',
               Items: JSON.stringify([
                 { title: 'Cardiology', description: '4 specialists', image: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=400&h=400&fit=crop' },
                 { title: 'Dermatology', description: '3 specialists', image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=400&h=400&fit=crop' },
@@ -2296,6 +2349,7 @@ const ALL_APP_PRESETS: AppPreset[] = [
             variants: { Layout: 'Basic', 'Image Style': 'Circle', Size: 'Regular', Action: 'Icon' },
             properties: {
               'Show Header': false,
+              'Click Action': 'Open Dynamic Page',
               Items: JSON.stringify([
                 { title: 'Dr. Sarah Patel', description: 'Cardiology · 12 yrs experience', image: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&h=200&fit=crop' },
                 { title: 'Dr. Marcus Lee', description: 'Dermatology · 8 yrs experience', image: 'https://images.unsplash.com/photo-1607746882042-944635dfe10e?w=200&h=200&fit=crop' },
