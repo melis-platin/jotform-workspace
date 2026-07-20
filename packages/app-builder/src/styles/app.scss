@@ -14427,17 +14427,27 @@ body.builder--phone-only {
   left: 0;
   right: 0;
   z-index: 1;
-  max-height: 320px;
+  max-height: 240px;
   display: flex;
   flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
   overflow-x: hidden;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   border: 1px solid var(--border-light);
   border-radius: var(--ds-radius-sm);
   background: var(--background-white);
   box-shadow:
     0 8px 16px color-mix(in srgb, var(--gray-400) 16%, transparent),
     0 2px 4px color-mix(in srgb, var(--navy-600) 4%, transparent);
+
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
 }
 
 .push-deep-link-dropdown__section {
@@ -14451,7 +14461,8 @@ body.builder--phone-only {
   height: 40px;
   display: flex;
   align-items: center;
-  padding: 0 var(--spacing-md);
+  flex: 0 0 40px;
+  padding: 0 var(--space-3);
   color: var(--text-medium);
   font-family: var(--ds-font-family);
   font-size: var(--font-size-sm);
@@ -14468,7 +14479,8 @@ body.builder--phone-only {
   height: 40px;
   display: flex;
   align-items: center;
-  padding: 0 var(--spacing-md) 0 var(--spacing-3xl);
+  flex: 0 0 40px;
+  padding: 0 var(--space-3) 0 var(--space-8);
   border: 0;
   background: var(--background-white);
   color: var(--text-darkest);
