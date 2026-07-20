@@ -298,7 +298,7 @@ const BOHO_TESTIMONIAL_ITEMS = [
   { name: 'Mia Carter', role: 'Decor enthusiast', rating: 5, text: 'The blog posts are more than inspiration. They helped me make clear decisions about sizing and placement.', avatar: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&h=200&fit=crop&crop=face' },
 ]
 
-export const APP_PRESETS: AppPreset[] = [
+const ALL_APP_PRESETS: AppPreset[] = [
   {
     id: EMPTY_PRESET_ID,
     name: 'Empty App',
@@ -10980,6 +10980,12 @@ export const APP_PRESETS: AppPreset[] = [
     }
   },
 ]
+
+// Landing app presets are no longer offered from the app picker. Keep the
+// page-level landing option intact for apps that need it in the future.
+export const APP_PRESETS: AppPreset[] = ALL_APP_PRESETS.filter(
+  (preset) => !preset.id.startsWith('landing-'),
+)
 
 export function getPresetById(id: string): AppPreset {
   return APP_PRESETS.find((p) => p.id === id) ?? APP_PRESETS[0]
