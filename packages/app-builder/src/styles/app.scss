@@ -1829,7 +1829,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--space-2);
+  padding: 0 var(--space-3);
   background: var(--background-white, #fff);
   color: var(--fg-primary);
   border-bottom: 1px solid transparent;
@@ -10645,7 +10645,7 @@ body.builder--phone-only {
 
 .live-preview__top-header-nav-more-btn {
   gap: var(--space-1);
-  padding-right: var(--space-2);
+  padding-right: var(--space-3);
 
   svg {
     flex-shrink: 0;
