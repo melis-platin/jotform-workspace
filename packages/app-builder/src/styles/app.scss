@@ -11979,7 +11979,9 @@ body.builder--phone-only {
 }
 
 .live-preview__phone-screen .live-preview__notifications-card-icon {
-  background: var(--bg-surface);
+  // Keep the mobile app mark on the same themed surface as the desktop
+  // notification card, rather than letting it disappear into the page.
+  background: var(--bg-surface-brand);
 }
 
 .live-preview__phone-screen .live-preview__notifications-page--mobile .live-preview__notifications-card:not(:last-child)::after {
