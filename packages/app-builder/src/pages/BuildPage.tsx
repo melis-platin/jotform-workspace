@@ -297,6 +297,161 @@ function createDynamicDetailPage(listId: string, pageId: string, elementIds: str
   return { id: pageId, name: 'Dynamic Page', dynamic: true, dynamicSourceElementId: listId, elements }
 }
 
+type CampDetailContent = {
+  sectionTitle: string
+  sectionDescription: string
+  cards: Array<{ title: string; description: string; icon: string }>
+  nextTitle: string
+  nextDescription: string
+  noteTitle: string
+  noteDescription: string
+  noteIcon: string
+}
+
+function getCampDetailContent(hostPageName: string): CampDetailContent {
+  switch (hostPageName.trim().toLowerCase()) {
+    case 'sessions':
+      return {
+        sectionTitle: 'Your week at a glance',
+        sectionDescription: 'Each session balances familiar cabin routines with new camp challenges.',
+        cards: [
+          { title: '8:30 AM check-in', description: 'Meet your cabin leader, share a morning plan, and settle in before activities begin.', icon: 'Sun' },
+          { title: 'Daily choice blocks', description: 'Campers choose a creative, active, or waterfront discovery block each afternoon.', icon: 'Sparkles' },
+          { title: 'Family updates', description: 'Find reminders, packing notes, and pickup details in the Family Hub throughout the week.', icon: 'Megaphone' },
+        ],
+        nextTitle: 'Before the first day',
+        nextDescription: 'Complete the Health & Consent Form, pack a refillable bottle and closed-toe shoes, then arrive ten minutes early on Monday for a relaxed welcome.',
+        noteTitle: 'Need a different week?',
+        noteDescription: 'The camp office can help combine sessions, update a registration, or find the best fit for your camper.',
+        noteIcon: 'MessagesSquare',
+      }
+    case 'counselors':
+      return {
+        sectionTitle: 'How your camper is supported',
+        sectionDescription: 'Every cabin is led by a team that knows each camper’s interests, comfort level, and care plan.',
+        cards: [
+          { title: 'Small cabin groups', description: 'Daily check-ins and familiar faces make it easy for campers to ask for help or try something new.', icon: 'Users' },
+          { title: 'Safety first', description: 'Leaders coordinate with the health team, waterfront staff, and program specialists all day.', icon: 'ShieldCheck' },
+          { title: 'Real encouragement', description: 'Counselors celebrate effort, new friendships, and the small wins that build confidence.', icon: 'Heart' },
+        ],
+        nextTitle: 'A trusted connection',
+        nextDescription: 'Share a cabin-friend request, access need, or note about your camper before the session. The counselor team reviews family notes before the first morning.',
+        noteTitle: 'Request a counselor match',
+        noteDescription: 'Tell the office what would help your camper feel at home and we’ll connect you with the right person.',
+        noteIcon: 'MessagesSquare',
+      }
+    case 'family hub':
+      return {
+        sectionTitle: 'Plan the week with confidence',
+        sectionDescription: 'Use this guide for the moments families ask about most often.',
+        cards: [
+          { title: 'Morning arrival', description: 'Use the posted car-line map and have your camper’s name visible for a quick, calm handoff.', icon: 'MapPin' },
+          { title: 'What to pack', description: 'Water bottle, sunscreen, swimsuit, towel, lunch, and shoes that can handle a trail.', icon: 'Backpack' },
+          { title: 'Pickup changes', description: 'Send the office a note before 2:30 PM whenever an authorized pickup plan changes.', icon: 'Clock' },
+        ],
+        nextTitle: 'Camp moments worth sharing',
+        nextDescription: 'Look for photos, showcase reminders, and short updates from each cabin as the week unfolds. They are designed to keep families close without interrupting the fun.',
+        noteTitle: 'Questions for the office?',
+        noteDescription: 'The Family Hub is the quickest place to find answers, forms, and direct contact details.',
+        noteIcon: 'CircleHelp',
+      }
+    default:
+      return {
+        sectionTitle: 'Inside this camp experience',
+        sectionDescription: 'Every Pinecrest program follows a safe progression from first try to proud finish.',
+        cards: [
+          { title: 'Learn by doing', description: 'Campers build skills through guided practice, clear safety routines, and plenty of time outdoors.', icon: 'Compass' },
+          { title: 'Choose your challenge', description: 'Activities adapt for age, confidence, and curiosity so every camper can participate fully.', icon: 'Sparkles' },
+          { title: 'Share the win', description: 'Each track ends with a moment to show families what campers explored, created, or achieved.', icon: 'Flag' },
+        ],
+        nextTitle: 'What a day feels like',
+        nextDescription: 'Morning cabin circles set the plan, focused program blocks build confidence, and afternoon choices leave room for new friendships and favorite activities.',
+        noteTitle: 'Planning for your camper',
+        noteDescription: 'Use the Family Hub for packing lists, health forms, and a direct line to the Pinecrest office.',
+        noteIcon: 'ClipboardCheck',
+      }
+  }
+}
+
+// Camp Pinecrest list details are intentionally richer than the universal
+// Heading + Image + Paragraph starter page. The first three elements remain
+// data-bound so every selected list item keeps its own title, image, and copy.
+function createCampPinecrestDetailPage(
+  listId: string,
+  hostPageName: string,
+  pageId: string,
+  elementIds: string[],
+): AppPage {
+  const content = getCampDetailContent(hostPageName)
+  const elements: CanvasElement[] = []
+  let index = 0
+  const add = (componentId: string, configure: (element: CanvasElement) => void) => {
+    const component = ComponentRegistry.get(componentId)
+    const elementId = elementIds[index]
+    index += 1
+    if (!component || !elementId) return
+    const element = createCanvasElement(component, elementId)
+    configure(element)
+    elements.push(element)
+  }
+
+  add('heading', (element) => {
+    element.variants.Size = 'Large'
+    element.properties['Heading Tokens'] = JSON.stringify([
+      { type: 'field', value: 'Title', label: 'Title', icon: 'type-square-filled', iconCategory: 'editor' },
+    ])
+    element.properties['Subheading Tokens'] = JSON.stringify([])
+  })
+  add('image', (element) => {
+    element.properties['Image Source'] = 'Image'
+  })
+  add('paragraph', (element) => {
+    element.properties[DYNAMIC_BIND_KEY] = 'description'
+  })
+  add('spacer', (element) => {
+    element.properties.Height = 24
+  })
+  add('heading', (element) => {
+    element.variants.Size = 'Medium'
+    element.variants.Alignment = 'Left'
+    element.properties.Heading = content.sectionTitle
+    element.properties.Subheading = content.sectionDescription
+  })
+  for (const card of content.cards) {
+    add('card', (element) => {
+      element.variants['Image Style'] = 'Icon'
+      element.variants.Layout = 'Vertical'
+      element.variants.Action = 'None'
+      element.properties.Title = card.title
+      element.properties.Description = card.description
+      element.properties.Icon = card.icon
+      element.properties.Shrinked = true
+    })
+  }
+  add('spacer', (element) => {
+    element.properties.Height = 24
+  })
+  add('heading', (element) => {
+    element.variants.Size = 'Small'
+    element.variants.Alignment = 'Left'
+    element.properties.Heading = content.nextTitle
+    element.properties.Subheading = ''
+  })
+  add('paragraph', (element) => {
+    element.properties.Text = content.nextDescription
+  })
+  add('card', (element) => {
+    element.variants['Image Style'] = 'Icon'
+    element.variants.Layout = 'Vertical'
+    element.variants.Action = 'None'
+    element.properties.Title = content.noteTitle
+    element.properties.Description = content.noteDescription
+    element.properties.Icon = content.noteIcon
+  })
+
+  return { id: pageId, name: 'Dynamic Page', dynamic: true, dynamicSourceElementId: listId, elements }
+}
+
 // Pure helpers shared by the (duplicated) live-preview render paths.
 function getDynamicPreviewItem(
   activePage: AppPage | undefined,
@@ -588,25 +743,32 @@ function ensureDynamicPagesForOpenDynamicLists(pages: AppPage[], preset?: AppPre
   const usedPageIds = pages.map((page) => page.id)
   const usedElementIds = pages.flatMap((page) => page.elements.map((element) => element.id))
   const result: AppPage[] = []
+  const isCampPinecrest = preset?.id === 'camp-registration'
 
   for (const page of pages.filter((candidate) => !candidate.dynamic)) {
     result.push(page)
 
     for (const element of page.elements.filter(isDynamicListElement)) {
       const existingDynamic = existingDynamicsBySource.get(element.id)
+      const dynamicPageId = existingDynamic?.id ?? nextNumericId('page', usedPageIds)
+      const dynamicElementIds = nextNumericIds(
+        'element',
+        usedElementIds,
+        isCampPinecrest ? 12 : 3,
+      )
+      const generatedDynamic = isCampPinecrest
+        ? createCampPinecrestDetailPage(element.id, page.name, dynamicPageId, dynamicElementIds)
+        : createDynamicDetailPage(element.id, dynamicPageId, dynamicElementIds)
       const dynamicPage = existingDynamic
         ? {
           ...existingDynamic,
+          ...(isCampPinecrest ? { elements: generatedDynamic.elements } : {}),
           name: getDynamicDetailPageName(page.name, preset),
           dynamic: true,
           dynamicSourceElementId: element.id,
         }
         : {
-          ...createDynamicDetailPage(
-            element.id,
-            nextNumericId('page', usedPageIds),
-            nextNumericIds('element', usedElementIds, 3),
-          ),
+          ...generatedDynamic,
           name: getDynamicDetailPageName(page.name, preset),
         }
 
