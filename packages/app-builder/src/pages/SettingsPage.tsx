@@ -408,7 +408,7 @@ function ScheduleDatePicker({ value, onChange }: ScheduleDatePickerProps) {
 
   return (
     <label className="push-schedule-field push-schedule-date-picker">
-      <span className="push-schedule-field__label">Date</span>
+      <span className="push-schedule-field__label">Send Date</span>
       <div
         ref={triggerRef}
         className="push-schedule-date-picker__trigger"
@@ -1327,7 +1327,7 @@ export function PushNotificationsPanel({
             <DropdownSingle
               className="push-schedule-field push-schedule-time-dropdown"
               size="md"
-              title="Time"
+              title="Send Time"
               showTitle
               showDescription={false}
               showHelpText={false}
@@ -1345,7 +1345,7 @@ export function PushNotificationsPanel({
           </div>
           <DropdownSingle
             className="push-schedule-timezone"
-            title="Timezone"
+            title="Time Zone"
             showTitle
             showDescription={false}
             showHelpText={false}
@@ -1632,7 +1632,7 @@ function EditScheduledNotificationModal({
               <DropdownSingle
                 className="push-schedule-field push-edit-notification-modal__time-dropdown"
                 size="md"
-                title="Time"
+                title="Send Time"
                 showTitle
                 showDescription={false}
                 showHelpText={false}
