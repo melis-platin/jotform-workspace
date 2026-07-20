@@ -12010,6 +12010,12 @@ body.builder--phone-only {
   border-radius: var(--radius-sm);
 }
 
+.live-preview__phone-screen .live-preview__notifications-card-icon {
+  width: var(--space-12);
+  height: var(--space-12);
+  flex-basis: var(--space-12);
+}
+
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card-icon svg {
   width: var(--space-8);
   height: var(--space-8);
