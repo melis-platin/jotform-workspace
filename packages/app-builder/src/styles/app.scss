@@ -11851,7 +11851,7 @@ body.builder--phone-only {
   overflow: visible;
   color: var(--fg-primary);
   font-family: var(--font-family-heading);
-  font-size: var(--font-size-label-lg);
+  font-size: var(--font-size-lg);
   font-weight: var(--font-weight-bold);
   line-height: var(--line-height-label-lg);
   letter-spacing: 0;
@@ -12032,7 +12032,7 @@ body.builder--phone-only {
 
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card-header strong {
   overflow: visible;
-  font-size: var(--font-size-paragraph-lg);
+  font-size: var(--font-size-lg);
   line-height: var(--line-height-label-lg);
   text-overflow: clip;
   white-space: normal;
@@ -12227,7 +12227,7 @@ body.builder--phone-only {
 
 .live-preview__desktop-notifications-card .live-preview__notifications-page--desktop .live-preview__notifications-card-header strong {
   padding-right: var(--space-16);
-  font-size: var(--font-size-paragraph-lg);
+  font-size: var(--font-size-lg);
   line-height: var(--line-height-label-lg);
   letter-spacing: -0.014em;
 }
@@ -12392,7 +12392,7 @@ body.builder--phone-only {
 
 .live-preview__notifications-page--left-desktop .live-preview__notifications-card-header strong {
   padding-right: 0;
-  font-size: var(--font-size-paragraph-lg);
+  font-size: var(--font-size-lg);
   line-height: var(--line-height-label-lg);
   letter-spacing: -0.014em;
 }
