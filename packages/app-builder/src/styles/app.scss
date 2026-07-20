@@ -10180,10 +10180,11 @@ body.builder--phone-only {
 
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--compact .live-preview__top-header-right {
   // Keep the trailing action inside the same 12px inset as the leading logo.
-  // The right block includes its trailing inset, so offset its outer footprint
-  // by the same token to keep its visible actions within the 760px shell.
+  // A trailing flex margin reserves this space even when the auth buttons use
+  // their intrinsic minimum width.
   margin-left: calc(var(--space-3) * -1);
-  padding-right: var(--space-3);
+  padding-right: var(--space-0);
+  margin-right: var(--space-3);
 }
 
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--compact .live-preview__top-header-compact-icon:not(.live-preview__top-header-compact-icon--image) {
