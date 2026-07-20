@@ -9902,6 +9902,7 @@ body.builder--phone-only {
   .live-preview__top-header {
     top: 0;
     height: 65px;
+    box-sizing: border-box;
     justify-content: flex-start;
     gap: var(--space-4);
     // Reveal-on-scroll-up animates; scroll-down hiding is driven imperatively
@@ -9914,7 +9915,8 @@ body.builder--phone-only {
   .live-preview__top-header--contained {
     justify-content: center;
     column-gap: var(--space-3);
-    padding: var(--space-0);
+    padding-block: var(--space-0);
+    padding-inline: max(var(--space-3), calc((100% - 760px) / 2));
   }
 
   // Compact variant: Figma's 760px App-Top shell keeps the brand left and the
@@ -9925,6 +9927,7 @@ body.builder--phone-only {
     right: var(--space-0);
     width: min(760px, calc(100% - (var(--space-4) * 2)));
     max-width: calc(100% - (var(--space-4) * 2));
+    box-sizing: border-box;
     margin-left: auto;
     margin-right: auto;
     justify-content: flex-start;
@@ -11678,6 +11681,12 @@ body.builder--phone-only {
   width: 32px;
   height: 32px;
   flex: 0 0 32px;
+}
+
+.app-preview-screen__desktop .live-preview__top-header-search:not(.live-preview__top-header-search--persistent):not(.live-preview__top-header-search--open) {
+  width: auto;
+  height: auto;
+  flex: 0 0 auto;
 }
 
 // Signed-in Contained/Compact desktop headers keep the app identity visible.
