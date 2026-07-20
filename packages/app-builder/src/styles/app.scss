@@ -10155,6 +10155,11 @@ body.builder--phone-only {
 
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header-right {
   gap: var(--space-2);
+  margin-left: var(--space-3);
+}
+
+.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--fullwidth-search-open .live-preview__top-header-right {
+  margin-left: auto;
 }
 
 // Fullwidth keeps navigation and actions flush to one another at the right edge.
@@ -10174,16 +10179,16 @@ body.builder--phone-only {
 }
 
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--compact .live-preview__top-header-nav {
-  margin-left: calc(var(--space-3) + var(--space-1));
-  margin-right: var(--space-2);
+  margin-left: auto;
+  margin-right: var(--space-0);
 }
 
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--compact .live-preview__top-header-right {
-  // Keep the trailing action inside the same 12px inset as the leading logo.
-  margin-left: calc(var(--space-3) * -1);
+  // Keep the trailing action inside the same inset as the leading logo.
+  margin-left: var(--space-3);
   padding-right: var(--space-0);
   margin-right: var(--space-0);
-  transform: translateX(calc(var(--space-3) * -1));
+  transform: none;
 }
 
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--compact .live-preview__top-header-compact-icon:not(.live-preview__top-header-compact-icon--image) {
