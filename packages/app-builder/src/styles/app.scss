@@ -14335,6 +14335,8 @@ body.builder--phone-only {
   max-height: 200px;
   display: flex;
   flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
   overflow-x: hidden;
   overflow-y: auto;
   border: 1px solid var(--border-light);
@@ -14350,12 +14352,13 @@ body.builder--phone-only {
   height: 40px;
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
-  padding: 0 var(--spacing-md);
+  flex: 0 0 40px;
+  gap: var(--space-3);
+  padding: 0 var(--space-3);
   border: 0;
   background: var(--background-white);
   color: var(--text-darkest);
-  font-family: var(--ds-font-family);
+  font-family: var(--font-family-circular);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-book);
   line-height: var(--line-height-xs);
@@ -14372,17 +14375,17 @@ body.builder--phone-only {
   &--selected,
   &--selected:hover,
   &--selected:focus-visible {
-    background: var(--accent-lightest);
+    background: var(--blue-100);
   }
 }
 
 .push-audience-dropdown__checkbox {
-  width: 20px;
-  height: 20px;
+  width: var(--space-5);
+  height: var(--space-5);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 20px;
+  flex: 0 0 var(--space-5);
   border: 2px solid var(--border-medium);
   border-radius: var(--ds-radius-sm);
   background: var(--background-white);
