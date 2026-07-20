@@ -10981,10 +10981,18 @@ const ALL_APP_PRESETS: AppPreset[] = [
   },
 ]
 
-// Landing app presets are no longer offered from the app picker. Keep the
+// These app concepts are no longer offered from the app picker. Keep the
 // page-level landing option intact for apps that need it in the future.
+const REMOVED_PRESET_IDS = new Set([
+  'beverage-shop',
+  'coffee-shop',
+  'gym-club',
+  'online-store',
+  'student-management',
+])
+
 export const APP_PRESETS: AppPreset[] = ALL_APP_PRESETS.filter(
-  (preset) => !preset.id.startsWith('landing-'),
+  (preset) => !preset.id.startsWith('landing-') && !REMOVED_PRESET_IDS.has(preset.id),
 )
 
 export function getPresetById(id: string): AppPreset {
