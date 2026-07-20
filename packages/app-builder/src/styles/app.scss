@@ -14339,12 +14339,20 @@ body.builder--phone-only {
   justify-content: flex-start;
   overflow-x: hidden;
   overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
   border: 1px solid var(--border-light);
   border-radius: var(--ds-radius-sm);
   background: var(--background-white);
   box-shadow:
     0 8px 16px color-mix(in srgb, var(--gray-400) 16%, transparent),
     0 2px 4px color-mix(in srgb, var(--navy-600) 4%, transparent);
+
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+    display: none;
+  }
 }
 
 .push-audience-dropdown__item {
