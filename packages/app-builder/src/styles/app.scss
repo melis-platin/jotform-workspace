@@ -14329,7 +14329,8 @@ body.builder--phone-only {
 
 .push-audience-dropdown__menu {
   position: absolute;
-  top: calc(100% + var(--spacing-2xs));
+  top: auto;
+  bottom: calc(100% + var(--spacing-2xs));
   left: 0;
   right: 0;
   z-index: 1;
