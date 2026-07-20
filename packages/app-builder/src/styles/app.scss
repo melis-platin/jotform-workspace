@@ -12003,17 +12003,11 @@ body.builder--phone-only {
 }
 
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card-icon {
-  width: calc(var(--space-12) + var(--space-3));
-  height: calc(var(--space-12) + var(--space-3));
-  flex-basis: calc(var(--space-12) + var(--space-3));
-  margin-right: var(--space-4);
-  border-radius: var(--radius-sm);
-}
-
-.live-preview__phone-screen .live-preview__notifications-card-icon {
   width: var(--space-12);
   height: var(--space-12);
   flex-basis: var(--space-12);
+  margin-right: var(--space-4);
+  border-radius: var(--radius-sm);
 }
 
 :is(.live-preview__phone-screen, .live-preview__desktop-notifications-card) .live-preview__notifications-card-icon svg {
