@@ -11042,6 +11042,7 @@ const REMOVED_PRESET_IDS = new Set([
   'coffee-shop',
   'education',
   'gym-club',
+  'healthcare',
   'online-store',
   'student-management',
 ])
