@@ -9913,7 +9913,7 @@ body.builder--phone-only {
   // Contained variant: the bar stays full-width, while its content forms a
   // centred, intrinsic group (brand · links · actions).
   .live-preview__top-header--contained {
-    justify-content: center;
+    justify-content: flex-start;
     column-gap: var(--space-3);
     padding-block: var(--space-0);
     padding-inline: max(var(--space-3), calc((100% - 760px) / 2));
@@ -10165,9 +10165,24 @@ body.builder--phone-only {
   margin-left: auto;
 }
 
-// Fullwidth keeps navigation and actions flush to one another at the right edge.
-// Contained uses a centred intrinsic group; compact keeps page links and actions
-// together as one right-aligned group.
+// Fullwidth, contained and compact keep page labels left-aligned after the app
+// identity. The right-panel Alignment control does not move page labels in these
+// layouts; it only remains relevant to the Left desktop navigation layout.
+.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) :is(
+  .live-preview__top-header--fullwidth,
+  .live-preview__top-header--contained,
+  .live-preview__top-header--compact
+)[data-nav-align] .live-preview__top-header-nav {
+  justify-content: flex-start;
+  margin-right: var(--space-0);
+}
+
+.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--fullwidth[data-nav-align] .live-preview__top-header-nav {
+  margin-left: var(--space-0);
+}
+
+// Fullwidth keeps navigation and actions inside the header row. Contained and
+// compact share the same left-to-right sequence: brand, page labels, actions.
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header:not(.live-preview__top-header--contained):not(.live-preview__top-header--compact) {
   column-gap: var(--space-0);
 }
@@ -10182,7 +10197,7 @@ body.builder--phone-only {
 }
 
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--compact .live-preview__top-header-nav {
-  margin-left: auto;
+  margin-left: var(--space-8);
   margin-right: var(--space-0);
 }
 
