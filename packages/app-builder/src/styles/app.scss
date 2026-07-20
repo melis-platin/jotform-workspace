@@ -13727,7 +13727,8 @@ body.builder--phone-only {
 }
 
 .push-composer-panel--initial .push-composer-panel__content {
-  padding: var(--space-3) var(--space-6) var(--space-6);
+  // Design rule: push composer form content keeps 24px padding on every side.
+  padding: var(--space-6);
 }
 
 .push-composer-panel--initial .push-composer-panel__selection {
@@ -13760,8 +13761,8 @@ body.builder--phone-only {
 }
 
 .push-composer-panel__content {
-  padding-top: var(--spacing-sm);
-  padding-bottom: var(--spacing-xl);
+  // Design rule: push composer form content keeps 24px padding on every side.
+  padding: var(--space-6);
 }
 
 .push-composer-panel__selection {
