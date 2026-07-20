@@ -10986,6 +10986,7 @@ const ALL_APP_PRESETS: AppPreset[] = [
 const REMOVED_PRESET_IDS = new Set([
   'beverage-shop',
   'coffee-shop',
+  'education',
   'gym-club',
   'online-store',
   'student-management',
