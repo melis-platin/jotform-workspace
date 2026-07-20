@@ -10573,7 +10573,7 @@ body.builder--phone-only {
   background: transparent;
   border: 1px solid transparent;
   border-radius: var(--radius-sm);
-  padding: 0 var(--space-3);
+  padding: 0 var(--space-4);
   font-family: var(--font-family);
   font-size: 16px;
   font-weight: 500;
@@ -10645,11 +10645,27 @@ body.builder--phone-only {
 
 .live-preview__top-header-nav-more-btn {
   gap: var(--space-1);
-  padding-right: var(--space-3);
+  padding-right: var(--space-0);
 
   svg {
     flex-shrink: 0;
   }
+}
+
+.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) :is(
+  .live-preview__top-header--fullwidth,
+  .live-preview__top-header--contained,
+  .live-preview__top-header--compact
+) .live-preview__top-header-nav-link {
+  padding-inline: var(--space-3);
+}
+
+.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) :is(
+  .live-preview__top-header--fullwidth,
+  .live-preview__top-header--contained,
+  .live-preview__top-header--compact
+) .live-preview__top-header-nav-more-btn {
+  padding-inline: var(--space-3);
 }
 
 .live-preview__top-header-nav-menu {
