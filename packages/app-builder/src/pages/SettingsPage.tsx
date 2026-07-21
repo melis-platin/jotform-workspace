@@ -3285,7 +3285,10 @@ function PushNotificationComposer({
   }, [isContextMenuOpen])
 
   return (
-    <section className={`push-composer-panel${isInitialPushNotification ? ' push-composer-panel--initial' : ''}`} aria-label="Push notification composer">
+    <section
+      className={`push-composer-panel${isInitialPushNotification ? ' push-composer-panel--initial' : ''}${hideIntro ? ' push-composer-panel--without-intro' : ''}`}
+      aria-label="Push notification composer"
+    >
       {!hideIntro && <div className={`push-composer-panel__intro-card${isDisabled ? ' push-composer-panel__intro-card--disabled' : ''}`}>
         <div className="push-composer-panel__intro">
           <div className="push-composer-panel__intro-copy">

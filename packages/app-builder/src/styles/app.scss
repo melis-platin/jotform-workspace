@@ -14205,6 +14205,12 @@ body.builder--phone-only {
   margin-top: var(--space-6);
 }
 
+// The Publish composer supplies its own panel header, so it needs the single
+// 24px header-to-form gap from the page shell rather than an additional gap.
+.push-composer-panel--initial.push-composer-panel--without-intro .push-composer-panel__form-card {
+  margin-top: var(--space-0);
+}
+
 .push-composer-panel--initial .push-composer-panel__form-card:has(
   .push-audience-dropdown__menu,
   .push-deep-link-dropdown__menu
