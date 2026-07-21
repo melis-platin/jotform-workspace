@@ -3509,8 +3509,6 @@ function PushNotificationComposer({
     contentSuffix.trim().length === 0
   const shouldShowEmptyStateNotice = showEmptyStateNotice && (isTitleEmpty || isContentEmpty)
   const shouldShowSendStatusNotice = showEmptyStateNotice && !shouldShowEmptyStateNotice
-  const selectedAudience = getSendStatusAudience(audience, appUserRoles)
-  const selectedAudienceDeviceCount = getAudienceDeviceCount(audience, appUserRoles)
 
   useEffect(() => {
     if (!isContextMenuOpen) return
@@ -3717,7 +3715,7 @@ function PushNotificationComposer({
           <div className="push-composer-panel__send-status-notice" role="status">
             <Icon name="paper-plane-diagonal-filled" category="communication" size={16} />
             <p>
-              Sending now to <strong>{selectedAudienceDeviceCount} people</strong> in {selectedAudience.emphasize ? <strong>{selectedAudience.label}</strong> : selectedAudience.label} - delivers immediately.
+              This will be sent to <strong>100 people</strong> in All Users, delivered immediately.
             </p>
           </div>
         )}
@@ -3812,29 +3810,6 @@ function getAudienceHistoryLabel(audience: string[], roles: AppRoleOption[]) {
   if (selectedRoles.length === 1) return selectedRoles[0].label
 
   return `${selectedRoles.length} roles (${selectedRoles.map((role) => role.label).join(', ')})`
-}
-
-function getSendStatusAudience(audience: string[], roles: AppRoleOption[]) {
-  if (audience.includes(ALL_USERS_AUDIENCE_ID) || audience.length === 0) {
-    return { label: 'All Users', emphasize: false }
-  }
-
-  const selectedRoleCount = roles.filter((role) => audience.includes(role.id)).length
-
-  return {
-    label: `${selectedRoleCount} ${selectedRoleCount === 1 ? 'role' : 'roles'}`,
-    emphasize: true,
-  }
-}
-
-function getAudienceDeviceCount(audience: string[], roles: AppRoleOption[]) {
-  if (audience.includes(ALL_USERS_AUDIENCE_ID)) {
-    return PUSH_NOTIFICATION_ALLOWED_DEVICE_COUNT
-  }
-
-  return roles.reduce((total, role) => (
-    audience.includes(role.id) ? total + (role.deviceCount ?? 0) : total
-  ), 0)
 }
 
 function getDeepLinkHistoryLabel(deepLink: string, targets: DeepLinkTarget[]) {
