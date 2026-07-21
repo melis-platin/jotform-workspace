@@ -12821,7 +12821,7 @@ body.builder--phone-only {
   margin: 0;
   padding: var(--space-3);
   border: 1px solid var(--product-ai-border-light);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   background: var(--product-ai-lightest);
   color: var(--text-dark);
   font-family: var(--font-family-circular);
@@ -12833,10 +12833,12 @@ body.builder--phone-only {
 
 .push-schedule-composer__scheduled-notice .jf-icon {
   flex: 0 0 auto;
+  color: var(--product-ai-default);
 }
 
 .push-schedule-composer__scheduled-notice p {
   margin: 0;
+  white-space: nowrap;
 }
 
 .push-schedule-composer__scheduled-notice strong {
