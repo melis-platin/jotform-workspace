@@ -60,6 +60,7 @@
   --ds-border-dark: var(--secondary-border-dark);
 
   // Builder spacing (referencing primitives)
+  --ds-space-3xs: var(--spacing-3xs);
   --ds-space-2xs: var(--spacing-2xs);
   --ds-space-xs: var(--spacing-xs);
   --ds-space-sm: var(--spacing-sm);
@@ -67,6 +68,7 @@
   --ds-space-lg: var(--spacing-lg);
   --ds-space-xl: var(--spacing-xl);
   --ds-space-2xl: var(--spacing-2xl);
+  --ds-space-4xl: var(--spacing-4xl);
 
   // Builder radius (referencing primitives)
   --ds-radius-sm: var(--radius-sm);
@@ -8716,6 +8718,41 @@ body {
 
 .side-nav--figma-push-initial .side-nav__text {
   gap: var(--spacing-2xs);
+}
+
+// Settings navigation follows the Figma source of truth (Archieve 27.03.2026,
+// node 1:307129). Keep these overrides scoped so Publish can retain its own
+// navigation variant.
+.side-nav--settings-figma {
+  width: 318px;
+  gap: var(--ds-space-sm);
+  padding: var(--ds-space-xl) 0 var(--ds-space-xl) var(--ds-space-sm);
+}
+
+.side-nav--settings-figma .side-nav__item {
+  width: calc(100% - var(--ds-space-sm));
+  min-height: calc(var(--ds-space-4xl) + var(--ds-space-2xs));
+  gap: var(--ds-space-2xs);
+  padding:
+    calc(var(--ds-space-sm) + var(--ds-space-3xs))
+    var(--ds-space-2xs);
+}
+
+.side-nav--settings-figma .side-nav__text {
+  gap: var(--ds-space-2xs);
+}
+
+.side-nav--settings-figma .side-nav__title {
+  font-weight: var(--ds-font-weight-bold);
+  line-height: var(--ds-line-height-md);
+}
+
+.side-nav--settings-figma .side-nav__desc {
+  color: var(--ds-text-primary);
+}
+
+.side-nav--settings-figma .side-nav__item--active .side-nav__desc {
+  color: var(--secondary-text-dark);
 }
 
 .builder:has(.publish-page--figma-push-initial) .topbar__main {

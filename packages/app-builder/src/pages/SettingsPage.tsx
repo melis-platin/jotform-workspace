@@ -3928,7 +3928,12 @@ export function SettingsPage({
 
   return (
     <div className={`settings-page${showPreview ? ' settings-page--with-preview' : ''}`}>
-      <SideNav items={NAV_ITEMS} activeId={activeId} onChange={setActiveId} />
+      <SideNav
+        items={NAV_ITEMS}
+        activeId={activeId}
+        onChange={setActiveId}
+        className="side-nav--settings-figma"
+      />
       <main className="settings-page__content">
         <div className="settings-page__main">
           <PanelHeader

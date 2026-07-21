@@ -12,6 +12,7 @@ Before starting any task, read the project memory for full architecture details:
 - Builder UI uses `--ds-*` tokens and Circular font from design-system
 - Canvas components use app-elements tokens (`--fg-*`, `--bg-*`, `--space-*`, `--radius-*`)
 - Icons: builder UI uses design-system Icon (SVG fetch), canvas uses app-elements Icon (lucide/phosphor/tabler)
+- Settings tab left navigation must follow the Figma source of truth: **Archieve 27.03.2026**, node `1:307129`. Preserve its 318px panel, spacing, 40px icon area, active/inactive typography, and token-based colors when making future changes.
 
 ## Local Dev Server
 - When the user asks to start the project locally, run the Vite app with `--host 0.0.0.0` so both `localhost` and the local-network URL are available.
