@@ -71,6 +71,38 @@ const NAV_ITEMS: SideNavItem[] = [
   },
 ]
 
+const FIGMA_PUSH_NAV_ITEMS: SideNavItem[] = [
+  {
+    id: 'app-settings',
+    icon: 'mobile-gear',
+    iconCategory: 'technology',
+    title: 'APP SETTINGS',
+    description: 'App status and properties.',
+  },
+  {
+    id: 'app-name-icon',
+    icon: 'mobile-title',
+    iconCategory: 'technology',
+    title: 'APP NAME & ICON',
+    description: 'Customize app name and icon.',
+  },
+  {
+    id: 'splash-screen',
+    icon: 'mobile-pencil',
+    iconCategory: 'technology',
+    title: 'SPLASH SCREEN',
+    description: 'Customize splash screen.',
+  },
+  NAV_ITEMS.find((item) => item.id === 'push-notifications')!,
+  {
+    id: 'ai-chatbot',
+    icon: 'ai-message-filled',
+    iconCategory: 'ai',
+    title: 'AI CHATBOT',
+    description: 'Support your users with AI.',
+  },
+]
+
 interface DraftRoleInput {
   id: string
   name: string
@@ -517,6 +549,7 @@ export function PublishPage({
   const [notificationDeepLink, setNotificationDeepLink] = useState('')
   const [notificationImage, setNotificationImage] = useState<PushComposerSelectedImage | null>(null)
   const [arePushNotificationsDisabled, setArePushNotificationsDisabled] = useState(false)
+  const [isPushInitialOverview, setIsPushInitialOverview] = useState(false)
   const [canReturnToPushHistory, setCanReturnToPushHistory] = useState(false)
   const [pushHistoryReturnRequestId, setPushHistoryReturnRequestId] = useState(0)
   const [isPermissionRequestModalOpen, setIsPermissionRequestModalOpen] = useState(false)
@@ -528,7 +561,8 @@ export function PublishPage({
   const [inverseColor] = useCssVar('--fg-inverse', '#FFFFFF')
   const active = NAV_ITEMS.find((item) => item.id === activeId) ?? NAV_ITEMS[0]
   const isPushNotificationsOpen = activeId === 'push-notifications'
-  const shouldShowPushPreview = isPushNotificationsOpen && !arePushNotificationsDisabled
+  const isFigmaPushInitial = isPushNotificationsOpen && isPushInitialOverview
+  const shouldShowPushPreview = isPushNotificationsOpen && !arePushNotificationsDisabled && !isFigmaPushInitial
   const pushNotificationIconStyle = 'flat'
   const previewNotificationTitle = formatPushNotificationTitle(
     notificationTitle,
@@ -544,9 +578,21 @@ export function PublishPage({
   )
   const shouldShowPreview = shouldShowPushPreview || isPermissionRequestModalOpen
 
+  const handleNavigationChange = (nextId: string) => {
+    if (isFigmaPushInitial && nextId !== 'push-notifications') return
+
+    setIsPushInitialOverview(nextId === 'push-notifications' && pushNotificationHistoryItems.length === 0)
+    setActiveId(nextId)
+  }
+
   return (
-    <div className={`publish-page${shouldShowPreview ? ' publish-page--with-preview' : ''}`}>
-      <SideNav items={NAV_ITEMS} activeId={activeId} onChange={setActiveId} />
+    <div className={`publish-page${shouldShowPreview ? ' publish-page--with-preview' : ''}${isFigmaPushInitial ? ' publish-page--figma-push-initial' : ''}`}>
+      <SideNav
+        items={isFigmaPushInitial ? FIGMA_PUSH_NAV_ITEMS : NAV_ITEMS}
+        activeId={activeId}
+        onChange={handleNavigationChange}
+        className={isFigmaPushInitial ? 'side-nav--figma-push-initial' : undefined}
+      />
       <main className="publish-page__content">
         <div className="publish-page__main">
           {isPermissionRequestModalOpen ? (
@@ -634,6 +680,7 @@ export function PublishPage({
                     setIsPermissionRequestModalOpen(true)
                   }}
                   onCanReturnToHistoryChange={setCanReturnToPushHistory}
+                  onInitialOverviewChange={setIsPushInitialOverview}
                   returnToHistoryRequestId={pushHistoryReturnRequestId}
                 />
               )}

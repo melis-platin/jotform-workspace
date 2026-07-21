@@ -185,7 +185,7 @@ export function TopBar({
         </div>
         <div className="topbar__nav-right">
           <span className="topbar__preview-label">
-            {activePage === 'settings' ? 'Preview App' : 'Full Preview'}
+            {activePage === 'settings' ? 'Preview App' : activePage === 'publish' ? 'Live Preview' : 'Full Preview'}
           </span>
           <button
             type="button"

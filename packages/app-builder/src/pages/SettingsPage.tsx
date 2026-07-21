@@ -900,6 +900,7 @@ export interface PushNotificationsPanelProps {
   onPermissionMessageEdit?: () => void
   onViewChange?: (view: PushNotificationPanelView) => void
   onCanReturnToHistoryChange?: (canReturnToHistory: boolean) => void
+  onInitialOverviewChange?: (isInitialOverview: boolean) => void
   returnToHistoryRequestId?: number
 }
 
@@ -967,6 +968,7 @@ export function PushNotificationsPanel({
   onPermissionMessageEdit,
   onViewChange,
   onCanReturnToHistoryChange,
+  onInitialOverviewChange,
   returnToHistoryRequestId = 0,
 }: PushNotificationsPanelProps) {
   const [activeView, setActiveView] = useState<PushNotificationPanelView>(() => (
@@ -1189,6 +1191,10 @@ export function PushNotificationsPanel({
   useEffect(() => {
     onCanReturnToHistoryChange?.(activeView === 'composer' && canReturnToHistory && !usesInitialComposerLayout)
   }, [activeView, canReturnToHistory, onCanReturnToHistoryChange, usesInitialComposerLayout])
+
+  useEffect(() => {
+    onInitialOverviewChange?.(activeView === 'composer' && usesInitialComposerLayout && !canReturnToHistory)
+  }, [activeView, canReturnToHistory, onInitialOverviewChange, usesInitialComposerLayout])
 
   useEffect(() => {
     if (returnToHistoryRequestId === handledReturnToHistoryRequestIdRef.current) return
@@ -1434,24 +1440,26 @@ function PushNotificationOverview({ onCreateNotification }: { onCreateNotificati
           </div>
         </div>
 
-        <div className="push-notification-overview__total">
-          <strong>0</strong>
-          <span>total reachable devices</span>
-        </div>
-        <div className="push-notification-overview__progress" aria-hidden="true" />
+        <div className="push-notification-overview__reach-details">
+          <div className="push-notification-overview__total">
+            <strong>0</strong>
+            <span>total reachable devices</span>
+          </div>
+          <div className="push-notification-overview__progress" aria-hidden="true" />
 
-        <div className="push-notification-overview__device-list">
-          {deviceStats.map(({ icon, label }) => (
-            <div className="push-notification-overview__device" key={icon}>
-              <span className="push-notification-overview__device-icon">
-                <Icon name={icon} category="technology" size={16} />
-              </span>
-              <span className="push-notification-overview__device-copy">
-                <strong>0</strong>
-                <span>{label}</span>
-              </span>
-            </div>
-          ))}
+          <div className="push-notification-overview__device-list">
+            {deviceStats.map(({ icon, label }) => (
+              <div className="push-notification-overview__device" key={icon}>
+                <span className="push-notification-overview__device-icon">
+                  <Icon name={icon} category="technology" size={16} />
+                </span>
+                <span className="push-notification-overview__device-copy">
+                  <strong>0</strong>
+                  <span>{label}</span>
+                </span>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
 

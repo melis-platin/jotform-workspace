@@ -8691,6 +8691,67 @@ body {
   @extend .settings-page__preview;
 }
 
+.publish-page--figma-push-initial .publish-page__main {
+  padding:
+    calc(var(--spacing-2xl) + var(--spacing-2xs))
+    var(--spacing-4xl)
+    var(--spacing-3xl)
+    calc(var(--spacing-4xl) + var(--spacing-md));
+}
+
+.side-nav--figma-push-initial {
+  width: 318px;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xl) 0 var(--spacing-xl) var(--spacing-sm);
+}
+
+.side-nav--figma-push-initial .side-nav__item {
+  width: calc(100% - var(--spacing-sm));
+  min-height: calc(var(--spacing-4xl) + var(--spacing-2xs));
+  gap: var(--spacing-2xs);
+  padding:
+    calc(var(--spacing-sm) + var(--spacing-3xs))
+    var(--spacing-2xs);
+}
+
+.side-nav--figma-push-initial .side-nav__text {
+  gap: var(--spacing-2xs);
+}
+
+.builder:has(.publish-page--figma-push-initial) .topbar__main {
+  height: calc(var(--spacing-4xl) + var(--spacing-2xs) + var(--spacing-3xs));
+}
+
+.builder:has(.publish-page--figma-push-initial) .topbar__logo {
+  height: calc(var(--spacing-2xl) - var(--spacing-3xs));
+}
+
+.builder:has(.publish-page--figma-push-initial) .topbar__divider {
+  height: calc(var(--spacing-2xl) + var(--spacing-3xs));
+}
+
+.builder:has(.publish-page--figma-push-initial) .topbar__avatar {
+  width: calc(var(--spacing-3xl) + var(--spacing-xs));
+  height: calc(var(--spacing-3xl) + var(--spacing-xs));
+  border-width: 3px;
+}
+
+.builder:has(.publish-page--figma-push-initial) .topbar__nav-item {
+  padding:
+    calc(var(--spacing-xs) + var(--spacing-3xs))
+    calc(var(--spacing-xl) + var(--spacing-2xs));
+}
+
+@media (max-width: 1024px) {
+  .publish-page--figma-push-initial .publish-page__main {
+    padding: var(--spacing-xl);
+  }
+
+  .side-nav--figma-push-initial {
+    width: 292px;
+  }
+}
+
 // ============================================
 // Mobile Elements Bottom Sheet
 // ============================================
@@ -13643,7 +13704,7 @@ body.builder--phone-only {
   max-width: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-6);
 }
 
 .push-notification-overview__reach-card,
@@ -13657,7 +13718,7 @@ body.builder--phone-only {
 .push-notification-overview__reach-card {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-6);
   padding: var(--space-6);
 }
 
@@ -13729,6 +13790,13 @@ body.builder--phone-only {
 
 .push-notification-overview__total {
   gap: var(--space-1);
+}
+
+.push-notification-overview__reach-details {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
 }
 
 .push-notification-overview__total strong {

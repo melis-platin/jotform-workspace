@@ -15,11 +15,12 @@ interface SideNavProps {
   items: SideNavItem[]
   activeId: string
   onChange: (id: string) => void
+  className?: string
 }
 
-export function SideNav({ items, activeId, onChange }: SideNavProps) {
+export function SideNav({ items, activeId, onChange, className }: SideNavProps) {
   return (
-    <aside className="side-nav">
+    <aside className={`side-nav${className ? ` ${className}` : ''}`}>
       {items.map((item) => {
         const isActive = item.id === activeId
         return (
