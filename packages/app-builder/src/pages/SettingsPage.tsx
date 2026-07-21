@@ -1236,6 +1236,13 @@ export function PushNotificationsPanel({
     setIsScheduleComposer(false)
     onScheduleComposerChange?.(false)
   }
+  const openInitialOverview = () => {
+    resetNotificationComposer()
+    setCanReturnToHistory(false)
+    setUsesInitialComposerLayout(true)
+    onInitialOverviewChange?.(true)
+    setActiveView('composer')
+  }
   const openNotificationComposer = () => {
     resetNotificationComposer()
     setCanReturnToHistory(true)
@@ -1502,7 +1509,7 @@ export function PushNotificationsPanel({
             className="push-notification-dashboard__create"
             colorScheme="primary"
             leftIcon={<Icon name="plus" category="general" size={16} />}
-            onClick={openNotificationComposer}
+            onClick={openInitialOverview}
           >
             Create New
           </Button>
