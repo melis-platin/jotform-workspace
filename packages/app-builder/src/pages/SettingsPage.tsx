@@ -2460,13 +2460,17 @@ function getPushComposerSerializedValue(
   ])
 }
 
-function useMeasuredInputWidth(value: string, inputRef: RefObject<HTMLInputElement | null>) {
+function useMeasuredInputWidth(
+  value: string,
+  inputRef: RefObject<HTMLInputElement | null>,
+  shouldMeasure = true,
+) {
   const [width, setWidth] = useState<string | undefined>()
 
   useLayoutEffect(() => {
     const input = inputRef.current
 
-    if (!input || value.length === 0) {
+    if (!shouldMeasure || !input || value.length === 0) {
       setWidth(undefined)
       return undefined
     }
@@ -2503,7 +2507,7 @@ function useMeasuredInputWidth(value: string, inputRef: RefObject<HTMLInputEleme
     return () => {
       isActive = false
     }
-  }, [inputRef, value])
+  }, [inputRef, shouldMeasure, value])
 
   return width
 }
@@ -2803,7 +2807,10 @@ function PushComposerTokenTextArea({
   const [isPrefixActive, setIsPrefixActive] = useState(false)
   const hasFields = fields.length > 0
   const hasText = value.length > 0
-  const prefixInputWidth = useMeasuredInputWidth(value, prefixInputRef)
+  // A content token changes the rendered input from a TextArea to this inline
+  // editor. Re-measure at that point so its text follows the same compact flow
+  // as the title token editor.
+  const prefixInputWidth = useMeasuredInputWidth(value, prefixInputRef, hasFields)
   const showPrefixInput = !hasFields || hasText || isPrefixActive
   const countValue = formatPushComposerText(value, fields, suffixValue, fieldValues).length
 
