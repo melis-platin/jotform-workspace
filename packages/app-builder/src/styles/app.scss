@@ -8693,10 +8693,10 @@ body {
   @extend .settings-page__preview;
 }
 
-.publish-page--figma-push-initial .publish-page__main,
-.publish-page--figma-push-composer .publish-page__main {
-  // Push Notification overview and Send Notification share the same Figma
-  // canvas origin: 36px from the top and 80px after the left navigation.
+.publish-page--figma-push .publish-page__main {
+  // Push Notification screens use a fixed Figma canvas origin: 36px from
+  // the top and 80px after the left navigation. Keep this shared for every
+  // Push state, including the sent/scheduled history dashboard.
   padding:
     calc(var(--spacing-2xl) + var(--spacing-2xs))
     var(--spacing-4xl)
@@ -8804,8 +8804,7 @@ body {
 }
 
 @media (max-width: 1024px) {
-  .publish-page--figma-push-initial .publish-page__main,
-  .publish-page--figma-push-composer .publish-page__main {
+  .publish-page--figma-push .publish-page__main {
     padding: var(--spacing-xl);
   }
 }

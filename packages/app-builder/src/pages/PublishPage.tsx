@@ -534,6 +534,7 @@ export function PublishPage({
   const isPushComposerOpen = isPushNotificationsOpen && canReturnToPushHistory
   const isPushScheduleOpen = isPushNotificationsOpen && isPushScheduleComposer
   const usesFigmaPushComposerLayout = isPushComposerOpen
+  const usesFigmaPushLayout = isPushNotificationsOpen
   const shouldShowPushPreview = isPushNotificationsOpen && !arePushNotificationsDisabled && !isFigmaPushInitial
   const pushNotificationIconStyle = 'flat'
   const previewNotificationTitle = formatPushNotificationTitle(
@@ -557,7 +558,7 @@ export function PublishPage({
   }
 
   return (
-    <div className={`publish-page${shouldShowPreview ? ' publish-page--with-preview' : ''}${isFigmaPushInitial ? ' publish-page--figma-push-initial' : ''}${usesFigmaPushComposerLayout ? ' publish-page--figma-push-composer' : ''}`}>
+    <div className={`publish-page${shouldShowPreview ? ' publish-page--with-preview' : ''}${usesFigmaPushLayout ? ' publish-page--figma-push' : ''}${isFigmaPushInitial ? ' publish-page--figma-push-initial' : ''}${usesFigmaPushComposerLayout ? ' publish-page--figma-push-composer' : ''}`}>
       <SideNav
         items={NAV_ITEMS}
         activeId={activeId}
