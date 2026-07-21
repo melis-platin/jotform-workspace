@@ -12729,6 +12729,65 @@ body.builder--phone-only {
   gap: var(--spacing-xl);
 }
 
+.push-schedule-composer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+  padding: var(--space-6);
+}
+
+.push-schedule-composer__intro {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-0);
+}
+
+.push-schedule-composer__intro h2,
+.push-schedule-composer__intro p {
+  margin: 0;
+}
+
+.push-schedule-composer__intro h2 {
+  color: var(--text-darkest);
+  font-family: var(--font-family-circular);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-md);
+  letter-spacing: var(--body-letter-spacing);
+}
+
+.push-schedule-composer__intro p,
+.push-schedule-composer__notice {
+  color: var(--text-medium);
+  font-family: var(--font-family-circular);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-book);
+  line-height: var(--line-height-sm);
+  letter-spacing: var(--body-sm-letter-spacing);
+}
+
+.push-schedule-composer__date-time-row {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-6);
+}
+
+.push-schedule-composer__notice {
+  width: 100%;
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px dashed var(--border-medium);
+  border-radius: var(--radius-md);
+  background: var(--background-light);
+}
+
+.push-schedule-composer .push-schedule-field,
+.push-schedule-composer .push-schedule-time-dropdown {
+  flex: 1 1 0;
+}
+
 .push-schedule-field {
   min-width: 0;
   flex: 1 1 0;
@@ -14220,6 +14279,13 @@ body.builder--phone-only {
   margin-top: var(--space-0);
 }
 
+.push-composer-panel__schedule-divider {
+  width: 100%;
+  height: 1px;
+  display: block;
+  background: var(--border-light);
+}
+
 .push-composer-panel--initial .push-composer-panel__form-card:has(
   .push-audience-dropdown__menu,
   .push-deep-link-dropdown__menu
@@ -14798,6 +14864,18 @@ body.builder--phone-only {
 .push-audience-dropdown__value {
   display: flex;
   align-items: center;
+}
+
+.push-audience-dropdown__all-users-value {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.push-audience-dropdown__all-users-value span:last-child {
+  color: var(--border-medium);
+  font-style: italic;
 }
 
 .push-audience-dropdown__value--chips {

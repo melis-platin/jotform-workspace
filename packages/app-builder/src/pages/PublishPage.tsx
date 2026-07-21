@@ -519,6 +519,7 @@ export function PublishPage({
   const [arePushNotificationsDisabled, setArePushNotificationsDisabled] = useState(false)
   const [isPushInitialOverview, setIsPushInitialOverview] = useState(false)
   const [canReturnToPushHistory, setCanReturnToPushHistory] = useState(false)
+  const [isPushScheduleComposer, setIsPushScheduleComposer] = useState(false)
   const [pushHistoryReturnRequestId, setPushHistoryReturnRequestId] = useState(0)
   const [isPermissionRequestModalOpen, setIsPermissionRequestModalOpen] = useState(false)
   const [permissionRequestTitle, setPermissionRequestTitle] = useState(PUSH_PERMISSION_REQUEST_DEFAULT_TITLE)
@@ -531,6 +532,7 @@ export function PublishPage({
   const isPushNotificationsOpen = activeId === 'push-notifications'
   const isFigmaPushInitial = isPushNotificationsOpen && isPushInitialOverview
   const isPushComposerOpen = isPushNotificationsOpen && canReturnToPushHistory
+  const isPushScheduleOpen = isPushNotificationsOpen && isPushScheduleComposer
   const usesFigmaPushComposerLayout = isPushComposerOpen
   const shouldShowPushPreview = isPushNotificationsOpen && !arePushNotificationsDisabled && !isFigmaPushInitial
   const pushNotificationIconStyle = 'flat'
@@ -550,6 +552,7 @@ export function PublishPage({
 
   const handleNavigationChange = (nextId: string) => {
     setIsPushInitialOverview(nextId === 'push-notifications' && pushNotificationHistoryItems.length === 0)
+    setIsPushScheduleComposer(false)
     setActiveId(nextId)
   }
 
@@ -581,11 +584,11 @@ export function PublishPage({
           ) : (
             <>
               <PanelHeader
-                icon={isPushComposerOpen ? 'paper-plane-diagonal-filled' : active.icon}
-                iconCategory={isPushComposerOpen ? 'communication' : active.iconCategory}
-                title={isPushComposerOpen ? 'SEND NOTIFICATION' : active.headerTitle ?? active.title}
-                description={isPushComposerOpen ? 'Create and send a notification now.' : active.headerDescription ?? active.description}
-                iconBg={isPushComposerOpen ? 'var(--success-default)' : active.iconBg}
+                icon={isPushScheduleOpen ? 'calendar-event' : isPushComposerOpen ? 'paper-plane-diagonal-filled' : active.icon}
+                iconCategory={isPushScheduleOpen ? 'time-date' : isPushComposerOpen ? 'communication' : active.iconCategory}
+                title={isPushScheduleOpen ? 'SCHEDULE NOTIFICATION' : isPushComposerOpen ? 'SEND NOTIFICATION' : active.headerTitle ?? active.title}
+                description={isPushScheduleOpen ? 'Choose when to send your notification.' : isPushComposerOpen ? 'Create and send a notification now.' : active.headerDescription ?? active.description}
+                iconBg={isPushScheduleOpen ? 'var(--purple-400)' : isPushComposerOpen ? 'var(--success-default)' : active.iconBg}
                 iconSize={isFigmaPushInitial || isPushComposerOpen ? 24 : undefined}
                 leading={isPushComposerOpen ? (
                   <button
@@ -650,6 +653,7 @@ export function PublishPage({
                   }}
                   onCanReturnToHistoryChange={setCanReturnToPushHistory}
                   onInitialOverviewChange={setIsPushInitialOverview}
+                  onScheduleComposerChange={setIsPushScheduleComposer}
                   returnToHistoryRequestId={pushHistoryReturnRequestId}
                   isPublishComposer
                 />

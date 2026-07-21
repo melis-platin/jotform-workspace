@@ -125,6 +125,13 @@
       &:active { background: var(--error-dark); }
       &:focus-visible { box-shadow: 0 0 0 3px var(--red-200); }
     }
+
+    &.jf-btn--apps {
+      background: var(--purple-400);
+      &:hover { background: var(--product-apps-default); }
+      &:active { background: var(--product-apps-default); }
+      &:focus-visible { box-shadow: 0 0 0 3px var(--purple-100); }
+    }
   }
 
   // ============================================
@@ -164,6 +171,14 @@
       &:active { background: var(--error-lightest); }
       &:focus-visible { box-shadow: 0 0 0 3px var(--red-200); }
     }
+
+    &.jf-btn--apps {
+      color: var(--purple-400);
+      border-color: var(--purple-400);
+      &:hover { background: var(--product-apps-light); }
+      &:active { background: var(--product-apps-light); }
+      &:focus-visible { box-shadow: 0 0 0 3px var(--purple-100); }
+    }
   }
 
   // ============================================
@@ -199,6 +214,13 @@
       &:hover { background: var(--error-lightest); }
       &:active { background: var(--error-lightest); }
       &:focus-visible { box-shadow: 0 0 0 3px var(--red-200); }
+    }
+
+    &.jf-btn--apps {
+      color: var(--purple-400);
+      &:hover { background: var(--product-apps-light); }
+      &:active { background: var(--product-apps-light); }
+      &:focus-visible { box-shadow: 0 0 0 3px var(--purple-100); }
     }
   }
 

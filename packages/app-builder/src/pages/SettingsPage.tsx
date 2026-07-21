@@ -493,6 +493,100 @@ function ScheduleDatePicker({ value, onChange }: ScheduleDatePickerProps) {
   )
 }
 
+interface PushScheduleComposerSectionProps {
+  quickPick: ScheduleQuickPickValue
+  onQuickPickChange: (quickPick: ScheduleQuickPickValue) => void
+  date: string
+  onDateChange: (date: string) => void
+  time: string
+  onTimeChange: (time: string) => void
+  timezone: string
+  onTimezoneChange: (timezone: string) => void
+}
+
+function PushScheduleComposerSection({
+  quickPick,
+  onQuickPickChange,
+  date,
+  onDateChange,
+  time,
+  onTimeChange,
+  timezone,
+  onTimezoneChange,
+}: PushScheduleComposerSectionProps) {
+  return (
+    <section className="push-schedule-composer" aria-labelledby="push-schedule-composer-title">
+      <div className="push-schedule-composer__intro">
+        <h2 id="push-schedule-composer-title">When to send</h2>
+        <p>Pick a time to deliver this notification. You can edit or cancel it anytime before it sends.</p>
+      </div>
+      <div className="push-schedule-quick-picks">
+        <p className="push-schedule-quick-picks__title">Quick Picks</p>
+        <div className="push-schedule-quick-picks__list">
+          {SCHEDULE_QUICK_PICK_OPTIONS.map((option) => {
+            const isSelected = quickPick === option.value
+
+            return (
+              <button
+                type="button"
+                className={`push-schedule-quick-picks__chip${isSelected ? ' push-schedule-quick-picks__chip--selected' : ''}`}
+                key={option.value}
+                onClick={() => onQuickPickChange(option.value)}
+              >
+                {isSelected && <Icon name="check" category="general" size={16} />}
+                <span>{option.label}</span>
+              </button>
+            )
+          })}
+        </div>
+      </div>
+      <div className="push-schedule-composer__date-time-row">
+        <ScheduleDatePicker
+          value={date}
+          onChange={(nextScheduleDate) => {
+            onDateChange(nextScheduleDate)
+            onQuickPickChange('custom')
+          }}
+        />
+        <DropdownSingle
+          className="push-schedule-field push-schedule-time-dropdown"
+          size="md"
+          title="Send Time"
+          showTitle
+          showDescription={false}
+          showHelpText={false}
+          showLeadingIcon={false}
+          usePortal
+          portalAlign="start"
+          placeholder="Select Time"
+          options={SCHEDULE_TIME_OPTIONS}
+          value={time}
+          onChange={(value) => {
+            onTimeChange(value)
+            onQuickPickChange('custom')
+          }}
+        />
+      </div>
+      <DropdownSingle
+        className="push-schedule-timezone"
+        title="Timezone"
+        showTitle
+        showDescription={false}
+        showHelpText={false}
+        showLeadingIcon={false}
+        usePortal
+        portalAlign="start"
+        options={SCHEDULE_TIMEZONE_OPTIONS}
+        value={timezone}
+        onChange={onTimezoneChange}
+      />
+      <p className="push-schedule-composer__notice">
+        Pick a date and time above to schedule this notification.
+      </p>
+    </section>
+  )
+}
+
 interface AppSettingsPanelProps {
   searchBarEnabled: boolean
   setSearchBarEnabled: (enabled: boolean) => void
@@ -902,6 +996,7 @@ export interface PushNotificationsPanelProps {
   onViewChange?: (view: PushNotificationPanelView) => void
   onCanReturnToHistoryChange?: (canReturnToHistory: boolean) => void
   onInitialOverviewChange?: (isInitialOverview: boolean) => void
+  onScheduleComposerChange?: (isScheduleComposer: boolean) => void
   returnToHistoryRequestId?: number
   isPublishComposer?: boolean
 }
@@ -971,6 +1066,7 @@ export function PushNotificationsPanel({
   onViewChange,
   onCanReturnToHistoryChange,
   onInitialOverviewChange,
+  onScheduleComposerChange,
   returnToHistoryRequestId = 0,
   isPublishComposer = false,
 }: PushNotificationsPanelProps) {
@@ -985,6 +1081,7 @@ export function PushNotificationsPanel({
   const [scheduleTime, setScheduleTime] = useState('')
   const [scheduleTimezone, setScheduleTimezone] = useState(SCHEDULE_TIMEZONE_OPTIONS[0].value)
   const [scheduleQuickPick, setScheduleQuickPick] = useState<ScheduleQuickPickValue>('custom')
+  const [isScheduleComposer, setIsScheduleComposer] = useState(false)
   const [editingNotification, setEditingNotification] = useState<PushNotificationHistoryItem | null>(null)
   const [editTitle, setEditTitle] = useState('')
   const [editContent, setEditContent] = useState('')
@@ -1053,11 +1150,22 @@ export function PushNotificationsPanel({
     setScheduleDate('')
     setScheduleTime('')
     setScheduleQuickPick('custom')
+    setIsScheduleComposer(false)
+    onScheduleComposerChange?.(false)
   }
   const openNotificationComposer = () => {
     resetNotificationComposer()
     setCanReturnToHistory(true)
     setUsesInitialComposerLayout(true)
+    setActiveView('composer')
+  }
+  const openScheduleNotificationComposer = () => {
+    resetNotificationComposer()
+    setAudience([ALL_USERS_AUDIENCE_ID])
+    setCanReturnToHistory(true)
+    setUsesInitialComposerLayout(true)
+    setIsScheduleComposer(true)
+    onScheduleComposerChange?.(true)
     setActiveView('composer')
   }
   const duplicateNotification = (notification: PushNotificationHistoryItem) => {
@@ -1200,6 +1308,10 @@ export function PushNotificationsPanel({
   }, [activeView, canReturnToHistory, onInitialOverviewChange, usesInitialComposerLayout])
 
   useEffect(() => {
+    onScheduleComposerChange?.(activeView === 'composer' && isScheduleComposer)
+  }, [activeView, isScheduleComposer, onScheduleComposerChange])
+
+  useEffect(() => {
     if (returnToHistoryRequestId === handledReturnToHistoryRequestIdRef.current) return
 
     handledReturnToHistoryRequestIdRef.current = returnToHistoryRequestId
@@ -1213,6 +1325,7 @@ export function PushNotificationsPanel({
         <PushNotificationOverview
           isDisabled={isDisabled}
           onCreateNotification={openNotificationComposer}
+          onScheduleNotification={isPublishComposer ? openScheduleNotificationComposer : openNotificationComposer}
           onDisable={onDisable}
           onEnable={onEnable}
           onPermissionMessageEdit={onPermissionMessageEdit}
@@ -1250,6 +1363,18 @@ export function PushNotificationsPanel({
             onPermissionMessageEdit={onPermissionMessageEdit}
             isInitialPushNotification={usesInitialComposerLayout}
             hideIntro={isPublishComposer}
+            scheduleContent={isScheduleComposer ? (
+              <PushScheduleComposerSection
+                quickPick={scheduleQuickPick}
+                onQuickPickChange={applyScheduleQuickPick}
+                date={scheduleDate}
+                onDateChange={setScheduleDate}
+                time={scheduleTime}
+                onTimeChange={setScheduleTime}
+                timezone={scheduleTimezone}
+                onTimezoneChange={setScheduleTimezone}
+              />
+            ) : undefined}
           />
           {!isDisabled && <div className="push-notification-actions">
             <Button
@@ -1261,7 +1386,14 @@ export function PushNotificationsPanel({
               SEND TEST
             </Button>
             <div className="push-notification-actions__right">
-              {!isPublishComposer && <Button
+              {isScheduleComposer ? <Button
+                colorScheme="apps"
+                disabled={areNotificationActionsDisabled}
+                leftIcon={<Icon name="calendar-event" category="time-date" size={20} />}
+                onClick={saveScheduledNotification}
+              >
+                SCHEDULE
+              </Button> : !isPublishComposer && <Button
                 colorScheme="primary"
                 disabled={areNotificationActionsDisabled}
                 leftIcon={<Icon name="calendar-event" category="time-date" size={20} />}
@@ -1269,13 +1401,13 @@ export function PushNotificationsPanel({
               >
                 SCHEDULE
               </Button>}
-              <Button
+              {!isScheduleComposer && <Button
                 colorScheme="constructive"
                 disabled={areNotificationActionsDisabled}
                 onClick={sendPushNotificationNow}
               >
                 SEND NOW
-              </Button>
+              </Button>}
             </div>
           </div>}
         </>
@@ -1413,6 +1545,7 @@ export function PushNotificationsPanel({
 interface PushNotificationOverviewProps {
   isDisabled: boolean
   onCreateNotification: () => void
+  onScheduleNotification: () => void
   onDisable: () => void
   onEnable: () => void
   onPermissionMessageEdit?: () => void
@@ -1529,6 +1662,7 @@ function PushNotificationDisabledState({
 function PushNotificationOverview({
   isDisabled,
   onCreateNotification,
+  onScheduleNotification,
   onDisable,
   onEnable,
   onPermissionMessageEdit,
@@ -1544,6 +1678,7 @@ function PushNotificationOverview({
   ]
   const createOptions = [
     {
+      action: 'send',
       icon: 'paper-plane-diagonal-filled',
       iconCategory: 'communication',
       title: 'Send Notification',
@@ -1551,6 +1686,7 @@ function PushNotificationOverview({
       tone: 'constructive',
     },
     {
+      action: 'schedule',
       icon: 'calendar-event',
       iconCategory: 'time-date',
       title: 'Schedule Notification',
@@ -1652,12 +1788,12 @@ function PushNotificationOverview({
       <div className="push-notification-overview__create-section">
         <p className="push-notification-overview__eyebrow">Create a notification</p>
         <div className="push-notification-overview__create-card">
-          {createOptions.map(({ icon, iconCategory, title, description, tone }) => (
+          {createOptions.map(({ action, icon, iconCategory, title, description, tone }) => (
             <button
               type="button"
               className="push-notification-overview__create-option"
               key={title}
-              onClick={onCreateNotification}
+              onClick={action === 'schedule' ? onScheduleNotification : onCreateNotification}
             >
               <span className={`push-notification-overview__create-icon push-notification-overview__create-icon--${tone}`}>
                 <Icon name={icon} category={iconCategory} size={16} />
@@ -2981,6 +3117,7 @@ interface PushNotificationComposerProps {
   onPermissionMessageEdit?: () => void
   isInitialPushNotification?: boolean
   hideIntro?: boolean
+  scheduleContent?: ReactNode
 }
 
 interface AudienceDropdownOption {
@@ -3014,6 +3151,7 @@ function AudienceDropdown({ value, onChange, roles }: AudienceDropdownProps) {
   ], [roles])
   const selectedOptions = options.filter((option) => value.includes(option.id))
   const selectedRoleOptions = selectedOptions.filter((option) => option.role)
+  const selectedAllUsersOption = selectedOptions.find((option) => option.id === ALL_USERS_AUDIENCE_ID)
   const selectedLabel = selectedOptions.length > 0
     ? selectedOptions.map((option) => option.label).join(', ')
     : NOTIFICATION_AUDIENCE_PLACEHOLDER
@@ -3098,6 +3236,11 @@ function AudienceDropdown({ value, onChange, roles }: AudienceDropdownProps) {
                     {option.label}
                   </span>
                 ))}
+              </span>
+            ) : selectedAllUsersOption ? (
+              <span className="push-audience-dropdown__all-users-value">
+                <span>{selectedAllUsersOption.label} - </span>
+                <span>{selectedAllUsersOption.deviceCount} devices</span>
               </span>
             ) : (
               selectedLabel
@@ -3282,6 +3425,7 @@ function PushNotificationComposer({
   onPermissionMessageEdit,
   isInitialPushNotification = false,
   hideIntro = false,
+  scheduleContent,
 }: PushNotificationComposerProps) {
   const imageInputRef = useRef<HTMLInputElement>(null)
   const contextMenuRef = useRef<HTMLDivElement>(null)
@@ -3484,6 +3628,10 @@ function PushNotificationComposer({
           <DeepLinkDropdown value={deepLink} onChange={setDeepLink} targets={deepLinkTargets} />
         </div>
       </div>
+      {scheduleContent && <>
+        <span className="push-composer-panel__schedule-divider" aria-hidden="true" />
+        {scheduleContent}
+      </>}
       </div>}
     </section>
   )

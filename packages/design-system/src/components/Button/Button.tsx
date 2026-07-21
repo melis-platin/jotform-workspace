@@ -3,7 +3,7 @@ import './Button.scss';
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'filled' | 'ghost' | 'transparent';
-  colorScheme?: 'primary' | 'secondary' | 'constructive' | 'destructive';
+  colorScheme?: 'primary' | 'secondary' | 'constructive' | 'destructive' | 'apps';
   shape?: 'rectangle' | 'rounded';
   size?: 'sm' | 'md' | 'lg';
   leftIcon?: ReactNode;
