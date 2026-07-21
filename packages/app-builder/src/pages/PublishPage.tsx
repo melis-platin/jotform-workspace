@@ -547,8 +547,6 @@ export function PublishPage({
   const shouldShowPreview = shouldShowPushPreview || isPermissionRequestModalOpen
 
   const handleNavigationChange = (nextId: string) => {
-    if (isFigmaPushInitial && nextId !== 'push-notifications') return
-
     setIsPushInitialOverview(nextId === 'push-notifications' && pushNotificationHistoryItems.length === 0)
     setActiveId(nextId)
   }
