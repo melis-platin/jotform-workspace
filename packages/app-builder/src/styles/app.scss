@@ -13791,10 +13791,11 @@ body.builder--phone-only {
 .push-notification-overview__context-menu {
   position: fixed;
   z-index: 2147483647;
-  width: 188px;
+  width: max-content;
+  min-width: 188px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  overflow: visible;
   padding: var(--space-2) 0;
   border-radius: var(--radius-sm);
   background: var(--secondary-background-medium);
