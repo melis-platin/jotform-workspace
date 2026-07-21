@@ -1207,7 +1207,13 @@ export function PushNotificationsPanel({
   return (
     <>
       {activeView === 'composer' && usesInitialComposerLayout && !canReturnToHistory ? (
-        <PushNotificationOverview onCreateNotification={openNotificationComposer} />
+        <PushNotificationOverview
+          isDisabled={isDisabled}
+          onCreateNotification={openNotificationComposer}
+          onDisable={onDisable}
+          onEnable={onEnable}
+          onPermissionMessageEdit={onPermissionMessageEdit}
+        />
       ) : activeView === 'composer' ? (
         <>
           <PushNotificationComposer
@@ -1400,7 +1406,25 @@ export function PushNotificationsPanel({
   )
 }
 
-function PushNotificationOverview({ onCreateNotification }: { onCreateNotification: () => void }) {
+interface PushNotificationOverviewProps {
+  isDisabled: boolean
+  onCreateNotification: () => void
+  onDisable: () => void
+  onEnable: () => void
+  onPermissionMessageEdit?: () => void
+}
+
+function PushNotificationOverview({
+  isDisabled,
+  onCreateNotification,
+  onDisable,
+  onEnable,
+  onPermissionMessageEdit,
+}: PushNotificationOverviewProps) {
+  const moreButtonRef = useRef<HTMLButtonElement>(null)
+  const contextMenuRef = useRef<HTMLDivElement>(null)
+  const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
+  const [contextMenuPosition, setContextMenuPosition] = useState({ top: 0, left: 0 })
   const deviceStats = [
     { icon: 'mobile', label: 'Mobile · 0%' },
     { icon: 'tablet', label: 'Tablet · 0%' },
@@ -1423,6 +1447,43 @@ function PushNotificationOverview({ onCreateNotification }: { onCreateNotificati
     },
   ] as const
 
+  const openContextMenu = () => {
+    const triggerBounds = moreButtonRef.current?.getBoundingClientRect()
+
+    if (!triggerBounds) return
+
+    setContextMenuPosition({
+      top: triggerBounds.bottom + 4,
+      left: Math.max(8, triggerBounds.left - 184),
+    })
+    setIsContextMenuOpen(true)
+  }
+
+  useEffect(() => {
+    if (!isContextMenuOpen) return undefined
+
+    const closeContextMenu = (event: MouseEvent) => {
+      if (
+        event.target instanceof Node &&
+        !contextMenuRef.current?.contains(event.target) &&
+        !moreButtonRef.current?.contains(event.target)
+      ) {
+        setIsContextMenuOpen(false)
+      }
+    }
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsContextMenuOpen(false)
+    }
+
+    document.addEventListener('mousedown', closeContextMenu)
+    document.addEventListener('keydown', closeOnEscape)
+
+    return () => {
+      document.removeEventListener('mousedown', closeContextMenu)
+      document.removeEventListener('keydown', closeOnEscape)
+    }
+  }, [isContextMenuOpen])
+
   return (
     <section className="push-notification-overview" aria-label="Push notification overview">
       <div className="push-notification-overview__reach-card">
@@ -1431,9 +1492,16 @@ function PushNotificationOverview({ onCreateNotification }: { onCreateNotificati
           <div className="push-notification-overview__reach-actions">
             <span className="push-notification-overview__status">Active</span>
             <button
+              ref={moreButtonRef}
               type="button"
               className="push-notification-overview__more-button"
               aria-label="Push notification options"
+              aria-expanded={isContextMenuOpen}
+              aria-haspopup="menu"
+              onClick={() => {
+                if (isContextMenuOpen) setIsContextMenuOpen(false)
+                else openContextMenu()
+              }}
             >
               <Icon name="ellipsis-vertical" category="general" size={16} />
             </button>
@@ -1487,6 +1555,42 @@ function PushNotificationOverview({ onCreateNotification }: { onCreateNotificati
           ))}
         </div>
       </div>
+
+      {isContextMenuOpen && createPortal(
+        <div
+          ref={contextMenuRef}
+          className="push-notification-overview__context-menu"
+          role="menu"
+          style={contextMenuPosition}
+        >
+          <button
+            type="button"
+            className="push-notification-overview__context-menu-item"
+            role="menuitem"
+            onClick={() => {
+              setIsContextMenuOpen(false)
+              if (isDisabled) onEnable()
+              else onDisable()
+            }}
+          >
+            <Icon name={isDisabled ? 'play-filled' : 'pause-filled'} category="media" size={18} />
+            <span>{isDisabled ? 'Enable' : 'Disable'}</span>
+          </button>
+          <button
+            type="button"
+            className="push-notification-overview__context-menu-item"
+            role="menuitem"
+            onClick={() => {
+              setIsContextMenuOpen(false)
+              onPermissionMessageEdit?.()
+            }}
+          >
+            <Icon name="pencil-to-square" category="general" size={18} />
+            <span>Edit Permission Message</span>
+          </button>
+        </div>,
+        document.body,
+      )}
     </section>
   )
 }

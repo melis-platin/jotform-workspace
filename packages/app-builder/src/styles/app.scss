@@ -13788,6 +13788,43 @@ body.builder--phone-only {
   }
 }
 
+.push-notification-overview__context-menu {
+  position: fixed;
+  z-index: 2147483647;
+  width: 188px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding: var(--space-2) 0;
+  border-radius: var(--radius-sm);
+  background: var(--secondary-background-medium);
+}
+
+.push-notification-overview__context-menu-item {
+  width: 100%;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: calc(var(--space-2) + var(--spacing-3xs)) var(--space-4);
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--secondary-text-white);
+  font-family: var(--font-family-circular);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-book);
+  line-height: var(--line-height-sm);
+  letter-spacing: var(--body-sm-letter-spacing);
+  text-align: left;
+  white-space: nowrap;
+  cursor: pointer;
+
+  .jf-icon,
+  svg {
+    flex: 0 0 auto;
+  }
+}
+
 .push-notification-overview__total {
   align-items: flex-end;
   gap: var(--space-1);
