@@ -1490,7 +1490,9 @@ function PushNotificationOverview({
         <div className="push-notification-overview__reach-header">
           <h2>Reachable Across Channels</h2>
           <div className="push-notification-overview__reach-actions">
-            <span className="push-notification-overview__status">Active</span>
+            <span className={`push-notification-overview__status${isDisabled ? ' push-notification-overview__status--disabled' : ''}`}>
+              {isDisabled ? 'Disabled' : 'Active'}
+            </span>
             <button
               ref={moreButtonRef}
               type="button"

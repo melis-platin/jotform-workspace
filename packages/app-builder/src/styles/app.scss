@@ -13768,6 +13768,11 @@ body.builder--phone-only {
   line-height: var(--line-height-xs);
 }
 
+.push-notification-overview__status--disabled {
+  background: var(--background-lightest);
+  color: var(--text-dark);
+}
+
 .push-notification-overview__more-button {
   width: var(--spacing-2xl);
   height: var(--spacing-2xl);
