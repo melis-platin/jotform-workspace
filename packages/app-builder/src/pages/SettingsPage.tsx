@@ -3214,7 +3214,7 @@ function AudienceDropdown({ value, onChange, roles }: AudienceDropdownProps) {
       id: role.id,
       label: role.label,
       role,
-      deviceCount: PUSH_NOTIFICATION_ALLOWED_DEVICE_COUNT,
+      deviceCount: role.deviceCount ?? 0,
     })),
   ], [roles])
   const selectedOptions = options.filter((option) => value.includes(option.id))
@@ -3508,6 +3508,9 @@ function PushNotificationComposer({
     contentFields.length === 0 &&
     contentSuffix.trim().length === 0
   const shouldShowEmptyStateNotice = showEmptyStateNotice && (isTitleEmpty || isContentEmpty)
+  const shouldShowSendStatusNotice = showEmptyStateNotice && !shouldShowEmptyStateNotice
+  const selectedAudienceLabel = getAudienceHistoryLabel(audience, appUserRoles)
+  const selectedAudienceDeviceCount = getAudienceDeviceCount(audience, appUserRoles)
 
   useEffect(() => {
     if (!isContextMenuOpen) return
@@ -3700,7 +3703,7 @@ function PushNotificationComposer({
           </div>
         </div>
       </div>
-      <div className={`push-composer-panel__selection${shouldShowEmptyStateNotice ? ' push-composer-panel__selection--with-empty-notice' : ''}`}>
+      <div className={`push-composer-panel__selection${shouldShowEmptyStateNotice || shouldShowSendStatusNotice ? ' push-composer-panel__selection--with-empty-notice' : ''}`}>
         <div className="push-composer-panel__dropdown-row">
           <AudienceDropdown value={audience} onChange={setAudience} roles={appUserRoles} />
           <DeepLinkDropdown value={deepLink} onChange={setDeepLink} targets={deepLinkTargets} />
@@ -3708,6 +3711,14 @@ function PushNotificationComposer({
         {shouldShowEmptyStateNotice && (
           <div className="push-composer-panel__empty-state-notice" role="status">
             Add a title and content to send this notification.
+          </div>
+        )}
+        {shouldShowSendStatusNotice && (
+          <div className="push-composer-panel__send-status-notice" role="status">
+            <Icon name="paper-plane-diagonal-filled" category="communication" size={16} />
+            <p>
+              Sending now to <strong>{selectedAudienceDeviceCount} people</strong> in {selectedAudienceLabel} - delivers immediately.
+            </p>
           </div>
         )}
       </div>
@@ -3801,6 +3812,16 @@ function getAudienceHistoryLabel(audience: string[], roles: AppRoleOption[]) {
   if (selectedRoles.length === 1) return selectedRoles[0].label
 
   return `${selectedRoles.length} roles (${selectedRoles.map((role) => role.label).join(', ')})`
+}
+
+function getAudienceDeviceCount(audience: string[], roles: AppRoleOption[]) {
+  if (audience.includes(ALL_USERS_AUDIENCE_ID)) {
+    return PUSH_NOTIFICATION_ALLOWED_DEVICE_COUNT
+  }
+
+  return roles.reduce((total, role) => (
+    audience.includes(role.id) ? total + (role.deviceCount ?? 0) : total
+  ), 0)
 }
 
 function getDeepLinkHistoryLabel(deepLink: string, targets: DeepLinkTarget[]) {

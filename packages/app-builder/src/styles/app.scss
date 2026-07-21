@@ -14387,6 +14387,40 @@ body.builder--phone-only {
   letter-spacing: var(--body-sm-letter-spacing);
 }
 
+.push-composer-panel__send-status-notice {
+  width: 100%;
+  height: calc(var(--space-3) * 2 + var(--line-height-sm));
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--success-notice-border);
+  border-radius: var(--radius-md);
+  background: var(--success-notice-background);
+  color: var(--text-dark);
+  font-family: var(--font-family-circular);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-book);
+  line-height: var(--line-height-sm);
+  letter-spacing: var(--body-sm-letter-spacing);
+}
+
+.push-composer-panel__send-status-notice .jf-icon {
+  flex: 0 0 auto;
+  color: var(--success-default);
+}
+
+.push-composer-panel__send-status-notice p {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.push-composer-panel__send-status-notice strong {
+  color: var(--text-darkest);
+  font-weight: var(--font-weight-bold);
+}
+
 .push-composer-panel--initial .push-composer-panel__fields,
 .push-composer-panel--initial .push-composer-panel__dropdown-row {
   gap: var(--space-6);
