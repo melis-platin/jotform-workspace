@@ -2337,6 +2337,7 @@ interface PushNotificationHistoryCardProps {
 function PushNotificationHistoryCard({ notification, onEdit, onCancel, onDuplicate }: PushNotificationHistoryCardProps) {
   const isScheduled = notification.status === 'scheduled'
   const statusBadgeLabel = isScheduled ? notification.statusLabel : 'Send'
+  const audienceLabel = getDisplayAudienceHistoryLabel(notification.audienceLabel)
   const destinationLabel = getDisplayDeepLinkLabel(notification.deepLinkLabel)
   const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false)
   const [actionsMenuStyle, setActionsMenuStyle] = useState<CSSProperties>({ visibility: 'hidden' })
@@ -2448,7 +2449,7 @@ function PushNotificationHistoryCard({ notification, onEdit, onCancel, onDuplica
         <div className="push-notification-history-card__metadata" aria-label="Notification details">
           <span className="push-notification-history-card__metadata-item">
             <Icon name="users-filled" category="users" size={12} />
-            <span>{notification.audienceLabel}</span>
+            <span>{audienceLabel}</span>
           </span>
           <span className="push-notification-history-card__metadata-separator" aria-hidden="true" />
           <span className="push-notification-history-card__metadata-item">
@@ -3887,7 +3888,11 @@ function getAudienceHistoryLabel(audience: string[], roles: AppRoleOption[]) {
   if (selectedRoles.length === 0) return 'All Users'
   if (selectedRoles.length === 1) return selectedRoles[0].label
 
-  return `${selectedRoles.length} roles (${selectedRoles.map((role) => role.label).join(', ')})`
+  return `${selectedRoles.length} roles`
+}
+
+function getDisplayAudienceHistoryLabel(audienceLabel: string) {
+  return audienceLabel.replace(/\s*\([^)]*\)\s*$/, '')
 }
 
 function getSendStatusAudience(audience: string[], roles: AppRoleOption[]) {
