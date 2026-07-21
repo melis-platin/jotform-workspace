@@ -8755,6 +8755,41 @@ body {
   color: var(--secondary-text-dark);
 }
 
+// Publish navigation follows the Figma source of truth (Archieve 27.03.2026,
+// node 1:307144). The Push first-open state intentionally uses its own
+// navigation variant above.
+.side-nav--publish-figma {
+  width: 318px;
+  gap: var(--ds-space-sm);
+  padding: var(--ds-space-xl) 0 var(--ds-space-xl) var(--ds-space-sm);
+}
+
+.side-nav--publish-figma .side-nav__item {
+  width: calc(100% - var(--ds-space-sm));
+  min-height: calc(var(--ds-space-4xl) + var(--ds-space-2xs));
+  gap: var(--ds-space-2xs);
+  padding:
+    calc(var(--ds-space-sm) + var(--ds-space-3xs))
+    var(--ds-space-2xs);
+}
+
+.side-nav--publish-figma .side-nav__text {
+  gap: var(--ds-space-2xs);
+}
+
+.side-nav--publish-figma .side-nav__title {
+  font-weight: var(--ds-font-weight-bold);
+  line-height: var(--ds-line-height-md);
+}
+
+.side-nav--publish-figma .side-nav__desc {
+  color: var(--ds-text-primary);
+}
+
+.side-nav--publish-figma .side-nav__item--active .side-nav__desc {
+  color: var(--secondary-text-dark);
+}
+
 .builder:has(.publish-page--figma-push-initial) .topbar__main {
   height: calc(var(--spacing-4xl) + var(--spacing-2xs) + var(--spacing-3xs));
 }

@@ -591,7 +591,7 @@ export function PublishPage({
         items={isFigmaPushInitial ? FIGMA_PUSH_NAV_ITEMS : NAV_ITEMS}
         activeId={activeId}
         onChange={handleNavigationChange}
-        className={isFigmaPushInitial ? 'side-nav--figma-push-initial' : undefined}
+        className={isFigmaPushInitial ? 'side-nav--figma-push-initial' : 'side-nav--publish-figma'}
       />
       <main className="publish-page__content">
         <div className="publish-page__main">
