@@ -1143,7 +1143,10 @@ export function PushNotificationsPanel({
       notificationContentFields.length === 0 &&
       notificationContentSuffix.trim().length === 0
     )
-  const isScheduleActionDisabled = !scheduleDate.trim() || !scheduleTime.trim()
+  const isScheduleActionDisabled =
+    areNotificationActionsDisabled ||
+    !scheduleDate.trim() ||
+    !scheduleTime.trim()
   const addNotificationTitleField = (field: PushComposerFieldOption) => {
     if (notificationTitleEditorRef.current?.insertField(field)) return
 
