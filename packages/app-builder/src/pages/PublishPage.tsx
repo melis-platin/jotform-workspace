@@ -533,6 +533,7 @@ export function PublishPage({
   const isFigmaPushInitial = isPushNotificationsOpen && isPushInitialOverview
   const isPushComposerOpen = isPushNotificationsOpen && canReturnToPushHistory
   const isPushScheduleOpen = isPushNotificationsOpen && isPushScheduleComposer
+  const canReturnFromPushOverview = isFigmaPushInitial && pushNotificationHistoryItems.length > 0
   const usesFigmaPushComposerLayout = isPushComposerOpen
   const usesFigmaPushLayout = isPushNotificationsOpen
   const shouldShowPushPreview = isPushNotificationsOpen && !arePushNotificationsDisabled && !isFigmaPushInitial
@@ -591,7 +592,7 @@ export function PublishPage({
                 description={isPushScheduleOpen ? 'Choose when to send your notification.' : isPushComposerOpen ? 'Create and send a notification now.' : active.headerDescription ?? active.description}
                 iconBg={isPushScheduleOpen ? 'var(--purple-400)' : isPushComposerOpen ? 'var(--success-default)' : active.iconBg}
                 iconSize={isFigmaPushInitial || isPushComposerOpen ? 24 : undefined}
-                leading={isPushComposerOpen ? (
+                leading={isPushComposerOpen || canReturnFromPushOverview ? (
                   <button
                     type="button"
                     className="panel-header__back-button"
