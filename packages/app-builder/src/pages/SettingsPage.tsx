@@ -1414,6 +1414,114 @@ interface PushNotificationOverviewProps {
   onPermissionMessageEdit?: () => void
 }
 
+function PushNotificationDisabledState({
+  onEnable,
+  onPermissionMessageEdit,
+}: Pick<PushNotificationOverviewProps, 'onEnable' | 'onPermissionMessageEdit'>) {
+  const moreButtonRef = useRef<HTMLButtonElement>(null)
+  const contextMenuRef = useRef<HTMLDivElement>(null)
+  const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
+  const [contextMenuPosition, setContextMenuPosition] = useState({ top: 0, left: 0 })
+
+  const openContextMenu = () => {
+    const triggerBounds = moreButtonRef.current?.getBoundingClientRect()
+
+    if (!triggerBounds) return
+
+    setContextMenuPosition({
+      top: triggerBounds.bottom + 4,
+      left: Math.max(8, triggerBounds.left - 184),
+    })
+    setIsContextMenuOpen(true)
+  }
+
+  useEffect(() => {
+    if (!isContextMenuOpen) return undefined
+
+    const closeContextMenu = (event: MouseEvent) => {
+      if (
+        event.target instanceof Node &&
+        !contextMenuRef.current?.contains(event.target) &&
+        !moreButtonRef.current?.contains(event.target)
+      ) {
+        setIsContextMenuOpen(false)
+      }
+    }
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setIsContextMenuOpen(false)
+    }
+
+    document.addEventListener('mousedown', closeContextMenu)
+    document.addEventListener('keydown', closeOnEscape)
+
+    return () => {
+      document.removeEventListener('mousedown', closeContextMenu)
+      document.removeEventListener('keydown', closeOnEscape)
+    }
+  }, [isContextMenuOpen])
+
+  return (
+    <section className="push-notification-disabled-state" aria-label="Push notifications disabled">
+      <div className="push-notification-disabled-state__copy">
+        <h2>Enable push notifications</h2>
+        <p>Send personalized notifications to your users instantly.</p>
+      </div>
+      <div className="push-notification-disabled-state__actions">
+        <span className="push-notification-overview__status push-notification-overview__status--disabled">Disabled</span>
+        <button
+          ref={moreButtonRef}
+          type="button"
+          className="push-notification-overview__more-button"
+          aria-label="Push notification options"
+          aria-expanded={isContextMenuOpen}
+          aria-haspopup="menu"
+          onClick={() => {
+            if (isContextMenuOpen) setIsContextMenuOpen(false)
+            else openContextMenu()
+          }}
+        >
+          <Icon name="ellipsis-vertical" category="general" size={16} />
+        </button>
+      </div>
+
+      {isContextMenuOpen && createPortal(
+        <div
+          ref={contextMenuRef}
+          className="push-notification-overview__context-menu"
+          role="menu"
+          style={contextMenuPosition}
+        >
+          <button
+            type="button"
+            className="push-notification-overview__context-menu-item"
+            role="menuitem"
+            onClick={() => {
+              setIsContextMenuOpen(false)
+              onEnable()
+            }}
+          >
+            <Icon name="play-filled" category="media" size={18} />
+            <span>Enable</span>
+          </button>
+          <button
+            type="button"
+            className="push-notification-overview__context-menu-item"
+            role="menuitem"
+            onClick={() => {
+              setIsContextMenuOpen(false)
+              onPermissionMessageEdit?.()
+            }}
+          >
+            <Icon name="pencil-to-square" category="general" size={18} />
+            <span>Edit Permission Message</span>
+          </button>
+        </div>,
+        document.body,
+      )}
+    </section>
+  )
+}
+
 function PushNotificationOverview({
   isDisabled,
   onCreateNotification,
@@ -1483,6 +1591,10 @@ function PushNotificationOverview({
       document.removeEventListener('keydown', closeOnEscape)
     }
   }, [isContextMenuOpen])
+
+  if (isDisabled) {
+    return <PushNotificationDisabledState onEnable={onEnable} onPermissionMessageEdit={onPermissionMessageEdit} />
+  }
 
   return (
     <section className="push-notification-overview" aria-label="Push notification overview">

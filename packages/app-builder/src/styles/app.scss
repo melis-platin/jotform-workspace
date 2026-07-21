@@ -13707,6 +13707,59 @@ body.builder--phone-only {
   gap: var(--space-6);
 }
 
+.push-notification-disabled-state {
+  width: 660px;
+  max-width: 100%;
+  min-height: 96px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  border-radius: var(--radius-sm);
+  background: var(--background-white);
+  box-shadow: var(--shadow-xs);
+}
+
+.push-notification-disabled-state__copy {
+  min-width: 0;
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.push-notification-disabled-state__copy h2,
+.push-notification-disabled-state__copy p {
+  width: 100%;
+  margin: 0;
+}
+
+.push-notification-disabled-state__copy h2 {
+  color: var(--text-darkest);
+  font-family: var(--font-family-circular);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-md);
+  letter-spacing: var(--body-letter-spacing);
+}
+
+.push-notification-disabled-state__copy p {
+  color: var(--text-medium);
+  font-family: var(--font-family-circular);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-book);
+  line-height: var(--line-height-sm);
+  letter-spacing: var(--body-sm-letter-spacing);
+}
+
+.push-notification-disabled-state__actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
 .push-notification-overview__reach-card,
 .push-notification-overview__create-card {
   width: 100%;
