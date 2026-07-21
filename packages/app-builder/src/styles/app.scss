@@ -14389,7 +14389,7 @@ body.builder--phone-only {
 
 .push-composer-panel__send-status-notice {
   width: 100%;
-  height: calc(var(--space-3) * 2 + var(--line-height-sm));
+  min-height: calc(var(--space-3) * 2 + var(--line-height-sm));
   display: flex;
   align-items: center;
   gap: var(--space-1);
@@ -14412,8 +14412,9 @@ body.builder--phone-only {
 }
 
 .push-composer-panel__send-status-notice p {
+  min-width: 0;
   margin: 0;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
 }
 
 .push-composer-panel__send-status-notice strong {
