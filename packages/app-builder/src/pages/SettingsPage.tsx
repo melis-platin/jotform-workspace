@@ -9,6 +9,7 @@ import {
   Input,
   Link as TextLink,
   Modal,
+  SearchInput,
   Segmented,
   TextArea,
   Toggle,
@@ -98,6 +99,24 @@ const SENT_NOTIFICATION_METRICS = [
   { label: 'SENT', value: '500' },
   { label: 'DELIVERED', value: '300' },
   { label: 'CLICKED', value: '0' },
+]
+
+const PUSH_NOTIFICATION_HISTORY_FILTER_OPTIONS = [
+  {
+    value: 'all',
+    label: 'See All',
+    leading: <Icon name="eye-filled" category="general" size={20} />,
+  },
+  {
+    value: 'scheduled',
+    label: 'Scheduled',
+    leading: <Icon name="clock-filled" category="time-date" size={20} />,
+  },
+  {
+    value: 'sent',
+    label: 'Sent',
+    leading: <Icon name="check-circle-filled" category="general" size={20} />,
+  },
 ]
 
 const SCHEDULE_TIMEZONE_OPTIONS = [
@@ -2217,14 +2236,51 @@ function PushNotificationHistory({
   onNotificationDuplicate,
 }: PushNotificationHistoryProps) {
   const [visibleCount, setVisibleCount] = useState(5)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [statusFilter, setStatusFilter] = useState<PushNotificationHistoryStatus | 'all'>('all')
 
   if (notifications.length === 0) return null
 
-  const visibleNotifications = notifications.slice(0, visibleCount)
-  const hasMoreNotifications = visibleCount < notifications.length
+  const normalizedSearchQuery = searchQuery.trim().toLocaleLowerCase()
+  const filteredNotifications = notifications.filter((notification) => (
+    (statusFilter === 'all' || notification.status === statusFilter) &&
+    (!normalizedSearchQuery || [notification.title, notification.content, notification.audienceLabel]
+      .some((value) => value.toLocaleLowerCase().includes(normalizedSearchQuery)))
+  ))
+  const visibleNotifications = filteredNotifications.slice(0, visibleCount)
+  const hasMoreNotifications = visibleCount < filteredNotifications.length
 
   return (
     <section className="push-notification-history" aria-label="Push notification history">
+      <div className="push-notification-history__toolbar">
+        <SearchInput
+          className="push-notification-history__search"
+          size="md"
+          placeholder="Search notifications"
+          aria-label="Search notifications"
+          value={searchQuery}
+          onChange={(event) => {
+            setSearchQuery(event.target.value)
+            setVisibleCount(5)
+          }}
+          onClear={() => {
+            setSearchQuery('')
+            setVisibleCount(5)
+          }}
+        />
+        <DropdownSingle
+          className="push-notification-history__filter"
+          size="md"
+          options={PUSH_NOTIFICATION_HISTORY_FILTER_OPTIONS}
+          value={statusFilter}
+          onChange={(value) => {
+            setStatusFilter(value as PushNotificationHistoryStatus | 'all')
+            setVisibleCount(5)
+          }}
+          usePortal
+          portalAlign="end"
+        />
+      </div>
       <div className="push-notification-history__list">
         {visibleNotifications.map((notification) => (
           <PushNotificationHistoryCard
