@@ -13908,12 +13908,6 @@ body.builder--phone-only {
   & + & {
     border-top: 1px solid var(--border-light);
   }
-
-  &:hover,
-  &:focus-visible {
-    outline: none;
-    background: var(--background-lightest);
-  }
 }
 
 .push-notification-overview__create-icon {
