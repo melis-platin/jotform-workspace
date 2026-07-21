@@ -1451,7 +1451,7 @@ function PushNotificationOverview({ onCreateNotification }: { onCreateNotificati
             {deviceStats.map(({ icon, label }) => (
               <div className="push-notification-overview__device" key={icon}>
                 <span className="push-notification-overview__device-icon">
-                  <Icon name={icon} category="technology" size={16} />
+                  <Icon name={icon} category="technology" size={20} />
                 </span>
                 <span className="push-notification-overview__device-copy">
                   <strong>0</strong>
