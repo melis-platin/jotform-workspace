@@ -570,7 +570,7 @@
   }
 
   &--disabled {
-    color: var(--navy-200);
+    color: var(--text-darkest);
     cursor: not-allowed;
 
     &:hover,
@@ -579,8 +579,9 @@
     }
 
     .jf-dropdown__item-leading,
-    .jf-dropdown__item-trailing {
-      color: inherit;
+    .jf-dropdown__item-label,
+    > .jf-icon {
+      opacity: 0.4;
     }
   }
 
