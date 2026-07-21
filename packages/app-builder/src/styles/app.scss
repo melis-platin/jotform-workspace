@@ -13760,8 +13760,8 @@ body.builder--phone-only {
   justify-content: center;
   padding: 0 var(--spacing-sm);
   border-radius: var(--radius-rounded);
-  background: color-mix(in srgb, var(--accent-default) 20%, transparent);
-  color: var(--accent-dark);
+  background: rgb(119 207 255 / 30%);
+  color: #0066c3;
   font-family: var(--font-family-circular);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-book);
