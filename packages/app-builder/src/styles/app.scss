@@ -12792,6 +12792,7 @@ body.builder--phone-only {
   height: var(--spacing-2xl);
   min-height: var(--spacing-2xl);
   max-height: var(--spacing-2xl);
+  padding: var(--spacing-xs) var(--spacing-sm);
   background: color-mix(in srgb, var(--purple-100) 70%, var(--background-white));
   color: var(--purple-400);
 
@@ -12803,6 +12804,7 @@ body.builder--phone-only {
   &.push-schedule-quick-picks__chip--selected {
     background: var(--purple-400);
     color: var(--background-white);
+    font-weight: var(--font-weight-medium);
   }
 }
 
