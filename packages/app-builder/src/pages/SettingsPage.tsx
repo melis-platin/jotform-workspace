@@ -187,6 +187,16 @@ const formatScheduleTime = (date: Date) => {
   return formatScheduleTimeParts(date.getHours(), date.getMinutes())
 }
 
+const formatScheduleTimeFieldValue = (value: string) => {
+  const parsedTime = parseScheduleTime(value)
+  if (!parsedTime) return value
+
+  const period = parsedTime.hours >= 12 ? 'pm' : 'am'
+  const displayHours = String(parsedTime.hours % 12 || 12).padStart(2, '0')
+
+  return `${displayHours}:${String(parsedTime.minutes).padStart(2, '0')} ${period}`
+}
+
 const SCHEDULE_TIME_OPTIONS = Array.from({ length: 48 }, (_, index) => {
   const totalMinutes = index * 30
   const label = formatScheduleTimeParts(Math.floor(totalMinutes / 60), totalMinutes % 60)
@@ -197,6 +207,11 @@ const SCHEDULE_TIME_OPTIONS = Array.from({ length: 48 }, (_, index) => {
     leading: <Icon name="clock" category="time-date" size={20} />,
   }
 })
+
+const SCHEDULE_COMPOSER_TIME_OPTIONS = SCHEDULE_TIME_OPTIONS.map(({ value }) => ({
+  value,
+  label: formatScheduleTimeFieldValue(value),
+}))
 
 const roundUpToNextHalfHour = (date: Date) => {
   const roundedDate = new Date(date)
@@ -593,12 +608,13 @@ function PushScheduleComposerSection({
           usePortal
           portalAlign="start"
           placeholder="Select Time"
-          options={SCHEDULE_TIME_OPTIONS}
+          options={SCHEDULE_COMPOSER_TIME_OPTIONS}
           value={time}
           onChange={(value) => {
             onTimeChange(value)
             onCustomScheduleChange()
           }}
+          trailingIcon={<Icon name="clock" category="time-date" size={20} />}
         />
       </div>
       <DropdownSingle

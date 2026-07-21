@@ -1,4 +1,4 @@
-import { Fragment, forwardRef, useImperativeHandle } from 'react';
+import { Fragment, forwardRef, useImperativeHandle, type ReactNode } from 'react';
 import { Icon } from '../Icon/Icon';
 import { DropdownWrapper } from './DropdownWrapper';
 import { DropdownMenuShell } from './DropdownMenuShell';
@@ -21,6 +21,8 @@ export interface DropdownSingleProps extends DropdownBaseProps {
    */
   onItemHoverEnd?: () => void;
   showLeadingIcon?: boolean;
+  /** Replaces the default chevron in the trigger while preserving dropdown behavior. */
+  trailingIcon?: ReactNode;
   menuPlacement?: 'auto' | 'top' | 'bottom';
   mobileBehavior?: 'auto' | 'inline' | 'sheet';
   /** Render the desktop menu in a portal — use when the trigger sits inside an `overflow: hidden` ancestor. */
@@ -45,6 +47,7 @@ export const DropdownSingle = forwardRef<DropdownHandle, DropdownSingleProps>(
       disabled = false,
       placeholder = 'Placeholder',
       showLeadingIcon = true,
+      trailingIcon,
       menuPlacement = 'auto',
       mobileBehavior = 'auto',
       usePortal,
@@ -124,7 +127,7 @@ export const DropdownSingle = forwardRef<DropdownHandle, DropdownSingleProps>(
               {selected ? selected.label : placeholder}
             </span>
             <span className="jf-dropdown__trailing">
-              <Icon name={open ? 'angle-up' : 'angle-down'} category="arrows" size={size === 'sm' ? 16 : 24} />
+              {trailingIcon ?? <Icon name={open ? 'angle-up' : 'angle-down'} category="arrows" size={size === 'sm' ? 16 : 24} />}
             </span>
           </button>
 
