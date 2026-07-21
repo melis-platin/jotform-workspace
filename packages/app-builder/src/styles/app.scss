@@ -14919,10 +14919,20 @@ body.builder--phone-only {
 }
 
 .push-audience-dropdown__item-label {
+  display: flex;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.push-audience-dropdown__item-separator,
+.push-audience-dropdown__item-devices {
+  color: var(--text-medium);
+}
+
+.push-audience-dropdown__item-devices {
+  font-style: italic;
 }
 
 .push-deep-link-dropdown {

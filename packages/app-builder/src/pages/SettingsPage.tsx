@@ -92,6 +92,7 @@ const NOTIFICATION_CONTENT_MAX_LENGTH = 150
 const EDIT_NOTIFICATION_CONTENT_MAX_LENGTH = 400
 const NOTIFICATION_DEEP_LINK_PLACEHOLDER = 'Choose a page or form'
 const NOTIFICATION_AUDIENCE_PLACEHOLDER = 'Choose audience'
+const PUSH_NOTIFICATION_ALLOWED_DEVICE_COUNT = 0
 const SENT_NOTIFICATION_METRICS = [
   { label: 'SUBSCRIBES', value: '600' },
   { label: 'SENT', value: '500' },
@@ -2985,6 +2986,7 @@ interface PushNotificationComposerProps {
 interface AudienceDropdownOption {
   id: string
   label: string
+  deviceCount: number
   role?: AppRoleOption
 }
 
@@ -2998,8 +3000,17 @@ function AudienceDropdown({ value, onChange, roles }: AudienceDropdownProps) {
   const [open, setOpen] = useState(false)
   const rootRef = useRef<HTMLDivElement | null>(null)
   const options = useMemo<AudienceDropdownOption[]>(() => [
-    { id: ALL_USERS_AUDIENCE_ID, label: 'All Users' },
-    ...roles.map((role) => ({ id: role.id, label: role.label, role })),
+    {
+      id: ALL_USERS_AUDIENCE_ID,
+      label: 'All Users',
+      deviceCount: PUSH_NOTIFICATION_ALLOWED_DEVICE_COUNT,
+    },
+    ...roles.map((role) => ({
+      id: role.id,
+      label: role.label,
+      role,
+      deviceCount: PUSH_NOTIFICATION_ALLOWED_DEVICE_COUNT,
+    })),
   ], [roles])
   const selectedOptions = options.filter((option) => value.includes(option.id))
   const selectedRoleOptions = selectedOptions.filter((option) => option.role)
@@ -3115,7 +3126,13 @@ function AudienceDropdown({ value, onChange, roles }: AudienceDropdownProps) {
                   <span className={`push-audience-dropdown__checkbox${isSelected ? ' push-audience-dropdown__checkbox--checked' : ''}`} aria-hidden="true">
                     {isSelected && <Icon name="check" category="general" size={16} />}
                   </span>
-                  <span className="push-audience-dropdown__item-label">{option.label}</span>
+                  <span className="push-audience-dropdown__item-label">
+                    <span>{option.label}</span>
+                    <span className="push-audience-dropdown__item-separator"> - </span>
+                    <span className="push-audience-dropdown__item-devices">
+                      {option.deviceCount} devices
+                    </span>
+                  </span>
                 </button>
               )
             })}
