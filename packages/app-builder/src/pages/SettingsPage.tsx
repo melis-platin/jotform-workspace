@@ -1516,6 +1516,7 @@ export function PushNotificationsPanel({
           <span className="push-notification-dashboard__divider" aria-hidden="true" />
           <PushNotificationHistory
             notifications={historyItems}
+            appUserRoles={appUserRoles}
             onScheduledNotificationEdit={openScheduledNotificationEdit}
             onScheduledNotificationCancel={openScheduledNotificationCancel}
             onNotificationDuplicate={duplicateNotification}
@@ -2231,6 +2232,7 @@ function EditScheduledNotificationModal({
 
 interface PushNotificationHistoryProps {
   notifications: PushNotificationHistoryItem[]
+  appUserRoles: AppRoleOption[]
   onScheduledNotificationEdit: (notification: PushNotificationHistoryItem) => void
   onScheduledNotificationCancel: (notification: PushNotificationHistoryItem) => void
   onNotificationDuplicate: (notification: PushNotificationHistoryItem) => void
@@ -2238,6 +2240,7 @@ interface PushNotificationHistoryProps {
 
 function PushNotificationHistory({
   notifications,
+  appUserRoles,
   onScheduledNotificationEdit,
   onScheduledNotificationCancel,
   onNotificationDuplicate,
@@ -2307,6 +2310,7 @@ function PushNotificationHistory({
           <PushNotificationHistoryCard
             key={notification.id}
             notification={notification}
+            appUserRoles={appUserRoles}
             onEdit={onScheduledNotificationEdit}
             onCancel={onScheduledNotificationCancel}
             onDuplicate={onNotificationDuplicate}
@@ -2329,15 +2333,17 @@ function PushNotificationHistory({
 
 interface PushNotificationHistoryCardProps {
   notification: PushNotificationHistoryItem
+  appUserRoles: AppRoleOption[]
   onEdit: (notification: PushNotificationHistoryItem) => void
   onCancel: (notification: PushNotificationHistoryItem) => void
   onDuplicate: (notification: PushNotificationHistoryItem) => void
 }
 
-function PushNotificationHistoryCard({ notification, onEdit, onCancel, onDuplicate }: PushNotificationHistoryCardProps) {
+function PushNotificationHistoryCard({ notification, appUserRoles, onEdit, onCancel, onDuplicate }: PushNotificationHistoryCardProps) {
   const isScheduled = notification.status === 'scheduled'
   const statusBadgeLabel = isScheduled ? notification.statusLabel : 'Send'
   const audienceLabel = getDisplayAudienceHistoryLabel(notification.audienceLabel)
+  const audienceRoleTooltip = getHistoryAudienceRoleTooltip(notification, appUserRoles)
   const destinationLabel = getDisplayDeepLinkLabel(notification.deepLinkLabel)
   const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false)
   const [actionsMenuStyle, setActionsMenuStyle] = useState<CSSProperties>({ visibility: 'hidden' })
@@ -2447,9 +2453,17 @@ function PushNotificationHistoryCard({ notification, onEdit, onCancel, onDuplica
           <p className="push-notification-history-card__description">{notification.content}</p>
         </div>
         <div className="push-notification-history-card__metadata" aria-label="Notification details">
-          <span className="push-notification-history-card__metadata-item">
+          <span
+            className={`push-notification-history-card__metadata-item${audienceRoleTooltip ? ' push-notification-history-card__metadata-item--roles' : ''}`}
+            tabIndex={audienceRoleTooltip ? 0 : undefined}
+          >
             <Icon name="users-filled" category="users" size={12} />
             <span>{audienceLabel}</span>
+            {audienceRoleTooltip && (
+              <span className="push-notification-history-card__roles-tooltip" role="tooltip">
+                {audienceRoleTooltip}
+              </span>
+            )}
           </span>
           <span className="push-notification-history-card__metadata-separator" aria-hidden="true" />
           <span className="push-notification-history-card__metadata-item">
@@ -3893,6 +3907,18 @@ function getAudienceHistoryLabel(audience: string[], roles: AppRoleOption[]) {
 
 function getDisplayAudienceHistoryLabel(audienceLabel: string) {
   return audienceLabel.replace(/\s*\([^)]*\)\s*$/, '')
+}
+
+function getHistoryAudienceRoleTooltip(notification: PushNotificationHistoryItem, roles: AppRoleOption[]) {
+  const selectedRoleNames = roles
+    .filter((role) => notification.audience?.includes(role.id))
+    .map((role) => role.label)
+
+  if (selectedRoleNames.length > 1) return selectedRoleNames.join(', ')
+
+  const legacyRoleNames = notification.audienceLabel.match(/\(([^)]*)\)/)?.[1]?.trim()
+
+  return legacyRoleNames || undefined
 }
 
 function getSendStatusAudience(audience: string[], roles: AppRoleOption[]) {

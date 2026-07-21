@@ -15536,6 +15536,42 @@ body.builder--phone-only {
   }
 }
 
+.push-notification-history-card__metadata-item--roles {
+  position: relative;
+  cursor: default;
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &:hover .push-notification-history-card__roles-tooltip,
+  &:focus-visible .push-notification-history-card__roles-tooltip {
+    visibility: visible;
+    opacity: 1;
+  }
+}
+
+.push-notification-history-card__metadata-item .push-notification-history-card__roles-tooltip {
+  position: absolute;
+  z-index: 1;
+  bottom: calc(100% + var(--spacing-xs));
+  left: 0;
+  min-width: max-content;
+  display: inline-flex;
+  padding: var(--spacing-2xs) var(--spacing-sm);
+  overflow: visible;
+  border-radius: var(--radius-sm);
+  background: var(--background-darkest);
+  color: var(--secondary-text-white);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-book);
+  line-height: 1;
+  letter-spacing: 0;
+  white-space: nowrap;
+  visibility: hidden;
+  opacity: 0;
+}
+
 .push-notification-history-card__metadata-separator {
   width: 1px;
   height: var(--spacing-sm);
