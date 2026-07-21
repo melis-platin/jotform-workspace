@@ -530,6 +530,7 @@ export function PublishPage({
   const active = NAV_ITEMS.find((item) => item.id === activeId) ?? NAV_ITEMS[0]
   const isPushNotificationsOpen = activeId === 'push-notifications'
   const isFigmaPushInitial = isPushNotificationsOpen && isPushInitialOverview
+  const isPushComposerOpen = isPushNotificationsOpen && canReturnToPushHistory
   const shouldShowPushPreview = isPushNotificationsOpen && !arePushNotificationsDisabled && !isFigmaPushInitial
   const pushNotificationIconStyle = 'flat'
   const previewNotificationTitle = formatPushNotificationTitle(
@@ -579,17 +580,17 @@ export function PublishPage({
           ) : (
             <>
               <PanelHeader
-                icon={active.icon}
-                iconCategory={active.iconCategory}
-                title={active.headerTitle ?? active.title}
-                description={active.headerDescription ?? active.description}
-                iconBg={active.iconBg}
-                iconSize={isFigmaPushInitial ? 24 : undefined}
-                leading={isPushNotificationsOpen && canReturnToPushHistory ? (
+                icon={isPushComposerOpen ? 'paper-plane-diagonal-filled' : active.icon}
+                iconCategory={isPushComposerOpen ? 'communication' : active.iconCategory}
+                title={isPushComposerOpen ? 'SEND NOTIFICATION' : active.headerTitle ?? active.title}
+                description={isPushComposerOpen ? 'Create and send a notification now.' : active.headerDescription ?? active.description}
+                iconBg={isPushComposerOpen ? 'var(--success-default)' : active.iconBg}
+                iconSize={isFigmaPushInitial || isPushComposerOpen ? 24 : undefined}
+                leading={isPushComposerOpen ? (
                   <button
                     type="button"
                     className="panel-header__back-button"
-                    aria-label="Back to push notification history"
+                    aria-label="Back to push notifications"
                     onClick={() => setPushHistoryReturnRequestId((requestId) => requestId + 1)}
                   >
                     <Icon name="chevron-left" category="arrows" size={24} />
@@ -649,6 +650,7 @@ export function PublishPage({
                   onCanReturnToHistoryChange={setCanReturnToPushHistory}
                   onInitialOverviewChange={setIsPushInitialOverview}
                   returnToHistoryRequestId={pushHistoryReturnRequestId}
+                  isPublishComposer
                 />
               )}
             </>

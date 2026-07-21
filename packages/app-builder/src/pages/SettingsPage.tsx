@@ -902,6 +902,7 @@ export interface PushNotificationsPanelProps {
   onCanReturnToHistoryChange?: (canReturnToHistory: boolean) => void
   onInitialOverviewChange?: (isInitialOverview: boolean) => void
   returnToHistoryRequestId?: number
+  isPublishComposer?: boolean
 }
 
 export type PushNotificationHistoryStatus = 'scheduled' | 'sent'
@@ -970,6 +971,7 @@ export function PushNotificationsPanel({
   onCanReturnToHistoryChange,
   onInitialOverviewChange,
   returnToHistoryRequestId = 0,
+  isPublishComposer = false,
 }: PushNotificationsPanelProps) {
   const [activeView, setActiveView] = useState<PushNotificationPanelView>(() => (
     historyItems.length > 0 ? 'history' : 'composer'
@@ -1189,8 +1191,8 @@ export function PushNotificationsPanel({
   }, [activeView, onViewChange])
 
   useEffect(() => {
-    onCanReturnToHistoryChange?.(activeView === 'composer' && canReturnToHistory && !usesInitialComposerLayout)
-  }, [activeView, canReturnToHistory, onCanReturnToHistoryChange, usesInitialComposerLayout])
+    onCanReturnToHistoryChange?.(activeView === 'composer' && canReturnToHistory)
+  }, [activeView, canReturnToHistory, onCanReturnToHistoryChange])
 
   useEffect(() => {
     onInitialOverviewChange?.(activeView === 'composer' && usesInitialComposerLayout && !canReturnToHistory)
@@ -1246,6 +1248,7 @@ export function PushNotificationsPanel({
             onEnable={onEnable}
             onPermissionMessageEdit={onPermissionMessageEdit}
             isInitialPushNotification={usesInitialComposerLayout}
+            hideIntro={isPublishComposer}
           />
           {!isDisabled && <div className="push-notification-actions">
             <Button
@@ -1257,14 +1260,14 @@ export function PushNotificationsPanel({
               SEND TEST
             </Button>
             <div className="push-notification-actions__right">
-              <Button
+              {!isPublishComposer && <Button
                 colorScheme="primary"
                 disabled={areNotificationActionsDisabled}
                 leftIcon={<Icon name="calendar-event" category="time-date" size={20} />}
                 onClick={() => setIsScheduleModalOpen(true)}
               >
                 SCHEDULE
-              </Button>
+              </Button>}
               <Button
                 colorScheme="constructive"
                 disabled={areNotificationActionsDisabled}
@@ -2969,6 +2972,7 @@ interface PushNotificationComposerProps {
   onEnable: () => void
   onPermissionMessageEdit?: () => void
   isInitialPushNotification?: boolean
+  hideIntro?: boolean
 }
 
 interface AudienceDropdownOption {
@@ -3253,6 +3257,7 @@ function PushNotificationComposer({
   onEnable,
   onPermissionMessageEdit,
   isInitialPushNotification = false,
+  hideIntro = false,
 }: PushNotificationComposerProps) {
   const imageInputRef = useRef<HTMLInputElement>(null)
   const contextMenuRef = useRef<HTMLDivElement>(null)
@@ -3281,7 +3286,7 @@ function PushNotificationComposer({
 
   return (
     <section className={`push-composer-panel${isInitialPushNotification ? ' push-composer-panel--initial' : ''}`} aria-label="Push notification composer">
-      <div className={`push-composer-panel__intro-card${isDisabled ? ' push-composer-panel__intro-card--disabled' : ''}`}>
+      {!hideIntro && <div className={`push-composer-panel__intro-card${isDisabled ? ' push-composer-panel__intro-card--disabled' : ''}`}>
         <div className="push-composer-panel__intro">
           <div className="push-composer-panel__intro-copy">
             <h2 className="push-composer-panel__intro-title">Create a push notification</h2>
@@ -3342,7 +3347,7 @@ function PushNotificationComposer({
             <span>0 devices have opted into receiving notifications.</span>
           </div>
         )}
-      </div>
+      </div>}
       {!isDisabled && <div className="push-composer-panel__form-card">
       <div className="push-composer-panel__content">
         <div className="push-composer-panel__fields">
