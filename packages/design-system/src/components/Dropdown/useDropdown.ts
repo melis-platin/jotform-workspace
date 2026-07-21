@@ -4,6 +4,7 @@ export interface UseDropdownOptions {
   disabled?: boolean;
   readOnly?: boolean;
   optionCount: number;
+  isOptionDisabled?: (index: number) => boolean;
   onSelect: (index: number) => void;
   closeOnSelect?: boolean;
   menuPlacement?: 'auto' | 'top' | 'bottom';
@@ -16,6 +17,7 @@ export function useDropdown({
   disabled,
   readOnly,
   optionCount,
+  isOptionDisabled = () => false,
   onSelect,
   closeOnSelect = true,
   menuPlacement = 'auto',
@@ -29,6 +31,27 @@ export function useDropdown({
   const rootRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const firstEnabledIndex = () => {
+    for (let index = 0; index < optionCount; index += 1) {
+      if (!isOptionDisabled(index)) return index;
+    }
+    return -1;
+  };
+
+  const lastEnabledIndex = () => {
+    for (let index = optionCount - 1; index >= 0; index -= 1) {
+      if (!isOptionDisabled(index)) return index;
+    }
+    return -1;
+  };
+
+  const nextEnabledIndex = (currentIndex: number, direction: 1 | -1) => {
+    for (let index = currentIndex + direction; index >= 0 && index < optionCount; index += direction) {
+      if (!isOptionDisabled(index)) return index;
+    }
+    return currentIndex;
+  };
 
   useEffect(() => {
     const mq = window.matchMedia(MOBILE_MEDIA);
@@ -98,17 +121,17 @@ export function useDropdown({
       e.preventDefault();
       if (!open) {
         setOpen(true);
-        setActiveIndex(0);
+        setActiveIndex(firstEnabledIndex());
       } else {
-        setActiveIndex((i) => Math.min(i + 1, optionCount - 1));
+        setActiveIndex((i) => nextEnabledIndex(i, 1));
       }
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
       if (!open) {
         setOpen(true);
-        setActiveIndex(optionCount - 1);
+        setActiveIndex(lastEnabledIndex());
       } else {
-        setActiveIndex((i) => Math.max(i - 1, 0));
+        setActiveIndex((i) => nextEnabledIndex(i, -1));
       }
     } else if (e.key === 'Escape') {
       setOpen(false);
@@ -118,13 +141,13 @@ export function useDropdown({
   const handleMenuKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'ArrowDown') {
       e.preventDefault();
-      setActiveIndex((i) => Math.min(i + 1, optionCount - 1));
+      setActiveIndex((i) => nextEnabledIndex(i, 1));
     } else if (e.key === 'ArrowUp') {
       e.preventDefault();
-      setActiveIndex((i) => Math.max(i - 1, 0));
+      setActiveIndex((i) => nextEnabledIndex(i, -1));
     } else if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      if (activeIndex >= 0) {
+      if (activeIndex >= 0 && !isOptionDisabled(activeIndex)) {
         onSelect(activeIndex);
         if (closeOnSelect) setOpen(false);
       }

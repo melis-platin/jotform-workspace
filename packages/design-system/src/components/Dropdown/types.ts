@@ -6,6 +6,8 @@ export type DropdownStatus = 'default' | 'error' | 'readonly';
 export interface DropdownOption {
   value: string;
   label: string;
+  /** Excludes this option from selection while keeping it visible in the menu. */
+  disabled?: boolean;
   leading?: ReactNode;
   trailing?: ReactNode;
   /** Render a divider directly above this option in the menu. */

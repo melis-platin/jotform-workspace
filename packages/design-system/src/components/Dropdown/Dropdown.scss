@@ -569,6 +569,21 @@
     background: var(--accent-lightest);
   }
 
+  &--disabled {
+    color: var(--navy-200);
+    cursor: not-allowed;
+
+    &:hover,
+    &.jf-dropdown__item--active {
+      background: transparent;
+    }
+
+    .jf-dropdown__item-leading,
+    .jf-dropdown__item-trailing {
+      color: inherit;
+    }
+  }
+
   &-leading {
     flex-shrink: 0;
     display: inline-flex;

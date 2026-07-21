@@ -81,6 +81,7 @@ export const DropdownSingle = forwardRef<DropdownHandle, DropdownSingleProps>(
       disabled,
       readOnly,
       optionCount: options.length,
+      isOptionDisabled: (index) => Boolean(options[index]?.disabled),
       onSelect: (i) => onChange?.(options[i].value),
       menuPlacement,
       mobileBehavior,
@@ -154,10 +155,12 @@ export const DropdownSingle = forwardRef<DropdownHandle, DropdownSingleProps>(
               {options.map((opt, i) => {
                 const isSelected = opt.value === value;
                 const isActive = i === activeIndex;
+                const isDisabled = Boolean(opt.disabled);
                 const itemClass = [
                   'jf-dropdown__item',
                   isSelected && 'jf-dropdown__item--selected',
                   isActive && 'jf-dropdown__item--active',
+                  isDisabled && 'jf-dropdown__item--disabled',
                 ]
                   .filter(Boolean)
                   .join(' ');
@@ -168,10 +171,12 @@ export const DropdownSingle = forwardRef<DropdownHandle, DropdownSingleProps>(
                       className={itemClass}
                       role="option"
                       aria-selected={isSelected}
+                      aria-disabled={isDisabled || undefined}
                       data-dd-index={i}
-                      onMouseEnter={() => onItemHover?.(opt.value)}
+                      onMouseEnter={() => !isDisabled && onItemHover?.(opt.value)}
                       onMouseDown={(e) => {
                         e.preventDefault();
+                        if (isDisabled) return;
                         onChange?.(opt.value);
                         setOpen(false);
                       }}

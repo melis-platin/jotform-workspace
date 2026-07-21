@@ -2239,6 +2239,21 @@ function PushNotificationHistory({
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<PushNotificationHistoryStatus | 'all'>('all')
 
+  const hasScheduledNotifications = notifications.some((notification) => notification.status === 'scheduled')
+  const hasSentNotifications = notifications.some((notification) => notification.status === 'sent')
+  const filterOptions = PUSH_NOTIFICATION_HISTORY_FILTER_OPTIONS.map((option) => ({
+    ...option,
+    disabled: (option.value === 'scheduled' && !hasScheduledNotifications)
+      || (option.value === 'sent' && !hasSentNotifications),
+  }))
+
+  useEffect(() => {
+    if ((statusFilter === 'scheduled' && !hasScheduledNotifications)
+      || (statusFilter === 'sent' && !hasSentNotifications)) {
+      setStatusFilter('all')
+    }
+  }, [hasScheduledNotifications, hasSentNotifications, statusFilter])
+
   if (notifications.length === 0) return null
 
   const normalizedSearchQuery = searchQuery.trim().toLocaleLowerCase()
@@ -2271,7 +2286,7 @@ function PushNotificationHistory({
         <DropdownSingle
           className="push-notification-history__filter"
           size="md"
-          options={PUSH_NOTIFICATION_HISTORY_FILTER_OPTIONS}
+          options={filterOptions}
           value={statusFilter}
           onChange={(value) => {
             setStatusFilter(value as PushNotificationHistoryStatus | 'all')
