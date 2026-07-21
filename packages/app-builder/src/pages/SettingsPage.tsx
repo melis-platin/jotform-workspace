@@ -2278,7 +2278,7 @@ function PushNotificationHistory({
             setVisibleCount(5)
           }}
           usePortal
-          portalAlign="end"
+          portalAlign="start"
           menuClassName="push-notification-history__filter-menu"
         />
       </div>

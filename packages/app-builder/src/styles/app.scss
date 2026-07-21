@@ -15372,6 +15372,8 @@ body.builder--phone-only {
 }
 
 .push-notification-history__filter-menu {
+  box-sizing: border-box;
+  margin: 0;
   border-color: var(--border-light);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-md);
