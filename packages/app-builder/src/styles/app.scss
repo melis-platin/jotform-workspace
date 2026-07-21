@@ -8693,7 +8693,10 @@ body {
   @extend .settings-page__preview;
 }
 
-.publish-page--figma-push-initial .publish-page__main {
+.publish-page--figma-push-initial .publish-page__main,
+.publish-page--figma-push-composer .publish-page__main {
+  // Push Notification overview and Send Notification share the same Figma
+  // canvas origin: 36px from the top and 80px after the left navigation.
   padding:
     calc(var(--spacing-2xl) + var(--spacing-2xs))
     var(--spacing-4xl)
@@ -8771,32 +8774,38 @@ body {
   color: var(--secondary-text-dark);
 }
 
-.builder:has(.publish-page--figma-push-initial) .topbar__main {
+.builder:has(.publish-page--figma-push-initial) .topbar__main,
+.builder:has(.publish-page--figma-push-composer) .topbar__main {
   height: calc(var(--spacing-4xl) + var(--spacing-2xs) + var(--spacing-3xs));
 }
 
-.builder:has(.publish-page--figma-push-initial) .topbar__logo {
+.builder:has(.publish-page--figma-push-initial) .topbar__logo,
+.builder:has(.publish-page--figma-push-composer) .topbar__logo {
   height: calc(var(--spacing-2xl) - var(--spacing-3xs));
 }
 
-.builder:has(.publish-page--figma-push-initial) .topbar__divider {
+.builder:has(.publish-page--figma-push-initial) .topbar__divider,
+.builder:has(.publish-page--figma-push-composer) .topbar__divider {
   height: calc(var(--spacing-2xl) + var(--spacing-3xs));
 }
 
-.builder:has(.publish-page--figma-push-initial) .topbar__avatar {
+.builder:has(.publish-page--figma-push-initial) .topbar__avatar,
+.builder:has(.publish-page--figma-push-composer) .topbar__avatar {
   width: calc(var(--spacing-3xl) + var(--spacing-xs));
   height: calc(var(--spacing-3xl) + var(--spacing-xs));
   border-width: 3px;
 }
 
-.builder:has(.publish-page--figma-push-initial) .topbar__nav-item {
+.builder:has(.publish-page--figma-push-initial) .topbar__nav-item,
+.builder:has(.publish-page--figma-push-composer) .topbar__nav-item {
   padding:
     calc(var(--spacing-xs) + var(--spacing-3xs))
     calc(var(--spacing-xl) + var(--spacing-2xs));
 }
 
 @media (max-width: 1024px) {
-  .publish-page--figma-push-initial .publish-page__main {
+  .publish-page--figma-push-initial .publish-page__main,
+  .publish-page--figma-push-composer .publish-page__main {
     padding: var(--spacing-xl);
   }
 }

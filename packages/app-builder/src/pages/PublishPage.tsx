@@ -531,6 +531,7 @@ export function PublishPage({
   const isPushNotificationsOpen = activeId === 'push-notifications'
   const isFigmaPushInitial = isPushNotificationsOpen && isPushInitialOverview
   const isPushComposerOpen = isPushNotificationsOpen && canReturnToPushHistory
+  const usesFigmaPushComposerLayout = isPushComposerOpen
   const shouldShowPushPreview = isPushNotificationsOpen && !arePushNotificationsDisabled && !isFigmaPushInitial
   const pushNotificationIconStyle = 'flat'
   const previewNotificationTitle = formatPushNotificationTitle(
@@ -553,7 +554,7 @@ export function PublishPage({
   }
 
   return (
-    <div className={`publish-page${shouldShowPreview ? ' publish-page--with-preview' : ''}${isFigmaPushInitial ? ' publish-page--figma-push-initial' : ''}`}>
+    <div className={`publish-page${shouldShowPreview ? ' publish-page--with-preview' : ''}${isFigmaPushInitial ? ' publish-page--figma-push-initial' : ''}${usesFigmaPushComposerLayout ? ' publish-page--figma-push-composer' : ''}`}>
       <SideNav
         items={NAV_ITEMS}
         activeId={activeId}
