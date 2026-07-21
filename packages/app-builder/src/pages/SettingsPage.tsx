@@ -114,7 +114,7 @@ const PUSH_NOTIFICATION_HISTORY_FILTER_OPTIONS = [
   },
   {
     value: 'sent',
-    label: 'Sent',
+    label: 'Send',
     leading: <Icon name="check-circle-filled" category="general" size={20} />,
   },
 ]
@@ -2279,6 +2279,7 @@ function PushNotificationHistory({
           }}
           usePortal
           portalAlign="end"
+          menuClassName="push-notification-history__filter-menu"
         />
       </div>
       <div className="push-notification-history__list">

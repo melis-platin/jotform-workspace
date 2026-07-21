@@ -15371,6 +15371,34 @@ body.builder--phone-only {
   }
 }
 
+.push-notification-history__filter-menu {
+  border-color: var(--border-light);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-md);
+
+  .jf-dropdown__item {
+    min-height: var(--spacing-3xl);
+    gap: var(--spacing-sm);
+    padding: 0 var(--spacing-sm);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-book);
+    line-height: var(--line-height-xs);
+    letter-spacing: var(--body-sm-letter-spacing);
+    color: var(--text-darkest);
+  }
+
+  .jf-dropdown__item--selected,
+  .jf-dropdown__item--selected.jf-dropdown__item--active {
+    background: var(--accent-lightest);
+  }
+
+  .jf-dropdown__item-leading {
+    width: var(--spacing-lg);
+    height: var(--spacing-lg);
+    color: var(--text-dark);
+  }
+}
+
 .push-notification-history__list {
   display: flex;
   flex-direction: column;
