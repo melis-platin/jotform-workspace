@@ -13,7 +13,7 @@ Before starting any task, read the project memory for full architecture details:
 - Canvas components use app-elements tokens (`--fg-*`, `--bg-*`, `--space-*`, `--radius-*`)
 - Icons: builder UI uses design-system Icon (SVG fetch), canvas uses app-elements Icon (lucide/phosphor/tabler)
 - Settings tab left navigation must follow the Figma source of truth: **Archieve 27.03.2026**, node `1:307129`. Preserve its 318px panel, spacing, 40px icon area, active/inactive typography, and token-based colors when making future changes.
-- Publish tab left navigation must follow the Figma source of truth: **Archieve 27.03.2026**, node `1:307144`. Preserve its 318px panel, four-item layout, spacing, 40px icon area, active/inactive typography, and token-based colors when making future changes; keep the Push first-open navigation variant separate.
+- Publish tab left navigation must follow the Figma source of truth: **Archieve 27.03.2026**, node `1:307144`. Preserve its 318px panel, four-item layout, spacing, 40px icon area, active/inactive typography, and token-based colors when making future changes. When Push Notifications opens, it must keep this exact Publish navigation and select only the Push Notifications item, as specified by **New Workspace** node `1231:15669`; never replace it with the Settings navigation.
 
 ## Local Dev Server
 - When the user asks to start the project locally, run the Vite app with `--host 0.0.0.0` so both `localhost` and the local-network URL are available.

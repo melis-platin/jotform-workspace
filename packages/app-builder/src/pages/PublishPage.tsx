@@ -71,38 +71,6 @@ const NAV_ITEMS: SideNavItem[] = [
   },
 ]
 
-const FIGMA_PUSH_NAV_ITEMS: SideNavItem[] = [
-  {
-    id: 'app-settings',
-    icon: 'mobile-gear',
-    iconCategory: 'technology',
-    title: 'APP SETTINGS',
-    description: 'App status and properties.',
-  },
-  {
-    id: 'app-name-icon',
-    icon: 'mobile-title',
-    iconCategory: 'technology',
-    title: 'APP NAME & ICON',
-    description: 'Customize app name and icon.',
-  },
-  {
-    id: 'splash-screen',
-    icon: 'mobile-pencil',
-    iconCategory: 'technology',
-    title: 'SPLASH SCREEN',
-    description: 'Customize splash screen.',
-  },
-  NAV_ITEMS.find((item) => item.id === 'push-notifications')!,
-  {
-    id: 'ai-chatbot',
-    icon: 'ai-message-filled',
-    iconCategory: 'ai',
-    title: 'AI CHATBOT',
-    description: 'Support your users with AI.',
-  },
-]
-
 interface DraftRoleInput {
   id: string
   name: string
@@ -588,10 +556,10 @@ export function PublishPage({
   return (
     <div className={`publish-page${shouldShowPreview ? ' publish-page--with-preview' : ''}${isFigmaPushInitial ? ' publish-page--figma-push-initial' : ''}`}>
       <SideNav
-        items={isFigmaPushInitial ? FIGMA_PUSH_NAV_ITEMS : NAV_ITEMS}
+        items={NAV_ITEMS}
         activeId={activeId}
         onChange={handleNavigationChange}
-        className={isFigmaPushInitial ? 'side-nav--figma-push-initial' : 'side-nav--publish-figma'}
+        className="side-nav--publish-figma"
       />
       <main className="publish-page__content">
         <div className="publish-page__main">

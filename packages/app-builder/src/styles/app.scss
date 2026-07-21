@@ -8701,25 +8701,6 @@ body {
     calc(var(--spacing-4xl) + var(--spacing-md));
 }
 
-.side-nav--figma-push-initial {
-  width: 318px;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-xl) 0 var(--spacing-xl) var(--spacing-sm);
-}
-
-.side-nav--figma-push-initial .side-nav__item {
-  width: calc(100% - var(--spacing-sm));
-  min-height: calc(var(--spacing-4xl) + var(--spacing-2xs));
-  gap: var(--spacing-2xs);
-  padding:
-    calc(var(--spacing-sm) + var(--spacing-3xs))
-    var(--spacing-2xs);
-}
-
-.side-nav--figma-push-initial .side-nav__text {
-  gap: var(--spacing-2xs);
-}
-
 // Settings navigation follows the Figma source of truth (Archieve 27.03.2026,
 // node 1:307129). Keep these overrides scoped so Publish can retain its own
 // navigation variant.
@@ -8817,10 +8798,6 @@ body {
 @media (max-width: 1024px) {
   .publish-page--figma-push-initial .publish-page__main {
     padding: var(--spacing-xl);
-  }
-
-  .side-nav--figma-push-initial {
-    width: 292px;
   }
 }
 
