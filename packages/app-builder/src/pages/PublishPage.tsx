@@ -618,6 +618,7 @@ export function PublishPage({
                 title={active.headerTitle ?? active.title}
                 description={active.headerDescription ?? active.description}
                 iconBg={active.iconBg}
+                iconSize={isFigmaPushInitial ? 24 : undefined}
                 leading={isPushNotificationsOpen && canReturnToPushHistory ? (
                   <button
                     type="button"
