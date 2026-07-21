@@ -12802,10 +12802,50 @@ body.builder--phone-only {
   }
 
   &.push-schedule-quick-picks__chip--selected {
+    gap: var(--space-0);
     background: var(--purple-400);
     color: var(--background-white);
     font-weight: var(--font-weight-medium);
   }
+}
+
+.push-schedule-composer .push-schedule-quick-picks__chip-label--selected {
+  padding: 0 var(--spacing-2xs);
+}
+
+.push-schedule-composer__scheduled-notice {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px solid var(--product-ai-border-light);
+  border-radius: var(--radius-lg);
+  background: var(--product-ai-lightest);
+  color: var(--text-dark);
+  font-family: var(--font-family-circular);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-book);
+  line-height: var(--line-height-sm);
+  letter-spacing: var(--body-sm-letter-spacing);
+}
+
+.push-schedule-composer__scheduled-notice .jf-icon {
+  flex: 0 0 auto;
+}
+
+.push-schedule-composer__scheduled-notice p {
+  margin: 0;
+}
+
+.push-schedule-composer__scheduled-notice strong {
+  color: var(--text-darkest);
+  font-weight: var(--font-weight-bold);
+}
+
+.push-schedule-composer__scheduled-notice em {
+  font-style: italic;
 }
 
 .push-schedule-field {

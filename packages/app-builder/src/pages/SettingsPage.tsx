@@ -253,6 +253,32 @@ const getScheduleQuickPickDate = (quickPick: ScheduleQuickPickValue) => {
   return null
 }
 
+const getScheduleSummaryDayLabel = (value: string) => {
+  const scheduleDate = parseScheduleDate(value)
+  if (!scheduleDate) return 'the selected date'
+
+  const today = new Date()
+  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate())
+  const scheduleStart = new Date(
+    scheduleDate.getFullYear(),
+    scheduleDate.getMonth(),
+    scheduleDate.getDate(),
+  )
+  const dayDifference = Math.round((scheduleStart.getTime() - todayStart.getTime()) / (24 * 60 * 60 * 1000))
+
+  if (dayDifference === 0) return 'Today'
+  if (dayDifference === 1) return 'Tomorrow'
+
+  return new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(scheduleDate)
+}
+
+const getScheduleTimezoneAbbreviation = (value: string) => {
+  const timezoneLabel = SCHEDULE_TIMEZONE_OPTIONS.find((option) => option.value === value)?.label
+  const match = timezoneLabel?.match(/\(([^)]+)\)$/)
+
+  return match?.[1] ?? timezoneLabel ?? ''
+}
+
 export interface PushComposerFieldOption {
   value: string
   label: string
@@ -514,6 +540,10 @@ function PushScheduleComposerSection({
   timezone,
   onTimezoneChange,
 }: PushScheduleComposerSectionProps) {
+  const hasQuickPickSchedule = quickPick !== 'custom' && Boolean(date) && Boolean(time)
+  const scheduleDayLabel = getScheduleSummaryDayLabel(date)
+  const timezoneAbbreviation = getScheduleTimezoneAbbreviation(timezone)
+
   return (
     <section className="push-schedule-composer" aria-labelledby="push-schedule-composer-title">
       <div className="push-schedule-composer__intro">
@@ -534,7 +564,7 @@ function PushScheduleComposerSection({
                 onClick={() => onQuickPickChange(option.value)}
               >
                 {isSelected && <Icon name="check" category="general" size={16} />}
-                <span>{option.label}</span>
+                <span className={isSelected ? 'push-schedule-quick-picks__chip-label push-schedule-quick-picks__chip-label--selected' : 'push-schedule-quick-picks__chip-label'}>{option.label}</span>
               </button>
             )
           })}
@@ -580,9 +610,19 @@ function PushScheduleComposerSection({
         value={timezone}
         onChange={onTimezoneChange}
       />
-      <p className="push-schedule-composer__notice">
-        Pick a date and time above to schedule this notification.
-      </p>
+      {hasQuickPickSchedule ? (
+        <div className="push-schedule-composer__scheduled-notice">
+          <Icon name="clock" category="time-date" size={16} />
+          <p>
+            Sends <strong>{scheduleDayLabel}</strong> at <strong>{time}.</strong>{' '}
+            <em>{timezoneAbbreviation}</em> - to All Users · {PUSH_NOTIFICATION_ALLOWED_DEVICE_COUNT} devices.
+          </p>
+        </div>
+      ) : (
+        <p className="push-schedule-composer__notice">
+          Pick a date and time above to schedule this notification.
+        </p>
+      )}
     </section>
   )
 }
@@ -1103,6 +1143,7 @@ export function PushNotificationsPanel({
       notificationContentFields.length === 0 &&
       notificationContentSuffix.trim().length === 0
     )
+  const isScheduleActionDisabled = !scheduleDate.trim() || !scheduleTime.trim()
   const addNotificationTitleField = (field: PushComposerFieldOption) => {
     if (notificationTitleEditorRef.current?.insertField(field)) return
 
@@ -1388,7 +1429,7 @@ export function PushNotificationsPanel({
             <div className="push-notification-actions__right">
               {isScheduleComposer ? <Button
                 colorScheme="apps"
-                disabled={areNotificationActionsDisabled}
+                disabled={isScheduleActionDisabled}
                 leftIcon={<Icon name="calendar-event" category="time-date" size={20} />}
                 onClick={saveScheduledNotification}
               >
