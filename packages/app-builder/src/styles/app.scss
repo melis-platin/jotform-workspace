@@ -12789,6 +12789,9 @@ body.builder--phone-only {
 }
 
 .push-schedule-composer .push-schedule-quick-picks__chip {
+  height: var(--spacing-2xl);
+  min-height: var(--spacing-2xl);
+  max-height: var(--spacing-2xl);
   background: color-mix(in srgb, var(--purple-100) 70%, var(--background-white));
   color: var(--purple-400);
 
