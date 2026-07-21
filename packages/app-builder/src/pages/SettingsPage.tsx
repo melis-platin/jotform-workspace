@@ -1448,7 +1448,6 @@ export function PushNotificationsPanel({
               variant="filled"
               colorScheme="secondary"
               disabled={areNotificationActionsDisabled}
-              leftIcon={<Icon name="paper-plane-diagonal-filled" category="communication" size={20} />}
             >
               SEND TEST
             </Button>
