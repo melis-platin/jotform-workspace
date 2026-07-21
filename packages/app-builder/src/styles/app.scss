@@ -13824,6 +13824,12 @@ body.builder--phone-only {
   svg {
     flex: 0 0 auto;
   }
+
+  &:hover,
+  &:focus-visible {
+    outline: none;
+    background: var(--ds-bg-secondary);
+  }
 }
 
 .push-notification-overview__total {
