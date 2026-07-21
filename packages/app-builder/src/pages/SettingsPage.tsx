@@ -1200,7 +1200,9 @@ export function PushNotificationsPanel({
 
   return (
     <>
-      {activeView === 'composer' ? (
+      {activeView === 'composer' && usesInitialComposerLayout && !canReturnToHistory ? (
+        <PushNotificationOverview onCreateNotification={openNotificationComposer} />
+      ) : activeView === 'composer' ? (
         <>
           <PushNotificationComposer
             titleEditorRef={notificationTitleEditorRef}
@@ -1389,6 +1391,95 @@ export function PushNotificationsPanel({
         onConfirm={confirmScheduledNotificationCancel}
       />
     </>
+  )
+}
+
+function PushNotificationOverview({ onCreateNotification }: { onCreateNotification: () => void }) {
+  const deviceStats = [
+    { icon: 'mobile', label: 'Mobile · 0%' },
+    { icon: 'tablet', label: 'Tablet · 0%' },
+    { icon: 'desktop', label: 'Desktop · 0%' },
+  ]
+  const createOptions = [
+    {
+      icon: 'paper-plane-diagonal-filled',
+      iconCategory: 'communication',
+      title: 'Send Notification',
+      description: 'Create and send a notification now.',
+      tone: 'constructive',
+    },
+    {
+      icon: 'calendar-event',
+      iconCategory: 'time-date',
+      title: 'Schedule Notification',
+      description: 'Choose when to send your notification.',
+      tone: 'apps',
+    },
+  ] as const
+
+  return (
+    <section className="push-notification-overview" aria-label="Push notification overview">
+      <div className="push-notification-overview__reach-card">
+        <div className="push-notification-overview__reach-header">
+          <h2>Reachable Across Channels</h2>
+          <div className="push-notification-overview__reach-actions">
+            <span className="push-notification-overview__status">Active</span>
+            <button
+              type="button"
+              className="push-notification-overview__more-button"
+              aria-label="Push notification options"
+            >
+              <Icon name="ellipsis-vertical" category="general" size={16} />
+            </button>
+          </div>
+        </div>
+
+        <div className="push-notification-overview__total">
+          <strong>0</strong>
+          <span>total reachable devices</span>
+        </div>
+        <div className="push-notification-overview__progress" aria-hidden="true" />
+
+        <div className="push-notification-overview__device-list">
+          {deviceStats.map(({ icon, label }) => (
+            <div className="push-notification-overview__device" key={icon}>
+              <span className="push-notification-overview__device-icon">
+                <Icon name={icon} category="technology" size={16} />
+              </span>
+              <span className="push-notification-overview__device-copy">
+                <strong>0</strong>
+                <span>{label}</span>
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="push-notification-overview__create-section">
+        <p className="push-notification-overview__eyebrow">Create a notification</p>
+        <div className="push-notification-overview__create-card">
+          {createOptions.map(({ icon, iconCategory, title, description, tone }) => (
+            <button
+              type="button"
+              className="push-notification-overview__create-option"
+              key={title}
+              onClick={onCreateNotification}
+            >
+              <span className={`push-notification-overview__create-icon push-notification-overview__create-icon--${tone}`}>
+                <Icon name={icon} category={iconCategory} size={16} />
+              </span>
+              <span className="push-notification-overview__create-copy">
+                <strong>{title}</strong>
+                <span>{description}</span>
+              </span>
+              <span className="push-notification-overview__create-arrow" aria-hidden="true">
+                <Icon name="chevron-right" category="arrows" size={16} />
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+    </section>
   )
 }
 

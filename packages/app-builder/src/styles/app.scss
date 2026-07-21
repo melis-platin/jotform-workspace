@@ -3376,7 +3376,7 @@ body {
   // 18px below the cover bottom (the row sits at the cover edge).
   margin: 18px 0 0;
   font-family: var(--font-family-heading);
-  font-size: var(--font-size-heading-md);
+  font-size: var(--font-size-4xl);
   font-weight: 700;
   line-height: 1.1;
   // Match the Heading element's letter-spacing for the heading-md size (its
@@ -13635,6 +13635,280 @@ body.builder--phone-only {
 
   .jf-btn {
     min-width: 96px;
+  }
+}
+
+.push-notification-overview {
+  width: 660px;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.push-notification-overview__reach-card,
+.push-notification-overview__create-card {
+  width: 100%;
+  border-radius: var(--radius-sm);
+  background: var(--background-white);
+  box-shadow: var(--shadow-xs);
+}
+
+.push-notification-overview__reach-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-6);
+}
+
+.push-notification-overview__reach-header,
+.push-notification-overview__reach-actions,
+.push-notification-overview__total,
+.push-notification-overview__device-list,
+.push-notification-overview__device,
+.push-notification-overview__create-option {
+  display: flex;
+  align-items: center;
+}
+
+.push-notification-overview__reach-header {
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.push-notification-overview__reach-header h2 {
+  margin: 0;
+  color: var(--text-darkest);
+  font-family: var(--font-family-circular);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-xs);
+  letter-spacing: var(--body-letter-spacing);
+}
+
+.push-notification-overview__reach-actions {
+  flex: 0 0 auto;
+  gap: var(--space-2);
+}
+
+.push-notification-overview__status {
+  width: var(--spacing-4xl);
+  height: var(--spacing-xl);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 var(--spacing-sm);
+  border-radius: var(--radius-rounded);
+  background: color-mix(in srgb, var(--accent-default) 20%, transparent);
+  color: var(--accent-dark);
+  font-family: var(--font-family-circular);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-book);
+  line-height: var(--line-height-xs);
+}
+
+.push-notification-overview__more-button {
+  width: var(--spacing-2xl);
+  height: var(--spacing-2xl);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text-dark);
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    outline: none;
+    background: var(--background-lightest);
+  }
+}
+
+.push-notification-overview__total {
+  gap: var(--space-1);
+}
+
+.push-notification-overview__total strong {
+  color: var(--text-darkest);
+  font-family: var(--font-family-circular);
+  font-size: var(--font-size-heading-md);
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+  letter-spacing: var(--letter-spacing-xs);
+}
+
+.push-notification-overview__total span,
+.push-notification-overview__device-copy > span {
+  color: var(--text-dark);
+  font-family: var(--font-family-circular);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-book);
+  line-height: var(--line-height-xs);
+}
+
+.push-notification-overview__progress {
+  width: 100%;
+  height: var(--space-2);
+  border-radius: var(--radius-rounded);
+  background: var(--border-medium);
+}
+
+.push-notification-overview__device-list {
+  gap: var(--space-4);
+}
+
+.push-notification-overview__device {
+  flex: 1 1 0;
+  min-width: 0;
+  gap: 11px;
+  padding: var(--space-3) var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--background-lightest);
+}
+
+.push-notification-overview__device-icon {
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-md);
+  background: var(--background-white);
+  color: var(--accent-default);
+}
+
+.push-notification-overview__device:nth-child(2) .push-notification-overview__device-icon {
+  color: var(--accent-default);
+}
+
+.push-notification-overview__device:nth-child(3) .push-notification-overview__device-icon {
+  color: var(--product-sign-default);
+}
+
+.push-notification-overview__device-copy,
+.push-notification-overview__create-copy {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.push-notification-overview__device-copy strong {
+  color: var(--text-darkest);
+  font-family: var(--font-family-circular);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-sm);
+}
+
+.push-notification-overview__create-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.push-notification-overview__eyebrow {
+  margin: 0;
+  color: var(--text-medium);
+  font-family: var(--font-family-circular);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-xs);
+  text-transform: uppercase;
+}
+
+.push-notification-overview__create-card {
+  overflow: hidden;
+}
+
+.push-notification-overview__create-option {
+  width: 100%;
+  min-height: 84px;
+  gap: var(--space-3);
+  padding: var(--space-6);
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+
+  & + & {
+    border-top: 1px solid var(--border-light);
+  }
+
+  &:hover,
+  &:focus-visible {
+    outline: none;
+    background: var(--background-lightest);
+  }
+}
+
+.push-notification-overview__create-icon {
+  width: var(--spacing-2xl);
+  height: var(--spacing-2xl);
+  flex: 0 0 var(--spacing-2xl);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  color: var(--background-white);
+}
+
+.push-notification-overview__create-icon--constructive {
+  background: var(--product-sign-default);
+}
+
+.push-notification-overview__create-icon--apps {
+  background: var(--product-apps-default);
+}
+
+.push-notification-overview__create-copy {
+  flex: 1 1 auto;
+  gap: var(--space-1);
+}
+
+.push-notification-overview__create-copy strong {
+  color: var(--text-dark);
+  font-family: var(--font-family-circular);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-xs);
+  letter-spacing: var(--body-letter-spacing);
+}
+
+.push-notification-overview__create-copy span {
+  color: var(--navy-400);
+  font-family: var(--font-family-circular);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-book);
+  line-height: var(--line-height-xs);
+  letter-spacing: var(--body-sm-letter-spacing);
+}
+
+.push-notification-overview__create-arrow {
+  width: var(--spacing-lg);
+  height: var(--spacing-lg);
+  flex: 0 0 var(--spacing-lg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-rounded);
+  background: var(--border-light);
+  color: var(--text-dark);
+}
+
+@media (max-width: 640px) {
+  .push-notification-overview__reach-card,
+  .push-notification-overview__create-option {
+    padding: var(--space-4);
+  }
+
+  .push-notification-overview__device-list {
+    flex-direction: column;
   }
 }
 
