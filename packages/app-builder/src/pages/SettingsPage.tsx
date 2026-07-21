@@ -1428,6 +1428,7 @@ export function PushNotificationsPanel({
             onPermissionMessageEdit={onPermissionMessageEdit}
             isInitialPushNotification={usesInitialComposerLayout}
             hideIntro={isPublishComposer}
+            showEmptyStateNotice={isPublishComposer && !isScheduleComposer}
             scheduleContent={isScheduleComposer ? (
               <PushScheduleComposerSection
                 quickPick={scheduleQuickPick}
@@ -3183,6 +3184,7 @@ interface PushNotificationComposerProps {
   onPermissionMessageEdit?: () => void
   isInitialPushNotification?: boolean
   hideIntro?: boolean
+  showEmptyStateNotice?: boolean
   scheduleContent?: ReactNode
 }
 
@@ -3491,11 +3493,21 @@ function PushNotificationComposer({
   onPermissionMessageEdit,
   isInitialPushNotification = false,
   hideIntro = false,
+  showEmptyStateNotice = false,
   scheduleContent,
 }: PushNotificationComposerProps) {
   const imageInputRef = useRef<HTMLInputElement>(null)
   const contextMenuRef = useRef<HTMLDivElement>(null)
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
+  const isTitleEmpty =
+    title.trim().length === 0 &&
+    titleFields.length === 0 &&
+    titleSuffix.trim().length === 0
+  const isContentEmpty =
+    content.trim().length === 0 &&
+    contentFields.length === 0 &&
+    contentSuffix.trim().length === 0
+  const shouldShowEmptyStateNotice = showEmptyStateNotice && (isTitleEmpty || isContentEmpty)
 
   useEffect(() => {
     if (!isContextMenuOpen) return
@@ -3688,11 +3700,16 @@ function PushNotificationComposer({
           </div>
         </div>
       </div>
-      <div className="push-composer-panel__selection">
+      <div className={`push-composer-panel__selection${shouldShowEmptyStateNotice ? ' push-composer-panel__selection--with-empty-notice' : ''}`}>
         <div className="push-composer-panel__dropdown-row">
           <AudienceDropdown value={audience} onChange={setAudience} roles={appUserRoles} />
           <DeepLinkDropdown value={deepLink} onChange={setDeepLink} targets={deepLinkTargets} />
         </div>
+        {shouldShowEmptyStateNotice && (
+          <div className="push-composer-panel__empty-state-notice" role="status">
+            Add a title and content to send this notification.
+          </div>
+        )}
       </div>
       {scheduleContent && <>
         <span className="push-composer-panel__schedule-divider" aria-hidden="true" />

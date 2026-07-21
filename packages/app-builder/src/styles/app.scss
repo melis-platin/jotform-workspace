@@ -14366,6 +14366,27 @@ body.builder--phone-only {
   padding: 0 var(--space-6) var(--space-6);
 }
 
+.push-composer-panel__selection--with-empty-notice {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.push-composer-panel__empty-state-notice {
+  width: 100%;
+  margin: 0;
+  padding: var(--space-3);
+  border: 1px dashed var(--border-medium);
+  border-radius: var(--radius-md);
+  background: var(--background-lightest);
+  color: var(--text-medium);
+  font-family: var(--font-family-circular);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-book);
+  line-height: var(--line-height-sm);
+  letter-spacing: var(--body-sm-letter-spacing);
+}
+
 .push-composer-panel--initial .push-composer-panel__fields,
 .push-composer-panel--initial .push-composer-panel__dropdown-row {
   gap: var(--space-6);
