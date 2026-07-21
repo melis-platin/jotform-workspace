@@ -253,6 +253,8 @@ const getScheduleQuickPickDate = (quickPick: ScheduleQuickPickValue) => {
   return null
 }
 
+const getCurrentScheduleTime = () => formatScheduleTime(roundUpToNextHalfHour(new Date()))
+
 const getScheduleSummaryDayLabel = (value: string) => {
   const scheduleDate = parseScheduleDate(value)
   if (!scheduleDate) return 'the selected date'
@@ -522,6 +524,7 @@ function ScheduleDatePicker({ value, onChange }: ScheduleDatePickerProps) {
 interface PushScheduleComposerSectionProps {
   quickPick: ScheduleQuickPickValue
   onQuickPickChange: (quickPick: ScheduleQuickPickValue) => void
+  onCustomScheduleChange: () => void
   date: string
   onDateChange: (date: string) => void
   time: string
@@ -533,6 +536,7 @@ interface PushScheduleComposerSectionProps {
 function PushScheduleComposerSection({
   quickPick,
   onQuickPickChange,
+  onCustomScheduleChange,
   date,
   onDateChange,
   time,
@@ -575,7 +579,7 @@ function PushScheduleComposerSection({
           value={date}
           onChange={(nextScheduleDate) => {
             onDateChange(nextScheduleDate)
-            onQuickPickChange('custom')
+            onCustomScheduleChange()
           }}
         />
         <DropdownSingle
@@ -593,7 +597,7 @@ function PushScheduleComposerSection({
           value={time}
           onChange={(value) => {
             onTimeChange(value)
-            onQuickPickChange('custom')
+            onCustomScheduleChange()
           }}
         />
       </div>
@@ -1170,7 +1174,7 @@ export function PushNotificationsPanel({
 
     if (quickPick === 'custom') {
       setScheduleDate('')
-      setScheduleTime('')
+      setScheduleTime(getCurrentScheduleTime())
       return
     }
 
@@ -1209,6 +1213,7 @@ export function PushNotificationsPanel({
     setCanReturnToHistory(true)
     setUsesInitialComposerLayout(true)
     setIsScheduleComposer(true)
+    setScheduleTime(getCurrentScheduleTime())
     onScheduleComposerChange?.(true)
     setActiveView('composer')
   }
@@ -1411,6 +1416,7 @@ export function PushNotificationsPanel({
               <PushScheduleComposerSection
                 quickPick={scheduleQuickPick}
                 onQuickPickChange={applyScheduleQuickPick}
+                onCustomScheduleChange={() => setScheduleQuickPick('custom')}
                 date={scheduleDate}
                 onDateChange={setScheduleDate}
                 time={scheduleTime}
