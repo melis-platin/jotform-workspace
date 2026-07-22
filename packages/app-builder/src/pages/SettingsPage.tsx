@@ -93,7 +93,6 @@ const SCHEDULE_NOTIFICATION_CONTENT_PLACEHOLDER = 'Enter notification content'
 const NOTIFICATION_CONTENT_MAX_LENGTH = 150
 const NOTIFICATION_DEEP_LINK_PLACEHOLDER = 'Choose a page or form'
 const NOTIFICATION_AUDIENCE_PLACEHOLDER = 'Choose audience'
-const PUSH_NOTIFICATION_ALLOWED_DEVICE_COUNT = 0
 const SENT_NOTIFICATION_METRICS = [
   { label: 'SUBSCRIBES', value: '600' },
   { label: 'SENT', value: '500' },
@@ -544,6 +543,8 @@ interface PushScheduleComposerSectionProps {
   quickPick: ScheduleQuickPickValue
   onQuickPickChange: (quickPick: ScheduleQuickPickValue) => void
   onCustomScheduleChange: () => void
+  audience: string[]
+  appUserRoles: AppRoleOption[]
   date: string
   onDateChange: (date: string) => void
   time: string
@@ -556,6 +557,8 @@ function PushScheduleComposerSection({
   quickPick,
   onQuickPickChange,
   onCustomScheduleChange,
+  audience,
+  appUserRoles,
   date,
   onDateChange,
   time,
@@ -570,6 +573,8 @@ function PushScheduleComposerSection({
     : time
   const scheduleDayLabel = getScheduleSummaryDayLabel(date)
   const timezoneAbbreviation = getScheduleTimezoneAbbreviation(timezone)
+  const scheduleAudience = getSendStatusAudience(audience, appUserRoles)
+  const scheduleAudienceUserCount = getAudienceUserCount(audience, appUserRoles)
 
   return (
     <section className="push-schedule-composer" aria-labelledby="push-schedule-composer-title">
@@ -650,7 +655,7 @@ function PushScheduleComposerSection({
           <Icon name="clock" category="time-date" size={16} />
           <p>
             Sends <strong>{scheduleDayLabel}</strong> at <strong>{scheduleTimeLabel}.</strong>{' '}
-            <em>{timezoneAbbreviation}</em> - to All Users · {PUSH_NOTIFICATION_ALLOWED_DEVICE_COUNT} devices.
+            <em>{timezoneAbbreviation}</em> - to {scheduleAudience} · {scheduleAudienceUserCount} {scheduleAudienceUserCount === 1 ? 'user' : 'users'}.
           </p>
         </div>
       ) : (
@@ -1467,6 +1472,8 @@ export function PushNotificationsPanel({
                 quickPick={scheduleQuickPick}
                 onQuickPickChange={applyScheduleQuickPick}
                 onCustomScheduleChange={() => setScheduleQuickPick('custom')}
+                audience={audience}
+                appUserRoles={appUserRoles}
                 date={scheduleDate}
                 onDateChange={setScheduleDate}
                 time={scheduleTime}
