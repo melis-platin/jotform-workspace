@@ -10607,6 +10607,14 @@ body.builder--phone-only {
   background: var(--background-white);
 }
 
+.live-preview__side-nav-avatar-wrap {
+  position: relative;
+  width: var(--space-8);
+  height: var(--space-8);
+  display: inline-flex;
+  flex: 0 0 var(--space-8);
+}
+
 .live-preview__side-nav-avatar {
   width: var(--space-8);
   height: var(--space-8);
@@ -10615,6 +10623,15 @@ body.builder--phone-only {
   border-radius: var(--radius-rounded);
   object-fit: cover;
   box-shadow: var(--shadow-xs);
+}
+
+.live-preview__side-nav-avatar-notification-badge {
+  top: calc(var(--spacing-2xs) * -1);
+  right: calc(var(--spacing-2xs) * -1);
+}
+
+.live-preview__side-nav-avatar-notification-badge--wide {
+  right: calc(var(--space-2) * -1);
 }
 
 .live-preview__side-nav-account-info {
@@ -11921,10 +11938,8 @@ body.builder--phone-only {
   height: var(--space-5);
 }
 
-.live-preview__top-header-notification-badge {
+.live-preview__notification-count-badge {
   position: absolute;
-  top: calc(var(--spacing-2xs) * -1);
-  left: var(--space-6);
   min-width: var(--spacing-lg);
   height: var(--spacing-lg);
   display: inline-flex;
@@ -11940,6 +11955,11 @@ body.builder--phone-only {
   font-weight: var(--font-weight-bold);
   line-height: 1;
   pointer-events: none;
+}
+
+.live-preview__top-header-notification-badge {
+  top: calc(var(--spacing-2xs) * -1);
+  left: var(--space-6);
 }
 
 .live-preview__top-header-notification-badge--wide {

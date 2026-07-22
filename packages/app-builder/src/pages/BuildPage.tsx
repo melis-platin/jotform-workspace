@@ -2972,6 +2972,10 @@ function isLivePreviewNotificationVisibleForRole(notification: LivePreviewPushNo
   return notification.audience.includes(ALL_USERS_AUDIENCE_ID) || notification.audience.includes(roleId)
 }
 
+function getLivePreviewNotificationCountLabel(unreadCount: number) {
+  return unreadCount > 99 ? '99+' : String(unreadCount)
+}
+
 function LivePreviewNotificationButton({
   unreadCount,
   onClick,
@@ -2985,7 +2989,7 @@ function LivePreviewNotificationButton({
 }) {
   const hasUnreadBadge = unreadCount > 0
   const hasWideUnreadBadge = unreadCount > 9
-  const visibleUnreadCount = unreadCount > 99 ? '99+' : String(unreadCount)
+  const visibleUnreadCount = getLivePreviewNotificationCountLabel(unreadCount)
 
   return (
     <div className={`live-preview__top-header-notification${open ? ' live-preview__top-header-notification--open' : ''}`}>
@@ -2999,7 +3003,7 @@ function LivePreviewNotificationButton({
       >
         <Icon name="bell-diagonal-filled" category="alerts-feedback" size={20} />
         {hasUnreadBadge && (
-          <span className={`live-preview__top-header-notification-badge${hasWideUnreadBadge ? ' live-preview__top-header-notification-badge--wide' : ''}`}>
+          <span className={`live-preview__notification-count-badge live-preview__top-header-notification-badge${hasWideUnreadBadge ? ' live-preview__top-header-notification-badge--wide' : ''}`}>
             {visibleUnreadCount}
           </span>
         )}
@@ -3506,6 +3510,9 @@ export function BuildPage({
     roleScopedPushNotifications.filter((notification) => notification.unread).length
   ), [roleScopedPushNotifications])
   const mobileNotificationScreenCount = roleScopedUnreadPushNotificationCount
+  const hasRoleScopedUnreadPushNotificationBadge = pushNotificationsEnabled && roleScopedUnreadPushNotificationCount > 0
+  const hasWideRoleScopedUnreadPushNotificationBadge = roleScopedUnreadPushNotificationCount > 9
+  const visibleRoleScopedUnreadPushNotificationCount = getLivePreviewNotificationCountLabel(roleScopedUnreadPushNotificationCount)
   const markRoleScopedPushNotificationRead = useCallback((notificationId: string) => {
     onPushNotificationRead?.(notificationId, viewingAsRole)
   }, [onPushNotificationRead, viewingAsRole])
@@ -5835,12 +5842,19 @@ export function BuildPage({
           <div className="live-preview__side-nav-footer">
             {isPreviewLoggedIn ? (
               <div className="live-preview__side-nav-account">
-                <img
-                  className="live-preview__side-nav-avatar"
-                  src={previewHeaderAvatar}
-                  alt=""
-                  aria-hidden="true"
-                />
+                <span className="live-preview__side-nav-avatar-wrap">
+                  <img
+                    className="live-preview__side-nav-avatar"
+                    src={previewHeaderAvatar}
+                    alt=""
+                    aria-hidden="true"
+                  />
+                  {hasRoleScopedUnreadPushNotificationBadge && (
+                    <span className={`live-preview__notification-count-badge live-preview__side-nav-avatar-notification-badge${hasWideRoleScopedUnreadPushNotificationBadge ? ' live-preview__side-nav-avatar-notification-badge--wide' : ''}`}>
+                      {visibleRoleScopedUnreadPushNotificationCount}
+                    </span>
+                  )}
+                </span>
                 <div className="live-preview__side-nav-account-info">
                   <span className="live-preview__side-nav-account-name">{PROFILE_USER.name}</span>
                   <span className="live-preview__side-nav-account-email">{PROFILE_USER.email}</span>
