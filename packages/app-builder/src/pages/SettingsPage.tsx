@@ -89,6 +89,7 @@ const LANGUAGE_OPTIONS = [
 
 const NOTIFICATION_TITLE_PLACEHOLDER = 'Notification Title'
 const NOTIFICATION_CONTENT_PLACEHOLDER = 'Notification content'
+const SCHEDULE_NOTIFICATION_CONTENT_PLACEHOLDER = 'Enter notification content'
 const NOTIFICATION_CONTENT_MAX_LENGTH = 150
 const EDIT_NOTIFICATION_CONTENT_MAX_LENGTH = 400
 const NOTIFICATION_DEEP_LINK_PLACEHOLDER = 'Choose a page or form'
@@ -130,8 +131,8 @@ type ScheduleQuickPickValue = 'in-1-hour' | 'tomorrow-9-am' | 'monday-9-am' | 'c
 
 const SCHEDULE_QUICK_PICK_OPTIONS: Array<{ value: ScheduleQuickPickValue; label: string }> = [
   { value: 'in-1-hour', label: 'In 1 hour' },
-  { value: 'tomorrow-9-am', label: 'Tomorrow 9 am' },
-  { value: 'monday-9-am', label: 'Monday 9 am' },
+  { value: 'tomorrow-9-am', label: 'Tomorrow 9 AM' },
+  { value: 'monday-9-am', label: 'Monday 9 AM' },
   { value: 'custom', label: 'Custom' },
 ]
 
@@ -210,7 +211,7 @@ const formatScheduleTimeFieldValue = (value: string) => {
   const parsedTime = parseScheduleTime(value)
   if (!parsedTime) return value
 
-  const period = parsedTime.hours >= 12 ? 'pm' : 'am'
+  const period = parsedTime.hours >= 12 ? 'PM' : 'AM'
   const displayHours = String(parsedTime.hours % 12 || 12).padStart(2, '0')
 
   return `${displayHours}:${String(parsedTime.minutes).padStart(2, '0')} ${period}`
@@ -578,18 +579,16 @@ function PushScheduleComposerSection({
   timezone,
   onTimezoneChange,
 }: PushScheduleComposerSectionProps) {
-  const hasQuickPickSchedule = quickPick !== 'custom' && Boolean(date) && Boolean(time)
+  const hasScheduleDateTime = Boolean(date) && Boolean(time)
   const scheduleDayLabel = getScheduleSummaryDayLabel(date)
   const timezoneAbbreviation = getScheduleTimezoneAbbreviation(timezone)
 
   return (
     <section className="push-schedule-composer" aria-labelledby="push-schedule-composer-title">
-      <div className="push-schedule-composer__intro">
-        <h2 id="push-schedule-composer-title">When to send</h2>
-        <p>Pick a time to deliver this notification. You can edit or cancel it anytime before it sends.</p>
-      </div>
-      <div className="push-schedule-quick-picks">
-        <p className="push-schedule-quick-picks__title">Quick Picks</p>
+      <div className="push-schedule-composer__quick-picks">
+        <h2 id="push-schedule-composer-title" className="push-schedule-composer__title">
+          Schedule
+        </h2>
         <div className="push-schedule-quick-picks__list">
           {SCHEDULE_QUICK_PICK_OPTIONS.map((option) => {
             const isSelected = quickPick === option.value
@@ -602,7 +601,13 @@ function PushScheduleComposerSection({
                 onClick={() => onQuickPickChange(option.value)}
               >
                 {isSelected && <Icon name="check" category="general" size={16} />}
-                <span className={isSelected ? 'push-schedule-quick-picks__chip-label push-schedule-quick-picks__chip-label--selected' : 'push-schedule-quick-picks__chip-label'}>{option.label}</span>
+                <span
+                  className={isSelected
+                    ? 'push-schedule-quick-picks__chip-label push-schedule-quick-picks__chip-label--selected'
+                    : 'push-schedule-quick-picks__chip-label'}
+                >
+                  {option.label}
+                </span>
               </button>
             )
           })}
@@ -649,7 +654,7 @@ function PushScheduleComposerSection({
         value={timezone}
         onChange={onTimezoneChange}
       />
-      {hasQuickPickSchedule ? (
+      {hasScheduleDateTime ? (
         <div className="push-schedule-composer__scheduled-notice">
           <Icon name="clock" category="time-date" size={16} />
           <p>
@@ -658,9 +663,12 @@ function PushScheduleComposerSection({
           </p>
         </div>
       ) : (
-        <p className="push-schedule-composer__notice">
-          Pick a date and time above to schedule this notification.
-        </p>
+        <div
+          className="push-schedule-composer__scheduled-notice push-schedule-composer__scheduled-notice--empty"
+          role="status"
+        >
+          <p>Pick a date and time above to schedule this notification.</p>
+        </div>
       )}
     </section>
   )
@@ -1443,6 +1451,11 @@ export function PushNotificationsPanel({
             isInitialPushNotification={usesInitialComposerLayout}
             hideIntro={isPublishComposer}
             showEmptyStateNotice={isPublishComposer && !isScheduleComposer}
+            contentPlaceholder={
+              isScheduleComposer
+                ? SCHEDULE_NOTIFICATION_CONTENT_PLACEHOLDER
+                : NOTIFICATION_CONTENT_PLACEHOLDER
+            }
             scheduleContent={isScheduleComposer ? (
               <PushScheduleComposerSection
                 quickPick={scheduleQuickPick}
@@ -1469,7 +1482,6 @@ export function PushNotificationsPanel({
               {isScheduleComposer ? <Button
                 colorScheme="apps"
                 disabled={isScheduleActionDisabled}
-                leftIcon={<Icon name="calendar-event" category="time-date" size={20} />}
                 onClick={saveScheduledNotification}
               >
                 SCHEDULE
@@ -3260,6 +3272,7 @@ interface PushNotificationComposerProps {
   isInitialPushNotification?: boolean
   hideIntro?: boolean
   showEmptyStateNotice?: boolean
+  contentPlaceholder?: string
   scheduleContent?: ReactNode
 }
 
@@ -3567,6 +3580,7 @@ function PushNotificationComposer({
   isInitialPushNotification = false,
   hideIntro = false,
   showEmptyStateNotice = false,
+  contentPlaceholder = NOTIFICATION_CONTENT_PLACEHOLDER,
   scheduleContent,
 }: PushNotificationComposerProps) {
   const imageInputRef = useRef<HTMLInputElement>(null)
@@ -3709,7 +3723,7 @@ function PushNotificationComposer({
               suffixValue={contentSuffix}
               fields={contentFields}
               fieldValues={fieldValues}
-              placeholder={NOTIFICATION_CONTENT_PLACEHOLDER}
+              placeholder={contentPlaceholder}
               maxLength={NOTIFICATION_CONTENT_MAX_LENGTH}
               onChange={setContent}
               onSuffixChange={setContentSuffix}

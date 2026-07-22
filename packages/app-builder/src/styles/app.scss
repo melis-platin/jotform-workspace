@@ -12737,18 +12737,15 @@ body.builder--phone-only {
   padding: var(--space-6);
 }
 
-.push-schedule-composer__intro {
+.push-schedule-composer__quick-picks {
+  width: 100%;
   display: flex;
   flex-direction: column;
-  gap: var(--space-0);
+  gap: var(--space-2);
 }
 
-.push-schedule-composer__intro h2,
-.push-schedule-composer__intro p {
+.push-schedule-composer__title {
   margin: 0;
-}
-
-.push-schedule-composer__intro h2 {
   color: var(--text-darkest);
   font-family: var(--font-family-circular);
   font-size: var(--font-size-md);
@@ -12757,30 +12754,11 @@ body.builder--phone-only {
   letter-spacing: var(--body-letter-spacing);
 }
 
-.push-schedule-composer__intro p,
-.push-schedule-composer__notice {
-  color: var(--text-medium);
-  font-family: var(--font-family-circular);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-book);
-  line-height: var(--line-height-sm);
-  letter-spacing: var(--body-sm-letter-spacing);
-}
-
 .push-schedule-composer__date-time-row {
   width: 100%;
   display: flex;
   align-items: flex-start;
   gap: var(--space-6);
-}
-
-.push-schedule-composer__notice {
-  width: 100%;
-  margin: 0;
-  padding: var(--space-3);
-  border: 1px dashed var(--border-medium);
-  border-radius: var(--radius-md);
-  background: var(--background-lightest);
 }
 
 .push-schedule-composer .push-schedule-field,
@@ -12839,6 +12817,13 @@ body.builder--phone-only {
 .push-schedule-composer__scheduled-notice p {
   margin: 0;
   white-space: nowrap;
+}
+
+.push-schedule-composer__scheduled-notice--empty {
+  border-style: dashed;
+  border-color: var(--border-medium);
+  background: var(--background-lightest);
+  color: var(--text-medium);
 }
 
 .push-schedule-composer__scheduled-notice strong {
