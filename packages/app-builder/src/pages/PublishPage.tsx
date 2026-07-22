@@ -596,6 +596,9 @@ export function PublishPage({
       setPreviewedPushNotificationId(null)
     }
   }, [])
+  const closeHistoryNotificationPreview = useCallback(() => {
+    setPreviewedPushNotificationId(null)
+  }, [])
 
   const handleNavigationChange = (nextId: string) => {
     setPreviewedPushNotificationId(null)
@@ -724,7 +727,9 @@ export function PublishPage({
         </div>
         {shouldShowPreview && (
           <div className="publish-page__preview">
-            <QuickPreview>
+            <QuickPreview
+              onClose={isHistoryNotificationPreviewOpen ? closeHistoryNotificationPreview : undefined}
+            >
               <BasicPhonePreview>
                 {isPermissionRequestModalOpen ? (
                   <PushPermissionRequestPreview

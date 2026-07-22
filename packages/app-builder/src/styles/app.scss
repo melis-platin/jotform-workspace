@@ -7954,6 +7954,28 @@ body {
   color: var(--text-medium);
 }
 
+.quick-preview__close {
+  width: var(--spacing-2xl);
+  height: var(--spacing-2xl);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radius-rounded);
+  background: transparent;
+  color: var(--text-medium);
+  cursor: pointer;
+  transition: background 150ms ease, color 150ms ease;
+
+  &:hover,
+  &:focus-visible {
+    outline: none;
+    background: var(--background-light);
+    color: var(--text-dark);
+  }
+}
+
 .quick-preview__open {
   display: inline-flex;
   align-items: center;
