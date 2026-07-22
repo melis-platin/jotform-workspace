@@ -1,4 +1,4 @@
-import { type Dispatch, type SetStateAction, useEffect, useMemo, useRef, useState } from 'react'
+import { type Dispatch, type SetStateAction, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { Badge, Button, Icon, SearchInput } from '@jf/design-system'
 import { BasicPhonePreview } from '../components/BasicPhonePreview'
@@ -537,6 +537,7 @@ export function PublishPage({
   const [canReturnToPushHistory, setCanReturnToPushHistory] = useState(false)
   const [isPushScheduleComposer, setIsPushScheduleComposer] = useState(false)
   const [pushHistoryReturnRequestId, setPushHistoryReturnRequestId] = useState(0)
+  const [previewedPushNotificationId, setPreviewedPushNotificationId] = useState<string | null>(null)
   const [isPermissionRequestModalOpen, setIsPermissionRequestModalOpen] = useState(false)
   const [permissionRequestTitle, setPermissionRequestTitle] = useState(PUSH_PERMISSION_REQUEST_DEFAULT_TITLE)
   const [permissionRequestContent, setPermissionRequestContent] = useState(PUSH_PERMISSION_REQUEST_DEFAULT_CONTENT)
@@ -551,6 +552,11 @@ export function PublishPage({
   const isPushComposerOpen = isPushNotificationsOpen && !isPushDisabledOverview && canReturnToPushHistory
   const isPushScheduleOpen = isPushNotificationsOpen && !isPushDisabledOverview && isPushScheduleComposer
   const isPushHistoryOpen = isPushNotificationsOpen && !isPushDisabledOverview && pushNotificationView === 'history'
+  const previewedPushNotification = useMemo(
+    () => pushNotificationHistoryItems.find((notification) => notification.id === previewedPushNotificationId) ?? null,
+    [previewedPushNotificationId, pushNotificationHistoryItems],
+  )
+  const isHistoryNotificationPreviewOpen = isPushHistoryOpen && Boolean(previewedPushNotification)
   const canReturnFromPushOverview =
     !isPushDisabledOverview && isFigmaPushInitial && pushNotificationHistoryItems.length > 0
   const usesFigmaPushComposerLayout = isPushComposerOpen
@@ -558,9 +564,12 @@ export function PublishPage({
   const shouldShowPushPreview =
     isPushNotificationsOpen &&
     !arePushNotificationsDisabled &&
-    !isFigmaPushInitial &&
-    !isPushHistoryOpen
+    (
+      isHistoryNotificationPreviewOpen ||
+      (!isFigmaPushInitial && !isPushHistoryOpen)
+    )
   const pushNotificationIconStyle = 'flat'
+  const pushPreviewNotification = isHistoryNotificationPreviewOpen ? previewedPushNotification : null
   const previewNotificationTitle = formatPushNotificationTitle(
     notificationTitle,
     notificationTitleFields,
@@ -575,7 +584,21 @@ export function PublishPage({
   )
   const shouldShowPreview = shouldShowPushPreview || isPermissionRequestModalOpen
 
+  useEffect(() => {
+    if (previewedPushNotificationId && !previewedPushNotification) {
+      setPreviewedPushNotificationId(null)
+    }
+  }, [previewedPushNotification, previewedPushNotificationId])
+
+  const handlePushNotificationViewChange = useCallback((view: PushNotificationPanelView) => {
+    setPushNotificationView(view)
+    if (view !== 'history') {
+      setPreviewedPushNotificationId(null)
+    }
+  }, [])
+
   const handleNavigationChange = (nextId: string) => {
+    setPreviewedPushNotificationId(null)
     setIsPushInitialOverview(
       nextId === 'push-notifications' &&
         (arePushNotificationsDisabled || pushNotificationHistoryItems.length === 0),
@@ -687,7 +710,8 @@ export function PublishPage({
                     setPermissionRequestPreviewContent(permissionRequestContent)
                     setIsPermissionRequestModalOpen(true)
                   }}
-                  onViewChange={setPushNotificationView}
+                  onNotificationPreview={(notification) => setPreviewedPushNotificationId(notification.id)}
+                  onViewChange={handlePushNotificationViewChange}
                   onCanReturnToHistoryChange={setCanReturnToPushHistory}
                   onInitialOverviewChange={setIsPushInitialOverview}
                   onScheduleComposerChange={setIsPushScheduleComposer}
@@ -709,9 +733,9 @@ export function PublishPage({
                   />
                 ) : (
                   <PushNotificationPreview
-                    title={previewNotificationTitle}
-                    content={previewNotificationContent}
-                    image={notificationImage}
+                    title={pushPreviewNotification?.title ?? previewNotificationTitle}
+                    content={pushPreviewNotification?.content ?? previewNotificationContent}
+                    image={pushPreviewNotification?.image ?? notificationImage}
                     appIconVariant={appIcon.variant}
                     appIconImageUrl={appIcon.imageUrl}
                     appIconName={appIcon.icon}
