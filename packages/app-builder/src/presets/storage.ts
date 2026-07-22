@@ -16,6 +16,12 @@ const DB_VERSION = 1
 const STORE = 'preset-snapshots'
 const LEGACY_LS_PREFIX = 'jf-app-builder:preset:v5:'
 
+// Keep preset identity resilient when a previously used icon is not available
+// in the current shared Lucide icon library.
+const LEGACY_PRESET_APP_HEADER_ICONS: Record<string, Record<string, string>> = {
+  'golden-hive': { Bee: 'Flower2' },
+}
+
 export interface PresetSnapshot {
   appTitle: string
   appSubtitle: string
@@ -173,5 +179,7 @@ export function loadStoredAppTitle(presetId: string): string | null {
 }
 
 export function loadStoredAppHeaderIcon(presetId: string): string | null {
-  return cache.get(presetId)?.appHeader?.icon ?? null
+  const icon = cache.get(presetId)?.appHeader?.icon
+  if (!icon) return null
+  return LEGACY_PRESET_APP_HEADER_ICONS[presetId]?.[icon] ?? icon
 }

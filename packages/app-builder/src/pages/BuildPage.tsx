@@ -673,6 +673,9 @@ const LEGACY_PRESET_HEADER_SUBTITLES: Record<string, string[]> = {
   'gym-club': ['Train with the best in the city', 'Classes, coaches, plans, and support in one place'],
   'camp-registration': ['Sign up for the 2026 season'],
 }
+const LEGACY_PRESET_HEADER_ICONS: Record<string, string[]> = {
+  'golden-hive': ['Bee'],
+}
 const BOHO_NEST_LEGACY_TURKISH_MARKERS = [
   'Evinize sıcak, özgür ve katmanlı bir bohem ruh katın',
   'Oda oda stil rehberleri, dekorasyon blogu',
@@ -696,6 +699,7 @@ function resolveStoredAppHeaderForPreset(
   const legacyImages = LEGACY_PRESET_HEADER_IMAGES[preset.id]
   const legacyTitles = LEGACY_PRESET_HEADER_TITLES[preset.id]
   const legacySubtitles = LEGACY_PRESET_HEADER_SUBTITLES[preset.id]
+  const legacyIcons = LEGACY_PRESET_HEADER_ICONS[preset.id]
   let nextHeader = storedHeader
 
   if (
@@ -726,6 +730,16 @@ function resolveStoredAppHeaderForPreset(
     nextHeader = {
       ...nextHeader,
       subtitle: presetHeader.subtitle,
+    }
+  }
+
+  if (
+    presetHeader.icon &&
+    legacyIcons?.includes(storedHeader.icon ?? '')
+  ) {
+    nextHeader = {
+      ...nextHeader,
+      icon: presetHeader.icon,
     }
   }
 

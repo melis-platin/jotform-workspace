@@ -365,7 +365,7 @@ const ALL_APP_PRESETS: AppPreset[] = [
       show: true,
       title: 'Small acts that help a whole hive thrive',
       subtitle: 'Keep hive notes, follow local blooms, and learn alongside a community that cares for pollinators.',
-      icon: 'Bee',
+      icon: 'Flower2',
       backgroundImageUrl: 'https://images.unsplash.com/photo-1473973266408-ed4e27abdd47?w=1200&h=700&fit=crop',
       backgroundImageName: 'bee on a flower',
     },
