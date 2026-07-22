@@ -3140,6 +3140,8 @@ function AudienceDropdown({ value, onChange, roles }: AudienceDropdownProps) {
   const selectedValue = value.length > 0 ? value : [ALL_USERS_AUDIENCE_ID]
   const selectedOptions = options.filter((option) => selectedValue.includes(option.id))
   const selectedRoleOptions = selectedOptions.filter((option) => option.role)
+  const visibleSelectedRoleOptions = selectedRoleOptions.slice(0, 2)
+  const hiddenSelectedRoleCount = Math.max(selectedRoleOptions.length - visibleSelectedRoleOptions.length, 0)
   const selectedAllUsersOption = selectedOptions.find((option) => option.id === ALL_USERS_AUDIENCE_ID)
   const selectedLabel = selectedOptions.length > 0
     ? selectedOptions.map((option) => option.label).join(', ')
@@ -3220,7 +3222,7 @@ function AudienceDropdown({ value, onChange, roles }: AudienceDropdownProps) {
           <span className={`jf-dropdown__value push-audience-dropdown__value${selectedRoleOptions.length > 0 ? ' push-audience-dropdown__value--chips' : ''}${selectedOptions.length === 0 ? ' jf-dropdown__value--placeholder' : ''}`}>
             {selectedRoleOptions.length > 0 ? (
               <span className="push-audience-dropdown__chips">
-                {selectedRoleOptions.map((option) => (
+                {visibleSelectedRoleOptions.map((option) => (
                   <span
                     className="push-audience-dropdown__chip"
                     style={option.role ? getRoleColorStyle(option.role.color) : undefined}
@@ -3229,6 +3231,11 @@ function AudienceDropdown({ value, onChange, roles }: AudienceDropdownProps) {
                     {option.label}
                   </span>
                 ))}
+                {hiddenSelectedRoleCount > 0 && (
+                  <span className="push-audience-dropdown__more">
+                    +{hiddenSelectedRoleCount} more
+                  </span>
+                )}
               </span>
             ) : selectedAllUsersOption ? (
               <span className="push-audience-dropdown__all-users-value">
