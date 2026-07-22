@@ -498,6 +498,8 @@ interface PublishPageProps {
   onPushNotificationHistoryItemCreate: (item: PushNotificationHistoryItem) => void
   onPushNotificationHistoryItemUpdate: (item: PushNotificationHistoryItem) => void
   onPushNotificationHistoryItemDelete: (itemId: string) => void
+  arePushNotificationsDisabled: boolean
+  onPushNotificationsDisabledChange: (isDisabled: boolean) => void
   pushComposerFieldValues?: PushComposerFieldValues
 }
 
@@ -514,6 +516,8 @@ export function PublishPage({
   onPushNotificationHistoryItemCreate,
   onPushNotificationHistoryItemUpdate,
   onPushNotificationHistoryItemDelete,
+  arePushNotificationsDisabled,
+  onPushNotificationsDisabledChange,
   pushComposerFieldValues = {},
 }: PublishPageProps) {
   const [activeId, setActiveId] = useState('quick-share')
@@ -526,7 +530,6 @@ export function PublishPage({
   const [notificationAudience, setNotificationAudience] = useState<string[]>([ALL_USERS_AUDIENCE_ID])
   const [notificationDeepLink, setNotificationDeepLink] = useState('')
   const [notificationImage, setNotificationImage] = useState<PushComposerSelectedImage | null>(null)
-  const [arePushNotificationsDisabled, setArePushNotificationsDisabled] = useState(false)
   const [pushNotificationView, setPushNotificationView] = useState<PushNotificationPanelView>(() => (
     pushNotificationHistoryItems.length > 0 ? 'history' : 'composer'
   ))
@@ -670,8 +673,8 @@ export function PublishPage({
                   notificationImage={notificationImage}
                   setNotificationImage={setNotificationImage}
                   isDisabled={arePushNotificationsDisabled}
-                  onDisable={() => setArePushNotificationsDisabled(true)}
-                  onEnable={() => setArePushNotificationsDisabled(false)}
+                  onDisable={() => onPushNotificationsDisabledChange(true)}
+                  onEnable={() => onPushNotificationsDisabledChange(false)}
                   onPermissionMessageEdit={() => {
                     setPermissionRequestPreviewTitle(permissionRequestTitle)
                     setPermissionRequestPreviewContent(permissionRequestContent)

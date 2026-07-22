@@ -22,6 +22,7 @@ import { SEARCH_BAR_AUTO_ENABLE_THRESHOLD } from './state/searchableElements.ts'
 type Page = 'build' | 'data' | 'settings' | 'publish'
 
 type PushNotificationHistoryByPreset = Record<string, PushNotificationHistoryItem[]>
+type PushNotificationsDisabledByPreset = Record<string, boolean>
 type ReadPushNotificationDeliveryIdsByPreset = Record<string, Set<string>>
 
 const EMPTY_READ_PUSH_NOTIFICATION_DELIVERY_IDS = new Set<string>()
@@ -125,7 +126,7 @@ export function App() {
   const [appUserRoleOptions, setAppUserRoleOptions] = useState<AppRoleOption[]>(() => getAppUserRoleOptionsForPreset(initialPresetId))
   const [appUserTableRoleIds, setAppUserTableRoleIds] = useState<string[]>(() => getAppUserTableRoleIdsForPreset(initialPresetId))
   const [appUserRoleUserCounts, setAppUserRoleUserCounts] = useState<Record<string, number>>(() => getAppUserRoleUserCountsForPreset(initialPresetId))
-  const pushNotificationsEnabled = true
+  const [pushNotificationsDisabledByPreset, setPushNotificationsDisabledByPreset] = useState<PushNotificationsDisabledByPreset>({})
   const [searchBarEnabled, setSearchBarEnabledState] = useState(false)
   const [searchableElementCount, setSearchableElementCount] = useState(0)
   const [dataBackedElementCount, setDataBackedElementCount] = useState(0)
@@ -140,6 +141,8 @@ export function App() {
   const [buildNavigationTarget, setBuildNavigationTarget] = useState<BuildNavigationTarget | null>(null)
   const [dataNavigationTarget, setDataNavigationTarget] = useState<DataNavigationTarget | null>(null)
   const preset = useMemo(() => getPresetById(activePresetId), [activePresetId])
+  const arePushNotificationsDisabled = pushNotificationsDisabledByPreset[activePresetId] ?? false
+  const pushNotificationsEnabled = !arePushNotificationsDisabled
   const pushNotificationHistoryItems = pushNotificationHistoryItemsByPreset[activePresetId] ?? []
   const readPushNotificationDeliveryIds = readPushNotificationDeliveryIdsByPreset[activePresetId]
     ?? EMPTY_READ_PUSH_NOTIFICATION_DELIVERY_IDS
@@ -366,6 +369,17 @@ export function App() {
     })
   }
 
+  const setActivePresetPushNotificationsDisabled = (isDisabled: boolean) => {
+    setPushNotificationsDisabledByPreset((currentDisabledByPreset) => {
+      if ((currentDisabledByPreset[activePresetId] ?? false) === isDisabled) return currentDisabledByPreset
+
+      return {
+        ...currentDisabledByPreset,
+        [activePresetId]: isDisabled,
+      }
+    })
+  }
+
   const appUserRoleOptionsWithUserCounts = useMemo<AppRoleOption[]>(() => (
     appUserRoleOptions.map((role) => ({
       ...role,
@@ -471,6 +485,8 @@ export function App() {
             onPushNotificationHistoryItemCreate={addPushNotificationHistoryItem}
             onPushNotificationHistoryItemUpdate={updatePushNotificationHistoryItem}
             onPushNotificationHistoryItemDelete={deletePushNotificationHistoryItem}
+            arePushNotificationsDisabled={arePushNotificationsDisabled}
+            onPushNotificationsDisabledChange={setActivePresetPushNotificationsDisabled}
             pushComposerFieldValues={{ 'user-name': getAppUserNameFieldValueForPreset(activePresetId) }}
           />
         )}
