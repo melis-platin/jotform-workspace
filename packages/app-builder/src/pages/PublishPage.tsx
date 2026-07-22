@@ -676,12 +676,6 @@ export function PublishPage({
                 <PushNotificationsPanel
                   appUserRoles={appUserRoles}
                   deepLinkTargets={deepLinkTargets}
-                  appIconVariant={appIcon.variant}
-                  appIconImageUrl={appIcon.imageUrl}
-                  appIconName={appIcon.icon}
-                  appIconColor={inverseColor}
-                  appIconBg={brandColor}
-                  appIconStyle={pushNotificationIconStyle}
                   historyItems={pushNotificationHistoryItems}
                   onHistoryItemCreate={onPushNotificationHistoryItemCreate}
                   onHistoryItemUpdate={onPushNotificationHistoryItemUpdate}

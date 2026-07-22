@@ -91,7 +91,6 @@ const NOTIFICATION_TITLE_PLACEHOLDER = 'Notification Title'
 const NOTIFICATION_CONTENT_PLACEHOLDER = 'Notification content'
 const SCHEDULE_NOTIFICATION_CONTENT_PLACEHOLDER = 'Enter notification content'
 const NOTIFICATION_CONTENT_MAX_LENGTH = 150
-const EDIT_NOTIFICATION_CONTENT_MAX_LENGTH = 400
 const NOTIFICATION_DEEP_LINK_PLACEHOLDER = 'Choose a page or form'
 const NOTIFICATION_AUDIENCE_PLACEHOLDER = 'Choose audience'
 const PUSH_NOTIFICATION_ALLOWED_DEVICE_COUNT = 0
@@ -1039,12 +1038,6 @@ function SplashScreenPanel({
 export interface PushNotificationsPanelProps {
   appUserRoles: AppRoleOption[]
   deepLinkTargets: DeepLinkTarget[]
-  appIconVariant: AppIconVariant
-  appIconImageUrl: string | null
-  appIconName: string
-  appIconColor: string
-  appIconBg: string
-  appIconStyle: IconStyle
   historyItems: PushNotificationHistoryItem[]
   onHistoryItemCreate: (item: PushNotificationHistoryItem) => void
   onHistoryItemUpdate: (item: PushNotificationHistoryItem) => void
@@ -1110,12 +1103,6 @@ export interface PushNotificationHistoryItem {
 export function PushNotificationsPanel({
   appUserRoles,
   deepLinkTargets,
-  appIconVariant,
-  appIconImageUrl,
-  appIconName,
-  appIconColor,
-  appIconBg,
-  appIconStyle,
   historyItems,
   onHistoryItemCreate,
   onHistoryItemUpdate,
@@ -1164,13 +1151,6 @@ export function PushNotificationsPanel({
   const [scheduleQuickPick, setScheduleQuickPick] = useState<ScheduleQuickPickValue>('custom')
   const [isScheduleComposer, setIsScheduleComposer] = useState(false)
   const [editingNotification, setEditingNotification] = useState<PushNotificationHistoryItem | null>(null)
-  const [editTitle, setEditTitle] = useState('')
-  const [editContent, setEditContent] = useState('')
-  const [editAudience, setEditAudience] = useState<string[]>([ALL_USERS_AUDIENCE_ID])
-  const [editDeepLink, setEditDeepLink] = useState('')
-  const [editScheduleDate, setEditScheduleDate] = useState('')
-  const [editScheduleTime, setEditScheduleTime] = useState('')
-  const [editScheduleTimezone, setEditScheduleTimezone] = useState(SCHEDULE_TIMEZONE_OPTIONS[0].value)
   const [cancelingNotification, setCancelingNotification] = useState<PushNotificationHistoryItem | null>(null)
   const [deletingNotification, setDeletingNotification] = useState<PushNotificationHistoryItem | null>(null)
   // Publish uses disabled as the highest-priority Push Notifications state:
@@ -1238,6 +1218,7 @@ export function PushNotificationsPanel({
     setScheduleTime('')
     setScheduleQuickPick('custom')
     setIsScheduleComposer(false)
+    setEditingNotification(null)
     onScheduleComposerChange?.(false)
   }
   const openInitialOverview = () => {
@@ -1276,6 +1257,7 @@ export function PushNotificationsPanel({
     setScheduleDate('')
     setScheduleTime('')
     setScheduleQuickPick('custom')
+    setEditingNotification(null)
     setCanReturnToHistory(true)
     setUsesInitialComposerLayout(true)
     setActiveView('composer')
@@ -1313,14 +1295,25 @@ export function PushNotificationsPanel({
   const saveScheduledNotification = () => {
     if (isScheduleActionDisabled) return
 
-    onHistoryItemCreate({
+    const scheduledNotification = {
       ...createBaseHistoryItem('scheduled'),
       scheduleDate,
       scheduleTime,
       scheduleTimezone,
       scheduledAtLabel: getScheduleHistoryDateTimeLabel(scheduleDate, scheduleTime),
       liveInLabel: getScheduleLiveInLabel(scheduleDate, scheduleTime),
-    })
+    }
+
+    if (editingNotification) {
+      onHistoryItemUpdate({
+        ...editingNotification,
+        ...scheduledNotification,
+        id: editingNotification.id,
+      })
+    } else {
+      onHistoryItemCreate(scheduledNotification)
+    }
+
     setIsScheduleModalOpen(false)
     resetNotificationComposer()
     setCanReturnToHistory(false)
@@ -1338,16 +1331,24 @@ export function PushNotificationsPanel({
   }
   const openScheduledNotificationEdit = (notification: PushNotificationHistoryItem) => {
     setEditingNotification(notification)
-    setEditTitle(notification.title)
-    setEditContent(notification.content)
-    setEditAudience(getHistoryAudienceValue(notification, appUserRoles))
-    setEditDeepLink(getHistoryDeepLinkValue(notification, deepLinkTargets))
-    setEditScheduleDate(getHistoryScheduleDateValue(notification))
-    setEditScheduleTime(getHistoryScheduleTimeValue(notification))
-    setEditScheduleTimezone(notification.scheduleTimezone ?? SCHEDULE_TIMEZONE_OPTIONS[0].value)
-  }
-  const closeScheduledNotificationEdit = () => {
-    setEditingNotification(null)
+    setNotificationTitle(notification.title)
+    setNotificationTitleFields([])
+    setNotificationTitleSuffix('')
+    setNotificationContent(notification.content)
+    setNotificationContentFields([])
+    setNotificationContentSuffix('')
+    setAudience(getHistoryAudienceValue(notification, appUserRoles))
+    setDeepLink(getHistoryDeepLinkValue(notification, deepLinkTargets))
+    setNotificationImage(notification.image ?? null)
+    setScheduleDate(getHistoryScheduleDateValue(notification))
+    setScheduleTime(getHistoryScheduleTimeValue(notification))
+    setScheduleTimezone(notification.scheduleTimezone ?? SCHEDULE_TIMEZONE_OPTIONS[0].value)
+    setScheduleQuickPick('custom')
+    setCanReturnToHistory(true)
+    setUsesInitialComposerLayout(true)
+    setIsScheduleComposer(true)
+    onScheduleComposerChange?.(true)
+    setActiveView('composer')
   }
   const openScheduledNotificationCancel = (notification: PushNotificationHistoryItem) => {
     setCancelingNotification(notification)
@@ -1373,29 +1374,6 @@ export function PushNotificationsPanel({
     onHistoryItemDelete(deletingNotification.id)
     closeSentNotificationDelete()
   }
-  const saveScheduledNotificationEdit = () => {
-    if (!editingNotification) return
-
-    const nextTitle = editTitle.trim() || NOTIFICATION_TITLE_PLACEHOLDER
-    const nextContent = editContent.trim() || NOTIFICATION_CONTENT_PLACEHOLDER
-
-    onHistoryItemUpdate({
-      ...editingNotification,
-      title: nextTitle,
-      content: nextContent,
-      audience: editAudience,
-      audienceLabel: getAudienceHistoryLabel(editAudience, appUserRoles),
-      deepLink: editDeepLink,
-      deepLinkLabel: getDeepLinkHistoryLabel(editDeepLink, deepLinkTargets),
-      scheduleDate: editScheduleDate,
-      scheduleTime: editScheduleTime,
-      scheduleTimezone: editScheduleTimezone,
-      scheduledAtLabel: getScheduleHistoryDateTimeLabel(editScheduleDate, editScheduleTime),
-      liveInLabel: getScheduleLiveInLabel(editScheduleDate, editScheduleTime),
-    })
-    closeScheduledNotificationEdit()
-  }
-
   useEffect(() => {
     if (historyItems.length === 0 && activeView === 'history') {
       setCanReturnToHistory(false)
@@ -1509,7 +1487,7 @@ export function PushNotificationsPanel({
                 disabled={isScheduleActionDisabled}
                 onClick={saveScheduledNotification}
               >
-                SCHEDULE
+                {editingNotification ? 'Save Changes' : 'SCHEDULE'}
               </Button> : !isPublishComposer && <Button
                 colorScheme="primary"
                 disabled={areNotificationActionsDisabled}
@@ -1628,31 +1606,6 @@ export function PushNotificationsPanel({
           />
         </div>
       </Modal>
-      <EditScheduledNotificationModal
-        open={editingNotification !== null}
-        title={editTitle}
-        setTitle={setEditTitle}
-        content={editContent}
-        setContent={setEditContent}
-        appIconVariant={appIconVariant}
-        appIconImageUrl={appIconImageUrl}
-        appIconName={appIconName}
-        appIconColor={appIconColor}
-        appIconBg={appIconBg}
-        appIconStyle={appIconStyle}
-        audience={editAudience}
-        setAudience={setEditAudience}
-        appUserRoles={appUserRoles}
-        deepLink={editDeepLink}
-        setDeepLink={setEditDeepLink}
-        deepLinkTargets={deepLinkTargets}
-        scheduleDate={editScheduleDate}
-        setScheduleDate={setEditScheduleDate}
-        scheduleTime={editScheduleTime}
-        setScheduleTime={setEditScheduleTime}
-        onClose={closeScheduledNotificationEdit}
-        onSave={saveScheduledNotificationEdit}
-      />
       <PushCancelNotificationDialog
         open={cancelingNotification !== null}
         title="Cancel this notificaiton?"
@@ -2074,210 +2027,6 @@ function PushCancelNotificationDialog({
             </Button>
           </footer>
         </div>
-      </section>
-    </div>,
-    document.body
-  )
-}
-
-interface EditScheduledNotificationModalProps {
-  open: boolean
-  title: string
-  setTitle: (title: string) => void
-  content: string
-  setContent: (content: string) => void
-  appIconVariant: AppIconVariant
-  appIconImageUrl: string | null
-  appIconName: string
-  appIconColor: string
-  appIconBg: string
-  appIconStyle: IconStyle
-  audience: string[]
-  setAudience: (audience: string[]) => void
-  appUserRoles: AppRoleOption[]
-  deepLink: string
-  setDeepLink: (deepLink: string) => void
-  deepLinkTargets: DeepLinkTarget[]
-  scheduleDate: string
-  setScheduleDate: (date: string) => void
-  scheduleTime: string
-  setScheduleTime: (time: string) => void
-  onClose: () => void
-  onSave: () => void
-}
-
-function EditScheduledNotificationModal({
-  open,
-  title,
-  setTitle,
-  content,
-  setContent,
-  appIconVariant,
-  appIconImageUrl,
-  appIconName,
-  appIconColor,
-  appIconBg,
-  appIconStyle,
-  audience,
-  setAudience,
-  appUserRoles,
-  deepLink,
-  setDeepLink,
-  deepLinkTargets,
-  scheduleDate,
-  setScheduleDate,
-  scheduleTime,
-  setScheduleTime,
-  onClose,
-  onSave,
-}: EditScheduledNotificationModalProps) {
-  const isSaveDisabled = title.trim().length === 0 || content.trim().length === 0
-
-  useEffect(() => {
-    if (!open) return undefined
-
-    const previousBodyOverflow = document.body.style.overflow
-    const closeOnEscape = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        event.stopPropagation()
-        onClose()
-      }
-    }
-
-    document.body.style.overflow = 'hidden'
-    document.addEventListener('keydown', closeOnEscape, true)
-
-    return () => {
-      document.body.style.overflow = previousBodyOverflow
-      document.removeEventListener('keydown', closeOnEscape, true)
-    }
-  }, [onClose, open])
-
-  if (!open) return null
-
-  return createPortal(
-    <div
-      className="push-edit-notification-modal__backdrop"
-      role="presentation"
-      onMouseDown={(event) => {
-        if (event.target === event.currentTarget) {
-          onClose()
-        }
-      }}
-    >
-      <section
-        className="push-edit-notification-modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="push-edit-notification-modal-title"
-        onMouseDown={(event) => event.stopPropagation()}
-      >
-        <header className="push-edit-notification-modal__header">
-          <span className="push-edit-notification-modal__icon" aria-hidden="true">
-            <Icon name="pencil-line-filled" category="editor" size={24} />
-          </span>
-          <div className="push-edit-notification-modal__header-copy">
-            <h2 id="push-edit-notification-modal-title">Edit Scheduled Notification</h2>
-            <p>Make changes to your notification before it goes live.</p>
-          </div>
-          <button
-            className="push-edit-notification-modal__close"
-            type="button"
-            aria-label="Close edit scheduled notification"
-            onClick={onClose}
-          >
-            <Icon name="xmark" category="general" size={20} />
-          </button>
-        </header>
-
-        <div className="push-edit-notification-modal__body">
-          <div className="push-edit-notification-modal__form">
-            <label className="push-edit-notification-modal__field" htmlFor="edit-push-notification-title">
-              <span className="push-edit-notification-modal__label">
-                <span>Notification Title</span>
-                <span className="push-edit-notification-modal__required">*</span>
-              </span>
-              <input
-                id="edit-push-notification-title"
-                className="push-edit-notification-modal__input"
-                value={title}
-                placeholder={NOTIFICATION_TITLE_PLACEHOLDER}
-                onChange={(event) => setTitle(event.currentTarget.value)}
-              />
-            </label>
-
-            <label className="push-edit-notification-modal__field" htmlFor="edit-push-notification-content">
-              <span className="push-edit-notification-modal__label">
-                <span>Notification Content</span>
-                <span className="push-edit-notification-modal__required">*</span>
-              </span>
-              <span className="push-edit-notification-modal__textarea-control">
-                <textarea
-                  id="edit-push-notification-content"
-                  className="push-edit-notification-modal__textarea"
-                  value={content}
-                  placeholder={NOTIFICATION_CONTENT_PLACEHOLDER}
-                  maxLength={EDIT_NOTIFICATION_CONTENT_MAX_LENGTH}
-                  onChange={(event) => setContent(event.currentTarget.value)}
-                />
-                <span className="push-edit-notification-modal__count">
-                  <span>{content.length}</span>
-                  <span>/</span>
-                  <span>{EDIT_NOTIFICATION_CONTENT_MAX_LENGTH}</span>
-                </span>
-              </span>
-            </label>
-
-            <AudienceDropdown value={audience} onChange={setAudience} roles={appUserRoles} />
-            <DeepLinkDropdown value={deepLink} onChange={setDeepLink} targets={deepLinkTargets} />
-
-            <div className="push-edit-notification-modal__schedule-row">
-              <ScheduleDatePicker value={scheduleDate} onChange={setScheduleDate} />
-              <DropdownSingle
-                className="push-schedule-field push-edit-notification-modal__time-dropdown"
-                size="md"
-                title="Send Time"
-                showTitle
-                showDescription={false}
-                showHelpText={false}
-                showLeadingIcon={false}
-                usePortal
-                portalAlign="start"
-                placeholder="Select Time"
-                options={SCHEDULE_TIME_OPTIONS}
-                value={scheduleTime}
-                onChange={setScheduleTime}
-              />
-            </div>
-          </div>
-
-          <div className="push-edit-notification-modal__preview">
-            <div className="push-edit-notification-modal__preview-header">Quick Preview</div>
-            <div className="push-edit-notification-modal__preview-body">
-              <div className="push-edit-notification-modal__phone">
-                <PushNotificationPreview
-                  title={title}
-                  content={content}
-                  appIconVariant={appIconVariant}
-                  appIconImageUrl={appIconImageUrl}
-                  appIconName={appIconName}
-                  appIconColor={appIconColor}
-                  appIconBg={appIconBg}
-                  appIconStyle={appIconStyle}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <footer className="push-edit-notification-modal__footer">
-          <Button variant="filled" colorScheme="secondary" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button colorScheme="constructive" disabled={isSaveDisabled} onClick={onSave}>
-            Save Changes
-          </Button>
-        </footer>
       </section>
     </div>,
     document.body
