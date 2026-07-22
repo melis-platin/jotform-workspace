@@ -10303,16 +10303,12 @@ body.builder--phone-only {
 }
 
 // Fullwidth, Contained and Compact desktop headers keep page navigation on a
-// 4px rhythm. Their utility actions form the compact action group; the visible
+// tight rhythm. Their utility actions form the compact action group; the visible
 // separation from page names stays controlled here. The Left layout owns a
 // sidebar and must not inherit or override this contract.
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header-nav {
   gap: var(--space-1);
-  margin-right: var(--space-1);
-}
-
-.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header-right {
-  gap: var(--space-1);
+  margin-right: var(--space-0);
 }
 
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--fullwidth-search-open .live-preview__top-header-right {
@@ -10355,8 +10351,17 @@ body.builder--phone-only {
 
 // Desktop Fullwidth / Contained / Compact headers keep page names aligned next
 // to the right-side search/action group regardless of the Navigation Properties
-// alignment control. The Left desktop sidebar layout owns separate navigation
-// and must not inherit this rule.
+// alignment control: 12px from page names to search, 8px from search to
+// notification, and 12px from notification to avatar. The Left desktop sidebar
+// layout owns separate navigation and must not inherit this rule.
+.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) :is(
+  .live-preview__top-header--fullwidth,
+  .live-preview__top-header--contained,
+  .live-preview__top-header--compact
+)[data-nav-align] {
+  gap: var(--space-3);
+}
+
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) :is(
   .live-preview__top-header--fullwidth,
   .live-preview__top-header--contained,
@@ -10364,7 +10369,23 @@ body.builder--phone-only {
 )[data-nav-align] .live-preview__top-header-nav {
   justify-content: flex-end;
   margin-left: auto;
-  margin-right: var(--space-1);
+  margin-right: var(--space-0);
+}
+
+.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) :is(
+  .live-preview__top-header--fullwidth,
+  .live-preview__top-header--contained,
+  .live-preview__top-header--compact
+).live-preview__top-header--logged-in .live-preview__top-header-right {
+  gap: var(--space-2);
+}
+
+.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) :is(
+  .live-preview__top-header--fullwidth,
+  .live-preview__top-header--contained,
+  .live-preview__top-header--compact
+).live-preview__top-header--logged-in .live-preview__top-header-notification + .live-preview__top-header-avatar-btn {
+  margin-left: var(--space-1);
 }
 
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--fullwidth-search-open .live-preview__top-header-nav {
