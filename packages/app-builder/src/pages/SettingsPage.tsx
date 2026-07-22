@@ -1211,7 +1211,7 @@ export function PushNotificationsPanel({
     setNotificationContent('')
     setNotificationContentFields([])
     setNotificationContentSuffix('')
-    setAudience([])
+    setAudience([ALL_USERS_AUDIENCE_ID])
     setDeepLink('')
     setNotificationImage(null)
     setScheduleDate('')
@@ -3132,7 +3132,8 @@ function AudienceDropdown({ value, onChange, roles }: AudienceDropdownProps) {
       userCount: role.userCount ?? 0,
     })),
   ], [roles, totalUserCount])
-  const selectedOptions = options.filter((option) => value.includes(option.id))
+  const selectedValue = value.length > 0 ? value : [ALL_USERS_AUDIENCE_ID]
+  const selectedOptions = options.filter((option) => selectedValue.includes(option.id))
   const selectedRoleOptions = selectedOptions.filter((option) => option.role)
   const selectedAllUsersOption = selectedOptions.find((option) => option.id === ALL_USERS_AUDIENCE_ID)
   const selectedLabel = selectedOptions.length > 0
@@ -3142,12 +3143,16 @@ function AudienceDropdown({ value, onChange, roles }: AudienceDropdownProps) {
   useEffect(() => {
     const optionIds = new Set(options.map((option) => option.id))
     const nextValue = value.filter((selectedId) => optionIds.has(selectedId))
+    const normalizedNextValue = nextValue.length > 0 ? nextValue : [ALL_USERS_AUDIENCE_ID]
 
-    if (nextValue.length === value.length && nextValue.every((selectedId, index) => selectedId === value[index])) {
+    if (
+      normalizedNextValue.length === value.length &&
+      normalizedNextValue.every((selectedId, index) => selectedId === value[index])
+    ) {
       return
     }
 
-    onChange(nextValue)
+    onChange(normalizedNextValue)
   }, [onChange, options, value])
 
   useEffect(() => {
@@ -3237,7 +3242,7 @@ function AudienceDropdown({ value, onChange, roles }: AudienceDropdownProps) {
         {open && (
           <div className="push-audience-dropdown__menu" role="menu" aria-label="Target Users">
             {options.map((option) => {
-              const isSelected = value.includes(option.id)
+              const isSelected = selectedValue.includes(option.id)
 
               return (
                 <button
