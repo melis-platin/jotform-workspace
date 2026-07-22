@@ -1488,11 +1488,11 @@ export function PushNotificationsPanel({
             )}
             <div className="push-notification-actions__right">
               {isScheduleComposer ? <Button
-                colorScheme="apps"
+                colorScheme={editingNotification ? 'constructive' : 'apps'}
                 disabled={isScheduleActionDisabled}
                 onClick={saveScheduledNotification}
               >
-                {editingNotification ? 'Save Changes' : 'SCHEDULE'}
+                {editingNotification ? 'SAVE CHANGES' : 'SCHEDULE'}
               </Button> : !isPublishComposer && <Button
                 colorScheme="primary"
                 disabled={areNotificationActionsDisabled}
