@@ -10652,14 +10652,14 @@ body.builder--phone-only {
 
 .live-preview__side-nav-avatar-notification-dot {
   position: absolute;
-  top: 0;
-  right: 0;
+  top: calc((var(--space-1) / 2) * -1);
+  right: calc((var(--space-1) / 2) * -1);
   width: var(--space-2);
   height: var(--space-2);
   border: calc(var(--space-1) / 2) solid var(--background-white);
   border-radius: var(--radius-rounded);
   background: var(--bg-fill-error);
-  box-sizing: border-box;
+  box-sizing: content-box;
   pointer-events: none;
   z-index: 1;
 }
