@@ -1879,7 +1879,6 @@ function PushNotificationOverview({
       </div>
 
       <div className="push-notification-overview__create-section">
-        <p className="push-notification-overview__eyebrow">Create a notification</p>
         <div className="push-notification-overview__create-card">
           {createOptions.map(({ action, icon, iconCategory, title, description, tone }) => (
             <button
