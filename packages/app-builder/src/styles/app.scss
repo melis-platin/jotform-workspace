@@ -10353,17 +10353,18 @@ body.builder--phone-only {
   flex-basis: var(--space-10);
 }
 
-// Desktop Fullwidth / Contained / Compact headers keep page names left-aligned
-// regardless of the Navigation Properties alignment control. The Left desktop
-// sidebar layout owns separate navigation and must not inherit this rule.
+// Desktop Fullwidth / Contained / Compact headers keep page names aligned next
+// to the right-side search/action group regardless of the Navigation Properties
+// alignment control. The Left desktop sidebar layout owns separate navigation
+// and must not inherit this rule.
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) :is(
   .live-preview__top-header--fullwidth,
   .live-preview__top-header--contained,
   .live-preview__top-header--compact
 )[data-nav-align] .live-preview__top-header-nav {
-  justify-content: flex-start;
-  margin-left: var(--space-0);
-  margin-right: auto;
+  justify-content: flex-end;
+  margin-left: auto;
+  margin-right: var(--space-1);
 }
 
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--fullwidth-search-open .live-preview__top-header-nav {
