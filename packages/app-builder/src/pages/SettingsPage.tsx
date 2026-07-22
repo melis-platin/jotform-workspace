@@ -3346,7 +3346,7 @@ function AudienceDropdown({ value, onChange, roles }: AudienceDropdownProps) {
     <div className="jf-dropdown-wrapper push-composer-dropdown push-audience-dropdown">
       <div className="jf-dropdown-wrapper__label">
         <div className="jf-dropdown-wrapper__title">
-          <span className="jf-dropdown-wrapper__title-text">Audience</span>
+          <span className="jf-dropdown-wrapper__title-text">Target Users</span>
         </div>
       </div>
 
@@ -3396,7 +3396,7 @@ function AudienceDropdown({ value, onChange, roles }: AudienceDropdownProps) {
         </button>
 
         {open && (
-          <div className="push-audience-dropdown__menu" role="menu" aria-label="Audience">
+          <div className="push-audience-dropdown__menu" role="menu" aria-label="Target Users">
             {options.map((option) => {
               const isSelected = value.includes(option.id)
 
@@ -3497,7 +3497,7 @@ function DeepLinkDropdown({ value, onChange, targets }: DeepLinkDropdownProps) {
     <div className="jf-dropdown-wrapper push-composer-dropdown push-deep-link-dropdown">
       <div className="jf-dropdown-wrapper__label">
         <div className="jf-dropdown-wrapper__title">
-          <span className="jf-dropdown-wrapper__title-text">On-click actions</span>
+          <span className="jf-dropdown-wrapper__title-text">Target Page</span>
         </div>
       </div>
 
