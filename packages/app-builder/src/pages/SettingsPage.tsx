@@ -1245,6 +1245,8 @@ export function PushNotificationsPanel({
     setActiveView('composer')
   }
   const duplicateNotification = (notification: PushNotificationHistoryItem) => {
+    const isScheduledDuplicate = notification.status === 'scheduled'
+
     setNotificationTitle(notification.title)
     setNotificationTitleFields([])
     setNotificationTitleSuffix('')
@@ -1254,12 +1256,15 @@ export function PushNotificationsPanel({
     setAudience(getHistoryAudienceValue(notification, appUserRoles))
     setDeepLink(getHistoryDeepLinkValue(notification, deepLinkTargets))
     setNotificationImage(notification.image ?? null)
-    setScheduleDate('')
-    setScheduleTime('')
+    setScheduleDate(isScheduledDuplicate ? getHistoryScheduleDateValue(notification) : '')
+    setScheduleTime(isScheduledDuplicate ? getHistoryScheduleTimeValue(notification) : '')
+    setScheduleTimezone(notification.scheduleTimezone ?? SCHEDULE_TIMEZONE_OPTIONS[0].value)
     setScheduleQuickPick('custom')
     setEditingNotification(null)
     setCanReturnToHistory(true)
     setUsesInitialComposerLayout(true)
+    setIsScheduleComposer(isScheduledDuplicate)
+    onScheduleComposerChange?.(isScheduledDuplicate)
     setActiveView('composer')
   }
   const returnToNotificationHistory = () => {
