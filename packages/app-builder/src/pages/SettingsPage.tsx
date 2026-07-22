@@ -3433,7 +3433,7 @@ function PushNotificationComposer({
   const shouldShowEmptyStateNotice = showEmptyStateNotice && (isTitleEmpty || isContentEmpty)
   const shouldShowSendStatusNotice = showEmptyStateNotice && !shouldShowEmptyStateNotice
   const selectedAudience = getSendStatusAudience(audience, appUserRoles)
-  const selectedAudienceDeviceCount = getAudienceDeviceCount(audience, appUserRoles)
+  const selectedAudienceUserCount = getAudienceUserCount(audience, appUserRoles)
 
   useEffect(() => {
     if (!isContextMenuOpen) return
@@ -3635,7 +3635,7 @@ function PushNotificationComposer({
           <div className="push-composer-panel__send-status-notice" role="status">
             <Icon name="paper-plane-diagonal-filled" category="communication" size={16} />
             <p>
-              This will be sent to <strong>{selectedAudienceDeviceCount} devices</strong> in <strong>{selectedAudience}</strong>, delivered immediately.
+              This will be sent to <strong>{selectedAudienceUserCount} {selectedAudienceUserCount === 1 ? 'user' : 'users'}</strong> in <strong>{selectedAudience}</strong>, delivered immediately.
             </p>
           </div>
         )}
@@ -3758,13 +3758,13 @@ function getSendStatusAudience(audience: string[], roles: AppRoleOption[]) {
   return `${selectedRoleCount} ${selectedRoleCount === 1 ? 'role' : 'roles'}`
 }
 
-function getAudienceDeviceCount(audience: string[], roles: AppRoleOption[]) {
-  if (audience.includes(ALL_USERS_AUDIENCE_ID)) {
-    return PUSH_NOTIFICATION_ALLOWED_DEVICE_COUNT
+function getAudienceUserCount(audience: string[], roles: AppRoleOption[]) {
+  if (audience.includes(ALL_USERS_AUDIENCE_ID) || audience.length === 0) {
+    return roles.reduce((total, role) => total + (role.userCount ?? 0), 0)
   }
 
   return roles.reduce((total, role) => (
-    audience.includes(role.id) ? total + (role.deviceCount ?? 0) : total
+    audience.includes(role.id) ? total + (role.userCount ?? 0) : total
   ), 0)
 }
 
