@@ -11927,6 +11927,35 @@ body.builder--phone-only {
   height: var(--space-5);
 }
 
+// Desktop Fullwidth / Contained / Compact headers must expose 40x40 action
+// targets while keeping the search and notification glyphs at 20x20. Keep this
+// after the broader desktop/tablet reset above, and do not apply it to the Left
+// desktop sidebar layout or mobile/tablet headers.
+.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) :is(
+  .live-preview__top-header--fullwidth,
+  .live-preview__top-header--contained,
+  .live-preview__top-header--compact
+) :is(
+  .live-preview__top-header-search-btn,
+  .live-preview__top-header-notification-btn
+) {
+  width: var(--space-10);
+  height: var(--space-10);
+  flex: 0 0 var(--space-10);
+}
+
+.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) :is(
+  .live-preview__top-header--fullwidth,
+  .live-preview__top-header--contained,
+  .live-preview__top-header--compact
+) :is(
+  .live-preview__top-header-search-btn,
+  .live-preview__top-header-notification-btn
+) svg {
+  width: var(--space-5);
+  height: var(--space-5);
+}
+
 .live-preview__notification-count-badge {
   position: absolute;
   min-width: var(--spacing-lg);
