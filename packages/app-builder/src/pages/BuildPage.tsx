@@ -3510,8 +3510,7 @@ export function BuildPage({
     roleScopedPushNotifications.filter((notification) => notification.unread).length
   ), [roleScopedPushNotifications])
   const mobileNotificationScreenCount = roleScopedUnreadPushNotificationCount
-  const hasRoleScopedUnreadPushNotificationBadge = pushNotificationsEnabled && roleScopedUnreadPushNotificationCount > 0
-  const hasWideRoleScopedUnreadPushNotificationBadge = roleScopedUnreadPushNotificationCount > 9
+  const hasRoleScopedUnreadPushNotificationIndicator = pushNotificationsEnabled && roleScopedUnreadPushNotificationCount > 0
   const visibleRoleScopedUnreadPushNotificationCount = getLivePreviewNotificationCountLabel(roleScopedUnreadPushNotificationCount)
   const markRoleScopedPushNotificationRead = useCallback((notificationId: string) => {
     onPushNotificationRead?.(notificationId, viewingAsRole)
@@ -5842,31 +5841,32 @@ export function BuildPage({
           <div className="live-preview__side-nav-footer">
             {isPreviewLoggedIn ? (
               <div className="live-preview__side-nav-account">
-                <span className="live-preview__side-nav-avatar-wrap">
-                  <img
-                    className="live-preview__side-nav-avatar"
-                    src={previewHeaderAvatar}
-                    alt=""
-                    aria-hidden="true"
-                  />
-                  {hasRoleScopedUnreadPushNotificationBadge && (
-                    <span className={`live-preview__notification-count-badge live-preview__side-nav-avatar-notification-badge${hasWideRoleScopedUnreadPushNotificationBadge ? ' live-preview__side-nav-avatar-notification-badge--wide' : ''}`}>
-                      {visibleRoleScopedUnreadPushNotificationCount}
-                    </span>
-                  )}
-                </span>
-                <div className="live-preview__side-nav-account-info">
-                  <span className="live-preview__side-nav-account-name">{PROFILE_USER.name}</span>
-                  <span className="live-preview__side-nav-account-email">{PROFILE_USER.email}</span>
-                </div>
                 <button
                   type="button"
-                  className="live-preview__side-nav-account-more"
+                  className="live-preview__side-nav-account-trigger"
                   aria-label="Account menu"
                   aria-expanded={isAvatarPopoverOpen}
+                  onMouseDown={(event) => event.stopPropagation()}
                   onClick={() => setIsAvatarPopoverOpen((v) => !v)}
                 >
-                  <AppIcon name="Ellipsis" size={20} />
+                  <span className="live-preview__side-nav-avatar-wrap">
+                    <img
+                      className="live-preview__side-nav-avatar"
+                      src={previewHeaderAvatar}
+                      alt=""
+                      aria-hidden="true"
+                    />
+                    {hasRoleScopedUnreadPushNotificationIndicator && (
+                      <span className="live-preview__side-nav-avatar-notification-dot" aria-hidden="true" />
+                    )}
+                  </span>
+                  <span className="live-preview__side-nav-account-info">
+                    <span className="live-preview__side-nav-account-name">{PROFILE_USER.name}</span>
+                    <span className="live-preview__side-nav-account-email">{PROFILE_USER.email}</span>
+                  </span>
+                  <span className="live-preview__side-nav-account-more" aria-hidden="true">
+                    <AppIcon name="Ellipsis" size={20} />
+                  </span>
                 </button>
                 <LivePreviewAvatarPopover
                   open={isAvatarPopoverOpen}
@@ -5878,6 +5878,7 @@ export function BuildPage({
                   }}
                   onNotification={openLeftDesktopNotificationsPage}
                   showNavigation
+                  notificationCountLabel={hasRoleScopedUnreadPushNotificationIndicator ? visibleRoleScopedUnreadPushNotificationCount : null}
                   userName={PROFILE_USER.name}
                 />
               </div>

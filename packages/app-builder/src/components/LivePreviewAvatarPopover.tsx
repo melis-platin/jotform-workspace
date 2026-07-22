@@ -7,6 +7,7 @@ interface LivePreviewAvatarPopoverProps {
   onProfile?: () => void
   onNotification?: () => void
   showNavigation?: boolean
+  notificationCountLabel?: string | null
   userName?: string
 }
 
@@ -17,6 +18,7 @@ export function LivePreviewAvatarPopover({
   onProfile,
   onNotification,
   showNavigation = false,
+  notificationCountLabel = null,
   userName = 'Melis Platin',
 }: LivePreviewAvatarPopoverProps) {
   const ref = useRef<HTMLDivElement>(null)
@@ -76,7 +78,12 @@ export function LivePreviewAvatarPopover({
                 onClose()
               }}
             >
-              {item.label}
+              <span className="live-preview__avatar-popover-item-label">{item.label}</span>
+              {item.id === 'navigation' && notificationCountLabel && (
+                <span className="live-preview__notification-count-badge live-preview__avatar-popover-notification-badge">
+                  {notificationCountLabel}
+                </span>
+              )}
             </button>
           </li>
         ))}

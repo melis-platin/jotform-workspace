@@ -2259,7 +2259,9 @@ body {
 
 .live-preview__avatar-popover-item {
   width: 100%;
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
   padding: var(--space-3) var(--space-4);
   border: 0;
   background: transparent;
@@ -2274,6 +2276,15 @@ body {
   &:hover {
     color: var(--fg-brand);
   }
+}
+
+.live-preview__avatar-popover-item-label {
+  flex: 0 0 auto;
+}
+
+.live-preview__avatar-popover-notification-badge {
+  position: static;
+  flex: 0 0 auto;
 }
 
 .live-preview__avatar-popover-item--navigation {
@@ -10597,14 +10608,33 @@ body.builder--phone-only {
 // Logged-in account row: avatar + name/email + a "more" menu trigger.
 .live-preview__side-nav-account {
   position: relative;
+  width: 100%;
+}
+
+.live-preview__side-nav-account-trigger {
   display: flex;
   align-items: center;
   gap: var(--space-2);
   width: 100%;
   height: 50px;
   padding: var(--space-2);
+  border: 0;
   border-radius: var(--radius-none);
   background: var(--background-white);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 150ms ease;
+
+  &:hover {
+    background: color-mix(in srgb, var(--navy-500) 6%, transparent);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: var(--shadow-focus);
+  }
 }
 
 .live-preview__side-nav-avatar-wrap {
@@ -10625,13 +10655,15 @@ body.builder--phone-only {
   box-shadow: var(--shadow-xs);
 }
 
-.live-preview__side-nav-avatar-notification-badge {
+.live-preview__side-nav-avatar-notification-dot {
+  position: absolute;
   top: calc(var(--spacing-2xs) * -1);
   right: calc(var(--spacing-2xs) * -1);
-}
-
-.live-preview__side-nav-avatar-notification-badge--wide {
-  right: calc(var(--space-2) * -1);
+  width: var(--space-2);
+  height: var(--space-2);
+  border-radius: var(--radius-rounded);
+  background: var(--bg-fill-error);
+  pointer-events: none;
 }
 
 .live-preview__side-nav-account-info {
