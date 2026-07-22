@@ -1170,6 +1170,7 @@ export function PushNotificationsPanel({
   const [editScheduleTime, setEditScheduleTime] = useState('')
   const [editScheduleTimezone, setEditScheduleTimezone] = useState(SCHEDULE_TIMEZONE_OPTIONS[0].value)
   const [cancelingNotification, setCancelingNotification] = useState<PushNotificationHistoryItem | null>(null)
+  const [deletingNotification, setDeletingNotification] = useState<PushNotificationHistoryItem | null>(null)
   const areNotificationActionsDisabled =
     (
       notificationTitle.trim().length === 0 &&
@@ -1350,6 +1351,18 @@ export function PushNotificationsPanel({
     onHistoryItemDelete(cancelingNotification.id)
     closeScheduledNotificationCancel()
   }
+  const openSentNotificationDelete = (notification: PushNotificationHistoryItem) => {
+    setDeletingNotification(notification)
+  }
+  const closeSentNotificationDelete = () => {
+    setDeletingNotification(null)
+  }
+  const confirmSentNotificationDelete = () => {
+    if (!deletingNotification) return
+
+    onHistoryItemDelete(deletingNotification.id)
+    closeSentNotificationDelete()
+  }
   const saveScheduledNotificationEdit = () => {
     if (!editingNotification) return
 
@@ -1517,6 +1530,7 @@ export function PushNotificationsPanel({
             appUserRoles={appUserRoles}
             onScheduledNotificationEdit={openScheduledNotificationEdit}
             onScheduledNotificationCancel={openScheduledNotificationCancel}
+            onSentNotificationDelete={openSentNotificationDelete}
             onNotificationDuplicate={duplicateNotification}
           />
         </section>
@@ -1626,8 +1640,25 @@ export function PushNotificationsPanel({
       />
       <PushCancelNotificationDialog
         open={cancelingNotification !== null}
+        title="Cancel this notificaiton?"
+        descriptionLines={[
+          "This notification will be canceled and can't be restored.",
+          'Do you want to continue?',
+        ]}
+        closeLabel="Close cancel notification confirmation"
         onClose={closeScheduledNotificationCancel}
         onConfirm={confirmScheduledNotificationCancel}
+      />
+      <PushCancelNotificationDialog
+        open={deletingNotification !== null}
+        title="Delete this notificaiton?"
+        descriptionLines={[
+          'This notification will be delete and can’t be restored.',
+          'Do you want to continue?',
+        ]}
+        closeLabel="Close delete notification confirmation"
+        onClose={closeSentNotificationDelete}
+        onConfirm={confirmSentNotificationDelete}
       />
     </>
   )
@@ -1941,11 +1972,21 @@ function PushNotificationOverview({
 
 interface PushCancelNotificationDialogProps {
   open: boolean
+  title: string
+  descriptionLines: string[]
+  closeLabel: string
   onClose: () => void
   onConfirm: () => void
 }
 
-function PushCancelNotificationDialog({ open, onClose, onConfirm }: PushCancelNotificationDialogProps) {
+function PushCancelNotificationDialog({
+  open,
+  title,
+  descriptionLines,
+  closeLabel,
+  onClose,
+  onConfirm,
+}: PushCancelNotificationDialogProps) {
   useEffect(() => {
     if (!open) return undefined
 
@@ -1989,7 +2030,7 @@ function PushCancelNotificationDialog({ open, onClose, onConfirm }: PushCancelNo
         <button
           className="push-cancel-notification-dialog__close"
           type="button"
-          aria-label="Close cancel notification confirmation"
+          aria-label={closeLabel}
           onClick={onClose}
         >
           <Icon name="xmark" category="general" size={16} />
@@ -2001,10 +2042,11 @@ function PushCancelNotificationDialog({ open, onClose, onConfirm }: PushCancelNo
           </span>
           <div className="push-cancel-notification-dialog__content">
             <div className="push-cancel-notification-dialog__copy">
-              <h2 id="push-cancel-notification-dialog-title">Cancel this notificaiton?</h2>
+              <h2 id="push-cancel-notification-dialog-title">{title}</h2>
               <p id="push-cancel-notification-dialog-description">
-                <span>This notification will be canceled and can't be restored.</span>
-                <span>Do you want to continue?</span>
+                {descriptionLines.map((line) => (
+                  <span key={line}>{line}</span>
+                ))}
               </p>
             </div>
           </div>
@@ -2232,6 +2274,7 @@ interface PushNotificationHistoryProps {
   appUserRoles: AppRoleOption[]
   onScheduledNotificationEdit: (notification: PushNotificationHistoryItem) => void
   onScheduledNotificationCancel: (notification: PushNotificationHistoryItem) => void
+  onSentNotificationDelete: (notification: PushNotificationHistoryItem) => void
   onNotificationDuplicate: (notification: PushNotificationHistoryItem) => void
 }
 
@@ -2240,6 +2283,7 @@ function PushNotificationHistory({
   appUserRoles,
   onScheduledNotificationEdit,
   onScheduledNotificationCancel,
+  onSentNotificationDelete,
   onNotificationDuplicate,
 }: PushNotificationHistoryProps) {
   const [visibleCount, setVisibleCount] = useState(5)
@@ -2310,6 +2354,7 @@ function PushNotificationHistory({
             appUserRoles={appUserRoles}
             onEdit={onScheduledNotificationEdit}
             onCancel={onScheduledNotificationCancel}
+            onDelete={onSentNotificationDelete}
             onDuplicate={onNotificationDuplicate}
           />
         ))}
@@ -2333,10 +2378,11 @@ interface PushNotificationHistoryCardProps {
   appUserRoles: AppRoleOption[]
   onEdit: (notification: PushNotificationHistoryItem) => void
   onCancel: (notification: PushNotificationHistoryItem) => void
+  onDelete: (notification: PushNotificationHistoryItem) => void
   onDuplicate: (notification: PushNotificationHistoryItem) => void
 }
 
-function PushNotificationHistoryCard({ notification, appUserRoles, onEdit, onCancel, onDuplicate }: PushNotificationHistoryCardProps) {
+function PushNotificationHistoryCard({ notification, appUserRoles, onEdit, onCancel, onDelete, onDuplicate }: PushNotificationHistoryCardProps) {
   const isScheduled = notification.status === 'scheduled'
   const statusBadgeLabel = isScheduled ? notification.statusLabel : 'Send'
   const audienceLabel = getDisplayAudienceHistoryLabel(notification.audienceLabel)
@@ -2527,6 +2573,9 @@ function PushNotificationHistoryCard({ notification, appUserRoles, onEdit, onCan
                 }
                 if (item.label === 'Cancel Notification') {
                   onCancel(notification)
+                }
+                if (item.label === 'Delete Notification') {
+                  onDelete(notification)
                 }
               }}
             >
