@@ -1403,18 +1403,25 @@ export function LivePreviewSearchResultList({
       results: results.filter((result) => result.category === category),
     }))
   ), [results])
-  const searchResultFilters = useMemo<Array<{ id: SearchResultFilter, label: string }>>(() => [
-    { id: 'all', label: 'All' },
-    ...searchResultGroups
-      .filter((group) => group.results.length > 0)
-      .map((group) => ({
+  const nonEmptySearchResultGroups = useMemo(() => (
+    searchResultGroups.filter((group) => group.results.length > 0)
+  ), [searchResultGroups])
+  const showSearchResultFilters = nonEmptySearchResultGroups.length > 1
+  const searchResultFilters = useMemo<Array<{ id: SearchResultFilter, label: string }>>(() => {
+    if (!showSearchResultFilters) return []
+
+    return [
+      { id: 'all', label: 'All' },
+      ...nonEmptySearchResultGroups.map((group) => ({
         id: group.category,
         label: SEARCH_RESULT_FILTER_LABELS[group.category],
       })),
-  ], [searchResultGroups])
+    ]
+  }, [nonEmptySearchResultGroups, showSearchResultFilters])
+  const activeVisibleResultFilter = showSearchResultFilters ? activeResultFilter : 'all'
   const visibleSearchResultGroups = searchResultGroups.filter((group) => (
     group.results.length > 0
-    && (activeResultFilter === 'all' || group.category === activeResultFilter)
+    && (activeVisibleResultFilter === 'all' || group.category === activeVisibleResultFilter)
   ))
 
   useEffect(() => {
@@ -1422,27 +1429,36 @@ export function LivePreviewSearchResultList({
   }, [resultQuery])
 
   useEffect(() => {
+    if (!showSearchResultFilters) {
+      if (activeResultFilter !== 'all') {
+        setActiveResultFilter('all')
+      }
+      return
+    }
+
     if (!searchResultFilters.some((filter) => filter.id === activeResultFilter)) {
       setActiveResultFilter('all')
     }
-  }, [activeResultFilter, searchResultFilters])
+  }, [activeResultFilter, searchResultFilters, showSearchResultFilters])
 
   return (
     <section className="live-preview__search-match-results" aria-label={`Search results for ${resultQuery}`}>
-      <div className="live-preview__search-filter-row" role="tablist" aria-label="Search result categories">
-        {searchResultFilters.map((filter) => (
-          <button
-            key={filter.id}
-            type="button"
-            role="tab"
-            aria-selected={activeResultFilter === filter.id}
-            className={`live-preview__search-filter-chip${activeResultFilter === filter.id ? ' live-preview__search-filter-chip--active' : ''}`}
-            onClick={() => setActiveResultFilter(filter.id)}
-          >
-            {filter.label}
-          </button>
-        ))}
-      </div>
+      {showSearchResultFilters && (
+        <div className="live-preview__search-filter-row" role="tablist" aria-label="Search result categories">
+          {searchResultFilters.map((filter) => (
+            <button
+              key={filter.id}
+              type="button"
+              role="tab"
+              aria-selected={activeResultFilter === filter.id}
+              className={`live-preview__search-filter-chip${activeResultFilter === filter.id ? ' live-preview__search-filter-chip--active' : ''}`}
+              onClick={() => setActiveResultFilter(filter.id)}
+            >
+              {filter.label}
+            </button>
+          ))}
+        </div>
+      )}
 
       {visibleSearchResultGroups.map((group) => (
         <section
