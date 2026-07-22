@@ -1171,6 +1171,14 @@ export function PushNotificationsPanel({
   const [editScheduleTimezone, setEditScheduleTimezone] = useState(SCHEDULE_TIMEZONE_OPTIONS[0].value)
   const [cancelingNotification, setCancelingNotification] = useState<PushNotificationHistoryItem | null>(null)
   const [deletingNotification, setDeletingNotification] = useState<PushNotificationHistoryItem | null>(null)
+  // Publish uses disabled as the highest-priority Push Notifications state:
+  // when disabled, the disabled overview must appear even if sent/scheduled
+  // history exists behind it.
+  const showsPublishDisabledOverview = isPublishComposer && isDisabled
+  const reportedView: PushNotificationPanelView = showsPublishDisabledOverview ? 'composer' : activeView
+  const showsInitialPushOverview =
+    showsPublishDisabledOverview ||
+    (activeView === 'composer' && usesInitialComposerLayout && !canReturnToHistory)
   const areNotificationActionsDisabled =
     (
       notificationTitle.trim().length === 0 &&
@@ -1395,20 +1403,24 @@ export function PushNotificationsPanel({
   }, [activeView, historyItems.length])
 
   useEffect(() => {
-    onViewChange?.(activeView)
-  }, [activeView, onViewChange])
+    onViewChange?.(reportedView)
+  }, [onViewChange, reportedView])
 
   useEffect(() => {
-    onCanReturnToHistoryChange?.(activeView === 'composer' && canReturnToHistory)
-  }, [activeView, canReturnToHistory, onCanReturnToHistoryChange])
+    onCanReturnToHistoryChange?.(
+      !showsPublishDisabledOverview && reportedView === 'composer' && canReturnToHistory,
+    )
+  }, [canReturnToHistory, onCanReturnToHistoryChange, reportedView, showsPublishDisabledOverview])
 
   useEffect(() => {
-    onInitialOverviewChange?.(activeView === 'composer' && usesInitialComposerLayout && !canReturnToHistory)
-  }, [activeView, canReturnToHistory, onInitialOverviewChange, usesInitialComposerLayout])
+    onInitialOverviewChange?.(showsInitialPushOverview)
+  }, [onInitialOverviewChange, showsInitialPushOverview])
 
   useEffect(() => {
-    onScheduleComposerChange?.(activeView === 'composer' && isScheduleComposer)
-  }, [activeView, isScheduleComposer, onScheduleComposerChange])
+    onScheduleComposerChange?.(
+      !showsPublishDisabledOverview && reportedView === 'composer' && isScheduleComposer,
+    )
+  }, [isScheduleComposer, onScheduleComposerChange, reportedView, showsPublishDisabledOverview])
 
   useEffect(() => {
     if (returnToHistoryRequestId === handledReturnToHistoryRequestIdRef.current) return
@@ -1420,7 +1432,7 @@ export function PushNotificationsPanel({
 
   return (
     <>
-      {activeView === 'composer' && usesInitialComposerLayout && !canReturnToHistory ? (
+      {showsInitialPushOverview ? (
         <PushNotificationOverview
           isDisabled={isDisabled}
           onCreateNotification={openNotificationComposer}

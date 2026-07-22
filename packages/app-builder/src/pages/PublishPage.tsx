@@ -546,11 +546,13 @@ export function PublishPage({
   const [inverseColor] = useCssVar('--fg-inverse', '#FFFFFF')
   const active = NAV_ITEMS.find((item) => item.id === activeId) ?? NAV_ITEMS[0]
   const isPushNotificationsOpen = activeId === 'push-notifications'
+  const isPushDisabledOverview = isPushNotificationsOpen && arePushNotificationsDisabled
   const isFigmaPushInitial = isPushNotificationsOpen && isPushInitialOverview
-  const isPushComposerOpen = isPushNotificationsOpen && canReturnToPushHistory
-  const isPushScheduleOpen = isPushNotificationsOpen && isPushScheduleComposer
-  const isPushHistoryOpen = isPushNotificationsOpen && pushNotificationView === 'history'
-  const canReturnFromPushOverview = isFigmaPushInitial && pushNotificationHistoryItems.length > 0
+  const isPushComposerOpen = isPushNotificationsOpen && !isPushDisabledOverview && canReturnToPushHistory
+  const isPushScheduleOpen = isPushNotificationsOpen && !isPushDisabledOverview && isPushScheduleComposer
+  const isPushHistoryOpen = isPushNotificationsOpen && !isPushDisabledOverview && pushNotificationView === 'history'
+  const canReturnFromPushOverview =
+    !isPushDisabledOverview && isFigmaPushInitial && pushNotificationHistoryItems.length > 0
   const usesFigmaPushComposerLayout = isPushComposerOpen
   const usesFigmaPushLayout = isPushNotificationsOpen
   const shouldShowPushPreview =
@@ -574,9 +576,14 @@ export function PublishPage({
   const shouldShowPreview = shouldShowPushPreview || isPermissionRequestModalOpen
 
   const handleNavigationChange = (nextId: string) => {
-    setIsPushInitialOverview(nextId === 'push-notifications' && pushNotificationHistoryItems.length === 0)
+    setIsPushInitialOverview(
+      nextId === 'push-notifications' &&
+        (arePushNotificationsDisabled || pushNotificationHistoryItems.length === 0),
+    )
     setPushNotificationView(
-      nextId === 'push-notifications' && pushNotificationHistoryItems.length > 0
+      nextId === 'push-notifications' &&
+        pushNotificationHistoryItems.length > 0 &&
+        !arePushNotificationsDisabled
         ? 'history'
         : 'composer',
     )
