@@ -10352,8 +10352,9 @@ body.builder--phone-only {
 // Desktop Fullwidth / Contained / Compact headers keep page names aligned next
 // to the right-side search/action group regardless of the Navigation Properties
 // alignment control: 12px from page names to search, 8px from search to
-// notification, and 12px from notification to avatar. The Left desktop sidebar
-// layout owns separate navigation and must not inherit this rule.
+// notification, and 12px from notification to the account/auth area. The Left
+// desktop sidebar layout owns separate navigation and must not inherit this
+// rule.
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) :is(
   .live-preview__top-header--fullwidth,
   .live-preview__top-header--contained,
@@ -10376,7 +10377,7 @@ body.builder--phone-only {
   .live-preview__top-header--fullwidth,
   .live-preview__top-header--contained,
   .live-preview__top-header--compact
-).live-preview__top-header--logged-in .live-preview__top-header-right {
+).live-preview__top-header-right {
   gap: var(--space-2);
 }
 
@@ -10385,6 +10386,14 @@ body.builder--phone-only {
   .live-preview__top-header--contained,
   .live-preview__top-header--compact
 ).live-preview__top-header--logged-in .live-preview__top-header-notification + .live-preview__top-header-avatar-btn {
+  margin-left: var(--space-1);
+}
+
+.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) :is(
+  .live-preview__top-header--fullwidth,
+  .live-preview__top-header--contained,
+  .live-preview__top-header--compact
+):not(.live-preview__top-header--logged-in) .live-preview__top-header-notification ~ .live-preview__top-header-auth {
   margin-left: var(--space-1);
 }
 
