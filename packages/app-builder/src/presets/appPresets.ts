@@ -312,6 +312,41 @@ const BOHO_TESTIMONIAL_ITEMS = [
   { name: 'Mia Carter', role: 'Decor enthusiast', rating: 5, text: 'The blog posts are more than inspiration. They helped me make clear decisions about sizing and placement.', avatar: 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=200&h=200&fit=crop&crop=face' },
 ]
 
+const BEE_HIVE_ITEMS = [
+  { title: 'Hive 01 · Clover Lane', description: 'Strong brood pattern · Queen spotted · Check again in 7 days.', image: 'https://images.unsplash.com/photo-1473973266408-ed4e27abdd47?w=500&h=500&fit=crop' },
+  { title: 'Hive 02 · Wildflower Rise', description: 'Busy entrance activity · Add a super before the next nectar flow.', image: 'https://images.unsplash.com/photo-1587049352846-4a222e784d38?w=500&h=500&fit=crop' },
+  { title: 'Hive 03 · Orchard Edge', description: 'New split settling in · Feed lightly and monitor queen cells.', image: 'https://images.unsplash.com/photo-1465146344425-f00d5f5c8f07?w=500&h=500&fit=crop' },
+  { title: 'Hive 04 · Meadow Gate', description: 'Calm colony · Fresh water source and shaded landing board in place.', image: 'https://images.unsplash.com/photo-1497250681960-ef046c08a56e?w=500&h=500&fit=crop' },
+]
+
+const BEE_BLOOM_ITEMS = [
+  { title: 'Lavender is opening', description: 'Peak forage window · July 24-August 8 · Visit the south meadow in the morning.', image: 'https://images.unsplash.com/photo-1499002238440-d264edd596ec?w=500&h=500&fit=crop' },
+  { title: 'Clover field watch', description: 'Strong nectar flow after rain · Check supers and keep water stations full.', image: 'https://images.unsplash.com/photo-1490750967868-88aa4486c946?w=500&h=500&fit=crop' },
+  { title: 'Sunflower trail walk', description: 'Community forage walk · Saturday at 10:00 AM · Bring a notebook and water.', image: 'https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=500&h=500&fit=crop' },
+  { title: 'Late-summer planting', description: 'Plant bee-friendly seeds now for a longer autumn forage season.', image: 'https://images.unsplash.com/photo-1497250681960-ef046c08a56e?w=500&h=500&fit=crop' },
+]
+
+const BEE_HIVE_CHECK_FIELDS = [
+  { name: 'hiveName', label: 'Hive name', type: 'text', placeholder: 'e.g. Hive 02 · Wildflower Rise' },
+  { name: 'inspectionDate', label: 'Inspection date', type: 'text', placeholder: 'e.g. July 22, 2026' },
+  { name: 'queenStatus', label: 'Queen status', type: 'text', placeholder: 'Seen, eggs present, or needs follow-up' },
+  { name: 'notes', label: 'Field notes', type: 'textarea', placeholder: 'Brood pattern, temperament, forage, feeding, or next steps.' },
+]
+
+const BEE_GARDEN_FIELDS = [
+  { name: 'gardenName', label: 'Garden or site name', type: 'text', placeholder: 'e.g. East community garden' },
+  { name: 'location', label: 'Location', type: 'text', placeholder: 'Neighborhood or cross streets' },
+  { name: 'bloomingNow', label: 'What is blooming?', type: 'textarea', placeholder: 'List flowers, trees, or herbs bees are visiting.' },
+  { name: 'supportNeeded', label: 'Support needed', type: 'textarea', placeholder: 'Watering, seed ideas, hive placement, or volunteer help.' },
+]
+
+const BEE_FAQ_ITEMS = [
+  { question: 'How often should I inspect a hive?', answer: 'During an active season, a brief inspection every 7-10 days is a good starting rhythm. Adjust for weather, colony behavior, and local conditions.' },
+  { question: 'How can I help bees without keeping a hive?', answer: 'Grow pesticide-free flowers, provide shallow water with landing stones, leave a few stems through winter, and share bloom observations with your local group.' },
+  { question: 'What should I record after each hive check?', answer: 'Start with queen or egg status, brood pattern, food stores, temperament, pests, weather, and one clear next step.' },
+  { question: 'Is this app a honey store?', answer: 'No. Golden Hive is a community and field-journal preset for hive care, pollinator learning, and local bloom updates.' },
+]
+
 const ALL_APP_PRESETS: AppPreset[] = [
   {
     id: EMPTY_PRESET_ID,
@@ -319,6 +354,242 @@ const ALL_APP_PRESETS: AppPreset[] = [
     appTitle: 'New App',
     appSubtitle: '',
     pages: [{ id: 'page-1', name: 'Home', icon: 'House', elements: [] }],
+    headerActions: [],
+  },
+  {
+    id: 'golden-hive',
+    name: 'Golden Hive',
+    appTitle: 'Golden Hive',
+    appSubtitle: 'A shared space for hive care, pollinator learning, and seasonal bloom notes.',
+    appHeader: {
+      show: true,
+      title: 'Small acts that help a whole hive thrive',
+      subtitle: 'Keep hive notes, follow local blooms, and learn alongside a community that cares for pollinators.',
+      icon: 'Bee',
+      backgroundImageUrl: 'https://images.unsplash.com/photo-1473973266408-ed4e27abdd47?w=1200&h=700&fit=crop',
+      backgroundImageName: 'bee on a flower',
+    },
+    theme: {
+      color: '#BF7800',
+      tint: 32,
+      font: 'DM Sans',
+      headingFont: 'DM Sans',
+      radius: 'Large',
+      harmonyOffset: 72,
+      activePreset: 'Sunset',
+      colorMode: 'light',
+      tokenOverrides: {
+        '--bg-page': 'oklch(0.975 0.025 88)',
+        '--bg-surface': '#FFFFFF',
+        '--bg-surface-hover': '#FFF9E8',
+        '--bg-surface-brand': '#FFF1BF',
+        '--bg-surface-brand-hover': '#FFE7A0',
+        '--bg-fill': '#FFFFFF',
+        '--bg-fill-hover': '#FFF9E8',
+        '--bg-fill-active': '#FFF0C2',
+        '--bg-fill-brand': '#BF7800',
+        '--bg-fill-brand-hover': '#9C6200',
+        '--bg-fill-brand-active': '#7E4E00',
+        '--bg-fill-brand-disabled': '#E8D4A4',
+        '--fg-brand': '#9C6200',
+        '--fg-brand-hover': '#7E4E00',
+        '--fg-inverse': '#FFFFFF',
+        '--fg-primary': '#332500',
+        '--fg-secondary': '#65522A',
+        '--fg-tertiary': '#8A7953',
+        '--fg-disabled': '#AB9D7E',
+        '--border': '#E8D9AE',
+        '--border-hover': '#D2B96F',
+      },
+    },
+    pages: [
+      {
+        id: 'page-1',
+        name: 'Home',
+        icon: 'House',
+        elements: [
+          {
+            componentId: 'heading',
+            variants: { Size: 'Medium', Alignment: 'Left' },
+            properties: {
+              Heading: 'Welcome back to the hive',
+              Subheading: 'A calm place for practical notes, local bloom updates, and pollinator-friendly action.',
+            },
+          },
+          {
+            componentId: 'button',
+            variants: { Type: 'Standard', Variant: 'Default', Corner: 'Rounded', Width: 'Full' },
+            properties: {
+              Label: 'Log a hive check',
+              'Left Icon': 'ClipboardPenLine',
+              Action: 'Open Form',
+              'Form Title': 'Hive Check',
+              'Form Description': 'Capture the important details while they are fresh.',
+              'Form Submit Label': 'Save Check',
+              'Form Fields': JSON.stringify(BEE_HIVE_CHECK_FIELDS),
+              'Submits To': 'hiveChecks',
+            },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'heading',
+            variants: { Size: 'Small', Alignment: 'Left' },
+            properties: { Heading: 'Hive at a glance', Subheading: 'Your next caring step is always visible.' },
+          },
+          {
+            componentId: 'card',
+            variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' },
+            properties: { Title: '4 active hives', Description: '2 inspections are due this week.', Icon: 'Hexagon', Shrinked: true },
+          },
+          {
+            componentId: 'card',
+            variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' },
+            properties: { Title: 'Lavender is blooming', Description: 'The south meadow is in its strongest forage window.', Icon: 'Flower2', Shrinked: true },
+          },
+          {
+            componentId: 'card',
+            variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' },
+            properties: { Title: 'Saturday field walk', Description: '10:00 AM · Sunflower Trail · 12 members joined.', Icon: 'CalendarDays', Shrinked: true },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'heading',
+            variants: { Size: 'Small', Alignment: 'Left' },
+            properties: { Heading: 'This week in the apiary', Subheading: 'Open a hive to see its latest field note.' },
+          },
+          {
+            componentId: 'list',
+            variants: { Layout: 'Basic', 'Image Style': 'Square', Size: 'Regular', Action: 'Icon' },
+            properties: { 'Show Header': false, 'Click Action': 'Open Dynamic Page', Items: JSON.stringify(BEE_HIVE_ITEMS.slice(0, 3)) },
+          },
+        ],
+      },
+      {
+        id: 'page-2',
+        name: 'My Hives',
+        icon: 'Hexagon',
+        elements: [
+          {
+            componentId: 'heading',
+            variants: { Size: 'Large', Alignment: 'Left' },
+            properties: { Heading: 'My Hives', Subheading: 'Keep each colony’s story, care rhythm, and next step together.' },
+          },
+          {
+            componentId: 'list',
+            variants: { Layout: 'Card', 'Card Image Style': 'Square', 'Card Layout': 'Vertical', 'Card Size': 'Medium', 'Card Action': 'Button' },
+            properties: {
+              Title: 'Hive journal',
+              'Show Header': false,
+              'Button Label': 'Open journal',
+              'Click Action': 'Open Dynamic Page',
+              Items: JSON.stringify(BEE_HIVE_ITEMS),
+            },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'button',
+            variants: { Type: 'Standard', Variant: 'Outlined', Corner: 'Rounded', Width: 'Full' },
+            properties: {
+              Label: 'Add hive check',
+              'Left Icon': 'Plus',
+              Action: 'Open Form',
+              'Form Title': 'Hive Check',
+              'Form Description': 'Record one observation and the next action.',
+              'Form Submit Label': 'Save Check',
+              'Form Fields': JSON.stringify(BEE_HIVE_CHECK_FIELDS),
+              'Submits To': 'hiveChecks',
+            },
+          },
+        ],
+      },
+      {
+        id: 'page-3',
+        name: 'Bloom Map',
+        icon: 'Flower2',
+        elements: [
+          {
+            componentId: 'heading',
+            variants: { Size: 'Large', Alignment: 'Left' },
+            properties: { Heading: 'Bloom Map', Subheading: 'Follow the flowers that feed your neighborhood’s pollinators.' },
+          },
+          {
+            componentId: 'list',
+            variants: { Layout: 'Card', 'Card Image Style': 'Square', 'Card Layout': 'Vertical', 'Card Size': 'Medium', 'Card Action': 'Button' },
+            properties: {
+              Title: 'Bloom notes',
+              'Show Header': false,
+              'Button Label': 'View details',
+              'Click Action': 'Open Dynamic Page',
+              Items: JSON.stringify(BEE_BLOOM_ITEMS),
+            },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'button',
+            variants: { Type: 'Standard', Variant: 'Secondary', Corner: 'Rounded', Width: 'Full' },
+            properties: {
+              Label: 'Share a bloom update',
+              'Left Icon': 'Sprout',
+              Action: 'Open Form',
+              'Form Title': 'Bloom Update',
+              'Form Description': 'Help the community spot forage and care needs early.',
+              'Form Submit Label': 'Share Update',
+              'Form Fields': JSON.stringify(BEE_GARDEN_FIELDS),
+              'Submits To': 'bloomUpdates',
+            },
+          },
+        ],
+      },
+      {
+        id: 'page-4',
+        name: 'Learn',
+        icon: 'BookOpen',
+        elements: [
+          {
+            componentId: 'heading',
+            variants: { Size: 'Large', Alignment: 'Left' },
+            properties: { Heading: 'Learn with the hive', Subheading: 'Simple guides for kinder, more confident pollinator care.' },
+          },
+          {
+            componentId: 'card',
+            variants: { 'Image Style': 'Icon', Layout: 'Horizontal', Action: 'None' },
+            properties: { Title: 'First hive inspection', Description: 'A gentle checklist for seeing what matters without overworking the colony.', Icon: 'ClipboardCheck' },
+          },
+          {
+            componentId: 'card',
+            variants: { 'Image Style': 'Icon', Layout: 'Horizontal', Action: 'None' },
+            properties: { Title: 'Pollinator-friendly planting', Description: 'Choose a long season of pesticide-free blooms, water, and shelter.', Icon: 'Sprout' },
+          },
+          {
+            componentId: 'card',
+            variants: { 'Image Style': 'Icon', Layout: 'Horizontal', Action: 'None' },
+            properties: { Title: 'Read the entrance', Description: 'Observe activity, pollen, and behavior before you lift the lid.', Icon: 'Eye' },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'heading',
+            variants: { Size: 'Small', Alignment: 'Left' },
+            properties: { Heading: 'Field guide', Subheading: '' },
+          },
+          {
+            componentId: 'document',
+            variants: { 'Has File': 'Yes', Size: 'Normal', Alignment: 'Left' },
+            properties: { 'File Name': 'Seasonal Hive Checklist.pdf', Description: 'A practical checklist for spring through autumn.' },
+          },
+          {
+            componentId: 'document',
+            variants: { 'Has File': 'Yes', Size: 'Normal', Alignment: 'Left' },
+            properties: { 'File Name': 'Pollinator Garden Guide.pdf', Description: 'Planting ideas for balconies, yards, and shared gardens.' },
+          },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          {
+            componentId: 'faq',
+            variants: { Style: 'Card', Icon: 'Plus/Minus', 'Icon Position': 'Right' },
+            properties: { Items: JSON.stringify(BEE_FAQ_ITEMS) },
+          },
+        ],
+      },
+    ],
     headerActions: [],
   },
   {
