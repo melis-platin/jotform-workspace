@@ -469,7 +469,7 @@ function ScheduleDatePicker({ value, onChange }: ScheduleDatePickerProps) {
           aria-label="Schedule date"
           aria-haspopup="dialog"
           aria-expanded={open}
-          placeholder="mm / dd / yyyy"
+          placeholder="MM / DD / YYYY"
           value={value}
           onClick={() => setOpen(true)}
           onFocus={() => setOpen(true)}
