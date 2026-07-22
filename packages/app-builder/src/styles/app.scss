@@ -10062,32 +10062,33 @@ body.builder--phone-only {
     transition: transform 0.25s ease, border-bottom-color 0.15s ease, box-shadow 0.15s ease;
   }
 
-  // Contained variant: the bar stays full-width, while its content forms a
-  // centred, intrinsic group (brand · links · actions).
+  // Contained variant: full-bleed bar (bg + bottom border span the page) but the
+  // content (logo · links · actions) is capped to the page width (760px) and
+  // centred, so it lines up with the page card below. Do not convert this into a
+  // fit-content/intrinsic group; that breaks the Navigation Properties desktop
+  // Fullwidth / Contained / Compact contract.
   .live-preview__top-header--contained {
-    justify-content: flex-start;
-    column-gap: var(--space-3);
-    padding-block: var(--space-0);
-    padding-inline: max(var(--space-3), calc((100% - 760px) / 2));
+    padding-left: max(var(--space-4), calc((100% - 760px) / 2));
+    padding-right: max(var(--space-4), calc((100% - 760px) / 2));
   }
 
-  // Compact variant: Figma's 760px App-Top shell keeps the brand left and the
-  // page/action group together on the right.
+  // Compact variant: a floating, app-page-width (760px) bar that lines up with
+  // the page card below it. Keep this as a page-width shell; do not shrink it to
+  // its content or let left-sidebar account rules affect it.
   .live-preview__top-header--compact {
     top: var(--space-4);
-    left: var(--space-0);
-    right: var(--space-0);
-    width: min(760px, calc(100% - (var(--space-4) * 2)));
-    max-width: calc(100% - (var(--space-4) * 2));
+    left: 0;
+    right: 0;
+    width: auto;
+    max-width: 760px;
     box-sizing: border-box;
     margin-left: auto;
     margin-right: auto;
     justify-content: flex-start;
-    column-gap: var(--space-0);
     padding: var(--space-0) var(--space-3);
     border: none;
-    border-radius: var(--radius-lg);
-    box-shadow: none;
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-md);
   }
 
   // Clear exactly the floating bar's footprint (top 16 + height 65 = 81px) so the
@@ -10301,64 +10302,27 @@ body.builder--phone-only {
   margin-right: 0;
 }
 
-// Fullwidth, contained and compact desktop headers use adjacent navigation
-// labels and a token-based action group. The Left layout retains its spacing.
+// Fullwidth, Contained and Compact desktop headers keep page navigation on a
+// 4px rhythm. Their utility actions form the compact action group; the visible
+// separation from page names stays controlled here. The Left layout owns a
+// sidebar and must not inherit or override this contract.
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header-nav {
-  gap: var(--space-0);
-  margin-right: var(--space-0);
+  gap: var(--space-1);
+  margin-right: var(--space-1);
 }
 
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header-right {
-  gap: var(--space-2);
-  margin-left: var(--space-3);
+  gap: var(--space-1);
 }
 
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--fullwidth-search-open .live-preview__top-header-right {
   margin-left: auto;
 }
 
-// Fullwidth, contained and compact keep page labels left-aligned after the app
-// identity. The right-panel Alignment control does not move page labels in these
-// layouts; it only remains relevant to the Left desktop navigation layout.
-.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) :is(
-  .live-preview__top-header--fullwidth,
-  .live-preview__top-header--contained,
-  .live-preview__top-header--compact
-)[data-nav-align] .live-preview__top-header-nav {
-  justify-content: flex-start;
-  margin-right: var(--space-0);
-}
-
-.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--fullwidth[data-nav-align] .live-preview__top-header-nav {
-  margin-left: var(--space-0);
-}
-
-// Fullwidth keeps navigation and actions inside the header row. Contained and
-// compact share the same left-to-right sequence: brand, page labels, actions.
-.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header:not(.live-preview__top-header--contained):not(.live-preview__top-header--compact) {
-  column-gap: var(--space-0);
-}
-
-.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) :is(
-  .live-preview__top-header--contained,
-  .live-preview__top-header--compact
-) .live-preview__top-header-nav {
-  flex: 0 0 auto;
-  margin-left: var(--space-8);
-  margin-right: var(--space-0);
-}
-
-.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--compact .live-preview__top-header-nav {
-  margin-left: var(--space-8);
-  margin-right: var(--space-0);
-}
-
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--compact .live-preview__top-header-right {
   // Keep the trailing action inside the same inset as the leading logo.
-  margin-left: var(--space-3);
-  padding-right: var(--space-0);
-  margin-right: var(--space-0);
-  transform: none;
+  margin-left: calc(var(--space-3) * -1);
+  padding-right: var(--space-3);
 }
 
 .app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--compact .live-preview__top-header-compact-icon:not(.live-preview__top-header-compact-icon--image) {
