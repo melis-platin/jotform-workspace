@@ -12109,13 +12109,13 @@ body.builder--phone-only {
 // Mobile notifications follow the full-page list treatment from the app preview:
 // flat rows, app identity at the left, and a compact timestamp at the right.
 .live-preview__phone-screen .live-preview__top-header--notifications-page {
-  height: 64px;
+  height: 48px;
   padding-left: var(--space-2);
-  padding-right: var(--space-4);
+  padding-right: var(--space-2);
 }
 
 .live-preview__phone-screen:has(.live-preview__top-header--notifications-page) > .live-preview__content-scaler {
-  padding-top: calc(var(--sb-h, 59px) + 64px);
+  padding-top: calc(var(--sb-h, 59px) + 48px);
 }
 
 .live-preview__phone-screen .live-preview__top-header--notifications-page .live-preview__top-header-back {
@@ -12139,15 +12139,11 @@ body.builder--phone-only {
 }
 
 .live-preview__phone-screen .live-preview__top-header--notifications-page .live-preview__top-header-right {
-  gap: var(--space-3);
+  gap: var(--space-1);
 }
 
 .live-preview__phone-screen .live-preview__top-header--notifications-page .live-preview__cart-btn {
   display: none;
-}
-
-.live-preview__phone-screen .live-preview__top-header--notifications-page .live-preview__top-header-search-btn {
-  margin-right: calc(var(--space-2) * -1);
 }
 
 .live-preview__phone-screen .live-preview__top-header--notifications-page .live-preview__top-header-notification-btn svg {
