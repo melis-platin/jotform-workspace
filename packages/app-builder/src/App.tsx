@@ -6,6 +6,7 @@ import { DataPage, findDataTableIdForElement, presetUsesDataElement } from './pa
 import { SettingsPage, type PushNotificationHistoryItem } from './pages/SettingsPage.tsx'
 import {
   getAppUserNameFieldValueForPreset,
+  getAppUserRoleUserCountsForPreset,
   getAppUserRoleOptionsForPreset,
   getAppUserTableRoleIdsForPreset,
   PublishPage,
@@ -123,6 +124,7 @@ export function App() {
   const [activePresetId, setActivePresetId] = useState<string>(initialPresetId)
   const [appUserRoleOptions, setAppUserRoleOptions] = useState<AppRoleOption[]>(() => getAppUserRoleOptionsForPreset(initialPresetId))
   const [appUserTableRoleIds, setAppUserTableRoleIds] = useState<string[]>(() => getAppUserTableRoleIdsForPreset(initialPresetId))
+  const [appUserRoleUserCounts, setAppUserRoleUserCounts] = useState<Record<string, number>>(() => getAppUserRoleUserCountsForPreset(initialPresetId))
   const pushNotificationsEnabled = true
   const [searchBarEnabled, setSearchBarEnabledState] = useState(false)
   const [searchableElementCount, setSearchableElementCount] = useState(0)
@@ -197,6 +199,7 @@ export function App() {
     setDeepLinkTargets(createDeepLinkTargetsFromPreset(getPresetById(urlPreset)))
     setAppUserRoleOptions(getAppUserRoleOptionsForPreset(urlPreset))
     setAppUserTableRoleIds(getAppUserTableRoleIdsForPreset(urlPreset))
+    setAppUserRoleUserCounts(getAppUserRoleUserCountsForPreset(urlPreset))
     if (presetChanged) resetSearchBarAutomation()
     // titleForPreset is stable enough here; intentionally omitted from deps.
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -271,6 +274,7 @@ export function App() {
     setDeepLinkTargets(createDeepLinkTargetsFromPreset(getPresetById(id)))
     setAppUserRoleOptions(getAppUserRoleOptionsForPreset(id))
     setAppUserTableRoleIds(getAppUserTableRoleIdsForPreset(id))
+    setAppUserRoleUserCounts(getAppUserRoleUserCountsForPreset(id))
     resetSearchBarAutomation()
   }
 
@@ -362,18 +366,25 @@ export function App() {
     })
   }
 
+  const appUserRoleOptionsWithUserCounts = useMemo<AppRoleOption[]>(() => (
+    appUserRoleOptions.map((role) => ({
+      ...role,
+      userCount: appUserRoleUserCounts[role.id] ?? 0,
+    }))
+  ), [appUserRoleOptions, appUserRoleUserCounts])
+
   const appUserTableRoleOptions = useMemo(() => {
-    const roleById = new Map(appUserRoleOptions.map((role) => [role.id, role]))
+    const roleById = new Map(appUserRoleOptionsWithUserCounts.map((role) => [role.id, role]))
     const roles = appUserTableRoleIds
       .map((roleId) => roleById.get(roleId))
       .filter((role): role is AppRoleOption => Boolean(role))
 
-    return roles.length > 0 ? roles : appUserRoleOptions
-  }, [appUserTableRoleIds, appUserRoleOptions])
+    return roles.length > 0 ? roles : appUserRoleOptionsWithUserCounts
+  }, [appUserTableRoleIds, appUserRoleOptionsWithUserCounts])
 
   const livePreviewAppUserRoleOptions = useMemo(() => (
-    activePresetId === EMPTY_PRESET_ID ? appUserRoleOptions : appUserTableRoleOptions
-  ), [activePresetId, appUserRoleOptions, appUserTableRoleOptions])
+    activePresetId === EMPTY_PRESET_ID ? appUserRoleOptionsWithUserCounts : appUserTableRoleOptions
+  ), [activePresetId, appUserRoleOptionsWithUserCounts, appUserTableRoleOptions])
 
   const buildInitialPageId = buildNavigationTarget?.pageId
     ?? (urlFullscreen || isFigmaCapture ? (urlPage ?? undefined) : undefined)
@@ -453,6 +464,7 @@ export function App() {
             appUserRoles={appUserTableRoleOptions}
             setRoleOptions={setAppUserRoleOptions}
             onAppUserTableRoleIdsChange={setAppUserTableRoleIds}
+            onAppUserRoleUserCountsChange={setAppUserRoleUserCounts}
             appIcon={appIcon}
             deepLinkTargets={deepLinkTargets}
             pushNotificationHistoryItems={pushNotificationHistoryItems}

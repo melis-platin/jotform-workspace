@@ -8,6 +8,7 @@ export interface AppRoleOption {
   tone: AppRoleTone
   color: string
   deviceCount?: number
+  userCount?: number
 }
 
 export const ROLE_COLOR_PALETTE = [

@@ -454,6 +454,13 @@ export function getAppUsersForPreset(presetId: string): AppUser[] {
   return buildPresetAppUsers(presetId)
 }
 
+export function getAppUserRoleUserCountsForPreset(presetId: string): Record<string, number> {
+  return getAppUsersForPreset(presetId).reduce<Record<string, number>>((counts, user) => {
+    counts[user.roleId] = (counts[user.roleId] ?? 0) + 1
+    return counts
+  }, {})
+}
+
 export function getAppUserRoleOptionsForPreset(presetId: string): AppRoleOption[] {
   if (presetId === EMPTY_PRESET_ID) return cloneRoleOptions(EMPTY_APP_ROLE_OPTIONS)
   return cloneRoleOptions(getRoleProfileForPreset(presetId).roles)
@@ -483,6 +490,7 @@ interface PublishPageProps {
   appUserRoles: AppRoleOption[]
   setRoleOptions: Dispatch<SetStateAction<AppRoleOption[]>>
   onAppUserTableRoleIdsChange?: (roleIds: string[]) => void
+  onAppUserRoleUserCountsChange?: (counts: Record<string, number>) => void
   appIcon: PublishAppIconState
   deepLinkTargets: DeepLinkTarget[]
   pushNotificationHistoryItems: PushNotificationHistoryItem[]
@@ -498,6 +506,7 @@ export function PublishPage({
   appUserRoles,
   setRoleOptions,
   onAppUserTableRoleIdsChange,
+  onAppUserRoleUserCountsChange,
   appIcon,
   deepLinkTargets,
   pushNotificationHistoryItems,
@@ -610,6 +619,7 @@ export function PublishPage({
                   roleOptions={roleOptions}
                   setRoleOptions={setRoleOptions}
                   onAppUserTableRoleIdsChange={onAppUserTableRoleIdsChange}
+                  onAppUserRoleUserCountsChange={onAppUserRoleUserCountsChange}
                 />
               )}
               {isPushNotificationsOpen && (
@@ -795,6 +805,7 @@ interface AppUsersPanelProps {
   roleOptions: AppRoleOption[]
   setRoleOptions: Dispatch<SetStateAction<AppRoleOption[]>>
   onAppUserTableRoleIdsChange?: (roleIds: string[]) => void
+  onAppUserRoleUserCountsChange?: (counts: Record<string, number>) => void
 }
 
 interface AddUserModalProps {
@@ -1067,7 +1078,13 @@ function AddUserModal({ onClose, roleOptions }: AddUserModalProps) {
   )
 }
 
-function AppUsersPanel({ presetId, roleOptions, setRoleOptions, onAppUserTableRoleIdsChange }: AppUsersPanelProps) {
+function AppUsersPanel({
+  presetId,
+  roleOptions,
+  setRoleOptions,
+  onAppUserTableRoleIdsChange,
+  onAppUserRoleUserCountsChange,
+}: AppUsersPanelProps) {
   const appUsers = useMemo(() => getAppUsersForPreset(presetId), [presetId])
   const [searchQuery, setSearchQuery] = useState('')
   const [selectedRoleUserId, setSelectedRoleUserId] = useState<string | null>(null)
@@ -1083,9 +1100,14 @@ function AppUsersPanel({ presetId, roleOptions, setRoleOptions, onAppUserTableRo
   const customRoleIdRef = useRef(0)
   const normalizedSearch = searchQuery.trim().toLowerCase()
   const roleById = useMemo(() => new Map(roleOptions.map((role) => [role.id, role])), [roleOptions])
-  const assignedTableRoleIds = useMemo(() => (
-    Array.from(new Set(appUsers.map((user) => assignedRoleIds[user.id] ?? user.roleId)))
-  ), [appUsers, assignedRoleIds])
+  const assignedRoleUserCounts = useMemo(() => appUsers.reduce<Record<string, number>>((counts, user) => {
+    const assignedRoleId = assignedRoleIds[user.id] ?? user.roleId
+
+    counts[assignedRoleId] = (counts[assignedRoleId] ?? 0) + 1
+
+    return counts
+  }, {}), [appUsers, assignedRoleIds])
+  const assignedTableRoleIds = useMemo(() => Object.keys(assignedRoleUserCounts), [assignedRoleUserCounts])
   const visibleUsers = useMemo(() => {
     if (!normalizedSearch) return appUsers
     return appUsers.filter((user) => {
@@ -1118,6 +1140,10 @@ function AppUsersPanel({ presetId, roleOptions, setRoleOptions, onAppUserTableRo
   useEffect(() => {
     onAppUserTableRoleIdsChange?.(assignedTableRoleIds)
   }, [assignedTableRoleIds, onAppUserTableRoleIdsChange])
+
+  useEffect(() => {
+    onAppUserRoleUserCountsChange?.(assignedRoleUserCounts)
+  }, [assignedRoleUserCounts, onAppUserRoleUserCountsChange])
 
   useEffect(() => {
     const maxCustomRoleId = roleOptions.reduce((maxId, role) => {

@@ -3266,7 +3266,7 @@ interface PushNotificationComposerProps {
 interface AudienceDropdownOption {
   id: string
   label: string
-  deviceCount: number
+  userCount: number
   role?: AppRoleOption
 }
 
@@ -3279,19 +3279,20 @@ interface AudienceDropdownProps {
 function AudienceDropdown({ value, onChange, roles }: AudienceDropdownProps) {
   const [open, setOpen] = useState(false)
   const rootRef = useRef<HTMLDivElement | null>(null)
+  const totalUserCount = useMemo(() => roles.reduce((total, role) => total + (role.userCount ?? 0), 0), [roles])
   const options = useMemo<AudienceDropdownOption[]>(() => [
     {
       id: ALL_USERS_AUDIENCE_ID,
       label: 'All Users',
-      deviceCount: PUSH_NOTIFICATION_ALLOWED_DEVICE_COUNT,
+      userCount: totalUserCount,
     },
     ...roles.map((role) => ({
       id: role.id,
       label: role.label,
       role,
-      deviceCount: role.deviceCount ?? 0,
+      userCount: role.userCount ?? 0,
     })),
-  ], [roles])
+  ], [roles, totalUserCount])
   const selectedOptions = options.filter((option) => value.includes(option.id))
   const selectedRoleOptions = selectedOptions.filter((option) => option.role)
   const selectedAllUsersOption = selectedOptions.find((option) => option.id === ALL_USERS_AUDIENCE_ID)
@@ -3383,7 +3384,7 @@ function AudienceDropdown({ value, onChange, roles }: AudienceDropdownProps) {
             ) : selectedAllUsersOption ? (
               <span className="push-audience-dropdown__all-users-value">
                 <span>{selectedAllUsersOption.label} - </span>
-                <span>{selectedAllUsersOption.deviceCount} devices</span>
+                <span>{selectedAllUsersOption.userCount} {selectedAllUsersOption.userCount === 1 ? 'user' : 'users'}</span>
               </span>
             ) : (
               selectedLabel
@@ -3415,8 +3416,8 @@ function AudienceDropdown({ value, onChange, roles }: AudienceDropdownProps) {
                   <span className="push-audience-dropdown__item-label">
                     <span>{option.label}</span>
                     <span className="push-audience-dropdown__item-separator"> - </span>
-                    <span className="push-audience-dropdown__item-devices">
-                      {option.deviceCount} devices
+                    <span className="push-audience-dropdown__item-users">
+                      {option.userCount} {option.userCount === 1 ? 'user' : 'users'}
                     </span>
                   </span>
                 </button>
