@@ -3,15 +3,44 @@ import { createPortal } from 'react-dom'
 import { SearchInput } from '@jf/design-system'
 import { icons as lucideIcons } from 'lucide-react'
 
+const CUSTOM_ICONS: Record<string, FC<{ size?: number }>> = {
+  Bee: ({ size = 18 }) => (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <path d="M12 9c2.2 0 4 1.9 4 4.6 0 3-1.8 5.4-4 5.4s-4-2.4-4-5.4C8 10.9 9.8 9 12 9Z" />
+      <path d="M9.2 11.1C8.1 9.4 6.3 8 4.8 8.8c-1.8 1-1.1 4.1 2.1 4.8" />
+      <path d="M14.8 11.1C15.9 9.4 17.7 8 19.2 8.8c1.8 1 1.1 4.1-2.1 4.8" />
+      <path d="M9.1 13h5.8" />
+      <path d="M9.7 16h4.6" />
+      <path d="M12 19v2" />
+      <path d="M10.2 7.4 8.8 5.2" />
+      <path d="M13.8 7.4 15.2 5.2" />
+      <path d="M10.1 6.5c.5-.9 1.1-1.4 1.9-1.4s1.4.5 1.9 1.4" />
+    </svg>
+  ),
+}
+
 export function LucideIcon({ name, size = 18 }: { name: string; size?: number }) {
-  const IconComp = lucideIcons[name as keyof typeof lucideIcons] as FC<{ size?: number }> | undefined
+  const IconComp = CUSTOM_ICONS[name] ?? lucideIcons[name as keyof typeof lucideIcons] as FC<{ size?: number }> | undefined
   if (!IconComp) return null
   return <IconComp size={size} />
 }
 
-export const ALL_ICON_NAMES = Object.keys(lucideIcons).filter(
-  (name) => name !== 'createLucideIcon' && name !== 'icons' && name !== 'default' && /^[A-Z]/.test(name)
-)
+export const ALL_ICON_NAMES = Array.from(new Set([
+  ...Object.keys(CUSTOM_ICONS),
+  ...Object.keys(lucideIcons).filter(
+    (name) => name !== 'createLucideIcon' && name !== 'icons' && name !== 'default' && /^[A-Z]/.test(name)
+  ),
+]))
 
 export const POPULAR_ICONS = [
   // Core nav
@@ -30,7 +59,7 @@ export const POPULAR_ICONS = [
   'Plus', 'Menu', 'Filter', 'SlidersHorizontal', 'ListFilter',
   'Eye', 'Lock', 'Unlock', 'LogIn', 'LogOut',
   // Environment
-  'Sun', 'Moon', 'Cloud', 'Flame', 'Zap', 'Sparkles',
+  'Sun', 'Moon', 'Cloud', 'Flame', 'Zap', 'Sparkles', 'Bee',
   // Lifestyle
   'Coffee', 'Utensils', 'Dumbbell', 'Bike', 'Car', 'Plane', 'Train', 'Ship',
   // Work & education

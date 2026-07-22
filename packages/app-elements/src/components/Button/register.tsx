@@ -7,6 +7,11 @@ import { useCollections, type FormField, type FormSchema } from '../../runtime/C
 
 interface ButtonActionExtras {
   action?: string;
+  cardAction?: string;
+  actionPage?: string;
+  actionUrl?: string;
+  actionEmail?: string;
+  actionPhone?: string;
   formTitle?: string;
   formDescription?: string;
   formSubmitLabel?: string;
@@ -33,8 +38,19 @@ function parseFields(raw?: string): FormField[] {
   }).filter((f) => f.name);
 }
 
+function normalizeAction(action?: string, cardAction?: string): string {
+  const value = action && action !== 'None' ? action : cardAction;
+  if (!value || value === 'Do Nothing') return 'None';
+  return value;
+}
+
 function ButtonWithAction({
   action,
+  cardAction,
+  actionPage,
+  actionUrl,
+  actionEmail,
+  actionPhone,
   formTitle,
   formDescription,
   formSubmitLabel,
@@ -43,17 +59,40 @@ function ButtonWithAction({
   ...rest
 }: ButtonProps & ButtonActionExtras) {
   const ctx = useCollections();
-  const interactive = Boolean(ctx) && action === 'Open Form';
+  const resolvedAction = normalizeAction(action, cardAction);
+  const interactive =
+    (resolvedAction === 'Navigate to Page' && Boolean(ctx?.navigateToPage && actionPage)) ||
+    (resolvedAction === 'Open Form' && Boolean(ctx)) ||
+    (resolvedAction === 'Open URL' && Boolean(actionUrl)) ||
+    (resolvedAction === 'Send Email' && Boolean(actionEmail)) ||
+    (resolvedAction === 'Make Call' && Boolean(actionPhone));
   const handleClick = () => {
-    if (!ctx) return;
-    const schema: FormSchema = {
-      title: formTitle || 'Add new item',
-      description: formDescription || undefined,
-      submitButtonLabel: formSubmitLabel || 'Submit',
-      submitsTo: submitsTo || '',
-      fields: parseFields(formFields),
-    };
-    ctx.openForm(schema);
+    switch (resolvedAction) {
+      case 'Navigate to Page':
+        if (actionPage) ctx?.navigateToPage?.(actionPage);
+        break;
+      case 'Open URL':
+        if (actionUrl) window.open(actionUrl, '_blank', 'noopener,noreferrer');
+        break;
+      case 'Send Email':
+        if (actionEmail) window.open(`mailto:${actionEmail}`, '_self');
+        break;
+      case 'Make Call':
+        if (actionPhone) window.open(`tel:${actionPhone}`, '_self');
+        break;
+      case 'Open Form': {
+        if (!ctx) return;
+        const schema: FormSchema = {
+          title: formTitle || 'Add new item',
+          description: formDescription || undefined,
+          submitButtonLabel: formSubmitLabel || 'Submit',
+          submitsTo: submitsTo || '',
+          fields: parseFields(formFields),
+        };
+        ctx.openForm(schema);
+        break;
+      }
+    }
   };
   return <Button {...rest} onClick={interactive ? handleClick : undefined} />;
 }
@@ -108,7 +147,11 @@ ComponentRegistry.register({
     { name: 'Right Icon', type: 'icon', default: 'none', showWhen: { Type: 'Standard' } },
     { name: 'Icon', type: 'icon', default: 'Plus', showWhen: { Type: 'Icon Only' } },
     { name: 'Shrinked', type: 'boolean', default: false, showWhen: { Type: 'Standard' } },
-    { name: 'Action', type: 'select', options: ['None', 'Open Form'], default: 'None' },
+    { name: 'Action', type: 'select', options: ['None', 'Navigate to Page', 'Open Form', 'Open URL', 'Send Email', 'Make Call'], default: 'None' },
+    { name: 'Action Page', type: 'text', default: '', showWhen: { Action: 'Navigate to Page' } },
+    { name: 'Action URL', type: 'text', default: '', showWhen: { Action: 'Open URL' } },
+    { name: 'Action Email', type: 'text', default: '', showWhen: { Action: 'Send Email' } },
+    { name: 'Action Phone', type: 'text', default: '', showWhen: { Action: 'Make Call' } },
     { name: 'Form Title', type: 'text', default: 'Add new item', showWhen: { Action: 'Open Form' } },
     { name: 'Form Description', type: 'text', default: '', showWhen: { Action: 'Open Form' } },
     { name: 'Form Submit Label', type: 'text', default: 'Submit', showWhen: { Action: 'Open Form' } },
@@ -295,6 +338,11 @@ ComponentRegistry.register({
         width={variants['Width'] as 'Auto' | 'Full'}
         align={variants['Alignment'] as 'Left' | 'Center' | 'Right'}
         action={props['Action'] as string}
+        cardAction={props['Card Action'] as string}
+        actionPage={props['Action Page'] as string}
+        actionUrl={props['Action URL'] as string}
+        actionEmail={props['Action Email'] as string}
+        actionPhone={props['Action Phone'] as string}
         formTitle={props['Form Title'] as string}
         formDescription={props['Form Description'] as string}
         formSubmitLabel={props['Form Submit Label'] as string}

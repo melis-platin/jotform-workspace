@@ -664,17 +664,22 @@ const LEGACY_PRESET_HEADER_IMAGES: Record<string, string[]> = {
     'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=1000&h=600&fit=crop',
     'https://images.unsplash.com/photo-1623874514711-0f321325f318?w=1000&h=600&fit=crop',
   ],
+  'golden-hive': [
+    'https://images.unsplash.com/photo-1473973266408-ed4e27abdd47?w=1200&h=700&fit=crop',
+  ],
 }
 const LEGACY_PRESET_HEADER_TITLES: Record<string, string[]> = {
   'gym-club': ['Iron Pulse', 'Train stronger with every session'],
   'camp-registration': ['Summer Camp'],
+  'golden-hive': ['Small acts that help a whole hive thrive'],
 }
 const LEGACY_PRESET_HEADER_SUBTITLES: Record<string, string[]> = {
   'gym-club': ['Train with the best in the city', 'Classes, coaches, plans, and support in one place'],
   'camp-registration': ['Sign up for the 2026 season'],
+  'golden-hive': ['Keep hive notes, follow local blooms, and learn alongside a community that cares for pollinators.'],
 }
 const LEGACY_PRESET_HEADER_ICONS: Record<string, string[]> = {
-  'golden-hive': ['Bee'],
+  'golden-hive': ['Flower2'],
 }
 const BOHO_NEST_LEGACY_TURKISH_MARKERS = [
   'Evinize sıcak, özgür ve katmanlı bir bohem ruh katın',
@@ -835,6 +840,7 @@ function normalizeGymTrainerDynamicPages(pages: AppPage[], preset: AppPreset | u
 const CAMP_PINECREST_REQUIRED_PAGES = ['Home', 'Programs', 'Sessions', 'Counselors', 'My Campers', 'Forms', 'Family Hub']
 const CAMP_PINECREST_FORMS_INTRO_HEADINGS = new Set(['forms & documents', 'open forms'])
 const CAMP_PINECREST_PAYMENT_ELEMENT_IDS = new Set(['product-list', 'donation-box'])
+const GOLDEN_HIVE_REQUIRED_PAGES = ['Home', 'Hives', 'Inspections', 'Bloom Map', 'Bee Garden', 'Learning', 'Community', 'Forms']
 
 function isDynamicListElement(element: CanvasElement): boolean {
   return element.componentId === 'list' && String(element.properties['Click Action'] ?? '') === 'Open Dynamic Page'
@@ -858,6 +864,13 @@ function hasCampPinecrestStructure(pages: AppPage[]): boolean {
   return hasAllPages && dynamicListCount >= 5
 }
 
+function hasGoldenHiveStructure(pages: AppPage[]): boolean {
+  const pageNames = new Set(pages.filter((page) => !page.dynamic).map((page) => page.name.trim().toLowerCase()))
+  const hasAllPages = GOLDEN_HIVE_REQUIRED_PAGES.every((name) => pageNames.has(name.toLowerCase()))
+  const dynamicListCount = pages.filter((page) => !page.dynamic).flatMap((page) => page.elements).filter(isDynamicListElement).length
+  return hasAllPages && dynamicListCount >= 5
+}
+
 function getDynamicDetailPageName(hostPageName: string, preset?: AppPreset): string {
   const name = hostPageName.trim().toLowerCase()
   if (preset?.id === 'healthcare') {
@@ -869,6 +882,14 @@ function getDynamicDetailPageName(hostPageName: string, preset?: AppPreset): str
     if (name === 'home' || name === 'guide') return 'Style Guide Detail'
     if (name === 'blog') return 'Decor Story Detail'
     return `${hostPageName} Detail`
+  }
+  if (preset?.id === 'golden-hive') {
+    if (name === 'home' || name === 'hives') return 'Hive Detail'
+    if (name === 'inspections') return 'Inspection Detail'
+    if (name === 'bloom map') return 'Bloom Detail'
+    if (name === 'bee garden') return 'Garden Detail'
+    if (name === 'learning') return 'Guide Detail'
+    if (name === 'community') return 'Community Detail'
   }
   if (name === 'classes') return 'Class Detail'
   if (name === 'programs') return 'Program Detail'
@@ -991,6 +1012,14 @@ function normalizeCampPinecrestPages(pages: AppPage[], preset: AppPreset | undef
   return ensureDynamicPagesForOpenDynamicLists(removeCampPinecrestPaymentElements(removeCampPinecrestFormsIntro(basePages)), preset)
 }
 
+function normalizeGoldenHivePages(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {
+  if (preset?.id !== 'golden-hive') return pages
+  const basePages = hasGoldenHiveStructure(pages)
+    ? pages
+    : buildAppPagesFromPresetPages(preset.pages, 1).pages
+  return ensureDynamicPagesForOpenDynamicLists(basePages, preset)
+}
+
 function normalizeBohoNestSharedListSources(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {
   if (preset?.id !== 'boho-nest') return pages
 
@@ -1088,7 +1117,10 @@ function normalizePresetPages(pages: AppPage[], preset: AppPreset | undefined): 
   return normalizeListTitleHeaders(
     normalizeBohoNestPages(
       normalizeCampPinecrestPages(
-        normalizeGymTrainerDynamicPages(pages, preset),
+        normalizeGoldenHivePages(
+          normalizeGymTrainerDynamicPages(pages, preset),
+          preset,
+        ),
         preset,
       ),
       preset,
@@ -1763,12 +1795,17 @@ function getPresetHeroCtaTargetPageId(pages: AppPage[], preset?: AppPreset): str
     const formsPage = pages.find((p) => p.name.trim().toLowerCase() === 'forms' && !p.hidden && !p.dynamic)
     if (formsPage) return formsPage.id
   }
+  if (preset?.id === 'golden-hive') {
+    const hivesPage = pages.find((p) => p.name.trim().toLowerCase() === 'hives' && !p.hidden && !p.dynamic)
+    if (hivesPage) return hivesPage.id
+  }
   return pages.find((p) => p.id !== firstPageId && !p.hidden && !p.dynamic)?.id ?? firstPageId
 }
 
 function getPresetHeroCtaLabel(header: AppHeaderState, preset?: AppPreset): string | undefined {
   if (preset?.id === 'gym-club') return 'View Classes'
   if (preset?.id === 'camp-registration') return 'Register for 2026'
+  if (preset?.id === 'golden-hive') return 'Open hive dashboard'
   return header.ctaLabel
 }
 
@@ -5489,7 +5526,7 @@ export function BuildPage({
   )
 
   const phoneScreenContent = (
-    <CollectionsProvider>
+    <CollectionsProvider navigateToPage={navigateToPage}>
     <CartProvider>
     <FavoritesProvider>
     <ProductDetailProvider onOpenChange={setIsPreviewDetailOpen}>
@@ -9784,7 +9821,7 @@ export function BuildPage({
                 })()}
               </div>
             ) : (
-              <CollectionsProvider>
+              <CollectionsProvider navigateToPage={navigateToPage}>
               <CartProvider>
               <FavoritesProvider>
               <ProductDetailProvider onOpenChange={setIsPreviewDetailOpen}>

@@ -1,5 +1,5 @@
 import { icons as lucideIcons } from 'lucide-react';
-import { createElement, type ComponentType } from 'react';
+import { createElement, type ComponentType, type SVGProps } from 'react';
 
 export type IconLibrary = 'lucide' | 'phosphor' | 'tabler';
 export type IconStyle = 'outline' | 'fill';
@@ -12,6 +12,38 @@ export const ICON_LIBRARIES: { value: IconLibrary; label: string; hasFill: boole
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 type IconComp = ComponentType<any>;
+type IconSvgProps = SVGProps<SVGSVGElement> & { size?: number | string };
+
+const BeeIcon: IconComp = ({ size = 24, ...props }: IconSvgProps) => createElement(
+  'svg',
+  {
+    ...props,
+    width: size,
+    height: size,
+    viewBox: '0 0 24 24',
+    fill: 'none',
+    stroke: 'currentColor',
+    strokeWidth: 2,
+    strokeLinecap: 'round',
+    strokeLinejoin: 'round',
+    xmlns: 'http://www.w3.org/2000/svg',
+    'aria-hidden': props['aria-hidden'] ?? true,
+  },
+  createElement('path', { d: 'M12 9c2.2 0 4 1.9 4 4.6 0 3-1.8 5.4-4 5.4s-4-2.4-4-5.4C8 10.9 9.8 9 12 9Z' }),
+  createElement('path', { d: 'M9.2 11.1C8.1 9.4 6.3 8 4.8 8.8c-1.8 1-1.1 4.1 2.1 4.8' }),
+  createElement('path', { d: 'M14.8 11.1C15.9 9.4 17.7 8 19.2 8.8c1.8 1 1.1 4.1-2.1 4.8' }),
+  createElement('path', { d: 'M9.1 13h5.8' }),
+  createElement('path', { d: 'M9.7 16h4.6' }),
+  createElement('path', { d: 'M12 19v2' }),
+  createElement('path', { d: 'M10.2 7.4 8.8 5.2' }),
+  createElement('path', { d: 'M13.8 7.4 15.2 5.2' }),
+  createElement('path', { d: 'M10.1 6.5c.5-.9 1.1-1.4 1.9-1.4s1.4.5 1.9 1.4' }),
+);
+
+const LUCIDE_ICON_REGISTRY = {
+  ...(lucideIcons as unknown as Record<string, IconComp>),
+  Bee: BeeIcon,
+};
 
 // Cross-library name mapping: Lucide canonical → library-native export name
 const NAME_MAP: Record<string, Partial<Record<IconLibrary, string>>> = {
@@ -195,7 +227,7 @@ for (const [lucideName, mappings] of Object.entries(NAME_MAP)) {
 
 // Cached registries — pre-load lucide so icons render on first frame
 const registryCache: Partial<Record<string, Record<string, IconComp>>> = {
-  'lucide:outline': lucideIcons as unknown as Record<string, IconComp>,
+  'lucide:outline': LUCIDE_ICON_REGISTRY,
 };
 
 function cacheKey(lib: IconLibrary, style: IconStyle = 'outline'): string {
@@ -220,7 +252,7 @@ export async function loadLibrary(lib: IconLibrary, style: IconStyle = 'outline'
 
   switch (lib) {
     case 'lucide':
-      registryCache[key] = lucideIcons as unknown as Record<string, IconComp>;
+      registryCache[key] = LUCIDE_ICON_REGISTRY;
       break;
     case 'phosphor': {
       // Phosphor uses weight prop for fill — load same module, wrap with weight

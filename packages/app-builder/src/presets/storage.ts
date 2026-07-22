@@ -19,7 +19,7 @@ const LEGACY_LS_PREFIX = 'jf-app-builder:preset:v5:'
 // Keep preset identity resilient when a previously used icon is not available
 // in the current shared Lucide icon library.
 const LEGACY_PRESET_APP_HEADER_ICONS: Record<string, Record<string, string>> = {
-  'golden-hive': { Bee: 'Flower2' },
+  'golden-hive': { Flower2: 'Bee' },
 }
 
 export interface PresetSnapshot {

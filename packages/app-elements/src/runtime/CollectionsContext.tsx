@@ -22,6 +22,7 @@ export interface CollectionsContextValue {
   append(name: string, item: CollectionItem): void;
   remove(name: string, index: number): void;
   get(name: string): CollectionItem[];
+  navigateToPage?: (pageId: string) => void;
   activeForm: FormSchema | null;
   openForm(schema: FormSchema): void;
   closeForm(): void;
@@ -35,11 +36,13 @@ export function useCollections() {
 
 interface CollectionsProviderProps {
   initialCollections?: Record<string, CollectionItem[]>;
+  navigateToPage?: (pageId: string) => void;
   children: ReactNode;
 }
 
 export function CollectionsProvider({
   initialCollections = {},
+  navigateToPage,
   children,
 }: CollectionsProviderProps) {
   const [collections, setCollections] = useState<Record<string, CollectionItem[]>>(initialCollections);
@@ -68,10 +71,11 @@ export function CollectionsProvider({
     append,
     remove,
     get,
+    navigateToPage,
     activeForm,
     openForm,
     closeForm,
-  }), [collections, append, remove, get, activeForm, openForm, closeForm]);
+  }), [collections, append, remove, get, navigateToPage, activeForm, openForm, closeForm]);
 
   return (
     <CollectionsContext.Provider value={value}>
