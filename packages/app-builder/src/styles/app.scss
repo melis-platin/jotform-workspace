@@ -15972,7 +15972,7 @@ body.builder--phone-only {
 }
 
 .push-preview-phone__notification--with-image .push-preview-phone__notification-head span {
-  font-size: 8px;
+  font-size: var(--font-size-xs);
 }
 
 .push-permission-preview {
