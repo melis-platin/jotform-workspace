@@ -2997,7 +2997,7 @@ function LivePreviewNotificationButton({
         aria-haspopup={popover ? 'dialog' : undefined}
         onClick={onClick}
       >
-        <Icon name="bell-diagonal-filled" category="alerts-feedback" size={24} />
+        <Icon name="bell-diagonal-filled" category="alerts-feedback" size={20} />
         {hasUnreadBadge && (
           <span className={`live-preview__top-header-notification-badge${hasWideUnreadBadge ? ' live-preview__top-header-notification-badge--wide' : ''}`}>
             {visibleUnreadCount}
