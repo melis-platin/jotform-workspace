@@ -851,6 +851,53 @@ function isDataBackedElement(element: CanvasElement): boolean {
   return element.componentId === 'button' && String(element.properties.Action ?? '') === 'Open Form'
 }
 
+function stripPresetButtonIconsFromElement(element: CanvasElement): CanvasElement {
+  if (element.componentId !== 'button') return element
+  if (element.properties['Left Icon'] === 'none' && element.properties['Right Icon'] === 'none') return element
+
+  return {
+    ...element,
+    properties: {
+      ...element.properties,
+      'Left Icon': 'none',
+      'Right Icon': 'none',
+    },
+  }
+}
+
+function normalizePresetButtonIcons(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {
+  if (!preset || preset.id === EMPTY_PRESET_ID) return pages
+
+  let changed = false
+  const normalizedPages = pages.map((page) => {
+    let pageChanged = false
+    const elements = page.elements.map((element) => {
+      const nextElement = stripPresetButtonIconsFromElement(element)
+      if (nextElement !== element) pageChanged = true
+      return nextElement
+    })
+
+    if (!pageChanged) return page
+    changed = true
+    return { ...page, elements }
+  })
+
+  return changed ? normalizedPages : pages
+}
+
+function normalizePresetHeaderButtonIcons(headerActions: CanvasElement[], preset: AppPreset | undefined): CanvasElement[] {
+  if (!preset || preset.id === EMPTY_PRESET_ID) return headerActions
+
+  let changed = false
+  const normalizedActions = headerActions.map((element) => {
+    const nextElement = stripPresetButtonIconsFromElement(element)
+    if (nextElement !== element) changed = true
+    return nextElement
+  })
+
+  return changed ? normalizedActions : headerActions
+}
+
 function countDataBackedElements(pages: AppPage[]): number {
   return pages
     .filter((page) => !page.dynamic)
@@ -1114,7 +1161,7 @@ function normalizeListTitleHeaders(pages: AppPage[]): AppPage[] {
 }
 
 function normalizePresetPages(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {
-  return normalizeListTitleHeaders(
+  return normalizePresetButtonIcons(normalizeListTitleHeaders(
     normalizeBohoNestPages(
       normalizeCampPinecrestPages(
         normalizeGoldenHivePages(
@@ -1125,7 +1172,7 @@ function normalizePresetPages(pages: AppPage[], preset: AppPreset | undefined): 
       ),
       preset,
     ),
-  )
+  ), preset)
 }
 
 function arePagesEqual(a: AppPage[], b: AppPage[]): boolean {
@@ -1159,7 +1206,7 @@ export function buildInitialStateFromPreset(preset: AppPreset | undefined): {
     )
     return {
       pages,
-      headerActions: stored.headerActions as CanvasElement[],
+      headerActions: normalizePresetHeaderButtonIcons(stored.headerActions as CanvasElement[], preset),
       activePageId: pages[0]?.id ?? 'page-1',
       appSubtitle: stored.appSubtitle,
       appHeader: applyPresetHomeAppHeaderRules({
@@ -1220,7 +1267,7 @@ export function buildInitialStateFromPreset(preset: AppPreset | undefined): {
   const headerBuilt = buildCanvasElementsFromPreset(preset.headerActions, nextId)
   return {
     pages,
-    headerActions: headerBuilt.elements,
+    headerActions: normalizePresetHeaderButtonIcons(headerBuilt.elements, preset),
     activePageId: pages[0].id,
     appSubtitle: preset.appSubtitle,
     appHeader: applyPresetHomeAppHeaderRules({ ...APP_HEADER_DEFAULTS, ...(preset.appHeader ?? {}) }, preset, pages),

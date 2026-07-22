@@ -11639,9 +11639,36 @@ const REMOVED_PRESET_IDS = new Set([
   'student-management',
 ])
 
+function stripButtonIconsFromPresetElement(element: PresetElement): PresetElement {
+  if (element.componentId !== 'button') return element
+
+  const properties = element.properties ?? {}
+  if (properties['Left Icon'] === 'none' && properties['Right Icon'] === 'none') return element
+
+  return {
+    ...element,
+    properties: {
+      ...properties,
+      'Left Icon': 'none',
+      'Right Icon': 'none',
+    },
+  }
+}
+
+function stripButtonIconsFromPreset(preset: AppPreset): AppPreset {
+  return {
+    ...preset,
+    pages: preset.pages.map((page) => ({
+      ...page,
+      elements: page.elements.map(stripButtonIconsFromPresetElement),
+    })),
+    headerActions: preset.headerActions.map(stripButtonIconsFromPresetElement),
+  }
+}
+
 export const APP_PRESETS: AppPreset[] = ALL_APP_PRESETS.filter(
   (preset) => !preset.id.startsWith('landing-') && !REMOVED_PRESET_IDS.has(preset.id),
-)
+).map(stripButtonIconsFromPreset)
 
 export function getPresetById(id: string): AppPreset {
   return APP_PRESETS.find((p) => p.id === id) ?? APP_PRESETS[0]

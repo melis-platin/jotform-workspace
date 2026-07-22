@@ -18,6 +18,7 @@ Before starting any task, read the project memory for full architecture details:
 - Publish > Push Notifications > Schedule Notification: the SCHEDULE action must remain disabled until both Notification Title and Notification Content have a value (including inserted field tokens), as well as a valid send date and time. Never relax this requirement.
 - Publish > Push Notifications > Schedule Notification: when Custom is selected in Quick Picks, Send Time must always show the current selectable time rather than a placeholder. Manual date or time changes must switch to Custom without clearing the value the user just selected. Never change this behavior.
 - App preset hero headers with transparent mobile top navigation must keep the visible gap from the top nav/avatar row to the hero title equal to the visible gap from the hero CTA to the first page card. Preserve this as one shared layout rule; do not rebalance it with one-off per-preset overrides.
+- Preset app Button components must be text-only. Do not use left or right icons in preset buttons; set both `Left Icon` and `Right Icon` to `none`. This applies to preset page buttons and header action buttons, but does not ban icons in app logos, cards, lists, navigation, or other non-button components.
 
 ## Local Dev Server
 - When the user asks to start the project locally, run the Vite app with `--host 0.0.0.0` so both `localhost` and the local-network URL are available.
