@@ -207,16 +207,6 @@ const formatScheduleTime = (date: Date) => {
   return formatScheduleTimeParts(date.getHours(), date.getMinutes())
 }
 
-const formatScheduleTimeFieldValue = (value: string) => {
-  const parsedTime = parseScheduleTime(value)
-  if (!parsedTime) return value
-
-  const period = parsedTime.hours >= 12 ? 'PM' : 'AM'
-  const displayHours = String(parsedTime.hours % 12 || 12).padStart(2, '0')
-
-  return `${displayHours}:${String(parsedTime.minutes).padStart(2, '0')} ${period}`
-}
-
 const SCHEDULE_TIME_OPTIONS = Array.from({ length: 48 }, (_, index) => {
   const totalMinutes = index * 30
   const label = formatScheduleTimeParts(Math.floor(totalMinutes / 60), totalMinutes % 60)
@@ -227,11 +217,6 @@ const SCHEDULE_TIME_OPTIONS = Array.from({ length: 48 }, (_, index) => {
     leading: <Icon name="clock" category="time-date" size={20} />,
   }
 })
-
-const SCHEDULE_COMPOSER_TIME_OPTIONS = SCHEDULE_TIME_OPTIONS.map(({ value }) => ({
-  value,
-  label: formatScheduleTimeFieldValue(value),
-}))
 
 const roundUpToNextHalfHour = (date: Date) => {
   const roundedDate = new Date(date)
@@ -579,7 +564,11 @@ function PushScheduleComposerSection({
   timezone,
   onTimezoneChange,
 }: PushScheduleComposerSectionProps) {
-  const hasScheduleDateTime = Boolean(date) && Boolean(time)
+  const parsedScheduleTime = parseScheduleTime(time)
+  const hasScheduleDateTime = Boolean(parseScheduleDate(date) && parsedScheduleTime)
+  const scheduleTimeLabel = parsedScheduleTime
+    ? formatScheduleTimeParts(parsedScheduleTime.hours, parsedScheduleTime.minutes)
+    : time
   const scheduleDayLabel = getScheduleSummaryDayLabel(date)
   const timezoneAbbreviation = getScheduleTimezoneAbbreviation(timezone)
 
@@ -621,25 +610,28 @@ function PushScheduleComposerSection({
             onCustomScheduleChange()
           }}
         />
-        <DropdownSingle
-          className="push-schedule-field push-schedule-time-dropdown"
-          size="md"
-          title="Send Time"
-          showTitle
-          showDescription={false}
-          showHelpText={false}
-          showLeadingIcon={false}
-          usePortal
-          portalAlign="start"
-          placeholder="Select Time"
-          options={SCHEDULE_COMPOSER_TIME_OPTIONS}
-          value={time}
-          onChange={(value) => {
-            onTimeChange(value)
-            onCustomScheduleChange()
-          }}
-          trailingIcon={<Icon name="clock" category="time-date" size={20} />}
-        />
+        <label className="push-schedule-field push-schedule-time-input">
+          <span className="push-schedule-field__label">Send Time</span>
+          <Input
+            size="md"
+            className="push-schedule-field__control"
+            aria-label="Schedule time"
+            placeholder="hh:mm AM"
+            value={time}
+            onChange={(event) => {
+              onTimeChange(event.currentTarget.value)
+              onCustomScheduleChange()
+            }}
+            onBlur={(event) => {
+              const nextScheduleTime = parseScheduleTime(event.currentTarget.value)
+
+              if (!nextScheduleTime) return
+
+              onTimeChange(formatScheduleTimeParts(nextScheduleTime.hours, nextScheduleTime.minutes))
+            }}
+            rightContent={<Icon name="clock" category="time-date" size={20} />}
+          />
+        </label>
       </div>
       <DropdownSingle
         className="push-schedule-timezone"
@@ -658,7 +650,7 @@ function PushScheduleComposerSection({
         <div className="push-schedule-composer__scheduled-notice">
           <Icon name="clock" category="time-date" size={16} />
           <p>
-            Sends <strong>{scheduleDayLabel}</strong> at <strong>{time}.</strong>{' '}
+            Sends <strong>{scheduleDayLabel}</strong> at <strong>{scheduleTimeLabel}.</strong>{' '}
             <em>{timezoneAbbreviation}</em> - to All Users · {PUSH_NOTIFICATION_ALLOWED_DEVICE_COUNT} devices.
           </p>
         </div>
@@ -1189,10 +1181,12 @@ export function PushNotificationsPanel({
       notificationContentFields.length === 0 &&
       notificationContentSuffix.trim().length === 0
     )
+  const hasValidScheduleDate = Boolean(parseScheduleDate(scheduleDate))
+  const hasValidScheduleTime = Boolean(parseScheduleTime(scheduleTime))
   const isScheduleActionDisabled =
     areNotificationActionsDisabled ||
-    !scheduleDate.trim() ||
-    !scheduleTime.trim()
+    !hasValidScheduleDate ||
+    !hasValidScheduleTime
   const removeNotificationContentField = (fieldIndex: number) => {
     const nextFields = notificationContentFields.filter((_, index) => index !== fieldIndex)
 
@@ -1306,6 +1300,8 @@ export function PushNotificationsPanel({
     deepLinkLabel: getDeepLinkHistoryLabel(deepLink, deepLinkTargets),
   })
   const saveScheduledNotification = () => {
+    if (isScheduleActionDisabled) return
+
     onHistoryItemCreate({
       ...createBaseHistoryItem('scheduled'),
       scheduleDate,
