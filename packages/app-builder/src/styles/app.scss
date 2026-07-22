@@ -1948,12 +1948,13 @@ body {
   padding-top: 0;
 }
 
-// Phone live preview: when the transparent top header overlays the hero, center
-// the hero copy + CTA in the remaining visible image area below that chrome.
-// The top header covers 59px safe-area offset + 48px nav visually; app content is
-// scaled to 0.9, so the AppHeader needs ~119px of unscaled top compensation.
+// Phone live preview: when the transparent top header overlays the hero, balance
+// the hero content between the avatar/nav row and the first page card. The first
+// page tucks under the header by --space-4, so keep the visible top gap (nav/avatar
+// row -> hero title) equal to the visible bottom gap (hero CTA -> first page).
 .live-preview__phone-screen > .live-preview__top-header--transparent:not(.live-preview__top-header--over-content) ~ .live-preview__content-scaler .live-preview__app-header-slot .jf-app-header--center-content-in-bounds {
-  padding-top: calc(var(--app-header-content-y) + 119px);
+  --live-preview-phone-hero-balanced-nav-offset: 95px;
+  padding-top: calc(var(--app-header-content-y) + var(--live-preview-phone-hero-balanced-nav-offset));
 }
 
 // Safe-area background goes transparent so the hero behind it shows through (the

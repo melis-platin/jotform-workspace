@@ -17,6 +17,7 @@ Before starting any task, read the project memory for full architecture details:
 - Publish > Push Notifications > Send Notification must keep the same canvas origin as the Push overview: 36px top padding (`calc(var(--spacing-2xl) + var(--spacing-2xs))`) and an 80px gap after the left panel (`calc(var(--spacing-4xl) + var(--spacing-md))`). Apply these token-based values to both states to prevent layout jumps; do not alter this rule.
 - Publish > Push Notifications > Schedule Notification: the SCHEDULE action must remain disabled until both Notification Title and Notification Content have a value (including inserted field tokens), as well as a valid send date and time. Never relax this requirement.
 - Publish > Push Notifications > Schedule Notification: when Custom is selected in Quick Picks, Send Time must always show the current selectable time rather than a placeholder. Manual date or time changes must switch to Custom without clearing the value the user just selected. Never change this behavior.
+- App preset hero headers with transparent mobile top navigation must keep the visible gap from the top nav/avatar row to the hero title equal to the visible gap from the hero CTA to the first page card. Preserve this as one shared layout rule; do not rebalance it with one-off per-preset overrides.
 
 ## Local Dev Server
 - When the user asks to start the project locally, run the Vite app with `--host 0.0.0.0` so both `localhost` and the local-network URL are available.
