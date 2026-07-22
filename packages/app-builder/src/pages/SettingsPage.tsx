@@ -1466,14 +1466,16 @@ export function PushNotificationsPanel({
               />
             ) : undefined}
           />
-          {!isDisabled && <div className="push-notification-actions">
-            <Button
-              variant="filled"
-              colorScheme="secondary"
-              disabled={areNotificationActionsDisabled}
-            >
-              SEND TEST
-            </Button>
+          {!isDisabled && <div className={`push-notification-actions${isPublishComposer ? ' push-notification-actions--publish' : ''}`}>
+            {!isPublishComposer && (
+              <Button
+                variant="filled"
+                colorScheme="secondary"
+                disabled={areNotificationActionsDisabled}
+              >
+                SEND TEST
+              </Button>
+            )}
             <div className="push-notification-actions__right">
               {isScheduleComposer ? <Button
                 colorScheme="apps"

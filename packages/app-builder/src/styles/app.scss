@@ -15240,6 +15240,10 @@ body.builder--phone-only {
   margin-top: var(--spacing-lg);
 }
 
+.push-notification-actions--publish {
+  justify-content: flex-end;
+}
+
 .push-notification-actions__right {
   display: flex;
   align-items: center;
