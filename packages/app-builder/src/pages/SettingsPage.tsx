@@ -1170,7 +1170,6 @@ export function PushNotificationsPanel({
   const [editScheduleTime, setEditScheduleTime] = useState('')
   const [editScheduleTimezone, setEditScheduleTimezone] = useState(SCHEDULE_TIMEZONE_OPTIONS[0].value)
   const [cancelingNotification, setCancelingNotification] = useState<PushNotificationHistoryItem | null>(null)
-  const notificationTitleEditorRef = useRef<PushComposerTokenEditorHandle>(null)
   const areNotificationActionsDisabled =
     (
       notificationTitle.trim().length === 0 &&
@@ -1186,14 +1185,6 @@ export function PushNotificationsPanel({
     areNotificationActionsDisabled ||
     !scheduleDate.trim() ||
     !scheduleTime.trim()
-  const addNotificationTitleField = (field: PushComposerFieldOption) => {
-    if (notificationTitleEditorRef.current?.insertField(field)) return
-
-    setNotificationTitleFields([...notificationTitleFields, field])
-  }
-  const addNotificationContentField = (field: PushComposerFieldOption) => {
-    setNotificationContentFields([...notificationContentFields, field])
-  }
   const removeNotificationContentField = (fieldIndex: number) => {
     const nextFields = notificationContentFields.filter((_, index) => index !== fieldIndex)
 
@@ -1424,18 +1415,15 @@ export function PushNotificationsPanel({
       ) : activeView === 'composer' ? (
         <>
           <PushNotificationComposer
-            titleEditorRef={notificationTitleEditorRef}
             title={notificationTitle}
             setTitle={setNotificationTitle}
             titleFields={notificationTitleFields}
             setTitleFields={setNotificationTitleFields}
-            onTitleFieldAdd={addNotificationTitleField}
             titleSuffix={notificationTitleSuffix}
             setTitleSuffix={setNotificationTitleSuffix}
             content={notificationContent}
             setContent={setNotificationContent}
             contentFields={notificationContentFields}
-            onContentFieldAdd={addNotificationContentField}
             onContentFieldRemove={removeNotificationContentField}
             contentSuffix={notificationContentSuffix}
             setContentSuffix={setNotificationContentSuffix}
@@ -3244,18 +3232,15 @@ function PushComposerTokenTextArea({
 }
 
 interface PushNotificationComposerProps {
-  titleEditorRef: RefObject<PushComposerTokenEditorHandle | null>
   title: string
   setTitle: (title: string) => void
   titleFields: PushComposerFieldOption[]
   setTitleFields: (fields: PushComposerFieldOption[]) => void
-  onTitleFieldAdd: (field: PushComposerFieldOption) => void
   titleSuffix: string
   setTitleSuffix: (title: string) => void
   content: string
   setContent: (content: string) => void
   contentFields: PushComposerFieldOption[]
-  onContentFieldAdd: (field: PushComposerFieldOption) => void
   onContentFieldRemove: (index: number) => void
   contentSuffix: string
   setContentSuffix: (content: string) => void
@@ -3553,18 +3538,15 @@ function DeepLinkDropdown({ value, onChange, targets }: DeepLinkDropdownProps) {
 }
 
 function PushNotificationComposer({
-  titleEditorRef,
   title,
   setTitle,
   titleFields,
   setTitleFields,
-  onTitleFieldAdd,
   titleSuffix,
   setTitleSuffix,
   content,
   setContent,
   contentFields,
-  onContentFieldAdd,
   onContentFieldRemove,
   contentSuffix,
   setContentSuffix,
@@ -3697,13 +3679,10 @@ function PushNotificationComposer({
             <PushComposerFieldLabel
               htmlFor="push-notification-title"
               required
-              showAddField
-              onAddField={onTitleFieldAdd}
             >
               Notification Title
             </PushComposerFieldLabel>
             <PushComposerTokenInput
-              ref={titleEditorRef}
               id="push-notification-title"
               aria-label="Notification Title"
               value={title}
@@ -3719,8 +3698,6 @@ function PushNotificationComposer({
             <PushComposerFieldLabel
               htmlFor="push-notification-content"
               required
-              showAddField
-              onAddField={onContentFieldAdd}
             >
               Notification Content
             </PushComposerFieldLabel>
