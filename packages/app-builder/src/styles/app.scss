@@ -15885,9 +15885,9 @@ body.builder--phone-only {
 }
 
 .push-preview-phone__notification-icon {
-  width: calc(var(--spacing-3xl) - var(--spacing-3xs));
-  height: calc(var(--spacing-3xl) - var(--spacing-3xs));
-  flex: 0 0 calc(var(--spacing-3xl) - var(--spacing-3xs));
+  width: var(--spacing-3xl);
+  height: var(--spacing-3xl);
+  flex: 0 0 var(--spacing-3xl);
   display: flex;
   align-items: center;
   justify-content: center;
