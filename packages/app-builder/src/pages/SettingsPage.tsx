@@ -1833,7 +1833,7 @@ function PushNotificationOverview({
     <section className="push-notification-overview" aria-label="Push notification overview">
       <div className="push-notification-overview__reach-card">
         <div className="push-notification-overview__reach-header">
-          <h2>Reachable Across Channels</h2>
+          <h2>Devices you can reach</h2>
           <div className="push-notification-overview__reach-actions">
             <span className={`push-notification-overview__status${isDisabled ? ' push-notification-overview__status--disabled' : ''}`}>
               {isDisabled ? 'Disabled' : 'Active'}
