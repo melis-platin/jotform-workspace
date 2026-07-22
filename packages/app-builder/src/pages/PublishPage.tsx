@@ -26,6 +26,7 @@ import {
   PushNotificationsPanel,
   type PushComposerFieldOption,
   type PushComposerFieldValues,
+  type PushNotificationPanelView,
   type PushComposerSelectedImage,
   type PushNotificationHistoryItem,
 } from './SettingsPage'
@@ -526,6 +527,9 @@ export function PublishPage({
   const [notificationDeepLink, setNotificationDeepLink] = useState('')
   const [notificationImage, setNotificationImage] = useState<PushComposerSelectedImage | null>(null)
   const [arePushNotificationsDisabled, setArePushNotificationsDisabled] = useState(false)
+  const [pushNotificationView, setPushNotificationView] = useState<PushNotificationPanelView>(() => (
+    pushNotificationHistoryItems.length > 0 ? 'history' : 'composer'
+  ))
   const [isPushInitialOverview, setIsPushInitialOverview] = useState(false)
   const [canReturnToPushHistory, setCanReturnToPushHistory] = useState(false)
   const [isPushScheduleComposer, setIsPushScheduleComposer] = useState(false)
@@ -542,10 +546,15 @@ export function PublishPage({
   const isFigmaPushInitial = isPushNotificationsOpen && isPushInitialOverview
   const isPushComposerOpen = isPushNotificationsOpen && canReturnToPushHistory
   const isPushScheduleOpen = isPushNotificationsOpen && isPushScheduleComposer
+  const isPushHistoryOpen = isPushNotificationsOpen && pushNotificationView === 'history'
   const canReturnFromPushOverview = isFigmaPushInitial && pushNotificationHistoryItems.length > 0
   const usesFigmaPushComposerLayout = isPushComposerOpen
   const usesFigmaPushLayout = isPushNotificationsOpen
-  const shouldShowPushPreview = isPushNotificationsOpen && !arePushNotificationsDisabled && !isFigmaPushInitial
+  const shouldShowPushPreview =
+    isPushNotificationsOpen &&
+    !arePushNotificationsDisabled &&
+    !isFigmaPushInitial &&
+    !isPushHistoryOpen
   const pushNotificationIconStyle = 'flat'
   const previewNotificationTitle = formatPushNotificationTitle(
     notificationTitle,
@@ -563,6 +572,11 @@ export function PublishPage({
 
   const handleNavigationChange = (nextId: string) => {
     setIsPushInitialOverview(nextId === 'push-notifications' && pushNotificationHistoryItems.length === 0)
+    setPushNotificationView(
+      nextId === 'push-notifications' && pushNotificationHistoryItems.length > 0
+        ? 'history'
+        : 'composer',
+    )
     setIsPushScheduleComposer(false)
     setActiveId(nextId)
   }
@@ -663,6 +677,7 @@ export function PublishPage({
                     setPermissionRequestPreviewContent(permissionRequestContent)
                     setIsPermissionRequestModalOpen(true)
                   }}
+                  onViewChange={setPushNotificationView}
                   onCanReturnToHistoryChange={setCanReturnToPushHistory}
                   onInitialOverviewChange={setIsPushInitialOverview}
                   onScheduleComposerChange={setIsPushScheduleComposer}
