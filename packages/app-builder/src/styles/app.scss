@@ -15855,34 +15855,43 @@ body.builder--phone-only {
 .push-preview-phone__notification {
   position: absolute;
   left: var(--spacing-md);
+  right: var(--spacing-md);
   bottom: var(--spacing-4xl);
-  width: 328px;
-  max-width: calc(100% - (var(--spacing-md) * 2));
+  width: auto;
   min-height: var(--spacing-4xl);
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  padding: var(--spacing-sm);
-  border-radius: var(--radius-md);
-  background: rgb(255 255 255 / 0.8);
-  overflow: visible;
+  gap: calc(var(--spacing-xs) + var(--spacing-3xs));
+  padding:
+    calc(var(--spacing-xs) + var(--spacing-3xs))
+    var(--spacing-sm);
+  border: 1px solid color-mix(in srgb, var(--background-white) 48%, transparent);
+  border-radius: calc(var(--radius-lg) + var(--spacing-3xs));
+  background: color-mix(in srgb, var(--background-white) 76%, transparent);
+  box-shadow:
+    var(--shadow-sm),
+    inset 0 1px 0 color-mix(in srgb, var(--background-white) 64%, transparent);
+  overflow: hidden;
+  -webkit-backdrop-filter: blur(var(--spacing-lg)) saturate(160%);
+  backdrop-filter: blur(var(--spacing-lg)) saturate(160%);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', var(--font-family-circular);
+  letter-spacing: -0.012em;
 }
 
 .push-preview-phone__notification--with-image {
-  min-height: calc(var(--spacing-4xl) + var(--spacing-xl));
+  min-height: calc(var(--spacing-4xl) + var(--spacing-lg));
   flex-direction: row;
   align-items: flex-start;
-  gap: var(--spacing-sm);
 }
 
 .push-preview-phone__notification-icon {
-  width: var(--spacing-3xl);
-  height: var(--spacing-3xl);
-  flex: 0 0 auto;
+  width: calc(var(--spacing-3xl) - var(--spacing-3xs));
+  height: calc(var(--spacing-3xl) - var(--spacing-3xs));
+  flex: 0 0 calc(var(--spacing-3xl) - var(--spacing-3xs));
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-sm);
+  border-radius: calc(var(--radius-md) + var(--spacing-3xs));
   background: var(--background-white);
   color: var(--product-default);
   line-height: 0;
@@ -15894,6 +15903,11 @@ body.builder--phone-only {
   height: 100%;
   display: block;
   object-fit: cover;
+}
+
+.push-preview-phone__notification-icon svg {
+  width: calc(var(--spacing-lg) - var(--spacing-3xs));
+  height: calc(var(--spacing-lg) - var(--spacing-3xs));
 }
 
 .push-preview-phone__notification-icon--linear {
@@ -15924,7 +15938,7 @@ body.builder--phone-only {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-2xs);
+  gap: var(--spacing-3xs);
 }
 
 .push-preview-phone__notification--with-image .push-preview-phone__notification-copy {
@@ -15941,15 +15955,16 @@ body.builder--phone-only {
 
 .push-preview-phone__notification-head {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: var(--spacing-xs);
 
   p {
     min-width: 0;
+    margin: 0;
     overflow-wrap: anywhere;
-    font-size: var(--font-size-md);
-    font-weight: var(--font-weight-bold);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
     line-height: var(--line-height-sm);
     color: var(--text-darkest);
   }
@@ -15958,8 +15973,9 @@ body.builder--phone-only {
     flex: 0 0 auto;
     font-size: var(--font-size-xs);
     font-weight: var(--font-weight-book);
-    line-height: 1;
+    line-height: var(--line-height-xs);
     color: var(--text-medium);
+    letter-spacing: -0.006em;
   }
 }
 
@@ -16038,11 +16054,17 @@ body.builder--phone-only {
 }
 
 .push-preview-phone__notification-text {
+  min-width: 0;
+  display: -webkit-box;
+  overflow: hidden;
   overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-book);
-  line-height: var(--line-height-xs);
+  line-height: var(--line-height-sm);
   color: var(--text-medium);
+  letter-spacing: -0.006em;
 }
 
 .push-preview-phone__notification--with-image .push-preview-phone__notification-text {
