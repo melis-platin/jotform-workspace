@@ -234,7 +234,11 @@
 .jf-whatsapp--button-width-auto.jf-whatsapp--button-align-left .jf-whatsapp__cta { margin-right: auto; margin-left: 0; }
 .jf-whatsapp--button-width-auto.jf-whatsapp--button-align-center .jf-whatsapp__cta { margin-right: auto; margin-left: auto; }
 .jf-whatsapp--button-width-auto.jf-whatsapp--button-align-right .jf-whatsapp__cta { margin-right: 0; margin-left: auto; }
-.jf-whatsapp--button-width-full .jf-whatsapp__cta { width: 100%; margin: 0; }
+.jf-whatsapp--button-width-full .jf-whatsapp__cta {
+  width: 100%;
+  margin: 0;
+  justify-content: center;
+}
 
 .jf-whatsapp__availability {
   display: flex;
