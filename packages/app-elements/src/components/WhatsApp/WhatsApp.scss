@@ -74,9 +74,9 @@
   right: var(--space-1);
   width: var(--space-2);
   height: var(--space-2);
-  border: 2px solid var(--bg-fill);
   border-radius: var(--radius-rounded);
   background: var(--whatsapp-fill);
+  box-shadow: 0 0 0 2px var(--bg-fill);
 }
 
 .jf-whatsapp__notice {
