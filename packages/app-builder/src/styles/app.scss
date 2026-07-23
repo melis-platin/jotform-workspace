@@ -92,6 +92,8 @@
   --ds-canvas-element-action-width: var(--spacing-3xl);
   --ds-canvas-element-action-hover-width: 113px;
   --ds-canvas-element-action-hover: #1AB3FF;
+  --ds-canvas-element-delete-hover-width: 89px;
+  --ds-canvas-element-delete-hover: #D3381E;
 }
 
 // ============================================
@@ -5769,6 +5771,13 @@ body {
 
   &--delete {
     background: var(--error-default);
+
+    &:hover {
+      justify-content: flex-start;
+      width: var(--ds-canvas-element-delete-hover-width);
+      padding: 0 var(--ds-space-sm);
+      background: var(--ds-canvas-element-delete-hover);
+    }
   }
 }
 
@@ -5781,8 +5790,8 @@ body {
   letter-spacing: var(--letter-spacing-lg);
 }
 
-.build-page__canvas-element-action--properties:hover
-  .build-page__canvas-element-action-label {
+.build-page__canvas-element-action--properties:hover .build-page__canvas-element-action-label,
+.build-page__canvas-element-action--delete:hover .build-page__canvas-element-action-label {
   display: inline;
 }
 

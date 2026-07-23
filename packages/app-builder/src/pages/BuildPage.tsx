@@ -2619,6 +2619,7 @@ const SortableElement = memo(function SortableElement({
             }}
           >
             <Icon name="trash-filled" category="general" size={20} />
+            <span className="build-page__canvas-element-action-label">Delete</span>
           </button>
         </div>
       )}
