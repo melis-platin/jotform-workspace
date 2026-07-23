@@ -2197,7 +2197,7 @@ function PushNotificationHistoryCard({
   onPreview,
 }: PushNotificationHistoryCardProps) {
   const isScheduled = notification.status === 'scheduled'
-  const statusBadgeLabel = isScheduled ? notification.statusLabel : 'Send'
+  const statusBadgeLabel = isScheduled ? notification.statusLabel : 'Sent'
   const audienceLabel = getDisplayAudienceHistoryLabel(notification.audienceLabel)
   const audienceRoleTooltip = getHistoryAudienceRoleTooltip(notification, appUserRoles)
   const destinationLabel = getDisplayDeepLinkLabel(notification.deepLinkLabel)
