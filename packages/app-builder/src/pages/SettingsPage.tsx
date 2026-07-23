@@ -1166,17 +1166,16 @@ export function PushNotificationsPanel({
   const showsInitialPushOverview =
     showsPublishDisabledOverview ||
     (activeView === 'composer' && usesInitialComposerLayout && !canReturnToHistory)
-  const areNotificationActionsDisabled =
-    (
-      notificationTitle.trim().length === 0 &&
-      notificationTitleFields.length === 0 &&
-      notificationTitleSuffix.trim().length === 0
-    ) ||
-    (
-      notificationContent.trim().length === 0 &&
-      notificationContentFields.length === 0 &&
-      notificationContentSuffix.trim().length === 0
-    )
+  const hasNotificationTitle =
+    notificationTitle.trim().length > 0 ||
+    notificationTitleFields.length > 0 ||
+    notificationTitleSuffix.trim().length > 0
+  const hasNotificationContent =
+    notificationContent.trim().length > 0 ||
+    notificationContentFields.length > 0 ||
+    notificationContentSuffix.trim().length > 0
+  const canSendNotification = hasNotificationTitle && hasNotificationContent
+  const areNotificationActionsDisabled = !canSendNotification
   const hasValidScheduleDate = Boolean(parseScheduleDate(scheduleDate))
   const hasValidScheduleTime = Boolean(parseScheduleTime(scheduleTime))
   const isScheduleActionDisabled =
