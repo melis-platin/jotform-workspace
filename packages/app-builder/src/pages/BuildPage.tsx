@@ -5751,6 +5751,29 @@ export function BuildPage({
     </div>
   )
 
+  // A floating WhatsApp CTA is an app-level action. Render it outside the
+  // current page in desktop preview so it remains available while navigating
+  // between every page and desktop navigation layout.
+  const whatsappPreviewElement = pages.flatMap((page) => page.elements).find((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)
+    ?? headerActions.find((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)
+  const whatsappPreviewComponent = whatsappPreviewElement
+    ? ComponentRegistry.get(whatsappPreviewElement.componentId)
+    : null
+  const desktopFloatingWhatsApp = previewDevice === 'desktop'
+    && whatsappPreviewElement
+    && whatsappPreviewComponent
+    && String(whatsappPreviewElement.properties['Display Style'] ?? 'Floating') === 'Floating'
+    ? (
+      <div className="live-preview__whatsapp-overlay app-scope">
+        {whatsappPreviewComponent.render(
+          whatsappPreviewElement.variants,
+          whatsappPreviewElement.properties,
+          whatsappPreviewElement.states,
+        )}
+      </div>
+    )
+    : null
+
   const phoneScreenContent = (
     <CollectionsProvider navigateToPage={navigateToPage}>
     <CartProvider>
@@ -6222,6 +6245,7 @@ export function BuildPage({
           })()}
         </div>
       </div>
+      {desktopFloatingWhatsApp}
       {pages.length > 1 && bottomNavEnabled && !isNotificationsPageOpen && !isPreviewSearchOpen && !isPreviewCartOpen && !isPreviewCheckoutOpen && !isPreviewDetailOpen && !isPreviewProfileOpen && !showLandingNav && !activePageIsDynamic && (
         <div className="live-preview__bottom-nav app-scope">
           <BottomNavigation

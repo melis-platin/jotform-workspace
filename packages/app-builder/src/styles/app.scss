@@ -3075,7 +3075,7 @@ body {
 
 // The desktop app preview uses the browser-sized canvas, so the action sits
 // directly in its lower-right corner with the desktop --space-8 inset.
-.app-preview-screen .app-preview-screen__desktop .live-preview__content .jf-whatsapp {
+.app-preview-screen .app-preview-screen__desktop .live-preview__whatsapp-overlay {
   position: fixed;
   right: var(--space-8);
   bottom: var(--space-8);
@@ -3085,6 +3085,12 @@ body {
   .jf-whatsapp__control {
     width: auto;
   }
+}
+
+// The source element stays in the builder data model, but the desktop preview
+// renders its floating version through the app-level overlay above.
+.app-preview-screen .app-preview-screen__desktop .themes-view__section:has(.jf-whatsapp:not(.jf-whatsapp--button)) {
+  display: none;
 }
 
 // Builder-only empty/upload placeholders (image + document with no content yet)
