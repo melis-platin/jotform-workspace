@@ -3073,6 +3073,20 @@ body {
   }
 }
 
+// The desktop app preview uses the browser-sized canvas, so the action sits
+// directly in its lower-right corner with the desktop --space-8 inset.
+.app-preview-screen .app-preview-screen__desktop .live-preview__content .jf-whatsapp {
+  position: fixed;
+  right: var(--space-8);
+  bottom: var(--space-8);
+  z-index: 2;
+  width: max-content;
+
+  .jf-whatsapp__control {
+    width: auto;
+  }
+}
+
 // Builder-only empty/upload placeholders (image + document with no content yet)
 // are editing affordances — never show them in the live preview (the published-
 // app simulation). Collapse the whole element wrapper so it leaves no gap, not
