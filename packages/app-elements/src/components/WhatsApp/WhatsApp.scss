@@ -204,6 +204,10 @@
 .jf-whatsapp--button-size-medium .jf-whatsapp__cta { height: var(--space-10); }
 .jf-whatsapp--button-size-large .jf-whatsapp__cta { height: var(--space-12); }
 
+.jf-whatsapp--button-size-small .jf-whatsapp__label { font-size: var(--font-size-xs); }
+.jf-whatsapp--button-size-medium .jf-whatsapp__label { font-size: var(--font-size-sm); }
+.jf-whatsapp--button-size-large .jf-whatsapp__label { font-size: var(--font-size-lg); }
+
 .jf-whatsapp--button .jf-whatsapp__main-content {
   display: flex;
   flex-direction: column;
