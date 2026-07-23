@@ -23,6 +23,7 @@ export type SearchResultTarget =
   | { type: 'page', pageId: string, elementId?: string }
   | { type: 'element', pageId: string, elementId: string }
   | { type: 'dynamic-item', pageId: string, elementId: string, itemIndex: number }
+  | { type: 'product-item', pageId: string, elementId: string, itemIndex: number }
   | { type: 'form', pageId: string, elementId: string, fieldName?: string, openForm?: boolean }
 
 type SearchMatchImageShape = 'square' | 'rounded' | 'circle'
@@ -793,7 +794,7 @@ const getElementNavigationPage = (
 }
 
 const getSearchResultTargetPriority = (target: SearchResultTarget) => {
-  if (target.type === 'dynamic-item') return 4
+  if (target.type === 'dynamic-item' || target.type === 'product-item') return 4
   if (target.type === 'form') return 3
   if (target.type === 'element') return 2
   return 1
@@ -1185,23 +1186,30 @@ export const getPreviewSearchResults = (
         })
       }
 
-      const listItems = [
-        ...parseSearchJsonItems(properties.Items),
-        ...parseSearchJsonItems(properties.Products),
-      ]
+      const isProductList = element.componentId === 'product-list'
+      const listItems = isProductList
+        ? parseSearchJsonItems(properties.Products)
+        : [
+            ...parseSearchJsonItems(properties.Items),
+            ...parseSearchJsonItems(properties.Products),
+          ]
       const dynamicDetailPage = isDynamicListNavigation
         ? getDynamicPageForElement(pages, elementId)
         : undefined
       const hasDynamicDetailTarget = Boolean(dynamicDetailPage)
 
       listItems.forEach((item, itemIndex) => {
+        if (isProductList && item.visible === false) return
+
         const itemTitle = getItemText(item, ['title', 'name', 'label', 'question'])
         const itemDescription = getItemText(item, ['description', 'text', 'answer', 'details', 'category', 'price'])
         const itemSearchCorpus = getItemSearchCorpus(item)
         const itemMatchesSearch = textMatchesSearch(itemSearchCorpus, normalizedSearchText)
-        const itemTarget: SearchResultTarget = hasDynamicDetailTarget
-          ? { type: 'dynamic-item', pageId, elementId, itemIndex }
-          : elementTarget
+        const itemTarget: SearchResultTarget = isProductList
+          ? { type: 'product-item', pageId, elementId, itemIndex }
+          : hasDynamicDetailTarget
+            ? { type: 'dynamic-item', pageId, elementId, itemIndex }
+            : elementTarget
         pushSearchResult(results, seen, searchText, {
           id: `item-${pageIndex}-${elementIndex}-${itemIndex}`,
           title: itemTitle || elementTitle || componentLabel,

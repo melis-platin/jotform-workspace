@@ -19,6 +19,7 @@ import {
   CartProvider,
   FavoritesProvider,
   ProductDetailProvider,
+  useProductDetail,
   FormSheet,
   compressImageFile,
   compressImageFiles,
@@ -1547,6 +1548,7 @@ const getFormSheetFieldSelector = (fieldName: string) => (
 )
 
 type CollectionsRuntime = ReturnType<typeof useCollections>
+type ProductDetailRuntime = ReturnType<typeof useProductDetail>
 
 function LivePreviewSearchPageWithCollections({
   appTitle,
@@ -1571,9 +1573,14 @@ function LivePreviewSearchPageWithCollections({
   presentation?: 'page' | 'desktop-context' | 'desktop-modal'
   showHeader?: boolean
   onClose: () => void
-  onResultSelect: (target: SearchResultTarget, collections: CollectionsRuntime) => void
+  onResultSelect: (
+    target: SearchResultTarget,
+    collections: CollectionsRuntime,
+    productDetail: ProductDetailRuntime,
+  ) => void
 }) {
   const collections = useCollections()
+  const productDetail = useProductDetail()
 
   return (
     <LivePreviewSearchPage
@@ -1587,7 +1594,7 @@ function LivePreviewSearchPageWithCollections({
       presentation={presentation}
       showHeader={showHeader}
       onClose={onClose}
-      onResultSelect={(target) => onResultSelect(target, collections)}
+      onResultSelect={(target) => onResultSelect(target, collections, productDetail)}
     />
   )
 }
@@ -4193,6 +4200,7 @@ export function BuildPage({
   const handleLivePreviewSearchResultSelect = useCallback((
     target: SearchResultTarget,
     collections: CollectionsRuntime,
+    productDetail: ProductDetailRuntime,
   ) => {
     const targetPage = pagesRef.current.find((page) => page.id === target.pageId)
     const needsLogin = Boolean(targetPage?.requireLogin && !isPreviewLoggedIn)
@@ -4202,6 +4210,27 @@ export function BuildPage({
     if (target.type === 'dynamic-item') {
       openDynamicDetailFor(target.elementId, target.itemIndex)
       if (!needsLogin) queueLivePreviewTargetHighlight()
+      return
+    }
+
+    if (target.type === 'product-item') {
+      navigateToPage(target.pageId)
+      if (needsLogin || !targetPage) return
+
+      const productList = targetPage.elements.find((item) => item.id === target.elementId)
+      if (!productList) return
+
+      try {
+        const products = JSON.parse(String(productList.properties.Products ?? '[]')) as unknown
+        if (!Array.isArray(products)) return
+
+        const product = products[target.itemIndex]
+        if (!product || typeof product !== 'object' || Array.isArray(product)) return
+
+        productDetail?.open(product as ProductItem)
+      } catch {
+        // Invalid product data should leave search closed without opening a broken detail view.
+      }
       return
     }
 
