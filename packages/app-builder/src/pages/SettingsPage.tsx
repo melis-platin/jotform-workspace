@@ -1483,12 +1483,13 @@ export function PushNotificationsPanel({
               />
             ) : undefined}
           />
-          {!isDisabled && <div className={`push-notification-actions${isPublishComposer ? ' push-notification-actions--publish' : ''}`}>
-            {!isPublishComposer && (
+          {!isDisabled && <div className={`push-notification-actions${isPublishComposer ? ' push-notification-actions--publish' : ''}${isPublishComposer && !isScheduleComposer ? ' push-notification-actions--with-test' : ''}`}>
+            {!isScheduleComposer && (
               <Button
                 variant="filled"
                 colorScheme="secondary"
                 disabled={areNotificationActionsDisabled}
+                leftIcon={<Icon name="paper-plane-diagonal-filled" category="communication" size={20} />}
               >
                 SEND TEST
               </Button>

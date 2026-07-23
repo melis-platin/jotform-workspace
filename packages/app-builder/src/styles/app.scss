@@ -15364,6 +15364,10 @@ body.builder--phone-only {
   justify-content: flex-end;
 }
 
+.push-notification-actions--with-test {
+  justify-content: space-between;
+}
+
 .push-notification-actions__right {
   display: flex;
   align-items: center;
