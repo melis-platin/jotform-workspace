@@ -7176,15 +7176,17 @@ export function BuildPage({
                       </div>
                     )
                     const displayStyle = String(selectedElement.properties['Display Style'] ?? 'Floating')
+                    const buttonText = String(selectedElement.properties['Button Text'] ?? 'Message us')
+                    const displayedButtonText = buttonText === 'Message us on WhatsApp' ? 'Message us' : buttonText
                     return <div className="property-panel__body property-panel__body--whatsapp">
                       {renderWhatsAppStyleOptions('Display Style', 'Display Style', ['Floating', 'Button'])}
                       {displayStyle === 'Button' ? <>
                         <div className="property-panel__field">
                           <DSFormField title="Button Text" size="md" showDescription={false} showHelpText={false}>
                             <DSInput
-                              value={String(selectedElement.properties['Button Text'] ?? 'Message us on WhatsApp')}
+                              value={displayedButtonText}
                               maxLength={30}
-                              rightContent={<span className="property-panel__char-count">{String(selectedElement.properties['Button Text'] ?? 'Message us on WhatsApp').length}/30</span>}
+                              rightContent={<span className="property-panel__char-count">{displayedButtonText.length}/30</span>}
                               onChange={(e) => handlePropertyChange(selectedElement.id, 'Button Text', e.target.value)}
                             />
                           </DSFormField>

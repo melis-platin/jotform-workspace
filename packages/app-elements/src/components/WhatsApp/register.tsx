@@ -20,7 +20,7 @@ ComponentRegistry.register({
     { name: 'Bubble Text', type: 'text', default: 'Message us on WhatsApp', maxLength: 30 },
     { name: 'Button Width', type: 'select', default: 'Auto', options: ['Auto', 'Full'] },
     { name: 'Button Alignment', type: 'select', default: 'Center', options: ['Left', 'Center', 'Right'] },
-    { name: 'Button Text', type: 'text', default: 'Message us on WhatsApp', maxLength: 30 },
+    { name: 'Button Text', type: 'text', default: 'Message us', maxLength: 30 },
     { name: 'Phone Number', type: 'text', default: '', placeholder: '+0 000-000-0000', description: 'Use the international format: +1 541-754-3010' },
     { name: 'Message', type: 'text', default: 'Hi Bloom Café! I’d like to ask about my order.', maxLength: 300, description: 'Automatically added to the chat so users can send in one tap.' },
     { name: 'Include Pages to Display', type: 'select', default: 'All Pages', options: ['All Pages'] },
@@ -57,6 +57,7 @@ ComponentRegistry.register({
   render(_variants: VariantValues, props: PropertyValues, _states: StateValues): React.ReactNode {
     const phoneNumber = String(props['Phone Number'] ?? '');
     const message = String(props['Message'] ?? '');
+    const buttonText = String(props['Button Text'] ?? 'Message us');
     return (
       <WhatsApp
         phoneNumber={phoneNumber}
@@ -70,7 +71,7 @@ ComponentRegistry.register({
         bubblePlacement={String(props['Bubble Placement'] ?? 'Beside')}
         buttonWidth={String(props['Button Width'] ?? 'Auto')}
         buttonAlignment={String(props['Alignment'] ?? 'Right')}
-        buttonText={String(props['Button Text'] ?? 'Message us on WhatsApp')}
+        buttonText={buttonText === 'Message us on WhatsApp' ? 'Message us' : buttonText}
         availabilityEnabled={Boolean(props['Set Availability Hours'])}
         availabilityDays={String(props['Availability Days'] ?? 'M0,T1,W2,T3,F4')}
         openTime={String(props['Open Time'] ?? '09:00 AM')}
