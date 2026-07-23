@@ -7180,7 +7180,7 @@ export function BuildPage({
                     return <div className="property-panel__body property-panel__body--whatsapp">
                       {renderWhatsAppStyleOptions('Display Style', 'Display Style', ['Floating', 'Button'])}
                       {displayStyle === 'Button' ? <>
-                        {renderWhatsAppStyleOptions('Button wWidth', 'Button Width', ['Auto', 'Full'])}
+                        {renderWhatsAppStyleOptions('Button Width', 'Button Width', ['Auto', 'Full'])}
                         {renderWhatsAppStyleOptions('Alignment', 'Button Alignment', ['Left', 'Center', 'Right'])}
                         <div className="property-panel__field">
                           <DSFormField title="Button Text" size="md" showDescription={false} showHelpText={false}>
