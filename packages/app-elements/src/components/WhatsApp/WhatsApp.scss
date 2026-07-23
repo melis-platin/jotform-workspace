@@ -239,6 +239,27 @@
   box-shadow: none;
 }
 
+.jf-whatsapp--button-size-small .jf-whatsapp__icon,
+.jf-whatsapp--button-size-small .jf-whatsapp__icon-image {
+  width: var(--space-4);
+  height: var(--space-4);
+}
+.jf-whatsapp--button-size-small .jf-whatsapp__icon { flex-basis: var(--space-4); }
+
+.jf-whatsapp--button-size-medium .jf-whatsapp__icon,
+.jf-whatsapp--button-size-medium .jf-whatsapp__icon-image {
+  width: var(--space-5);
+  height: var(--space-5);
+}
+.jf-whatsapp--button-size-medium .jf-whatsapp__icon { flex-basis: var(--space-5); }
+
+.jf-whatsapp--button-size-large .jf-whatsapp__icon,
+.jf-whatsapp--button-size-large .jf-whatsapp__icon-image {
+  width: var(--space-6);
+  height: var(--space-6);
+}
+.jf-whatsapp--button-size-large .jf-whatsapp__icon { flex-basis: var(--space-6); }
+
 .jf-whatsapp--button-width-auto .jf-whatsapp__cta { width: max-content; }
 .jf-whatsapp--button-width-auto.jf-whatsapp--button-align-left .jf-whatsapp__cta { margin-right: auto; margin-left: 0; }
 .jf-whatsapp--button-width-auto.jf-whatsapp--button-align-center .jf-whatsapp__cta { margin-right: auto; margin-left: auto; }
