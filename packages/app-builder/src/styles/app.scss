@@ -7527,6 +7527,16 @@ body {
   gap: var(--ds-space-xs);
 }
 .whatsapp-availability__times { grid-template-columns: 1fr 1fr; gap: var(--ds-space-md); }
+.whatsapp-availability__times .jf-form-field {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--ds-space-xs);
+}
+.whatsapp-availability__times .jf-form-field__label,
+.whatsapp-availability__times .jf-form-field__input {
+  width: 100%;
+  flex: initial;
+}
 .whatsapp-availability__day {
   display: grid;
   place-items: center;
