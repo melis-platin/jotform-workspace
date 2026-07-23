@@ -5846,6 +5846,26 @@ body {
   outline-offset: 4px;
 }
 
+// WhatsApp uses the Figma selection container instead of the generic outer
+// outline: its 2px info border encloses the full CTA slot with 4px padding,
+// while its configuration notice stays outside the selected control.
+.build-page__canvas-element--selected
+  > .build-page__canvas-element-content
+  > .jf-whatsapp {
+  outline: none;
+}
+
+.build-page__canvas-element--selected
+  > .build-page__canvas-element-content
+  > .jf-whatsapp
+  > .jf-whatsapp__control {
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: var(--space-1);
+  border: 2px solid var(--border-info);
+  border-radius: var(--radius-sm);
+}
+
 // Standard buttons select on the full-width slot, not the button itself, so the
 // selection wrapper is consistent regardless of Width (Auto = content-width, Full
 // = stretched) and the button's own corner radius. A fixed --radius-md slot (like

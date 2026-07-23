@@ -28,19 +28,21 @@ export const WhatsApp: FC<WhatsAppProps> = ({
 
   return (
     <div className={`jf-whatsapp${shrinked ? ' jf-whatsapp--shrinked' : ''}`}>
-      <button
-        type="button"
-        className="jf-whatsapp__cta"
-        disabled={!isEnabled}
-        onClick={openWhatsApp}
-        aria-label="Message us on WhatsApp"
-      >
-        <span className="jf-whatsapp__label">Message us on WhatsApp</span>
-        <span className="jf-whatsapp__icon" aria-hidden="true">
-          <Icon name="whatsapp-filled" category="brands" size={20} />
-        </span>
-        <span className="jf-whatsapp__presence" aria-hidden="true" />
-      </button>
+      <div className="jf-whatsapp__control">
+        <button
+          type="button"
+          className="jf-whatsapp__cta"
+          disabled={!isEnabled}
+          onClick={openWhatsApp}
+          aria-label="Message us on WhatsApp"
+        >
+          <span className="jf-whatsapp__label">Message us on WhatsApp</span>
+          <span className="jf-whatsapp__icon" aria-hidden="true">
+            <Icon name="whatsapp-filled" category="brands" size={20} />
+          </span>
+          <span className="jf-whatsapp__presence" aria-hidden="true" />
+        </button>
+      </div>
       {!isEnabled && (
         <div className="jf-whatsapp__notice" role="status">
           <Icon name="exclamation-circle-filled" category="general" size={16} />
