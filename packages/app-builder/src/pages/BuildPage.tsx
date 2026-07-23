@@ -2377,6 +2377,7 @@ const SortableElement = memo(function SortableElement({
   pairPartnerId,
   partnerSwapEdge,
   onSelect,
+  onRemove,
   onPropertyChange,
 }: {
   element: CanvasElement
@@ -2387,6 +2388,7 @@ const SortableElement = memo(function SortableElement({
   pairPartnerId: string | null
   partnerSwapEdge: Edge | null
   onSelect: (id: string) => void
+  onRemove: (id: string) => void
   onPropertyChange: (elementId: string, property: string, value: string | boolean | number) => void
 }) {
   const comp = ComponentRegistry.get(element.componentId)
@@ -2586,6 +2588,32 @@ const SortableElement = memo(function SortableElement({
       <div ref={handleRef} className="build-page__drag-handle">
         <Icon name="grid-dots-vertical" category="general" size={24} />
       </div>
+      {isSelected && (
+        <div className="build-page__canvas-element-actions">
+          <button
+            type="button"
+            className="build-page__canvas-element-action build-page__canvas-element-action--properties"
+            aria-label="Open element properties"
+            onClick={(e) => {
+              e.stopPropagation()
+              onSelect(element.id)
+            }}
+          >
+            <Icon name="gear-filled" category="general" size={20} />
+          </button>
+          <button
+            type="button"
+            className="build-page__canvas-element-action build-page__canvas-element-action--delete"
+            aria-label="Delete element"
+            onClick={(e) => {
+              e.stopPropagation()
+              onRemove(element.id)
+            }}
+          >
+            <Icon name="trash-filled" category="general" size={20} />
+          </button>
+        </div>
+      )}
       <div ref={contentRef} className="build-page__canvas-element-content">
         {comp.render(element.variants, element.properties, element.states, (name, value) => onPropertyChange(element.id, name, value))}
       </div>
@@ -6574,6 +6602,7 @@ export function BuildPage({
                                 pairPartnerId={partnerId}
                                 partnerSwapEdge={swapEdge}
                                 onSelect={handleSelectElement}
+                                onRemove={handleRemoveElement}
                                 onPropertyChange={handlePropertyChange}
                               />
                             )
