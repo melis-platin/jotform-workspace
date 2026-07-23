@@ -12,6 +12,8 @@ ComponentRegistry.register({
   variants: {},
 
   properties: [
+    { name: 'Display Style', type: 'select', default: 'Floating', options: ['Floating', 'Button'] },
+    { name: 'Size', type: 'select', default: 'Medium', options: ['Small', 'Medium', 'Large'] },
     { name: 'Phone Number', type: 'text', default: '', placeholder: '+0 000-000-0000', description: 'Use the international format: +1 541-754-3010' },
     { name: 'Message', type: 'text', default: 'Hi Bloom Café! I’d like to ask about my order.', maxLength: 300, description: 'Automatically added to the chat so users can send in one tap.' },
     { name: 'Include Pages to Display', type: 'select', default: 'All Pages', options: ['All Pages'] },

@@ -7061,6 +7061,23 @@ export function BuildPage({
                   const isBanner = selectedComponent.id === 'banner'
                   const isSocialFollow = selectedComponent.id === 'social-follow'
                   const isWhatsApp = selectedComponent.id === 'whatsapp'
+                  if (isWhatsApp && propertyTab === 'style') {
+                    const renderWhatsAppStyleOptions = (title: string, property: string, options: string[]) => (
+                      <div className="property-panel__field">
+                        <DSFormField title={title} size="md" showDescription={false} showHelpText={false}>
+                          <div className={`whatsapp-properties__segmented whatsapp-properties__segmented--${options.length}`}>
+                            {options.map((option) => (
+                              <button key={option} type="button" className={`whatsapp-properties__segment${String(selectedElement.properties[property] ?? (property === 'Display Style' ? 'Floating' : 'Medium')) === option ? ' whatsapp-properties__segment--selected' : ''}`} onClick={() => handlePropertyChange(selectedElement.id, property, option)}>{option}</button>
+                            ))}
+                          </div>
+                        </DSFormField>
+                      </div>
+                    )
+                    return <div className="property-panel__body property-panel__body--whatsapp">
+                      {renderWhatsAppStyleOptions('Display Style', 'Display Style', ['Floating', 'Button'])}
+                      {renderWhatsAppStyleOptions('Size', 'Size', ['Small', 'Medium', 'Large'])}
+                    </div>
+                  }
                   if (isWhatsApp && propertyTab === 'general') {
                     return (
                       <div className="property-panel__body property-panel__body--whatsapp">
