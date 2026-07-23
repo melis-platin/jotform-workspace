@@ -6088,14 +6088,10 @@ body {
   z-index: 2;
 }
 
-// The WhatsApp panel starts directly with its three configuration tabs; it
-// intentionally has no secondary title/action bar above them.
-.build-page__properties--whatsapp .property-panel__header {
+// WhatsApp retains the standard properties header, but deleting it happens via
+// the canvas action control rather than a second trash button in this panel.
+.build-page__properties--whatsapp .property-panel__close[title='Delete element'] {
   display: none;
-}
-
-.build-page__properties--whatsapp .property-panel__tabs {
-  top: 0;
 }
 
 .property-panel__body {
