@@ -200,11 +200,12 @@
   color: var(--fg-inverse);
 }
 
-.jf-whatsapp--button .jf-whatsapp__main {
+.jf-whatsapp--button .jf-whatsapp__main-content {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-1);
+  width: 100%;
 }
 
 .jf-whatsapp--button .jf-whatsapp__label {
@@ -234,14 +235,14 @@
 .jf-whatsapp--button-width-auto.jf-whatsapp--button-align-left .jf-whatsapp__cta { margin-right: auto; margin-left: 0; }
 .jf-whatsapp--button-width-auto.jf-whatsapp--button-align-center .jf-whatsapp__cta { margin-right: auto; margin-left: auto; }
 .jf-whatsapp--button-width-auto.jf-whatsapp--button-align-right .jf-whatsapp__cta { margin-right: 0; margin-left: auto; }
-.jf-whatsapp--button-width-auto .jf-whatsapp__main {
+.jf-whatsapp--button-width-auto .jf-whatsapp__main-content {
   width: max-content;
   align-items: center;
 }
 .jf-whatsapp--button-width-auto .jf-whatsapp__control { width: max-content; }
-.jf-whatsapp--button-width-auto.jf-whatsapp--button-align-left .jf-whatsapp__main { margin-right: auto; }
-.jf-whatsapp--button-width-auto.jf-whatsapp--button-align-center .jf-whatsapp__main { margin-right: auto; margin-left: auto; }
-.jf-whatsapp--button-width-auto.jf-whatsapp--button-align-right .jf-whatsapp__main { margin-left: auto; }
+.jf-whatsapp--button-width-auto.jf-whatsapp--button-align-left .jf-whatsapp__main-content { margin-right: auto; }
+.jf-whatsapp--button-width-auto.jf-whatsapp--button-align-center .jf-whatsapp__main-content { margin-right: auto; margin-left: auto; }
+.jf-whatsapp--button-width-auto.jf-whatsapp--button-align-right .jf-whatsapp__main-content { margin-left: auto; }
 .jf-whatsapp--button-width-full .jf-whatsapp__cta {
   width: 100%;
   margin: 0;
