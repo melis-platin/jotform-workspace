@@ -740,6 +740,7 @@ body {
   }
 
   &--in-use {
+    position: relative;
     cursor: default;
 
     &:hover {
@@ -753,6 +754,10 @@ body {
     .build-page__element-icon,
     .build-page__element-name {
       opacity: 0.4;
+    }
+
+    .build-page__element-name {
+      line-height: var(--ds-line-height-xs);
     }
   }
 }
@@ -793,11 +798,13 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  position: absolute;
+  top: calc(var(--ds-space-md) + var(--ds-space-2xs));
+  right: var(--ds-space-md);
   height: var(--ds-line-height-xs);
-  margin-left: auto;
   padding: 0 var(--ds-radius-md);
   border-radius: var(--radius-rounded);
-  background: var(--ds-bg-primary);
+  background: var(--ds-bg-page);
   color: var(--ds-text-dark);
   font-size: var(--font-size-2xs);
   font-weight: var(--ds-font-weight-bold);
