@@ -10241,7 +10241,9 @@ body.builder--phone-only {
 }
 
 .app-preview-screen__qr-badge {
-  position: absolute;
+  // Anchor to the preview viewport rather than the scrollable canvas so the
+  // QR card stays in the lower-left corner at every device size.
+  position: fixed;
   bottom: var(--ds-space-md);
   left: var(--ds-space-md);
   z-index: 2;
