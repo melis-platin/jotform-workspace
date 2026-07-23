@@ -7118,7 +7118,18 @@ export function BuildPage({
                       <div className="property-panel__body property-panel__body--whatsapp">
                         <div className="property-panel__field">
                           <DSFormField title="Whatsapp Number" description="Use the international format: +1 541-754-3010" required size="md" showDescription showHelpText={false}>
-                            <DSInput value={String(selectedElement.properties['Phone Number'] ?? '')} placeholder="+0 000-000-0000" onChange={(e) => handlePropertyChange(selectedElement.id, 'Phone Number', e.target.value)} />
+                            <DSInput
+                              value={String(selectedElement.properties['Phone Number'] ?? '')}
+                              placeholder="+0 000-000-0000"
+                              onChange={(e) => {
+                                const value = e.target.value.trimStart()
+                                handlePropertyChange(
+                                  selectedElement.id,
+                                  'Phone Number',
+                                  value ? `+${value.replace(/^\++/, '')}` : '',
+                                )
+                              }}
+                            />
                           </DSFormField>
                         </div>
                         <div className="property-panel__field">
