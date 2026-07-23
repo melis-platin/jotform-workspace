@@ -85,7 +85,9 @@
 }
 
 .jf-whatsapp__notice {
-  display: flex;
+  // The builder reveals this configuration-only notice while the element is
+  // selected. It stays hidden in the app itself and in every other state.
+  display: none;
   align-items: center;
   gap: var(--space-1);
   padding: var(--space-1) var(--space-2);

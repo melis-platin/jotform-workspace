@@ -5905,6 +5905,16 @@ body {
   border-radius: var(--radius-sm);
 }
 
+// A missing phone number is a builder configuration concern, so its warning is
+// only shown while the WhatsApp element is selected. The component omits this
+// notice entirely once a valid number has been provided.
+.build-page__canvas-element--selected
+  > .build-page__canvas-element-content
+  > .jf-whatsapp
+  > .jf-whatsapp__notice {
+  display: flex;
+}
+
 // Standard buttons select on the full-width slot, not the button itself, so the
 // selection wrapper is consistent regardless of Width (Auto = content-width, Full
 // = stretched) and the button's own corner radius. A fixed --radius-md slot (like
