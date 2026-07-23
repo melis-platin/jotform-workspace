@@ -78,6 +78,7 @@ export { SocialFollow } from './components/SocialFollow';
 export { DailyTaskManager } from './components/DailyTaskManager';
 export { ProgressIndicator } from './components/ProgressIndicator';
 export { Spacer } from './components/Spacer';
+export { WhatsApp } from './components/WhatsApp/WhatsApp';
 
 // Layout
 export { AppDesigner, applyDefaultTheme, applyStoredOrDefaultTheme } from './layout/AppDesigner';

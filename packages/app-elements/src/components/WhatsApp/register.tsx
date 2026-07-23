@@ -1,14 +1,7 @@
 import { ComponentRegistry } from '../../types/registry';
-import { Button } from '../Button';
+import { WhatsApp } from './WhatsApp';
 import type { VariantValues, PropertyValues, StateValues } from '../../types/component';
-
-function openWhatsApp(phoneNumber: string, message: string) {
-  const phone = phoneNumber.replace(/\D/g, '');
-  if (!phone) return;
-
-  const query = message.trim() ? `?text=${encodeURIComponent(message)}` : '';
-  window.open(`https://wa.me/${phone}${query}`, '_blank', 'noopener,noreferrer');
-}
+import whatsAppScss from './WhatsApp.scss?raw';
 
 ComponentRegistry.register({
   id: 'whatsapp',
@@ -19,19 +12,18 @@ ComponentRegistry.register({
   variants: {},
 
   properties: [
-    { name: 'Label', type: 'text', default: 'Chat on WhatsApp' },
-    { name: 'Phone Number', type: 'text', default: '' },
-    { name: 'Message', type: 'text', default: '' },
+    { name: 'Phone Number', type: 'text', default: '', placeholder: '+0 000-000-0000', description: 'Use the international format: +1 541-754-3010' },
+    { name: 'Message', type: 'text', default: 'Hi Bloom Café! I’d like to ask about my order.', maxLength: 300, description: 'Automatically added to the chat so users can send in one tap.' },
     { name: 'Shrinked', type: 'boolean', default: false },
   ],
 
   states: [],
-  scss: '',
+  scss: whatsAppScss,
   colorTokens: [],
 
-  usage: `import { Button } from '@/components/Button';
+  usage: `import { WhatsApp } from '@/components/WhatsApp';
 
-<Button label="Chat on WhatsApp" />`,
+<WhatsApp phoneNumber="15551234567" />`,
   propDocs: [
     {
       name: 'Phone Number',
@@ -51,13 +43,10 @@ ComponentRegistry.register({
     const phoneNumber = String(props['Phone Number'] ?? '');
     const message = String(props['Message'] ?? '');
     return (
-      <Button
-        label={String(props['Label'] ?? 'Chat on WhatsApp')}
-        leftIcon="none"
-        rightIcon="none"
-        width="Full"
+      <WhatsApp
+        phoneNumber={phoneNumber}
+        message={message}
         shrinked={props['Shrinked'] as boolean}
-        onClick={phoneNumber ? () => openWhatsApp(phoneNumber, message) : undefined}
       />
     );
   },

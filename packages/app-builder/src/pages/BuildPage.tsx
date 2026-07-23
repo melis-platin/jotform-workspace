@@ -7022,6 +7022,7 @@ export function BuildPage({
                   const isTestimonial = selectedComponent.id === 'testimonial'
                   const isBanner = selectedComponent.id === 'banner'
                   const isSocialFollow = selectedComponent.id === 'social-follow'
+                  const isWhatsApp = selectedComponent.id === 'whatsapp'
                   const socialPlatforms = [
                     { key: 'Facebook', icon: <Icon name="facebook-square-filled" category="brands" size={20} />, placeholder: 'Enter your Facebook username' },
                     { key: 'Youtube', icon: <Icon name="youtube-filled" category="brands" size={20} />, placeholder: 'Enter your YouTube channel URL' },
@@ -9976,6 +9977,15 @@ export function BuildPage({
                                 options={DYNAMIC_DETAIL_FIELD_OPTIONS}
                                 onCreate={() => {}}
                                 placeholder="Type or insert a field…"
+                              />
+                            ) : isWhatsApp && prop.name === 'Message' ? (
+                              <DSTextArea
+                                size="md"
+                                rows={4}
+                                value={String(selectedElement.properties[prop.name] || '')}
+                                placeholder={prop.placeholder}
+                                maxLength={prop.maxLength}
+                                onChange={(e) => handlePropertyChange(selectedElement.id, prop.name, e.target.value)}
                               />
                             ) : prop.type === 'boolean' ? (
                               <DSToggle
