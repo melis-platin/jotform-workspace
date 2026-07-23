@@ -7079,6 +7079,7 @@ export function BuildPage({
                             <DSDropdownSingle
                               value={String(selectedElement.properties['Include Pages to Display'] ?? 'All Pages')}
                               onChange={(v) => handlePropertyChange(selectedElement.id, 'Include Pages to Display', v)}
+                              showLeadingIcon={false}
                               options={[
                                 { value: 'All Pages', label: 'All Pages' },
                                 ...pages.map((page) => ({ value: page.id, label: page.name })),
