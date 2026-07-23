@@ -5733,7 +5733,9 @@ body {
 .build-page__canvas-element-actions {
   position: absolute;
   top: 0;
-  left: calc(100% + var(--ds-space-2xs));
+  // Keep the action stack outside the selected element's right edge so it
+  // aligns with the canvas action rail instead of reading as in-element UI.
+  right: calc(-1 * (var(--ds-canvas-element-action-width) + var(--ds-space-md)));
   z-index: 3;
   display: flex;
   flex-direction: column;
