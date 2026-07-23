@@ -16,6 +16,8 @@ ComponentRegistry.register({
     { name: 'Size', type: 'select', default: 'Medium', options: ['Small', 'Medium', 'Large'] },
     { name: 'Alignment', type: 'select', default: 'Right', options: ['Left', 'Right'] },
     { name: 'Show Label', type: 'boolean', default: false },
+    { name: 'Bubble Placement', type: 'select', default: 'Beside', options: ['Beside', 'Above'] },
+    { name: 'Bubble Text', type: 'text', default: 'Message us on WhatsApp', maxLength: 30 },
     { name: 'Phone Number', type: 'text', default: '', placeholder: '+0 000-000-0000', description: 'Use the international format: +1 541-754-3010' },
     { name: 'Message', type: 'text', default: 'Hi Bloom Café! I’d like to ask about my order.', maxLength: 300, description: 'Automatically added to the chat so users can send in one tap.' },
     { name: 'Include Pages to Display', type: 'select', default: 'All Pages', options: ['All Pages'] },
