@@ -11,6 +11,7 @@ export interface WhatsAppProps {
   size?: string;
   alignment?: string;
   showLabel?: boolean;
+  bubbleText?: string;
   buttonWidth?: string;
   buttonAlignment?: string;
   buttonText?: string;
@@ -74,6 +75,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
   size = 'Medium',
   alignment = 'Right',
   showLabel = true,
+  bubbleText = 'Message us on WhatsApp',
   buttonWidth = 'Auto',
   buttonAlignment = 'Center',
   buttonText = 'Message us on WhatsApp',
@@ -82,6 +84,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
   openTime = '09:00 AM',
   closeTime = '18:00 PM',
 }) => {
+  const floatingLabel = bubbleText.slice(0, 30);
   const number = getWhatsAppNumber(phoneNumber);
   const isEnabled = number.length > 0;
   const isButtonStyle = displayStyle === 'Button';
@@ -123,7 +126,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
             {isButtonStyle && <span className="jf-whatsapp__icon" aria-hidden="true">
               <img className="jf-whatsapp__icon-image" src={whatsAppIcon} alt="" />
             </span>}
-            {(isButtonStyle || showLabel) && <span className="jf-whatsapp__label">{isButtonStyle ? buttonText : 'Message us on WhatsApp'}</span>}
+            {(isButtonStyle || showLabel) && <span className="jf-whatsapp__label">{isButtonStyle ? buttonText : floatingLabel}</span>}
             {!isButtonStyle && <>
               <span className="jf-whatsapp__icon" aria-hidden="true">
                 <img className="jf-whatsapp__icon-image" src={whatsAppIcon} alt="" />
