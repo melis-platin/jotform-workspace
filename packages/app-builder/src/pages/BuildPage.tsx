@@ -1599,6 +1599,32 @@ function LivePreviewSearchPageWithCollections({
   )
 }
 
+function LivePreviewSideNavPageLink({
+  page,
+  active,
+  onNavigate,
+}: {
+  page: AppPage
+  active: boolean
+  onNavigate: (pageId: string) => void
+}) {
+  const productDetail = useProductDetail()
+
+  return (
+    <button
+      type="button"
+      className={`live-preview__side-nav-link${active ? ' live-preview__side-nav-link--active' : ''}`}
+      onClick={() => {
+        productDetail?.close()
+        onNavigate(page.id)
+      }}
+    >
+      <AppIcon name={getPageIconName(page, 0)} size={16} />
+      <span className="live-preview__side-nav-label">{page.name}</span>
+    </button>
+  )
+}
+
 interface HeroCtaConfig {
   label: string
   action: AppHeaderCtaAction
@@ -3870,6 +3896,8 @@ export function BuildPage({
     setIsPreviewSearchOpen(false)
     setIsDesktopPreviewSearchOpen(false)
     setIsDesktopNavMoreOpen(false)
+    setIsPreviewCartOpen(false)
+    setIsPreviewCheckoutOpen(false)
     setActivePageId(pageId)
   }, [isPreviewLoggedIn])
 
@@ -5925,15 +5953,12 @@ export function BuildPage({
           </div>
           <nav className="live-preview__side-nav-list">
             {navPages.map((p) => (
-              <button
+              <LivePreviewSideNavPageLink
                 key={p.id}
-                type="button"
-                className={`live-preview__side-nav-link${p.id === activePageId ? ' live-preview__side-nav-link--active' : ''}`}
-                onClick={() => navigateToPage(p.id)}
-              >
-                <AppIcon name={getPageIconName(p, 0)} size={16} />
-                <span className="live-preview__side-nav-label">{p.name}</span>
-              </button>
+                page={p}
+                active={p.id === activePageId}
+                onNavigate={navigateToPage}
+              />
             ))}
           </nav>
           <div className="live-preview__side-nav-footer">
