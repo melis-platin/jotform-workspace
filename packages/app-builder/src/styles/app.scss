@@ -6088,6 +6088,16 @@ body {
   z-index: 2;
 }
 
+// The WhatsApp panel starts directly with its three configuration tabs; it
+// intentionally has no secondary title/action bar above them.
+.build-page__properties--whatsapp .property-panel__header {
+  display: none;
+}
+
+.build-page__properties--whatsapp .property-panel__tabs {
+  top: 0;
+}
+
 .property-panel__body {
   flex: 1;
   overflow-y: auto;

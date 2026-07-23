@@ -6759,7 +6759,7 @@ export function BuildPage({
                 )
               })()
             ) : rightPanel === 'properties' && selectedElement && selectedComponent ? (
-              <div className="build-page__properties" data-theme="dark">
+              <div className={`build-page__properties${selectedComponent.id === 'whatsapp' ? ' build-page__properties--whatsapp' : ''}`} data-theme="dark">
                 <div className="property-panel__header">
                   {selectedComponent.id === 'product-list' && propertyTab === 'products' && editingProductIndex !== null ? (
                     <div className="property-panel__header-nav">
