@@ -82,6 +82,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
   const number = getWhatsAppNumber(phoneNumber);
   const isEnabled = number.length > 0;
   const isButtonStyle = displayStyle === 'Button';
+  const isLarge = size === 'Large';
   const isAvailable = isWithinAvailability(
     availabilityEnabled,
     availabilityDays,
@@ -122,7 +123,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
             <span className="jf-whatsapp__label">{isButtonStyle ? buttonText : 'Message us on WhatsApp'}</span>
             {!isButtonStyle && <>
               <span className="jf-whatsapp__icon" aria-hidden="true">
-                <Icon name="whatsapp-filled" category="brands" size={20} />
+                <Icon name="whatsapp-filled" category="brands" size={isLarge ? 32 : 20} />
               </span>
               <span className={`jf-whatsapp__presence${isAvailable ? '' : ' jf-whatsapp__presence--offline'}`} aria-hidden="true" />
             </>}
