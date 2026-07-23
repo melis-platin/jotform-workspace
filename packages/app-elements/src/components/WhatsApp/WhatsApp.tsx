@@ -7,6 +7,7 @@ export interface WhatsAppProps {
   message?: string;
   shrinked?: boolean;
   displayStyle?: string;
+  alignment?: string;
   buttonWidth?: string;
   buttonAlignment?: string;
   buttonText?: string;
@@ -67,6 +68,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
   message = '',
   shrinked = false,
   displayStyle = 'Floating',
+  alignment = 'Right',
   buttonWidth = 'Auto',
   buttonAlignment = 'Center',
   buttonText = 'Message us on WhatsApp',
@@ -84,6 +86,13 @@ export const WhatsApp: FC<WhatsAppProps> = ({
     openTime,
     closeTime,
   );
+  const whatsappClassName = [
+    'jf-whatsapp',
+    shrinked && 'jf-whatsapp--shrinked',
+    isButtonStyle
+      ? `jf-whatsapp--button jf-whatsapp--button-width-${buttonWidth.toLowerCase()} jf-whatsapp--button-align-${buttonAlignment.toLowerCase()}`
+      : `jf-whatsapp--align-${alignment.toLowerCase()}`,
+  ].filter(Boolean).join(' ');
 
   const openWhatsApp = (event: MouseEvent<HTMLButtonElement>) => {
     // The builder canvas uses the CTA as an element-selection target. Keep
@@ -95,7 +104,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
   };
 
   return (
-    <div className={`jf-whatsapp${shrinked ? ' jf-whatsapp--shrinked' : ''}${isButtonStyle ? ` jf-whatsapp--button jf-whatsapp--button-width-${buttonWidth.toLowerCase()} jf-whatsapp--button-align-${buttonAlignment.toLowerCase()}` : ''}`}>
+    <div className={whatsappClassName}>
       <div className="jf-whatsapp__main">
         <div className="jf-whatsapp__control">
           <button
