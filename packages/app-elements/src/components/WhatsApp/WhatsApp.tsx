@@ -37,30 +37,32 @@ export const WhatsApp: FC<WhatsAppProps> = ({
 
   return (
     <div className={`jf-whatsapp${shrinked ? ' jf-whatsapp--shrinked' : ''}${isButtonStyle ? ` jf-whatsapp--button jf-whatsapp--button-width-${buttonWidth.toLowerCase()} jf-whatsapp--button-align-${buttonAlignment.toLowerCase()}` : ''}`}>
-      <div className="jf-whatsapp__control">
-        <button
-          type="button"
-          className="jf-whatsapp__cta"
-          disabled={!isEnabled}
-          onClick={openWhatsApp}
-          aria-label={isButtonStyle ? buttonText : 'Message us on WhatsApp'}
-        >
-          {isButtonStyle && <span className="jf-whatsapp__icon" aria-hidden="true">
-            <Icon name="whatsapp-filled" category="brands" size={24} />
-          </span>}
-          <span className="jf-whatsapp__label">{isButtonStyle ? buttonText : 'Message us on WhatsApp'}</span>
-          {!isButtonStyle && <>
-            <span className="jf-whatsapp__icon" aria-hidden="true">
-              <Icon name="whatsapp-filled" category="brands" size={20} />
-            </span>
-            <span className="jf-whatsapp__presence" aria-hidden="true" />
-          </>}
-        </button>
+      <div className="jf-whatsapp__main">
+        <div className="jf-whatsapp__control">
+          <button
+            type="button"
+            className="jf-whatsapp__cta"
+            disabled={!isEnabled}
+            onClick={openWhatsApp}
+            aria-label={isButtonStyle ? buttonText : 'Message us on WhatsApp'}
+          >
+            {isButtonStyle && <span className="jf-whatsapp__icon" aria-hidden="true">
+              <Icon name="whatsapp-filled" category="brands" size={24} />
+            </span>}
+            <span className="jf-whatsapp__label">{isButtonStyle ? buttonText : 'Message us on WhatsApp'}</span>
+            {!isButtonStyle && <>
+              <span className="jf-whatsapp__icon" aria-hidden="true">
+                <Icon name="whatsapp-filled" category="brands" size={20} />
+              </span>
+              <span className="jf-whatsapp__presence" aria-hidden="true" />
+            </>}
+          </button>
+        </div>
+        {isButtonStyle && <div className="jf-whatsapp__availability" aria-label="Online now">
+          <span className="jf-whatsapp__availability-dot" aria-hidden="true" />
+          <span>Online now</span>
+        </div>}
       </div>
-      {isButtonStyle && <div className="jf-whatsapp__availability" aria-label="Online now">
-        <span className="jf-whatsapp__availability-dot" aria-hidden="true" />
-        <span>Online now</span>
-      </div>}
       {!isEnabled && (
         <div className="jf-whatsapp__notice" role="status">
           <Icon name="exclamation-circle-filled" category="general" size={16} />
