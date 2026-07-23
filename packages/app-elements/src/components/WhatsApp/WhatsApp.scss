@@ -75,6 +75,10 @@
   width: 100%;
 }
 
+.jf-whatsapp--no-label .jf-whatsapp__cta {
+  width: var(--whatsapp-icon-size);
+}
+
 .jf-whatsapp--align-left .jf-whatsapp__cta {
   margin-right: auto;
   margin-left: 0;

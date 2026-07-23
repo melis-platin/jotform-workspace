@@ -15,7 +15,7 @@ ComponentRegistry.register({
     { name: 'Display Style', type: 'select', default: 'Floating', options: ['Floating', 'Button'] },
     { name: 'Size', type: 'select', default: 'Medium', options: ['Small', 'Medium', 'Large'] },
     { name: 'Alignment', type: 'select', default: 'Right', options: ['Left', 'Right'] },
-    { name: 'Show Label', type: 'boolean', default: false },
+    { name: 'Show Label', type: 'boolean', default: true },
     { name: 'Bubble Placement', type: 'select', default: 'Beside', options: ['Beside', 'Above'] },
     { name: 'Bubble Text', type: 'text', default: 'Message us on WhatsApp', maxLength: 30 },
     { name: 'Button Width', type: 'select', default: 'Auto', options: ['Auto', 'Full'] },
@@ -65,6 +65,7 @@ ComponentRegistry.register({
         displayStyle={String(props['Display Style'] ?? 'Floating')}
         size={String(props['Size'] ?? 'Medium')}
         alignment={String(props['Alignment'] ?? 'Right')}
+        showLabel={props['Show Label'] !== false}
         buttonWidth={String(props['Button Width'] ?? 'Auto')}
         buttonAlignment={String(props['Button Alignment'] ?? 'Center')}
         buttonText={String(props['Button Text'] ?? 'Message us on WhatsApp')}

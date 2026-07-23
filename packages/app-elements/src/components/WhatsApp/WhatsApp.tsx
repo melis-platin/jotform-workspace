@@ -10,6 +10,7 @@ export interface WhatsAppProps {
   displayStyle?: string;
   size?: string;
   alignment?: string;
+  showLabel?: boolean;
   buttonWidth?: string;
   buttonAlignment?: string;
   buttonText?: string;
@@ -72,6 +73,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
   displayStyle = 'Floating',
   size = 'Medium',
   alignment = 'Right',
+  showLabel = true,
   buttonWidth = 'Auto',
   buttonAlignment = 'Center',
   buttonText = 'Message us on WhatsApp',
@@ -92,6 +94,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
   const whatsappClassName = [
     'jf-whatsapp',
     shrinked && 'jf-whatsapp--shrinked',
+    !isButtonStyle && !showLabel && 'jf-whatsapp--no-label',
     isButtonStyle
       ? `jf-whatsapp--button jf-whatsapp--button-width-${buttonWidth.toLowerCase()} jf-whatsapp--button-align-${buttonAlignment.toLowerCase()}`
       : `jf-whatsapp--size-${size.toLowerCase()} jf-whatsapp--align-${alignment.toLowerCase()}`,
@@ -120,7 +123,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
             {isButtonStyle && <span className="jf-whatsapp__icon" aria-hidden="true">
               <img className="jf-whatsapp__icon-image" src={whatsAppIcon} alt="" />
             </span>}
-            <span className="jf-whatsapp__label">{isButtonStyle ? buttonText : 'Message us on WhatsApp'}</span>
+            {(isButtonStyle || showLabel) && <span className="jf-whatsapp__label">{isButtonStyle ? buttonText : 'Message us on WhatsApp'}</span>}
             {!isButtonStyle && <>
               <span className="jf-whatsapp__icon" aria-hidden="true">
                 <img className="jf-whatsapp__icon-image" src={whatsAppIcon} alt="" />
