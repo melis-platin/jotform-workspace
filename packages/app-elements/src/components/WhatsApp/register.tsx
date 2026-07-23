@@ -62,6 +62,10 @@ ComponentRegistry.register({
         phoneNumber={phoneNumber}
         message={message}
         shrinked={props['Shrinked'] as boolean}
+        displayStyle={String(props['Display Style'] ?? 'Floating')}
+        buttonWidth={String(props['Button Width'] ?? 'Auto')}
+        buttonAlignment={String(props['Button Alignment'] ?? 'Center')}
+        buttonText={String(props['Button Text'] ?? 'Message us on WhatsApp')}
       />
     );
   },
