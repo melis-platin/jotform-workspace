@@ -3058,10 +3058,11 @@ body {
   }
 }
 
-// WhatsApp is a floating app action in the phone preview, rather than a card
-// in the page flow. The content canvas is rendered at 0.9x, so compensate the
-// logical inset to keep the visible edge clearance at --space-4 (16px).
-.live-preview__phone-screen .live-preview__content .jf-whatsapp {
+// Only the Floating WhatsApp variant is an app-level preview action. Button
+// style stays in the ordinary page flow just like every other canvas element.
+// The content canvas is rendered at 0.9x, so compensate the logical inset to
+// keep the visible edge clearance at --space-4 (16px).
+.live-preview__phone-screen .live-preview__content .jf-whatsapp:not(.jf-whatsapp--button) {
   position: fixed;
   right: calc(var(--space-4) / 0.9);
   bottom: calc(var(--space-4) / 0.9);
