@@ -3093,6 +3093,25 @@ body {
   display: none;
 }
 
+// Navigation Properties reuses the desktop preview in the builder canvas.
+// Its preview frame is not fullscreen, so anchor the same app-level action to
+// that frame instead of the browser viewport.
+.build-page__nav-preview--desktop .live-preview__whatsapp-overlay {
+  position: absolute;
+  right: var(--space-8);
+  bottom: var(--space-8);
+  z-index: 2;
+  width: max-content;
+
+  .jf-whatsapp__control {
+    width: auto;
+  }
+}
+
+.build-page__nav-preview--desktop .themes-view__section:has(.jf-whatsapp:not(.jf-whatsapp--button)) {
+  display: none;
+}
+
 // Builder-only empty/upload placeholders (image + document with no content yet)
 // are editing affordances — never show them in the live preview (the published-
 // app simulation). Collapse the whole element wrapper so it leaves no gap, not
