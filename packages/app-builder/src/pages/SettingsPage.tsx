@@ -1561,7 +1561,7 @@ export function PushNotificationsPanel({
             <QrPlaceholder className="push-test-notification-modal__qr-code" />
           </div>
           <p className="push-test-notification-modal__helper">
-            Keep this window open while you scan and confirm the test notification on your device.
+            Keep this window open until you confirm the notification on your device.
           </p>
         </div>
       </Modal>
