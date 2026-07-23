@@ -5060,6 +5060,55 @@ export function BuildPage({
     })
   }, [activePageId, whatsappDisplayPages])
 
+  // The builder renders every page in one scrollable canvas. When WhatsApp is
+  // displayed on all pages, follow the page that occupies the largest visible
+  // portion of that canvas — including when the owner scrolls without using a
+  // page tab.
+  useEffect(() => {
+    if (whatsappDisplayPages !== 'All Pages') return
+
+    const canvas = canvasRef.current
+    if (!canvas) return
+    let frameId: number | null = null
+
+    const syncFocusedPageToViewport = () => {
+      frameId = null
+      const canvasBounds = canvas.getBoundingClientRect()
+      let focusedPageId: string | null = null
+      let largestVisibleArea = 0
+
+      canvas.querySelectorAll<HTMLElement>('[data-page-id]').forEach((page) => {
+        const bounds = page.getBoundingClientRect()
+        const visibleWidth = Math.max(0, Math.min(bounds.right, canvasBounds.right) - Math.max(bounds.left, canvasBounds.left))
+        const visibleHeight = Math.max(0, Math.min(bounds.bottom, canvasBounds.bottom) - Math.max(bounds.top, canvasBounds.top))
+        const visibleArea = visibleWidth * visibleHeight
+        if (visibleArea > largestVisibleArea) {
+          largestVisibleArea = visibleArea
+          focusedPageId = page.dataset.pageId ?? null
+        }
+      })
+
+      if (focusedPageId) {
+        const nextFocusedPageId = focusedPageId
+        setActivePageId((current) => current === nextFocusedPageId ? current : nextFocusedPageId)
+      }
+    }
+
+    const requestViewportSync = () => {
+      if (frameId !== null) return
+      frameId = window.requestAnimationFrame(syncFocusedPageToViewport)
+    }
+
+    requestViewportSync()
+    canvas.addEventListener('scroll', requestViewportSync, { passive: true })
+    window.addEventListener('resize', requestViewportSync)
+    return () => {
+      canvas.removeEventListener('scroll', requestViewportSync)
+      window.removeEventListener('resize', requestViewportSync)
+      if (frameId !== null) window.cancelAnimationFrame(frameId)
+    }
+  }, [whatsappDisplayPages])
+
   const baseGroups = activeTab === 'basic' ? BASIC_GROUPS : WIDGETS_GROUPS
   const widgetSearchTerm = widgetSearch.trim().toLowerCase()
   const activeGroups = activeTab === 'widgets' && widgetSearchTerm
