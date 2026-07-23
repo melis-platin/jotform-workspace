@@ -5841,7 +5841,6 @@ export function BuildPage({
   const desktopFloatingWhatsApp = previewDevice === 'desktop'
     && whatsappPreviewElement
     && whatsappPreviewComponent
-    && String(whatsappPreviewElement.properties['Display Style'] ?? 'Floating') === 'Floating'
     ? (
       <div className="live-preview__whatsapp-overlay app-scope">
         {whatsappPreviewComponent.render(
