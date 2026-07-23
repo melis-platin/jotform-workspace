@@ -3,6 +3,7 @@
   --whatsapp-label-width: calc(var(--space-10) * 5 + var(--space-3));
   --whatsapp-label-height: var(--space-8);
   --whatsapp-icon-size: calc(var(--space-10) + var(--space-3));
+  --whatsapp-icon-glyph-size: var(--space-6);
   --whatsapp-control-width: calc(var(--whatsapp-label-width) + var(--whatsapp-icon-size) + var(--space-1));
   --whatsapp-presence-size: var(--space-2);
   --whatsapp-presence-inset: var(--space-1);
@@ -39,6 +40,7 @@
   --whatsapp-label-width: 246px;
   --whatsapp-label-height: var(--space-10);
   --whatsapp-icon-size: calc(var(--space-10) + var(--space-6));
+  --whatsapp-icon-glyph-size: var(--space-8);
   --whatsapp-presence-size: var(--space-3);
   --whatsapp-presence-outline: var(--space-1);
 }
@@ -121,6 +123,12 @@
   background: var(--whatsapp-fill);
   color: var(--fg-inverse);
   box-shadow: var(--shadow-xs);
+}
+
+.jf-whatsapp__icon-image {
+  display: block;
+  width: var(--whatsapp-icon-glyph-size);
+  height: var(--whatsapp-icon-glyph-size);
 }
 
 .jf-whatsapp__presence {
