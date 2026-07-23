@@ -25,7 +25,7 @@ const FALLBACK_PAGES: DeepLinkPageSource[] = [
   { id: 'page-1', name: 'Home', elements: [] },
 ]
 
-const FORM_LABEL_KEYS = ['Label', 'Form Title', 'Title', 'Name', 'Button Label']
+const FORM_LABEL_KEYS = ['Form Title', 'Heading', 'Title', 'Name', 'Label', 'Button Label']
 
 function getTextProperty(properties: DeepLinkElementSource['properties'], key: string): string {
   const value = properties?.[key]
