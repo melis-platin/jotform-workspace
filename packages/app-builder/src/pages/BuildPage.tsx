@@ -5029,6 +5029,36 @@ export function BuildPage({
   }, {})
   const whatsappInUse = pages.some((page) => page.elements.some((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID))
     || headerActions.some((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)
+  const whatsappPageElement = pages.flatMap((page) => page.elements)
+    .find((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)
+  const whatsappDisplayPages = String(whatsappPageElement?.properties['Include Pages to Display'] ?? '')
+
+  // “All Pages” has one persisted WhatsApp instance, which follows the page
+  // the app owner is currently editing. Keeping it last preserves the expected
+  // page order while avoiding duplicate elements in the app data.
+  useEffect(() => {
+    if (whatsappDisplayPages !== 'All Pages') return
+
+    setPages((prev) => {
+      const whatsapp = prev.flatMap((page) => page.elements)
+        .find((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)
+      const targetPage = prev.find((page) => page.id === activePageId)
+      if (!whatsapp || !targetPage) return prev
+
+      const isAlreadyLastOnFocusedPage = targetPage.elements.at(-1)?.id === whatsapp.id
+        && prev.every((page) => page.id === targetPage.id || !page.elements.some((element) => element.id === whatsapp.id))
+      if (isAlreadyLastOnFocusedPage) return prev
+
+      return prev.map((page) => {
+        const elementsWithoutWhatsApp = page.elements.filter((element) => element.id !== whatsapp.id)
+        return page.id === targetPage.id
+          ? { ...page, elements: [...elementsWithoutWhatsApp, whatsapp] }
+          : elementsWithoutWhatsApp.length === page.elements.length
+            ? page
+            : { ...page, elements: elementsWithoutWhatsApp }
+      })
+    })
+  }, [activePageId, whatsappDisplayPages])
 
   const baseGroups = activeTab === 'basic' ? BASIC_GROUPS : WIDGETS_GROUPS
   const widgetSearchTerm = widgetSearch.trim().toLowerCase()
