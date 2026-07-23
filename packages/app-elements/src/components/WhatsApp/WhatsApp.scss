@@ -54,6 +54,15 @@
   margin-left: 0;
 }
 
+.jf-whatsapp--align-left .jf-whatsapp__icon {
+  order: -1;
+}
+
+.jf-whatsapp--align-left .jf-whatsapp__presence {
+  right: auto;
+  left: calc(var(--space-10) + var(--space-3) - var(--space-2) - var(--space-1));
+}
+
 .jf-whatsapp__main {
   width: 100%;
 }
