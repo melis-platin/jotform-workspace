@@ -5915,6 +5915,13 @@ body {
   display: flex;
 }
 
+// In the builder, the CTA also acts as the element's selection target. Keep
+// that affordance visible even while the app-level CTA is disabled for setup.
+.build-page__canvas-element[data-component-id='whatsapp']
+  .jf-whatsapp__cta {
+  cursor: pointer;
+}
+
 // Standard buttons select on the full-width slot, not the button itself, so the
 // selection wrapper is consistent regardless of Width (Auto = content-width, Full
 // = stretched) and the button's own corner radius. A fixed --radius-md slot (like
