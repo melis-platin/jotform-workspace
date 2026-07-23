@@ -649,7 +649,7 @@ interface PanelGroup {
 }
 
 const BASIC_GROUPS: PanelGroup[] = [
-  { elementIds: ['form', 'heading', 'banner', 'list', 'paragraph', 'card', 'sign-document', 'document', 'image', 'image-gallery', 'button', 'spacer'] },
+  { elementIds: ['form', 'heading', 'banner', 'list', 'paragraph', 'card', 'sign-document', 'document', 'image', 'image-gallery', 'button', 'whatsapp', 'spacer'] },
   { label: 'PAYMENT ELEMENTS', elementIds: ['product-list', 'donation-box'] },
   { label: 'FEATURED WIDGETS', elementIds: ['social-follow', 'testimonial', 'faq'] },
   { label: 'DATA ELEMENTS', elementIds: ['table'] },
@@ -660,6 +660,7 @@ const WIDGETS_GROUPS: PanelGroup[] = [
 ]
 
 const HIDDEN_ELEMENTS = ['empty-state', 'app-header', 'bottom-navigation', 'color-picker']
+const WHATSAPP_PANEL_ITEM_ID = 'whatsapp'
 const LEGACY_PRESET_HEADER_IMAGES: Record<string, string[]> = {
   'gym-club': [
     'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=1000&h=600&fit=crop',
@@ -6263,17 +6264,36 @@ export function BuildPage({
             <div className="build-page__widget-search-empty">No widgets found</div>
           )}
           {activeGroups.map((group, groupIndex) => {
-            const validItems = group.elementIds
-              .map((id) => componentMap[id])
-              .filter(Boolean)
-            if (validItems.length === 0) return null
+            const validItemIds = group.elementIds.filter((id) => id === WHATSAPP_PANEL_ITEM_ID || componentMap[id])
+            if (validItemIds.length === 0) return null
 
             return (
               <div key={group.label || groupIndex}>
                 {group.label && (
                   <div className="build-page__separator">{group.label}</div>
                 )}
-                {validItems.map((comp, itemIndex) => {
+                {validItemIds.map((itemId, itemIndex) => {
+                  if (itemId === WHATSAPP_PANEL_ITEM_ID) {
+                    return (
+                      <div key={itemId}>
+                        <div className="build-page__element-item build-page__element-item--in-use" aria-disabled="true">
+                          <div className="build-page__element-icon">
+                            <Icon name="whatsapp-filled" category="brands" size={24} />
+                          </div>
+                          <div className="build-page__element-content">
+                            <span className="build-page__element-name">WhatsApp</span>
+                            <span className="build-page__element-in-use-badge">IN USE</span>
+                          </div>
+                        </div>
+                        {itemIndex < validItemIds.length - 1 && (
+                          <hr className="build-page__element-divider" />
+                        )}
+                      </div>
+                    )
+                  }
+
+                  const comp = componentMap[itemId]
+                  if (!comp) return null
                   const iconInfo = ELEMENT_ICON_MAP[comp.id]
                   return (
                     <div key={comp.id}>
@@ -6294,7 +6314,7 @@ export function BuildPage({
                           </div>
                         </div>
                       </DraggablePanelItem>
-                      {itemIndex < validItems.length - 1 && (
+                      {itemIndex < validItemIds.length - 1 && (
                         <hr className="build-page__element-divider" />
                       )}
                     </div>
@@ -10460,15 +10480,29 @@ export function BuildPage({
             <div className="build-page__widget-search-empty">No widgets found</div>
           )}
           {activeGroups.map((group, groupIndex) => {
-            const validItems = group.elementIds.map((id) => componentMap[id]).filter(Boolean)
-            if (validItems.length === 0) return null
+            const validItemIds = group.elementIds.filter((id) => id === WHATSAPP_PANEL_ITEM_ID || componentMap[id])
+            if (validItemIds.length === 0) return null
             return (
               <div key={group.label || groupIndex}>
                 {group.label && (
                   <div className="mobile-elements-grid__separator">{group.label}</div>
                 )}
                 <div className="mobile-elements-grid">
-                  {validItems.map((comp) => {
+                  {validItemIds.map((itemId) => {
+                    if (itemId === WHATSAPP_PANEL_ITEM_ID) {
+                      return (
+                        <div key={itemId} className="mobile-elements-grid__item mobile-elements-grid__item--in-use" aria-disabled="true">
+                          <div className="mobile-elements-grid__icon">
+                            <Icon name="whatsapp-filled" category="brands" size={24} />
+                          </div>
+                          <span className="mobile-elements-grid__label">WhatsApp</span>
+                          <span className="mobile-elements-grid__in-use-badge">IN USE</span>
+                        </div>
+                      )
+                    }
+
+                    const comp = componentMap[itemId]
+                    if (!comp) return null
                     const iconInfo = ELEMENT_ICON_MAP[comp.id]
                     return (
                       <button
