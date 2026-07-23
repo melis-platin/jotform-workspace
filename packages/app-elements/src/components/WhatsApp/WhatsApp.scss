@@ -29,11 +29,11 @@
 }
 
 // Small maps to the Figma reference's 166×24 bubble and 40px icon after the
-// builder canvas scale is applied (212×32 and 52px at source size).
+// builder canvas scale is applied.
 .jf-whatsapp--size-small {
-  --whatsapp-label-width: calc(var(--space-10) * 5 + var(--space-3));
+  --whatsapp-label-width: calc(var(--space-10) * 5 + var(--space-2));
   --whatsapp-label-height: var(--space-8);
-  --whatsapp-icon-size: calc(var(--space-10) + var(--space-3));
+  --whatsapp-icon-size: calc(var(--space-10) + var(--space-2));
 }
 
 .jf-whatsapp--size-large {
