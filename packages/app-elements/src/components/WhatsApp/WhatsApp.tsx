@@ -43,7 +43,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
       </button>
       {!isEnabled && (
         <div className="jf-whatsapp__notice" role="status">
-          <Icon name="exclamation-circle-filled" category="general" size={14} />
+          <Icon name="exclamation-circle-filled" category="general" size={16} />
           <span>This element won&apos;t be visible until a phone number is added.</span>
         </div>
       )}
