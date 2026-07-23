@@ -6094,6 +6094,12 @@ body {
   display: none;
 }
 
+// WhatsApp uses the Figma dark tab treatment: 48px equal-width tabs with the
+// existing Apps accent, and uppercase Circular labels.
+.build-page__properties--whatsapp .jf-tabs__label {
+  text-transform: uppercase;
+}
+
 .property-panel__body {
   flex: 1;
   overflow-y: auto;
