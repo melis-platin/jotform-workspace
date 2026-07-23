@@ -7100,6 +7100,26 @@ export function BuildPage({
                         </div>
                         <div className="property-panel__field property-panel__field--inline">
                           <DSFormField title="Set Availability Hours" description="Show real online / away status" size="md" showDescription showHelpText={false}><DSToggle size="md" checked={Boolean(selectedElement.properties['Set Availability Hours'])} onChange={(e) => handlePropertyChange(selectedElement.id, 'Set Availability Hours', e.target.checked)} /></DSFormField>
+                          {Boolean(selectedElement.properties['Set Availability Hours']) && (() => {
+                            const days = String(selectedElement.properties['Availability Days'] ?? 'M,T,W,T,F').split(',')
+                            const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
+                            return <div className="whatsapp-availability">
+                              <div className="whatsapp-availability__days">{dayLabels.map((day, index) => {
+                                const isActive = days.includes(`${day}${index}`) || (index < 5 && days.includes(day))
+                                return <button key={`${day}-${index}`} type="button" className={`whatsapp-availability__day${isActive ? ' whatsapp-availability__day--active' : ''}`} onClick={() => {
+                                  const next = dayLabels.map((label, i) => {
+                                    const active = days.includes(`${label}${i}`) || (i < 5 && days.includes(label))
+                                    return i === index ? (!active ? `${label}${i}` : '') : (active ? `${label}${i}` : '')
+                                  }).filter(Boolean).join(',')
+                                  handlePropertyChange(selectedElement.id, 'Availability Days', next)
+                                }}>{day}</button>
+                              })}</div>
+                              <div className="whatsapp-availability__times">
+                                <DSFormField title="Open Time" size="md" showDescription={false} showHelpText={false}><DSInput value={String(selectedElement.properties['Open Time'] ?? '09:00 AM')} onChange={(e) => handlePropertyChange(selectedElement.id, 'Open Time', e.target.value)} /></DSFormField>
+                                <DSFormField title="Close Time" size="md" showDescription={false} showHelpText={false}><DSInput value={String(selectedElement.properties['Close Time'] ?? '18:00 PM')} onChange={(e) => handlePropertyChange(selectedElement.id, 'Close Time', e.target.value)} /></DSFormField>
+                              </div>
+                            </div>
+                          })()}
                         </div>
                         <div className="property-panel__field property-panel__field--inline">
                           <DSFormField title="Shrink" description="Make element smaller." size="md" showDescription showHelpText={false}><DSToggle size="md" checked={Boolean(selectedElement.properties['Shrinked'])} onChange={(e) => handlePropertyChange(selectedElement.id, 'Shrinked', e.target.checked)} /></DSFormField>

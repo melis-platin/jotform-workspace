@@ -17,6 +17,9 @@ ComponentRegistry.register({
     { name: 'Include Pages to Display', type: 'select', default: 'All Pages', options: ['All Pages'] },
     { name: 'When a User Clicks', type: 'select', default: 'Open WhatsApp', options: ['Quick Chat', 'Open WhatsApp'] },
     { name: 'Set Availability Hours', type: 'boolean', default: false },
+    { name: 'Availability Days', type: 'text', default: 'M,T,W,T,F' },
+    { name: 'Open Time', type: 'text', default: '09:00 AM' },
+    { name: 'Close Time', type: 'text', default: '18:00 PM' },
     { name: 'Shrinked', type: 'boolean', default: false },
   ],
 
