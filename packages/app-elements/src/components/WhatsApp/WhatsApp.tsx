@@ -1,4 +1,4 @@
-import type { FC } from 'react';
+import type { FC, MouseEvent } from 'react';
 import { Icon } from '@jf/design-system';
 import './WhatsApp.scss';
 
@@ -29,7 +29,10 @@ export const WhatsApp: FC<WhatsAppProps> = ({
   const isEnabled = number.length > 0;
   const isButtonStyle = displayStyle === 'Button';
 
-  const openWhatsApp = () => {
+  const openWhatsApp = (event: MouseEvent<HTMLButtonElement>) => {
+    // The builder canvas uses the CTA as an element-selection target. Keep
+    // navigation exclusive to the interactive Full Preview experience.
+    if (event.currentTarget.closest('.build-page__canvas-element')) return;
     if (!isEnabled) return;
     const query = message.trim() ? `?text=${encodeURIComponent(message)}` : '';
     window.open(`https://wa.me/${number}${query}`, '_blank', 'noopener,noreferrer');
