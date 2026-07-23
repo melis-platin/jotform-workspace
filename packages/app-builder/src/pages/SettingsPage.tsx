@@ -1551,7 +1551,7 @@ export function PushNotificationsPanel({
         className="push-test-notification-modal"
         icon={<Icon name="qr" category="media" size={24} />}
         title="Test Notification"
-        description="Scan the QR code with your phone to open the app and test this notification as the app owner."
+        description="Scan the QR code with your phone to open the app and test the notification"
         showCancel={false}
         confirmLabel="DONE"
         onConfirm={() => setIsTestNotificationModalOpen(false)}
