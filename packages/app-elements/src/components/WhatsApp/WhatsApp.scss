@@ -92,6 +92,10 @@
   box-shadow: 0 0 0 2px var(--bg-fill);
 }
 
+.jf-whatsapp__presence--offline {
+  background: var(--fg-warning);
+}
+
 .jf-whatsapp__notice {
   // The builder reveals this configuration-only notice while the element is
   // selected. It stays hidden in the app itself and in every other state.
@@ -169,4 +173,8 @@
   height: var(--space-2);
   border-radius: var(--radius-rounded);
   background: var(--whatsapp-fill);
+}
+
+.jf-whatsapp__availability-dot--offline {
+  background: var(--fg-warning);
 }

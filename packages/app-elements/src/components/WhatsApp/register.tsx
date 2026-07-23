@@ -26,7 +26,7 @@ ComponentRegistry.register({
     { name: 'Include Pages to Display', type: 'select', default: 'All Pages', options: ['All Pages'] },
     { name: 'When a User Clicks', type: 'select', default: 'Open WhatsApp', options: ['Quick Chat', 'Open WhatsApp'] },
     { name: 'Set Availability Hours', type: 'boolean', default: false },
-    { name: 'Availability Days', type: 'text', default: 'M,T,W,T,F' },
+    { name: 'Availability Days', type: 'text', default: 'M0,T1,W2,T3,F4' },
     { name: 'Open Time', type: 'text', default: '09:00 AM' },
     { name: 'Close Time', type: 'text', default: '18:00 PM' },
     { name: 'Shrinked', type: 'boolean', default: false },
@@ -66,6 +66,10 @@ ComponentRegistry.register({
         buttonWidth={String(props['Button Width'] ?? 'Auto')}
         buttonAlignment={String(props['Button Alignment'] ?? 'Center')}
         buttonText={String(props['Button Text'] ?? 'Message us on WhatsApp')}
+        availabilityEnabled={Boolean(props['Set Availability Hours'])}
+        availabilityDays={String(props['Availability Days'] ?? 'M0,T1,W2,T3,F4')}
+        openTime={String(props['Open Time'] ?? '09:00 AM')}
+        closeTime={String(props['Close Time'] ?? '18:00 PM')}
       />
     );
   },
