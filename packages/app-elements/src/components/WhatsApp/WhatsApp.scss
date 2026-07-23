@@ -193,12 +193,16 @@
 .jf-whatsapp--button .jf-whatsapp__cta {
   gap: 0;
   min-width: calc(var(--space-10) * 3);
-  height: var(--space-12);
+  height: var(--space-10);
   padding: 0 var(--space-3);
   border-radius: var(--radius-sm);
   background: var(--whatsapp-fill);
   color: var(--fg-inverse);
 }
+
+.jf-whatsapp--button-size-small .jf-whatsapp__cta { height: var(--space-8); }
+.jf-whatsapp--button-size-medium .jf-whatsapp__cta { height: var(--space-10); }
+.jf-whatsapp--button-size-large .jf-whatsapp__cta { height: var(--space-12); }
 
 .jf-whatsapp--button .jf-whatsapp__main-content {
   display: flex;

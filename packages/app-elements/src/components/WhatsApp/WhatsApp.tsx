@@ -102,7 +102,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
     !isButtonStyle && !showLabel && 'jf-whatsapp--no-label',
     !isButtonStyle && showLabel && `jf-whatsapp--bubble-${bubblePlacement.toLowerCase()}`,
     isButtonStyle
-      ? `jf-whatsapp--button jf-whatsapp--button-width-${buttonWidth.toLowerCase()} jf-whatsapp--button-align-${buttonAlignment.toLowerCase()}`
+      ? `jf-whatsapp--button jf-whatsapp--button-size-${size.toLowerCase()} jf-whatsapp--button-width-${buttonWidth.toLowerCase()} jf-whatsapp--button-align-${buttonAlignment.toLowerCase()}`
       : `jf-whatsapp--size-${size.toLowerCase()} jf-whatsapp--align-${alignment.toLowerCase()}`,
   ].filter(Boolean).join(' ');
 
