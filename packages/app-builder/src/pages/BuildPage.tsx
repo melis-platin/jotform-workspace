@@ -6797,7 +6797,7 @@ export function BuildPage({
                       <span className="property-panel__title">Testimonial</span>
                     </div>
                   ) : (
-                    <span className="property-panel__title">{selectedComponent.name}</span>
+                    <span className="property-panel__title">{selectedComponent.id === 'whatsapp' ? 'Whatsapp Properties' : selectedComponent.name}</span>
                   )}
                   <div className="property-panel__header-actions">
                     {!(selectedComponent.id === 'product-list' && propertyTab === 'products' && editingProductIndex !== null) && !(selectedComponent.id === 'faq' && propertyTab === 'general' && editingFaqIndex !== null) && !(selectedComponent.id === 'testimonial' && propertyTab === 'general' && editingTestimonialIndex !== null) && selectedElement.id !== APP_HEADER_ID && (
@@ -6886,7 +6886,7 @@ export function BuildPage({
                                     { value: 'style', label: 'Style' },
                                     { value: 'condition', label: 'Condition' },
                                   ]
-                                : selectedComponent.id === 'social-follow'
+                                : selectedComponent.id === 'social-follow' || selectedComponent.id === 'whatsapp'
                                   ? [
                                       { value: 'general', label: 'General' },
                                       { value: 'style', label: 'Style' },
@@ -7061,6 +7061,44 @@ export function BuildPage({
                   const isBanner = selectedComponent.id === 'banner'
                   const isSocialFollow = selectedComponent.id === 'social-follow'
                   const isWhatsApp = selectedComponent.id === 'whatsapp'
+                  if (isWhatsApp && propertyTab === 'general') {
+                    return (
+                      <div className="property-panel__body property-panel__body--whatsapp">
+                        <div className="property-panel__field">
+                          <DSFormField title="Whatsapp Number" description="Use the international format: +1 541-754-3010" required size="md" showDescription showHelpText={false}>
+                            <DSInput value={String(selectedElement.properties['Phone Number'] ?? '')} placeholder="+0 000-000-0000" onChange={(e) => handlePropertyChange(selectedElement.id, 'Phone Number', e.target.value)} />
+                          </DSFormField>
+                        </div>
+                        <div className="property-panel__field">
+                          <DSFormField title="Message" description="Automatically added to the chat so users can send in one tap." size="md" showDescription showHelpText={false}>
+                            <DSTextArea size="md" rows={4} maxLength={300} showCount value={String(selectedElement.properties['Message'] ?? '')} onChange={(e) => handlePropertyChange(selectedElement.id, 'Message', e.target.value)} />
+                          </DSFormField>
+                        </div>
+                        <div className="property-panel__field">
+                          <DSFormField title="Include Pages to Display" size="md" showDescription={false} showHelpText={false}>
+                            <DSDropdownSingle value={String(selectedElement.properties['Include Pages to Display'] ?? 'All Pages')} onChange={(v) => handlePropertyChange(selectedElement.id, 'Include Pages to Display', v)} options={[{ value: 'All Pages', label: 'All Pages' }]} />
+                          </DSFormField>
+                        </div>
+                        <div className="property-panel__field">
+                          <DSFormField title="When a User Clicks" size="md" showDescription={false} showHelpText={false}>
+                            <div className="whatsapp-properties__actions">
+                              {([{ value: 'Quick Chat', label: 'Quick Chat', icon: 'message-filled', category: 'communication' }, { value: 'Open WhatsApp', label: 'Open WhatsApp', icon: 'arrow-up-right-from-square-sm', category: 'general' }] as const).map((action) => (
+                                <button key={action.value} type="button" className={`whatsapp-properties__action${selectedElement.properties['When a User Clicks'] === action.value ? ' whatsapp-properties__action--selected' : ''}`} onClick={() => handlePropertyChange(selectedElement.id, 'When a User Clicks', action.value)}>
+                                  <Icon name={action.icon} category={action.category} size={24} /><span>{action.label}</span>
+                                </button>
+                              ))}
+                            </div>
+                          </DSFormField>
+                        </div>
+                        <div className="property-panel__field property-panel__field--inline">
+                          <DSFormField title="Set Availability Hours" description="Show real online / away status" size="md" showDescription showHelpText={false}><DSToggle size="md" checked={Boolean(selectedElement.properties['Set Availability Hours'])} onChange={(e) => handlePropertyChange(selectedElement.id, 'Set Availability Hours', e.target.checked)} /></DSFormField>
+                        </div>
+                        <div className="property-panel__field property-panel__field--inline">
+                          <DSFormField title="Shrink" description="Make element smaller." size="md" showDescription showHelpText={false}><DSToggle size="md" checked={Boolean(selectedElement.properties['Shrinked'])} onChange={(e) => handlePropertyChange(selectedElement.id, 'Shrinked', e.target.checked)} /></DSFormField>
+                        </div>
+                      </div>
+                    )
+                  }
                   const socialPlatforms = [
                     { key: 'Facebook', icon: <Icon name="facebook-square-filled" category="brands" size={20} />, placeholder: 'Enter your Facebook username' },
                     { key: 'Youtube', icon: <Icon name="youtube-filled" category="brands" size={20} />, placeholder: 'Enter your YouTube channel URL' },
