@@ -69,7 +69,7 @@ ComponentRegistry.register({
         bubbleText={String(props['Bubble Text'] ?? 'Message us on WhatsApp')}
         bubblePlacement={String(props['Bubble Placement'] ?? 'Beside')}
         buttonWidth={String(props['Button Width'] ?? 'Auto')}
-        buttonAlignment={String(props['Button Alignment'] ?? 'Center')}
+        buttonAlignment={String(props['Alignment'] ?? 'Right')}
         buttonText={String(props['Button Text'] ?? 'Message us on WhatsApp')}
         availabilityEnabled={Boolean(props['Set Availability Hours'])}
         availabilityDays={String(props['Availability Days'] ?? 'M0,T1,W2,T3,F4')}
