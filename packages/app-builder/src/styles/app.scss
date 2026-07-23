@@ -87,6 +87,11 @@
   --ds-font-weight-book: var(--font-weight-book);
   --ds-font-weight-medium: var(--font-weight-medium);
   --ds-font-weight-bold: var(--font-weight-bold);
+
+  // Canvas element action controls (Figma: New Workspace / 1262:4249)
+  --ds-canvas-element-action-width: var(--spacing-3xl);
+  --ds-canvas-element-action-hover-width: 113px;
+  --ds-canvas-element-action-hover: #1AB3FF;
 }
 
 // ============================================
@@ -5731,28 +5736,54 @@ body {
   display: flex;
   flex-direction: column;
   gap: var(--ds-space-2xs);
-  width: var(--spacing-3xl);
+  width: var(--ds-canvas-element-action-width);
 }
 
 .build-page__canvas-element-action {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: var(--spacing-3xl);
-  height: var(--spacing-3xl);
+  gap: var(--ds-space-2xs);
+  box-sizing: border-box;
+  width: var(--ds-canvas-element-action-width);
+  height: var(--ds-canvas-element-action-width);
   padding: 0;
   border: 0;
   border-radius: var(--radius-rounded);
   color: var(--ds-text-primary);
   cursor: pointer;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: width 150ms ease, background-color 150ms ease;
 
   &--properties {
     background: var(--blue-400);
+
+    &:hover {
+      justify-content: flex-start;
+      width: var(--ds-canvas-element-action-hover-width);
+      padding: 0 var(--ds-space-sm);
+      background: var(--ds-canvas-element-action-hover);
+    }
   }
 
   &--delete {
     background: var(--error-default);
   }
+}
+
+.build-page__canvas-element-action-label {
+  display: none;
+  font-family: var(--ds-font-family);
+  font-size: var(--ds-font-size-sm);
+  font-weight: var(--ds-font-weight-book);
+  line-height: var(--ds-line-height-sm);
+  letter-spacing: var(--letter-spacing-lg);
+}
+
+.build-page__canvas-element-action--properties:hover
+  .build-page__canvas-element-action-label {
+  display: inline;
 }
 
 .build-page__canvas-element--selected .build-page__canvas-element-content {
