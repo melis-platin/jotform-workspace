@@ -46,6 +46,7 @@ import './components/BottomNavigation/register';
 import './components/Paragraph/register';
 import './components/ProgressIndicator/register';
 import './components/Spacer/register';
+import './components/WhatsApp/register';
 
 // Individual component exports
 export { Button } from './components/Button';

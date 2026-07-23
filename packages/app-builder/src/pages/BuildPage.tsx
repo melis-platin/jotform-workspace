@@ -627,6 +627,7 @@ const ELEMENT_ICON_MAP: Record<string, { icon: string; iconCategory: string }> =
   'sign-document': { icon: 'document-jf-sign-filled', iconCategory: 'documents' },
   'document': { icon: 'file-filled', iconCategory: 'forms-files' },
   'button': { icon: 'label-button-filled', iconCategory: 'general' },
+  'whatsapp': { icon: 'whatsapp-filled', iconCategory: 'brands' },
   'social-follow': { icon: 'share-nodes-filled', iconCategory: 'general' },
   'product-list': { icon: 'cart-shopping-filled', iconCategory: 'finance' },
   'donation-box': { icon: 'heart-filled', iconCategory: 'general' },
@@ -4989,6 +4990,8 @@ export function BuildPage({
     if (!HIDDEN_ELEMENTS.includes(comp.id)) acc[comp.id] = comp
     return acc
   }, {})
+  const whatsappInUse = pages.some((page) => page.elements.some((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID))
+    || headerActions.some((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)
 
   const baseGroups = activeTab === 'basic' ? BASIC_GROUPS : WIDGETS_GROUPS
   const widgetSearchTerm = widgetSearch.trim().toLowerCase()
@@ -5002,6 +5005,12 @@ export function BuildPage({
     : baseGroups
 
   const handleAddElement = useCallback((comp: RegisteredComponent) => {
+    const whatsappAlreadyAdded = comp.id === WHATSAPP_PANEL_ITEM_ID && (
+      pagesRef.current.some((page) => page.elements.some((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID))
+      || headerActionsRef.current.some((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)
+    )
+    if (whatsappAlreadyAdded) return
+
     const element = createCanvasElement(comp, nextElementId(pagesRef.current, headerActionsRef.current))
     setPages((prev) => {
       let targetPageId = activePageId
@@ -6273,7 +6282,7 @@ export function BuildPage({
                   <div className="build-page__separator">{group.label}</div>
                 )}
                 {validItemIds.map((itemId, itemIndex) => {
-                  if (itemId === WHATSAPP_PANEL_ITEM_ID) {
+                  if (itemId === WHATSAPP_PANEL_ITEM_ID && whatsappInUse) {
                     return (
                       <div key={itemId}>
                         <div className="build-page__element-item build-page__element-item--in-use" aria-disabled="true">
@@ -10489,7 +10498,7 @@ export function BuildPage({
                 )}
                 <div className="mobile-elements-grid">
                   {validItemIds.map((itemId) => {
-                    if (itemId === WHATSAPP_PANEL_ITEM_ID) {
+                    if (itemId === WHATSAPP_PANEL_ITEM_ID && whatsappInUse) {
                       return (
                         <div key={itemId} className="mobile-elements-grid__item mobile-elements-grid__item--in-use" aria-disabled="true">
                           <div className="mobile-elements-grid__icon">
