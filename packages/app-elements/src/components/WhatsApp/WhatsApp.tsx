@@ -12,6 +12,7 @@ export interface WhatsAppProps {
   alignment?: string;
   showLabel?: boolean;
   bubbleText?: string;
+  bubblePlacement?: string;
   buttonWidth?: string;
   buttonAlignment?: string;
   buttonText?: string;
@@ -76,6 +77,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
   alignment = 'Right',
   showLabel = true,
   bubbleText = 'Message us on WhatsApp',
+  bubblePlacement = 'Beside',
   buttonWidth = 'Auto',
   buttonAlignment = 'Center',
   buttonText = 'Message us on WhatsApp',
@@ -98,6 +100,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
     'jf-whatsapp',
     shrinked && 'jf-whatsapp--shrinked',
     !isButtonStyle && !showLabel && 'jf-whatsapp--no-label',
+    !isButtonStyle && showLabel && `jf-whatsapp--bubble-${bubblePlacement.toLowerCase()}`,
     isButtonStyle
       ? `jf-whatsapp--button jf-whatsapp--button-width-${buttonWidth.toLowerCase()} jf-whatsapp--button-align-${buttonAlignment.toLowerCase()}`
       : `jf-whatsapp--size-${size.toLowerCase()} jf-whatsapp--align-${alignment.toLowerCase()}`,

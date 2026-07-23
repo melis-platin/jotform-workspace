@@ -67,6 +67,7 @@ ComponentRegistry.register({
         alignment={String(props['Alignment'] ?? 'Right')}
         showLabel={props['Show Label'] !== false}
         bubbleText={String(props['Bubble Text'] ?? 'Message us on WhatsApp')}
+        bubblePlacement={String(props['Bubble Placement'] ?? 'Beside')}
         buttonWidth={String(props['Button Width'] ?? 'Auto')}
         buttonAlignment={String(props['Button Alignment'] ?? 'Center')}
         buttonText={String(props['Button Text'] ?? 'Message us on WhatsApp')}

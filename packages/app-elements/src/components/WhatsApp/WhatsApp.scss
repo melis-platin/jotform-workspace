@@ -95,6 +95,26 @@
   left: calc(var(--whatsapp-icon-size) - var(--space-2) - var(--space-1));
 }
 
+// The Above variant follows the Figma stack: bubble first, WhatsApp icon
+// underneath, with a 4px gap and the presence dot anchored to the icon.
+.jf-whatsapp--bubble-above .jf-whatsapp__cta {
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-1);
+}
+
+.jf-whatsapp--bubble-above .jf-whatsapp__icon {
+  order: initial;
+}
+
+.jf-whatsapp--bubble-above .jf-whatsapp__presence {
+  top: calc(var(--whatsapp-label-height) + var(--space-1) + var(--whatsapp-presence-inset));
+}
+
+.jf-whatsapp--bubble-above.jf-whatsapp--align-left .jf-whatsapp__cta {
+  align-items: flex-start;
+}
+
 .jf-whatsapp__main {
   width: 100%;
 }
