@@ -7090,7 +7090,7 @@ export function BuildPage({
                         <div className="property-panel__field">
                           <DSFormField title="When a User Clicks" size="md" showDescription={false} showHelpText={false}>
                             <div className="whatsapp-properties__actions">
-                              {([{ value: 'Quick Chat', label: 'Quick Chat', icon: 'message-filled', category: 'communication' }, { value: 'Open WhatsApp', label: 'Open WhatsApp', icon: 'arrow-up-right-from-square-sm', category: 'general' }] as const).map((action) => (
+                              {([{ value: 'Quick Chat', label: 'Quick Chat', icon: 'message-filled', category: 'communication' }, { value: 'Open WhatsApp', label: 'Open WhatsApp', icon: 'arrow-up-right-from-square-sm', category: 'arrows' }] as const).map((action) => (
                                 <button key={action.value} type="button" className={`whatsapp-properties__action${String(selectedElement.properties['When a User Clicks'] ?? 'Open WhatsApp') === action.value ? ' whatsapp-properties__action--selected' : ''}`} onClick={() => handlePropertyChange(selectedElement.id, 'When a User Clicks', action.value)}>
                                   <Icon name={action.icon} category={action.category} size={24} /><span>{action.label}</span>
                                 </button>
