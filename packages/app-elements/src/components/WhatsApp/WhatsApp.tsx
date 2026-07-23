@@ -39,6 +39,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
         <span className="jf-whatsapp__icon" aria-hidden="true">
           <Icon name="whatsapp-filled" category="brands" size={20} />
         </span>
+        <span className="jf-whatsapp__presence" aria-hidden="true" />
       </button>
       {!isEnabled && (
         <div className="jf-whatsapp__notice" role="status">
