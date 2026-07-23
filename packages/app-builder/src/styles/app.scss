@@ -7489,7 +7489,9 @@ body {
 
 .whatsapp-properties__action {
   display: flex;
-  min-height: calc(var(--spacing-4xl) + var(--spacing-md));
+  box-sizing: border-box;
+  height: calc(var(--spacing-4xl) + var(--spacing-md));
+  padding: var(--ds-space-md);
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -7501,7 +7503,10 @@ body {
   font-family: var(--ds-font-family);
   font-size: var(--ds-font-size-sm);
   font-weight: var(--ds-font-weight-bold);
+  line-height: var(--ds-line-height-sm);
+  letter-spacing: var(--letter-spacing-lg);
   cursor: pointer;
+  overflow: hidden;
 
   &--selected {
     background: var(--blue-500);
