@@ -841,6 +841,17 @@ const CAMP_PINECREST_REQUIRED_PAGES = ['Home', 'Programs', 'Sessions', 'Counselo
 const CAMP_PINECREST_FORMS_INTRO_HEADINGS = new Set(['forms & documents', 'open forms'])
 const CAMP_PINECREST_PAYMENT_ELEMENT_IDS = new Set(['product-list', 'donation-box'])
 const GOLDEN_HIVE_REQUIRED_PAGES = ['Home', 'Hives', 'Inspections', 'Bloom Map', 'Bee Garden', 'Learning', 'Community', 'Forms']
+const GOLDEN_HIVE_DYNAMIC_LIST_PAGES = new Set(['Home', 'Hives', 'Inspections', 'Bloom Map', 'Bee Garden', 'Learning', 'Community'])
+const GOLDEN_HIVE_BUTTON_DESTINATIONS: Record<string, readonly string[]> = {
+  Home: ['Hives', 'Bloom Map'],
+  Hives: ['Inspections'],
+  Inspections: ['Forms'],
+  'Bloom Map': ['Bee Garden'],
+  'Bee Garden': ['Community'],
+  Learning: ['Community'],
+  Community: ['Forms'],
+  Forms: ['Home'],
+}
 
 function isDynamicListElement(element: CanvasElement): boolean {
   return element.componentId === 'list' && String(element.properties['Click Action'] ?? '') === 'Open Dynamic Page'
@@ -1064,7 +1075,65 @@ function normalizeGoldenHivePages(pages: AppPage[], preset: AppPreset | undefine
   const basePages = hasGoldenHiveStructure(pages)
     ? pages
     : buildAppPagesFromPresetPages(preset.pages, 1).pages
-  return ensureDynamicPagesForOpenDynamicLists(basePages, preset)
+  const pageIdsByName = new Map(
+    basePages
+      .filter((page) => !page.dynamic)
+      .map((page) => [page.name, page.id]),
+  )
+
+  const pagesWithCompleteFlows = basePages.map((page) => {
+    if (page.dynamic) return page
+
+    const buttonDestinations = GOLDEN_HIVE_BUTTON_DESTINATIONS[page.name] ?? []
+    let buttonIndex = 0
+    let listIndex = 0
+    let changed = false
+    const elements = page.elements.map((element) => {
+      if (element.componentId === 'list' && GOLDEN_HIVE_DYNAMIC_LIST_PAGES.has(page.name)) {
+        const isPresetList = listIndex === 0
+        listIndex += 1
+        if (!isPresetList) return element
+        if (element.properties['Click Action'] === 'Open Dynamic Page') return element
+        changed = true
+        return {
+          ...element,
+          properties: {
+            ...element.properties,
+            'Click Action': 'Open Dynamic Page',
+          },
+        }
+      }
+
+      if (element.componentId !== 'button') return element
+
+      const destinationPageName = buttonDestinations[buttonIndex]
+      buttonIndex += 1
+      if (!destinationPageName) return element
+
+      const destinationPageId = pageIdsByName.get(destinationPageName)
+      if (!destinationPageId) return element
+      if (
+        element.properties.Action === 'Navigate to Page'
+        && element.properties['Action Page'] === destinationPageId
+      ) {
+        return element
+      }
+
+      changed = true
+      return {
+        ...element,
+        properties: {
+          ...element.properties,
+          Action: 'Navigate to Page',
+          'Action Page': destinationPageId,
+        },
+      }
+    })
+
+    return changed ? { ...page, elements } : page
+  })
+
+  return ensureDynamicPagesForOpenDynamicLists(pagesWithCompleteFlows, preset)
 }
 
 function normalizeBohoNestSharedListSources(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {
