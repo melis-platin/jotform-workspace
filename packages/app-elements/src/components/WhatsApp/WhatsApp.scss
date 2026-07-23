@@ -1,5 +1,8 @@
 .jf-whatsapp {
   --whatsapp-fill: #25D366;
+  --whatsapp-label-width: calc(var(--space-10) * 5 + var(--space-3));
+  --whatsapp-label-height: var(--space-8);
+  --whatsapp-icon-size: calc(var(--space-10) + var(--space-3));
 
   display: flex;
   flex-direction: column;
@@ -18,6 +21,14 @@
   &--button {
     gap: var(--space-1);
   }
+}
+
+// Small maps to the Figma reference's 166×24 bubble and 40px icon after the
+// builder canvas scale is applied (212×32 and 52px at source size).
+.jf-whatsapp--size-small {
+  --whatsapp-label-width: calc(var(--space-10) * 5 + var(--space-3));
+  --whatsapp-label-height: var(--space-8);
+  --whatsapp-icon-size: calc(var(--space-10) + var(--space-3));
 }
 
 .jf-whatsapp__cta {
@@ -60,7 +71,7 @@
 
 .jf-whatsapp--align-left .jf-whatsapp__presence {
   right: auto;
-  left: calc(var(--space-10) + var(--space-3) - var(--space-2) - var(--space-1));
+  left: calc(var(--whatsapp-icon-size) - var(--space-2) - var(--space-1));
 }
 
 .jf-whatsapp__main {
@@ -71,9 +82,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 calc(var(--space-10) * 5 + var(--space-3));
-  width: calc(var(--space-10) * 5 + var(--space-3));
-  height: var(--space-8);
+  flex: 0 0 var(--whatsapp-label-width);
+  width: var(--whatsapp-label-width);
+  height: var(--whatsapp-label-height);
   border: 1px solid var(--border);
   border-radius: var(--radius-rounded);
   background: var(--bg-fill);
@@ -86,9 +97,9 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  flex: 0 0 calc(var(--space-10) + var(--space-3));
-  width: calc(var(--space-10) + var(--space-3));
-  height: calc(var(--space-10) + var(--space-3));
+  flex: 0 0 var(--whatsapp-icon-size);
+  width: var(--whatsapp-icon-size);
+  height: var(--whatsapp-icon-size);
   border-radius: var(--radius-rounded);
   background: var(--whatsapp-fill);
   color: var(--fg-inverse);

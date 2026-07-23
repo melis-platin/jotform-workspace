@@ -63,6 +63,7 @@ ComponentRegistry.register({
         message={message}
         shrinked={props['Shrinked'] as boolean}
         displayStyle={String(props['Display Style'] ?? 'Floating')}
+        size={String(props['Size'] ?? 'Medium')}
         alignment={String(props['Alignment'] ?? 'Right')}
         buttonWidth={String(props['Button Width'] ?? 'Auto')}
         buttonAlignment={String(props['Button Alignment'] ?? 'Center')}

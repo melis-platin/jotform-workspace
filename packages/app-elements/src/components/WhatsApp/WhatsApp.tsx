@@ -7,6 +7,7 @@ export interface WhatsAppProps {
   message?: string;
   shrinked?: boolean;
   displayStyle?: string;
+  size?: string;
   alignment?: string;
   buttonWidth?: string;
   buttonAlignment?: string;
@@ -68,6 +69,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
   message = '',
   shrinked = false,
   displayStyle = 'Floating',
+  size = 'Medium',
   alignment = 'Right',
   buttonWidth = 'Auto',
   buttonAlignment = 'Center',
@@ -91,7 +93,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
     shrinked && 'jf-whatsapp--shrinked',
     isButtonStyle
       ? `jf-whatsapp--button jf-whatsapp--button-width-${buttonWidth.toLowerCase()} jf-whatsapp--button-align-${buttonAlignment.toLowerCase()}`
-      : `jf-whatsapp--align-${alignment.toLowerCase()}`,
+      : `jf-whatsapp--size-${size.toLowerCase()} jf-whatsapp--align-${alignment.toLowerCase()}`,
   ].filter(Boolean).join(' ');
 
   const openWhatsApp = (event: MouseEvent<HTMLButtonElement>) => {
