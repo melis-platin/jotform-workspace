@@ -2278,17 +2278,6 @@ function HeaderActionItem({
       data-element-id={element.id}
       data-component-id={element.componentId}
       style={hideDuringDrag ? { display: 'none' } : undefined}
-      onPointerDownCapture={(e) => {
-        // A disabled native button does not emit a click event, so the
-        // WhatsApp element needs to select on its first pointer interaction.
-        // Preventing that initial interaction also keeps the canvas from
-        // opening WhatsApp instead of selecting the element.
-        if (!isSelected && element.componentId === 'whatsapp') {
-          e.preventDefault()
-          e.stopPropagation()
-          onSelect(element.id)
-        }
-      }}
       onClick={(e) => {
         e.stopPropagation()
         onSelect(element.id)
@@ -2591,6 +2580,13 @@ const SortableElement = memo(function SortableElement({
       data-element-id={element.id}
       data-component-id={element.componentId}
       style={hideDuringDrag ? { display: 'none' } : undefined}
+      onPointerDownCapture={() => {
+        // Disabled native buttons do not emit click events. Selecting here
+        // keeps the element selectable without cancelling the CTA click.
+        if (!isSelected && element.componentId === 'whatsapp') {
+          onSelect(element.id)
+        }
+      }}
       onClick={(e) => {
         e.stopPropagation()
         onSelect(element.id)
