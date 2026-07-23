@@ -26,6 +26,7 @@ import {
 } from '../components/HomeScreenMockup'
 import { LucideIcon } from '../components/IconPicker'
 import { PanelHeader } from '../components/PanelHeader'
+import { QrPlaceholder } from '../components/QrPlaceholder'
 import { QuickPreview } from '../components/QuickPreview'
 import { SideNav, type SideNavItem } from '../components/SideNav'
 import { SplashScreenMockup, type SplashAnimation, type SplashStyle } from '../components/SplashScreenMockup'
@@ -1150,6 +1151,7 @@ export function PushNotificationsPanel({
   const [usesInitialComposerLayout, setUsesInitialComposerLayout] = useState(() => historyItems.length === 0)
   const handledReturnToHistoryRequestIdRef = useRef(returnToHistoryRequestId)
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false)
+  const [isTestNotificationModalOpen, setIsTestNotificationModalOpen] = useState(false)
   const [scheduleDate, setScheduleDate] = useState('')
   const [scheduleTime, setScheduleTime] = useState('')
   const [scheduleTimezone, setScheduleTimezone] = useState(SCHEDULE_TIMEZONE_OPTIONS[0].value)
@@ -1489,6 +1491,7 @@ export function PushNotificationsPanel({
                 colorScheme="secondary"
                 disabled={areNotificationActionsDisabled}
                 leftIcon={<Icon name="paper-plane-diagonal-filled" category="communication" size={20} />}
+                onClick={() => setIsTestNotificationModalOpen(true)}
               >
                 SEND TEST
               </Button>
@@ -1540,6 +1543,28 @@ export function PushNotificationsPanel({
           />
         </section>
       )}
+
+      <Modal
+        open={isTestNotificationModalOpen}
+        onClose={() => setIsTestNotificationModalOpen(false)}
+        size="sm"
+        className="push-test-notification-modal"
+        icon={<Icon name="qr" category="media" size={24} />}
+        title="Test Notification"
+        description="Scan the QR code with your phone to open the app and test this notification as the app owner."
+        showCancel={false}
+        confirmLabel="DONE"
+        onConfirm={() => setIsTestNotificationModalOpen(false)}
+      >
+        <div className="push-test-notification-modal__content">
+          <div className="push-test-notification-modal__qr" aria-label="Test notification QR code">
+            <QrPlaceholder className="push-test-notification-modal__qr-code" />
+          </div>
+          <p className="push-test-notification-modal__helper">
+            Keep this window open while you scan and confirm the test notification on your device.
+          </p>
+        </div>
+      </Modal>
 
       <Modal
         open={isScheduleModalOpen}
