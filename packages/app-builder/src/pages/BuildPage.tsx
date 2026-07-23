@@ -7067,7 +7067,7 @@ export function BuildPage({
                         <DSFormField title={title} size="md" showDescription={false} showHelpText={false}>
                           <div className={`whatsapp-properties__segmented whatsapp-properties__segmented--${options.length}`}>
                             {options.map((option) => (
-                              <button key={option} type="button" className={`whatsapp-properties__segment${String(selectedElement.properties[property] ?? (property === 'Display Style' ? 'Floating' : 'Medium')) === option ? ' whatsapp-properties__segment--selected' : ''}`} onClick={() => handlePropertyChange(selectedElement.id, property, option)}>{option}</button>
+                              <button key={option} type="button" className={`whatsapp-properties__segment${String(selectedElement.properties[property] ?? ({ 'Display Style': 'Floating', Size: 'Medium', Alignment: 'Right' }[property] ?? '')) === option ? ' whatsapp-properties__segment--selected' : ''}`} onClick={() => handlePropertyChange(selectedElement.id, property, option)}>{option}</button>
                             ))}
                           </div>
                         </DSFormField>
@@ -7076,6 +7076,12 @@ export function BuildPage({
                     return <div className="property-panel__body property-panel__body--whatsapp">
                       {renderWhatsAppStyleOptions('Display Style', 'Display Style', ['Floating', 'Button'])}
                       {renderWhatsAppStyleOptions('Size', 'Size', ['Small', 'Medium', 'Large'])}
+                      {renderWhatsAppStyleOptions('Alignment', 'Alignment', ['Left', 'Right'])}
+                      <div className="property-panel__field property-panel__field--inline">
+                        <DSFormField title="Show Label" description="Text shown with the button" size="md" showDescription showHelpText={false}>
+                          <DSToggle size="md" checked={Boolean(selectedElement.properties['Show Label'])} onChange={(e) => handlePropertyChange(selectedElement.id, 'Show Label', e.target.checked)} />
+                        </DSFormField>
+                      </div>
                     </div>
                   }
                   if (isWhatsApp && propertyTab === 'general') {
