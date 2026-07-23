@@ -7076,7 +7076,14 @@ export function BuildPage({
                         </div>
                         <div className="property-panel__field">
                           <DSFormField title="Include Pages to Display" size="md" showDescription={false} showHelpText={false}>
-                            <DSDropdownSingle value={String(selectedElement.properties['Include Pages to Display'] ?? 'All Pages')} onChange={(v) => handlePropertyChange(selectedElement.id, 'Include Pages to Display', v)} options={[{ value: 'All Pages', label: 'All Pages' }]} />
+                            <DSDropdownSingle
+                              value={String(selectedElement.properties['Include Pages to Display'] ?? 'All Pages')}
+                              onChange={(v) => handlePropertyChange(selectedElement.id, 'Include Pages to Display', v)}
+                              options={[
+                                { value: 'All Pages', label: 'All Pages' },
+                                ...pages.map((page) => ({ value: page.id, label: page.name })),
+                              ]}
+                            />
                           </DSFormField>
                         </div>
                         <div className="property-panel__field">
