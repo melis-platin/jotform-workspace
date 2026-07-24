@@ -5393,16 +5393,7 @@ export function BuildPage({
         ...page,
         elements: page.elements.map((el) =>
           el.id === elementId
-            ? (() => {
-                const properties = { ...el.properties, [name]: value }
-                const quickChatIsUnavailable = el.componentId === WHATSAPP_PANEL_ITEM_ID
-                  && String(properties['Display Style'] ?? 'Floating') === 'Button'
-                  && String(properties['Include Pages to Display'] ?? 'All Pages') !== 'All Pages'
-                if (quickChatIsUnavailable && properties['When a User Clicks'] === 'Quick Chat') {
-                  properties['When a User Clicks'] = 'Open WhatsApp'
-                }
-                return { ...el, properties }
-              })()
+            ? { ...el, properties: { ...el.properties, [name]: value } }
             : el
         ),
       }))
@@ -5410,16 +5401,7 @@ export function BuildPage({
     setHeaderActions((prev) =>
       prev.map((el) =>
         el.id === elementId
-          ? (() => {
-              const properties = { ...el.properties, [name]: value }
-              const quickChatIsUnavailable = el.componentId === WHATSAPP_PANEL_ITEM_ID
-                && String(properties['Display Style'] ?? 'Floating') === 'Button'
-                && String(properties['Include Pages to Display'] ?? 'All Pages') !== 'All Pages'
-              if (quickChatIsUnavailable && properties['When a User Clicks'] === 'Quick Chat') {
-                properties['When a User Clicks'] = 'Open WhatsApp'
-              }
-              return { ...el, properties }
-            })()
+          ? { ...el, properties: { ...el.properties, [name]: value } }
           : el
       )
     )
@@ -6996,7 +6978,6 @@ export function BuildPage({
                                   ? [
                                       { value: 'general', label: 'General' },
                                       { value: 'style', label: 'Style' },
-                                      { value: 'action', label: 'Action' },
                                       { value: 'condition', label: 'Condition' },
                                     ]
                                 : selectedComponent.id === 'social-follow'
@@ -7273,6 +7254,18 @@ export function BuildPage({
                           </DSFormField>
                         </div>
                         <div className="property-panel__field">
+                          <DSFormField title="Message" description="Automatically added to the chat so users can send in one tap." size="md" showDescription showHelpText={false}>
+                            <DSTextArea
+                              size="md"
+                              height="message"
+                              maxLength={200}
+                              showCount
+                              value={String(selectedElement.properties['Message'] ?? '')}
+                              onChange={(event) => handlePropertyChange(selectedElement.id, 'Message', event.target.value)}
+                            />
+                          </DSFormField>
+                        </div>
+                        <div className="property-panel__field">
                           <DSFormField title="Show on" size="md" showDescription={false} showHelpText={false}>
                             <div className="whatsapp-properties__segmented whatsapp-properties__segmented--2">
                               <button type="button" className={`whatsapp-properties__segment${showOnAllPages ? ' whatsapp-properties__segment--selected' : ''}`} onClick={() => handlePropertyChange(selectedElement.id, 'Include Pages to Display', 'All Pages')}>All Pages</button>
@@ -7309,83 +7302,6 @@ export function BuildPage({
                         </div>
                         <div className="property-panel__field property-panel__field--inline">
                           <DSFormField title="Shrink" description="Make element smaller." size="md" showDescription showHelpText={false}><DSToggle size="lg" checked={Boolean(selectedElement.properties['Shrinked'])} onChange={(e) => handlePropertyChange(selectedElement.id, 'Shrinked', e.target.checked)} /></DSFormField>
-                        </div>
-                      </div>
-                    )
-                  }
-                  if (isWhatsApp && propertyTab === 'action') {
-                    const buttonAction = String(selectedElement.properties['When a User Clicks'] ?? 'Open WhatsApp')
-                    const quickChatIsUnavailable = String(selectedElement.properties['Display Style'] ?? 'Floating') === 'Button'
-                      && String(selectedElement.properties['Include Pages to Display'] ?? 'All Pages') !== 'All Pages'
-                    const quickChatAppName = appTitle.trim() || 'Your business'
-                    const quickChatMessage = String(selectedElement.properties['Message'] ?? '')
-                    const buttonActionOptions = [
-                      { value: 'Open WhatsApp', label: 'Open Whatsapp', icon: 'arrow-up-right-from-square-sm', category: 'arrows' },
-                      {
-                        value: 'Quick Chat',
-                        label: 'Quick Chat',
-                        icon: 'message-filled',
-                        category: 'communication',
-                        disabled: quickChatIsUnavailable,
-                        tooltip: quickChatIsUnavailable
-                          ? 'Quick Chat is available only when this button appears on all pages.'
-                          : undefined,
-                      },
-                    ]
-                    return (
-                      <div className="property-panel__body property-panel__body--whatsapp">
-                        <div className="property-panel__field">
-                          <DSFormField title="Button Action" size="md" showDescription={false} showHelpText={false}>
-                            <DSDropdownSingle
-                              value={buttonAction}
-                              onChange={(value) => {
-                                if (quickChatIsUnavailable && value === 'Quick Chat') return
-                                handlePropertyChange(selectedElement.id, 'When a User Clicks', value)
-                              }}
-                              options={buttonActionOptions.map((action) => ({
-                                value: action.value,
-                                label: action.label,
-                                disabled: action.disabled,
-                                tooltip: action.tooltip,
-                                leading: <Icon name={action.icon} category={action.category} size={20} />,
-                              }))}
-                            />
-                          </DSFormField>
-                        </div>
-                        {buttonAction === 'Quick Chat' && (
-                          <div className="property-panel__field whatsapp-quick-chat-preview">
-                            <span className="whatsapp-quick-chat-preview__title">Quick Chat Preview</span>
-                            <div className="whatsapp-quick-chat-preview__frame">
-                              <div className="whatsapp-quick-chat-preview__chat" aria-label="Quick Chat preview">
-                                <div className="whatsapp-quick-chat-preview__header">
-                                  <div className="whatsapp-quick-chat-preview__identity">
-                                    <span className="whatsapp-quick-chat-preview__avatar">
-                                      <Icon name="whatsapp-filled" category="brands" size={24} />
-                                    </span>
-                                    <span className="whatsapp-quick-chat-preview__name">
-                                      <strong>{quickChatAppName}</strong>
-                                      <span><i />Online now</span>
-                                    </span>
-                                  </div>
-                                  <Icon name="xmark" category="general" size={20} />
-                                </div>
-                                <div className="whatsapp-quick-chat-preview__messages">
-                                  <span>Hi 👋 How can we help you today?</span>
-                                </div>
-                                <div className="whatsapp-quick-chat-preview__composer">
-                                  <span>{quickChatMessage || 'Type your message'}</span>
-                                  <span className="whatsapp-quick-chat-preview__send">
-                                    <Icon name="paper-plane-diagonal-filled" category="communication" size={16} />
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                        <div className="property-panel__field">
-                          <DSFormField title="Message" description="Automatically added to the chat so users can send in one tap." size="md" showDescription showHelpText={false}>
-                            <DSTextArea size="md" height="message" maxLength={200} showCount value={quickChatMessage} onChange={(e) => handlePropertyChange(selectedElement.id, 'Message', e.target.value)} />
-                          </DSFormField>
                         </div>
                       </div>
                     )
