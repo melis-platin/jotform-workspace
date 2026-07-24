@@ -5155,15 +5155,48 @@ export function BuildPage({
     scrollToCanvasElement(element.id)
   }, [activePageId, appTitle, mobileElementsSheet, selectedElementId, forceTargetPageId, scrollToCanvasElement])
 
+  // All Pages still has one persisted WhatsApp element. Deliberately focusing a
+  // page (or one of its elements) places that instance at the bottom of the
+  // focused page. Scrolling and drag-and-drop never call this helper, so a
+  // manually dropped element remains exactly where it was placed.
+  const moveAllPagesWhatsAppToPageEnd = useCallback((targetPageId: string) => {
+    setPages((prev) => {
+      const whatsapp = prev.flatMap((page) => page.elements)
+        .find((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)
+      const targetPage = prev.find((page) => page.id === targetPageId)
+      if (!whatsapp || !targetPage || String(whatsapp.properties['Include Pages to Display'] ?? '') !== 'All Pages') {
+        return prev
+      }
+
+      const alreadyLastOnTarget = targetPage.elements.at(-1)?.id === whatsapp.id
+        && prev.every((page) => page.id === targetPageId || !page.elements.some((element) => element.id === whatsapp.id))
+      if (alreadyLastOnTarget) return prev
+
+      return prev.map((page) => {
+        const elementsWithoutWhatsApp = page.elements.filter((element) => element.id !== whatsapp.id)
+        if (page.id === targetPageId) {
+          return { ...page, elements: [...elementsWithoutWhatsApp, whatsapp] }
+        }
+        return elementsWithoutWhatsApp.length === page.elements.length
+          ? page
+          : { ...page, elements: elementsWithoutWhatsApp }
+      })
+    })
+  }, [])
+
   const handleSelectElement = useCallback((elementId: string) => {
     const ownerPage = pagesRef.current.find((page) => page.elements.some((element) => element.id === elementId))
     if (ownerPage) {
       setActivePageId((current) => current === ownerPage.id ? current : ownerPage.id)
+      if (elementId !== pagesRef.current.flatMap((page) => page.elements)
+        .find((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)?.id) {
+        moveAllPagesWhatsAppToPageEnd(ownerPage.id)
+      }
     }
     setSelectedElementId(elementId)
     setRightPanel('properties')
     setMobileElementsSheet(false)
-  }, [])
+  }, [moveAllPagesWhatsAppToPageEnd])
 
   const handleRemoveElement = useCallback((elementId: string) => {
     // If this element owns a dynamic detail page, park it in the stash and drop it
@@ -5289,10 +5322,11 @@ export function BuildPage({
 
   const openPageSettings = useCallback((pageId: string) => {
     setActivePageId(pageId)
+    moveAllPagesWhatsAppToPageEnd(pageId)
     setSelectedElementId(null)
     setPagePropertiesId(pageId)
     setRightPanel('page')
-  }, [])
+  }, [moveAllPagesWhatsAppToPageEnd])
 
   const openNavSettings = useCallback(() => {
     setSelectedElementId(null)
@@ -6725,6 +6759,7 @@ export function BuildPage({
           variant={navBarPages.length === 1 ? 'empty' : 'default'}
           onPageSelect={(pageId) => {
             setActivePageId(pageId)
+            moveAllPagesWhatsAppToPageEnd(pageId)
             requestAnimationFrame(() => {
               const scrollContainer = document.querySelector('.build-page__canvas')
               if (!scrollContainer) return
