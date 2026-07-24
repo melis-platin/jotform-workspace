@@ -7261,6 +7261,15 @@ export function BuildPage({
                               value={String(selectedElement.properties['Phone Number'] ?? '')}
                               placeholder="+0 000-000-0000"
                               maxLength={16}
+                              inputMode="numeric"
+                              pattern="[0-9]*"
+                              onKeyDown={(event) => {
+                                if (event.ctrlKey || event.metaKey || event.altKey || /^\d$/.test(event.key) || ['Backspace', 'Delete', 'Tab', 'ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return
+                                event.preventDefault()
+                              }}
+                              onPaste={(event) => {
+                                if (!/^\d+$/.test(event.clipboardData.getData('text'))) event.preventDefault()
+                              }}
                               onChange={(e) => {
                                 const value = e.target.value.trimStart()
                                 const digits = value.replace(/\D/g, '').slice(0, 15)
