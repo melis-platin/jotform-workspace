@@ -3476,6 +3476,8 @@ export function BuildPage({
     }
     return initial.activePageId
   })
+  const previousActivePageIdRef = useRef(activePageId)
+  const whatsappDragTargetPageRef = useRef<string | null>(null)
   const [dragSession, setDragSession] = useState<DragSourceData | null>(null)
   const isDragging = dragSession !== null
   const draggedCanvasId = dragSession?.type === 'canvas' ? dragSession.elementId : null
@@ -3496,9 +3498,9 @@ export function BuildPage({
   const [forceTargetPageId, setForceTargetPageId] = useState<string | null>(null)
   const [isMobileView, setIsMobileView] = useState(() => window.matchMedia('(max-width: 768px)').matches)
   // An All Pages WhatsApp element keeps the precise position chosen by the app
-  // owner. It begins following the currently visible page only after canvas
-  // scrolling starts, and a new drag places it back under direct control.
-  const [whatsappFollowsCanvas, setWhatsappFollowsCanvas] = useState(false)
+  // owner. It moves to another page only after the owner intentionally focuses
+  // that page; scrolling never changes its position.
+  const [whatsappFollowsFocusedPage, setWhatsappFollowsFocusedPage] = useState(false)
   const canvasRef = useRef<HTMLElement>(null)
 
   const pagesRef = useRef<AppPage[]>([])
@@ -5078,11 +5080,11 @@ export function BuildPage({
     .find((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)
   const whatsappDisplayPages = String(whatsappPageElement?.properties['Include Pages to Display'] ?? '')
 
-  // “All Pages” has one persisted WhatsApp instance. Once canvas scrolling has
-  // started it follows the visible page and stays last in that page's order;
-  // before then, it remains exactly where the app owner dropped it.
+  // “All Pages” has one persisted WhatsApp instance. When the owner focuses a
+  // different page, it moves to the end of that page; otherwise it remains
+  // exactly where it was dropped.
   useEffect(() => {
-    if (whatsappDisplayPages !== 'All Pages' || !whatsappFollowsCanvas) return
+    if (whatsappDisplayPages !== 'All Pages' || !whatsappFollowsFocusedPage) return
 
     setPages((prev) => {
       const whatsapp = prev.flatMap((page) => page.elements)
@@ -5103,57 +5105,19 @@ export function BuildPage({
             : { ...page, elements: elementsWithoutWhatsApp }
       })
     })
-  }, [activePageId, whatsappDisplayPages, whatsappFollowsCanvas])
+  }, [activePageId, whatsappDisplayPages, whatsappFollowsFocusedPage])
 
-  // The builder renders every page in one scrollable canvas. When WhatsApp is
-  // displayed on all pages, scrolling makes it follow the page that occupies
-  // the largest visible portion of that canvas.
   useEffect(() => {
-    if (whatsappDisplayPages !== 'All Pages') return
+    if (previousActivePageIdRef.current === activePageId) return
+    previousActivePageIdRef.current = activePageId
 
-    const canvas = canvasRef.current
-    if (!canvas) return
-    let frameId: number | null = null
-
-    const syncFocusedPageToViewport = () => {
-      frameId = null
-      const canvasBounds = canvas.getBoundingClientRect()
-      let focusedPageId: string | null = null
-      let largestVisibleArea = 0
-
-      canvas.querySelectorAll<HTMLElement>('[data-page-id]').forEach((page) => {
-        const bounds = page.getBoundingClientRect()
-        const visibleWidth = Math.max(0, Math.min(bounds.right, canvasBounds.right) - Math.max(bounds.left, canvasBounds.left))
-        const visibleHeight = Math.max(0, Math.min(bounds.bottom, canvasBounds.bottom) - Math.max(bounds.top, canvasBounds.top))
-        const visibleArea = visibleWidth * visibleHeight
-        if (visibleArea > largestVisibleArea) {
-          largestVisibleArea = visibleArea
-          focusedPageId = page.dataset.pageId ?? null
-        }
-      })
-
-      if (focusedPageId) {
-        const nextFocusedPageId = focusedPageId
-        setActivePageId((current) => current === nextFocusedPageId ? current : nextFocusedPageId)
-      }
+    if (whatsappDragTargetPageRef.current === activePageId) {
+      whatsappDragTargetPageRef.current = null
+      return
     }
-
-    const requestViewportSync = () => {
-      if (frameId !== null) return
-      frameId = window.requestAnimationFrame(syncFocusedPageToViewport)
-    }
-
-    const handleCanvasScroll = () => {
-      setWhatsappFollowsCanvas(true)
-      requestViewportSync()
-    }
-
-    canvas.addEventListener('scroll', handleCanvasScroll, { passive: true })
-    return () => {
-      canvas.removeEventListener('scroll', handleCanvasScroll)
-      if (frameId !== null) window.cancelAnimationFrame(frameId)
-    }
-  }, [whatsappDisplayPages])
+    whatsappDragTargetPageRef.current = null
+    setWhatsappFollowsFocusedPage(true)
+  }, [activePageId])
 
   const baseGroups = activeTab === 'basic' ? BASIC_GROUPS : WIDGETS_GROUPS
   const widgetSearchTerm = widgetSearch.trim().toLowerCase()
@@ -5505,7 +5469,7 @@ export function BuildPage({
         const data = source.data as DragSourceData
         setDragSession(data)
         if (data.type === 'canvas' && data.componentId === WHATSAPP_PANEL_ITEM_ID) {
-          setWhatsappFollowsCanvas(false)
+          setWhatsappFollowsFocusedPage(false)
         }
         if (data.type === 'panel') {
           setSelectedElementId(null)
@@ -5523,6 +5487,12 @@ export function BuildPage({
           | { type: 'page'; pageId: string }
           | { type: 'header-actions' }
           | { type: 'header-action'; elementId: string }
+
+        if (data.type === 'canvas' && data.componentId === WHATSAPP_PANEL_ITEM_ID) {
+          whatsappDragTargetPageRef.current = targetData.type === 'element' || targetData.type === 'page'
+            ? targetData.pageId
+            : null
+        }
 
         const edge =
           targetData.type === 'element' || targetData.type === 'header-action'
