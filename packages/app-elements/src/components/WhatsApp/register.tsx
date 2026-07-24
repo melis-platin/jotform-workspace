@@ -22,7 +22,7 @@ ComponentRegistry.register({
     { name: 'Button Alignment', type: 'select', default: 'Center', options: ['Left', 'Center', 'Right'] },
     { name: 'Button Text', type: 'text', default: 'Message us', maxLength: 30 },
     { name: 'Phone Number', type: 'text', default: '', placeholder: '+0 000-000-0000', description: 'Use the international format: +1 541-754-3010' },
-    { name: 'Message', type: 'text', default: 'Hi Bloom Café! I’d like to ask about my order.', maxLength: 300, description: 'Automatically added to the chat so users can send in one tap.' },
+    { name: 'Message', type: 'text', default: 'Hi! I’d like to learn more about your services.', maxLength: 300, description: 'Automatically added to the chat so users can send in one tap.' },
     { name: 'Include Pages to Display', type: 'select', default: 'All Pages', options: ['All Pages'] },
     { name: 'When a User Clicks', type: 'select', default: 'Open WhatsApp', options: ['Quick Chat', 'Open WhatsApp'] },
     { name: 'Set Availability Hours', type: 'boolean', default: false },

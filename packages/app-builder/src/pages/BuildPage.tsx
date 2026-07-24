@@ -1841,6 +1841,16 @@ const APP_HEADER_DESC_PLACEHOLDER = 'Add a short description to tell people what
 // The app's default name (mirrors appPresets.ts). Until the app is renamed, the header
 // title falls back to this — treated as an unfilled placeholder, not a real title.
 const DEFAULT_APP_TITLE = 'App Title'
+const LEGACY_WHATSAPP_MESSAGE = 'Hi Bloom Café! I’d like to ask about my order.'
+const DEFAULT_WHATSAPP_MESSAGE = 'Hi! I’d like to learn more about your services.'
+
+function createDefaultWhatsAppMessage(appName: string): string {
+  const name = appName.trim()
+  const isUnnamedApp = !name || [APP_HEADER_TITLE_PLACEHOLDER, DEFAULT_APP_TITLE, 'New App'].includes(name)
+  return isUnnamedApp
+    ? DEFAULT_WHATSAPP_MESSAGE
+    : `Hi ${name}! I’d like to learn more about your services.`
+}
 
 // The header banner's title for display: an explicit value (including '' to hide
 // it) wins; otherwise a real app name shows through, else an archetype-specific
@@ -3553,6 +3563,29 @@ export function BuildPage({
   }, [])
 
   const appTitle = appTitleProp
+  // Replace the old, app-specific demo copy only. Any message the app owner has
+  // customized stays intact, while an untouched WhatsApp element adopts the
+  // current app name when there is one.
+  useEffect(() => {
+    const defaultMessage = createDefaultWhatsAppMessage(appTitle)
+    setPages((prev) => {
+      let changed = false
+      const next = prev.map((page) => ({
+        ...page,
+        elements: page.elements.map((element) => {
+          if (element.componentId !== WHATSAPP_PANEL_ITEM_ID || element.properties['Message'] !== LEGACY_WHATSAPP_MESSAGE) {
+            return element
+          }
+          changed = true
+          return {
+            ...element,
+            properties: { ...element.properties, Message: defaultMessage },
+          }
+        }),
+      }))
+      return changed ? next : prev
+    })
+  }, [appTitle])
   // App name/description are the app identity, edited from the builder chrome /
   // Settings — NOT from the app header (now an independent hero banner). They
   // only seed the header's default title/subtitle when its own are unset.
@@ -5128,6 +5161,9 @@ export function BuildPage({
     if (whatsappAlreadyAdded) return
 
     const element = createCanvasElement(comp, nextElementId(pagesRef.current, headerActionsRef.current))
+    if (comp.id === WHATSAPP_PANEL_ITEM_ID) {
+      element.properties.Message = createDefaultWhatsAppMessage(appTitle)
+    }
     setPages((prev) => {
       let targetPageId = activePageId
       if (forceTargetPageId) {
@@ -5179,7 +5215,7 @@ export function BuildPage({
         requestAnimationFrame(step)
       }, 100)
     })
-  }, [activePageId, isMobileView, mobileElementsSheet, selectedElementId, forceTargetPageId])
+  }, [activePageId, appTitle, isMobileView, mobileElementsSheet, selectedElementId, forceTargetPageId])
 
   const handleSelectElement = useCallback((elementId: string) => {
     setSelectedElementId(elementId)
