@@ -1842,14 +1842,22 @@ const APP_HEADER_DESC_PLACEHOLDER = 'Add a short description to tell people what
 // title falls back to this — treated as an unfilled placeholder, not a real title.
 const DEFAULT_APP_TITLE = 'App Title'
 const LEGACY_WHATSAPP_MESSAGE = 'Hi Bloom Café! I’d like to ask about my order.'
-const DEFAULT_WHATSAPP_MESSAGE = 'Hi! I’d like to learn more about your services.'
+const PREVIOUS_DEFAULT_WHATSAPP_MESSAGE = 'Hi! I’d like to learn more about your services.'
+const DEFAULT_WHATSAPP_MESSAGE = "Hi! I'd like to ask a question."
 
 function createDefaultWhatsAppMessage(appName: string): string {
   const name = appName.trim()
   const isUnnamedApp = !name || [APP_HEADER_TITLE_PLACEHOLDER, DEFAULT_APP_TITLE, 'New App'].includes(name)
   return isUnnamedApp
     ? DEFAULT_WHATSAPP_MESSAGE
-    : `Hi ${name}! I’d like to learn more about your services.`
+    : `Hi ${name}! I'd like to ask a question.`
+}
+
+function isUntouchedWhatsAppDefaultMessage(message: unknown): boolean {
+  const value = String(message ?? '')
+  return value === LEGACY_WHATSAPP_MESSAGE
+    || value === PREVIOUS_DEFAULT_WHATSAPP_MESSAGE
+    || /^Hi .+! I’d like to learn more about your services\.$/.test(value)
 }
 
 // The header banner's title for display: an explicit value (including '' to hide
@@ -3577,7 +3585,7 @@ export function BuildPage({
       const next = prev.map((page) => ({
         ...page,
         elements: page.elements.map((element) => {
-          if (element.componentId !== WHATSAPP_PANEL_ITEM_ID || element.properties['Message'] !== LEGACY_WHATSAPP_MESSAGE) {
+          if (element.componentId !== WHATSAPP_PANEL_ITEM_ID || !isUntouchedWhatsAppDefaultMessage(element.properties['Message'])) {
             return element
           }
           changed = true
