@@ -5808,15 +5808,16 @@ export function BuildPage({
     </div>
   )
 
-  // "All Pages" is a preview-only visibility rule. The builder retains the
-  // element exactly where it was placed, while the live preview renders one
-  // app-level CTA in the lower-right corner on every page.
+  // "All Pages" is a preview-only rule for the Floating style. A Button-style
+  // WhatsApp element behaves like every other canvas button and remains where
+  // its owner placed it.
   const whatsappPreviewElement = pages.flatMap((page) => page.elements).find((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)
     ?? headerActions.find((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)
   const whatsappPreviewComponent = whatsappPreviewElement
     ? ComponentRegistry.get(whatsappPreviewElement.componentId)
     : null
-  const allPagesWhatsAppPreview = String(whatsappPreviewElement?.properties['Include Pages to Display'] ?? 'All Pages') === 'All Pages'
+  const allPagesWhatsAppPreview = String(whatsappPreviewElement?.properties['Display Style'] ?? 'Floating') !== 'Button'
+    && String(whatsappPreviewElement?.properties['Include Pages to Display'] ?? 'All Pages') === 'All Pages'
   const allPagesWhatsAppOverlay = allPagesWhatsAppPreview
     && whatsappPreviewElement
     && whatsappPreviewComponent
@@ -7206,6 +7207,7 @@ export function BuildPage({
                     </div>
                   }
                   if (isWhatsApp && propertyTab === 'general') {
+                    const isButtonStyle = String(selectedElement.properties['Display Style'] ?? 'Floating') === 'Button'
                     return (
                       <div className="property-panel__body property-panel__body--whatsapp">
                         <div className="property-panel__field">
@@ -7235,19 +7237,21 @@ export function BuildPage({
                             />
                           </DSFormField>
                         </div>
-                        <div className="property-panel__field">
-                          <DSFormField title="Include Pages to Display" size="md" showDescription={false} showHelpText={false}>
-                            <DSDropdownSingle
-                              value={String(selectedElement.properties['Include Pages to Display'] ?? 'All Pages')}
-                              onChange={(v) => handlePropertyChange(selectedElement.id, 'Include Pages to Display', v)}
-                              showLeadingIcon={false}
-                              options={[
-                                { value: 'All Pages', label: 'All Pages' },
-                                ...pages.map((page) => ({ value: page.id, label: page.name })),
-                              ]}
-                            />
-                          </DSFormField>
-                        </div>
+                        {!isButtonStyle && (
+                          <div className="property-panel__field">
+                            <DSFormField title="Include Pages to Display" size="md" showDescription={false} showHelpText={false}>
+                              <DSDropdownSingle
+                                value={String(selectedElement.properties['Include Pages to Display'] ?? 'All Pages')}
+                                onChange={(v) => handlePropertyChange(selectedElement.id, 'Include Pages to Display', v)}
+                                showLeadingIcon={false}
+                                options={[
+                                  { value: 'All Pages', label: 'All Pages' },
+                                  ...pages.map((page) => ({ value: page.id, label: page.name })),
+                                ]}
+                              />
+                            </DSFormField>
+                          </div>
+                        )}
                         <div className="property-panel__field property-panel__field--inline">
                           <DSFormField title="Set Availability" description="Show real online / away status" size="md" showDescription showHelpText={false}><DSToggle size="lg" checked={Boolean(selectedElement.properties['Set Availability Hours'])} onChange={(e) => handlePropertyChange(selectedElement.id, 'Set Availability Hours', e.target.checked)} /></DSFormField>
                           {Boolean(selectedElement.properties['Set Availability Hours']) && (() => {

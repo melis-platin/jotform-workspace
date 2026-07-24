@@ -3061,7 +3061,7 @@ body {
 // WhatsApp is a floating app action in the phone preview, rather than a card
 // in the page flow. The content canvas is rendered at 0.9x, so compensate the
 // logical inset to keep the visible edge clearance at --space-4 (16px).
-.live-preview__phone-screen .live-preview__content .jf-whatsapp {
+.live-preview__phone-screen .live-preview__content .jf-whatsapp:not(.jf-whatsapp--button) {
   position: fixed;
   right: calc(var(--space-4) / 0.9);
   bottom: calc(var(--space-4) / 0.9);
@@ -3076,7 +3076,7 @@ body {
 // Tablet follows the phone preview interaction model for every WhatsApp
 // display style. Unlike the 0.9x phone canvas, tablet content is unscaled, so
 // use the native 16px inset while anchoring to the tablet screen.
-.live-preview__tablet-screen .live-preview__content .jf-whatsapp {
+.live-preview__tablet-screen .live-preview__content .jf-whatsapp:not(.jf-whatsapp--button) {
   position: absolute;
   right: var(--space-4);
   bottom: var(--space-4);
@@ -3104,7 +3104,7 @@ body {
 
 // The source element stays in the builder data model, but the desktop preview
 // renders its floating version through the app-level overlay above.
-.app-preview-screen .app-preview-screen__desktop .themes-view__section:has(.jf-whatsapp) {
+.app-preview-screen .app-preview-screen__desktop .themes-view__section:has(.jf-whatsapp:not(.jf-whatsapp--button)) {
   display: none;
 }
 
@@ -3123,7 +3123,7 @@ body {
   }
 }
 
-.build-page__nav-preview--desktop .themes-view__section:has(.jf-whatsapp) {
+.build-page__nav-preview--desktop .themes-view__section:has(.jf-whatsapp:not(.jf-whatsapp--button)) {
   display: none;
 }
 
