@@ -5137,7 +5137,28 @@ export function BuildPage({
       pagesRef.current.some((page) => page.elements.some((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID))
       || headerActionsRef.current.some((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)
     )
-    if (whatsappAlreadyAdded) return
+    if (whatsappAlreadyAdded) {
+      const whatsapp = pagesRef.current.flatMap((page) => page.elements)
+        .find((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)
+        ?? headerActionsRef.current.find((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)
+      if (!whatsapp) return
+
+      // A panel click always restores the singleton WhatsApp element to the
+      // bottom of the focused page. Canvas drag-and-drop remains positional.
+      setPages((prev) => prev.map((page) => {
+        const withoutWhatsApp = page.elements.filter((element) => element.id !== whatsapp.id)
+        if (page.id === activePageId) {
+          return { ...page, elements: [...withoutWhatsApp, whatsapp] }
+        }
+        return withoutWhatsApp.length === page.elements.length ? page : { ...page, elements: withoutWhatsApp }
+      }))
+      setHeaderActions((prev) => prev.filter((element) => element.id !== whatsapp.id))
+      setWhatsappFollowsFocusedPage(false)
+      setForceTargetPageId(null)
+      setSelectedElementId(whatsapp.id)
+      if (!mobileElementsSheet) setRightPanel('properties')
+      return
+    }
 
     const element = createCanvasElement(comp, nextElementId(pagesRef.current, headerActionsRef.current))
     if (comp.id === WHATSAPP_PANEL_ITEM_ID) {
@@ -6449,10 +6470,11 @@ export function BuildPage({
                   <div className="build-page__separator">{group.label}</div>
                 )}
                 {validItemIds.map((itemId, itemIndex) => {
+                  const comp = componentMap[itemId]
                   if (itemId === WHATSAPP_PANEL_ITEM_ID && whatsappInUse) {
                     return (
                       <div key={itemId}>
-                        <div className="build-page__element-item build-page__element-item--in-use" aria-disabled="true">
+                        <div className="build-page__element-item build-page__element-item--in-use" aria-disabled="true" onClick={() => comp && handleAddElement(comp)}>
                           <div className="build-page__element-icon">
                             <Icon name="whatsapp-filled" category="brands" size={24} />
                           </div>
@@ -6468,7 +6490,6 @@ export function BuildPage({
                     )
                   }
 
-                  const comp = componentMap[itemId]
                   if (!comp) return null
                   const iconInfo = ELEMENT_ICON_MAP[comp.id]
                   return (
@@ -10838,9 +10859,10 @@ export function BuildPage({
                 )}
                 <div className="mobile-elements-grid">
                   {validItemIds.map((itemId) => {
+                    const comp = componentMap[itemId]
                     if (itemId === WHATSAPP_PANEL_ITEM_ID && whatsappInUse) {
                       return (
-                        <div key={itemId} className="mobile-elements-grid__item mobile-elements-grid__item--in-use" aria-disabled="true">
+                        <div key={itemId} className="mobile-elements-grid__item mobile-elements-grid__item--in-use" aria-disabled="true" onClick={() => comp && handleAddElement(comp)}>
                           <div className="mobile-elements-grid__icon">
                             <Icon name="whatsapp-filled" category="brands" size={24} />
                           </div>
@@ -10850,7 +10872,6 @@ export function BuildPage({
                       )
                     }
 
-                    const comp = componentMap[itemId]
                     if (!comp) return null
                     const iconInfo = ELEMENT_ICON_MAP[comp.id]
                     return (
