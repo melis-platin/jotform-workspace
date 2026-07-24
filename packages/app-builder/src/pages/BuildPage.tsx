@@ -5195,6 +5195,10 @@ export function BuildPage({
   }, [activePageId, appTitle, isMobileView, mobileElementsSheet, selectedElementId, forceTargetPageId])
 
   const handleSelectElement = useCallback((elementId: string) => {
+    const ownerPage = pagesRef.current.find((page) => page.elements.some((element) => element.id === elementId))
+    if (ownerPage) {
+      setActivePageId((current) => current === ownerPage.id ? current : ownerPage.id)
+    }
     setSelectedElementId(elementId)
     setRightPanel('properties')
     setMobileElementsSheet(false)
