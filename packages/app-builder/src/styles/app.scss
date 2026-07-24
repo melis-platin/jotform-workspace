@@ -7706,11 +7706,14 @@ body {
   border-radius: var(--radius-sm);
   background: var(--secondary-background-white);
   color: #0a1551;
-  font-size: var(--font-size-2xs);
-  line-height: var(--line-height-2xs);
-  letter-spacing: calc(var(--ds-space-3xs) / -8);
-  text-overflow: clip;
-  white-space: nowrap;
+  font-family: var(--ds-font-family);
+  font-size: var(--ds-font-size-sm);
+  font-weight: var(--ds-font-weight-book);
+  line-height: var(--ds-line-height-sm);
+  letter-spacing: -0.084px;
+  overflow-wrap: break-word;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .whatsapp-quick-chat-preview__send {
