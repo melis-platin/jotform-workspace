@@ -7260,12 +7260,14 @@ export function BuildPage({
                             <DSInput
                               value={String(selectedElement.properties['Phone Number'] ?? '')}
                               placeholder="+0 000-000-0000"
+                              maxLength={16}
                               onChange={(e) => {
                                 const value = e.target.value.trimStart()
+                                const digits = value.replace(/\D/g, '').slice(0, 15)
                                 handlePropertyChange(
                                   selectedElement.id,
                                   'Phone Number',
-                                  value ? `+${value.replace(/^\++/, '')}` : '',
+                                  digits ? `+${digits}` : '',
                                 )
                               }}
                             />

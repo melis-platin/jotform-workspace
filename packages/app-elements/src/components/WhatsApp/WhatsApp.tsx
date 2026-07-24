@@ -26,6 +26,16 @@ function getWhatsAppNumber(phoneNumber: string): string {
   return phoneNumber.replace(/\D/g, '');
 }
 
+const WHATSAPP_PHONE_MIN_LENGTH = 11;
+const WHATSAPP_PHONE_MAX_LENGTH = 16;
+
+function isValidWhatsAppPhoneNumber(phoneNumber: string, normalizedNumber: string): boolean {
+  const value = phoneNumber.trim();
+  return value.length >= WHATSAPP_PHONE_MIN_LENGTH
+    && value.length <= WHATSAPP_PHONE_MAX_LENGTH
+    && normalizedNumber.length > 0;
+}
+
 const AVAILABILITY_DAY_IDS = ['M0', 'T1', 'W2', 'T3', 'F4', 'S5', 'S6'];
 
 function parseTime(value: string): number | null {
@@ -88,7 +98,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
 }) => {
   const floatingLabel = bubbleText.slice(0, 30);
   const number = getWhatsAppNumber(phoneNumber);
-  const isEnabled = number.length > 0;
+  const isEnabled = isValidWhatsAppPhoneNumber(phoneNumber, number);
   const isButtonStyle = displayStyle === 'Button';
   const isAvailable = isWithinAvailability(
     availabilityEnabled,
