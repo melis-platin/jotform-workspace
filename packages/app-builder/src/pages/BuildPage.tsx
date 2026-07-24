@@ -5132,6 +5132,34 @@ export function BuildPage({
         .filter((g) => g.elementIds.length > 0)
     : baseGroups
 
+  const scrollToCanvasElement = useCallback((elementId: string) => {
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        const element = document.querySelector(`[data-element-id="${elementId}"]`)
+        if (!element) return
+        const rect = element.getBoundingClientRect()
+        const scrollContainer = isMobileView
+          ? document.querySelector('.builder')
+          : document.querySelector('.build-page__canvas')
+        if (!scrollContainer) return
+        const containerRect = scrollContainer.getBoundingClientRect()
+        const targetY = scrollContainer.scrollTop + rect.top - containerRect.top - containerRect.height / 2 + rect.height / 2
+        const start = scrollContainer.scrollTop
+        const distance = targetY - start
+        const duration = 500
+        let startTime: number | null = null
+        const ease = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
+        const step = (timestamp: number) => {
+          if (!startTime) startTime = timestamp
+          const progress = Math.min((timestamp - startTime) / duration, 1)
+          scrollContainer.scrollTop = start + distance * ease(progress)
+          if (progress < 1) requestAnimationFrame(step)
+        }
+        requestAnimationFrame(step)
+      }, 100)
+    })
+  }, [isMobileView])
+
   const handleAddElement = useCallback((comp: RegisteredComponent) => {
     const whatsappAlreadyAdded = comp.id === WHATSAPP_PANEL_ITEM_ID && (
       pagesRef.current.some((page) => page.elements.some((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID))
@@ -5157,6 +5185,7 @@ export function BuildPage({
       setForceTargetPageId(null)
       setSelectedElementId(whatsapp.id)
       if (!mobileElementsSheet) setRightPanel('properties')
+      scrollToCanvasElement(whatsapp.id)
       return
     }
 
@@ -5166,7 +5195,11 @@ export function BuildPage({
     }
     setPages((prev) => {
       let targetPageId = activePageId
-      if (forceTargetPageId) {
+      if (comp.id === WHATSAPP_PANEL_ITEM_ID) {
+        // A panel click places WhatsApp at the bottom of the currently focused
+        // page, regardless of which element is currently selected.
+        targetPageId = activePageId
+      } else if (forceTargetPageId) {
         targetPageId = forceTargetPageId
       } else if (selectedElementId) {
         const selectedPage = prev.find((p) => p.elements.some((el) => el.id === selectedElementId))
@@ -5174,7 +5207,7 @@ export function BuildPage({
       }
       return prev.map((page) => {
         if (page.id !== targetPageId) return page
-        const selectedIdx = selectedElementId && !forceTargetPageId
+        const selectedIdx = comp.id !== WHATSAPP_PANEL_ITEM_ID && selectedElementId && !forceTargetPageId
           ? page.elements.findIndex((el) => el.id === selectedElementId)
           : -1
         if (selectedIdx !== -1) {
@@ -5190,32 +5223,8 @@ export function BuildPage({
     if (!mobileElementsSheet) {
       setRightPanel('properties')
     }
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        const el = document.querySelector(`[data-element-id="${element.id}"]`)
-        if (!el) return
-        const rect = el.getBoundingClientRect()
-        const scrollContainer = isMobileView
-          ? document.querySelector('.builder')
-          : document.querySelector('.build-page__canvas')
-        if (!scrollContainer) return
-        const containerRect = scrollContainer.getBoundingClientRect()
-        const targetY = scrollContainer.scrollTop + rect.top - containerRect.top - containerRect.height / 2 + rect.height / 2
-        const start = scrollContainer.scrollTop
-        const distance = targetY - start
-        const duration = 500
-        let startTime: number | null = null
-        const ease = (t: number) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
-        const step = (timestamp: number) => {
-          if (!startTime) startTime = timestamp
-          const progress = Math.min((timestamp - startTime) / duration, 1)
-          scrollContainer.scrollTop = start + distance * ease(progress)
-          if (progress < 1) requestAnimationFrame(step)
-        }
-        requestAnimationFrame(step)
-      }, 100)
-    })
-  }, [activePageId, appTitle, isMobileView, mobileElementsSheet, selectedElementId, forceTargetPageId])
+    scrollToCanvasElement(element.id)
+  }, [activePageId, appTitle, mobileElementsSheet, selectedElementId, forceTargetPageId, scrollToCanvasElement])
 
   const handleSelectElement = useCallback((elementId: string) => {
     const ownerPage = pagesRef.current.find((page) => page.elements.some((element) => element.id === elementId))
