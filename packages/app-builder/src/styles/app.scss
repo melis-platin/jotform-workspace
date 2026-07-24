@@ -7602,9 +7602,12 @@ body {
 
 .whatsapp-quick-chat-preview__header {
   display: flex;
+  box-sizing: border-box;
   align-items: center;
   justify-content: space-between;
+  height: 62px;
   min-height: 62px;
+  flex: 0 0 62px;
   padding: var(--ds-space-sm);
   background: #075e54;
   color: var(--ds-text-primary);
