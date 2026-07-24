@@ -7285,7 +7285,7 @@ export function BuildPage({
                           </span>
                         </div>
                         <div className="property-panel__field property-panel__field--inline">
-                          <DSFormField title="Set Availability" description="Show real online / away status" size="md" showDescription showHelpText={false}><DSToggle size="lg" checked={Boolean(selectedElement.properties['Set Availability Hours'])} onChange={(e) => handlePropertyChange(selectedElement.id, 'Set Availability Hours', e.target.checked)} /></DSFormField>
+                          <DSFormField title="Show availability hours" description="Show real online / away status" size="md" showDescription showHelpText={false}><DSToggle size="lg" checked={Boolean(selectedElement.properties['Set Availability Hours'])} onChange={(e) => handlePropertyChange(selectedElement.id, 'Set Availability Hours', e.target.checked)} /></DSFormField>
                           {Boolean(selectedElement.properties['Set Availability Hours']) && (() => {
                             const days = String(selectedElement.properties['Availability Days'] ?? 'M0,T1,W2,T3,F4').split(',')
                             const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
