@@ -5155,48 +5155,15 @@ export function BuildPage({
     scrollToCanvasElement(element.id)
   }, [activePageId, appTitle, mobileElementsSheet, selectedElementId, forceTargetPageId, scrollToCanvasElement])
 
-  // All Pages still has one persisted WhatsApp element. Deliberately focusing a
-  // page (or one of its elements) places that instance at the bottom of the
-  // focused page. Scrolling and drag-and-drop never call this helper, so a
-  // manually dropped element remains exactly where it was placed.
-  const moveAllPagesWhatsAppToPageEnd = useCallback((targetPageId: string) => {
-    setPages((prev) => {
-      const whatsapp = prev.flatMap((page) => page.elements)
-        .find((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)
-      const targetPage = prev.find((page) => page.id === targetPageId)
-      if (!whatsapp || !targetPage || String(whatsapp.properties['Include Pages to Display'] ?? '') !== 'All Pages') {
-        return prev
-      }
-
-      const alreadyLastOnTarget = targetPage.elements.at(-1)?.id === whatsapp.id
-        && prev.every((page) => page.id === targetPageId || !page.elements.some((element) => element.id === whatsapp.id))
-      if (alreadyLastOnTarget) return prev
-
-      return prev.map((page) => {
-        const elementsWithoutWhatsApp = page.elements.filter((element) => element.id !== whatsapp.id)
-        if (page.id === targetPageId) {
-          return { ...page, elements: [...elementsWithoutWhatsApp, whatsapp] }
-        }
-        return elementsWithoutWhatsApp.length === page.elements.length
-          ? page
-          : { ...page, elements: elementsWithoutWhatsApp }
-      })
-    })
-  }, [])
-
   const handleSelectElement = useCallback((elementId: string) => {
     const ownerPage = pagesRef.current.find((page) => page.elements.some((element) => element.id === elementId))
     if (ownerPage) {
       setActivePageId((current) => current === ownerPage.id ? current : ownerPage.id)
-      if (elementId !== pagesRef.current.flatMap((page) => page.elements)
-        .find((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)?.id) {
-        moveAllPagesWhatsAppToPageEnd(ownerPage.id)
-      }
     }
     setSelectedElementId(elementId)
     setRightPanel('properties')
     setMobileElementsSheet(false)
-  }, [moveAllPagesWhatsAppToPageEnd])
+  }, [])
 
   const handleRemoveElement = useCallback((elementId: string) => {
     // If this element owns a dynamic detail page, park it in the stash and drop it
@@ -5322,11 +5289,10 @@ export function BuildPage({
 
   const openPageSettings = useCallback((pageId: string) => {
     setActivePageId(pageId)
-    moveAllPagesWhatsAppToPageEnd(pageId)
     setSelectedElementId(null)
     setPagePropertiesId(pageId)
     setRightPanel('page')
-  }, [moveAllPagesWhatsAppToPageEnd])
+  }, [])
 
   const openNavSettings = useCallback(() => {
     setSelectedElementId(null)
@@ -5842,15 +5808,16 @@ export function BuildPage({
     </div>
   )
 
-  // A floating WhatsApp CTA is an app-level action. Render it outside the
-  // current page in desktop preview so it remains available while navigating
-  // between every page and desktop navigation layout.
+  // "All Pages" is a preview-only visibility rule. The builder retains the
+  // element exactly where it was placed, while the live preview renders one
+  // app-level CTA in the lower-right corner on every page.
   const whatsappPreviewElement = pages.flatMap((page) => page.elements).find((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)
     ?? headerActions.find((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)
   const whatsappPreviewComponent = whatsappPreviewElement
     ? ComponentRegistry.get(whatsappPreviewElement.componentId)
     : null
-  const desktopFloatingWhatsApp = previewDevice === 'desktop'
+  const allPagesWhatsAppPreview = String(whatsappPreviewElement?.properties['Include Pages to Display'] ?? 'All Pages') === 'All Pages'
+  const allPagesWhatsAppOverlay = allPagesWhatsAppPreview
     && whatsappPreviewElement
     && whatsappPreviewComponent
     ? (
@@ -6296,6 +6263,7 @@ export function BuildPage({
               <div className={`themes-view__canvas${isFirstPage && appHeaderState.show ? ' themes-view__canvas--first' : ''}`}>
                 <div className="themes-view__app">
                   {activePage.elements.map((element) => {
+                    if (allPagesWhatsAppPreview && element.id === whatsappPreviewElement?.id) return null
                     const comp = ComponentRegistry.get(element.componentId)
                     if (!comp) return null
                     // Dynamic detail page: bind each seeded element to the previewed row.
@@ -6333,9 +6301,9 @@ export function BuildPage({
               </>
             ) : null
           })()}
+          {allPagesWhatsAppOverlay}
         </div>
       </div>
-      {desktopFloatingWhatsApp}
       {pages.length > 1 && bottomNavEnabled && !isNotificationsPageOpen && !isPreviewSearchOpen && !isPreviewCartOpen && !isPreviewCheckoutOpen && !isPreviewDetailOpen && !isPreviewProfileOpen && !showLandingNav && !activePageIsDynamic && (
         <div className="live-preview__bottom-nav app-scope">
           <BottomNavigation
@@ -6759,7 +6727,6 @@ export function BuildPage({
           variant={navBarPages.length === 1 ? 'empty' : 'default'}
           onPageSelect={(pageId) => {
             setActivePageId(pageId)
-            moveAllPagesWhatsAppToPageEnd(pageId)
             requestAnimationFrame(() => {
               const scrollContainer = document.querySelector('.build-page__canvas')
               if (!scrollContainer) return
