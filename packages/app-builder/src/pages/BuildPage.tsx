@@ -3583,7 +3583,12 @@ export function BuildPage({
       const next = prev.map((page) => ({
         ...page,
         elements: page.elements.map((element) => {
-          if (element.componentId !== WHATSAPP_PANEL_ITEM_ID || !isUntouchedWhatsAppDefaultMessage(element.properties['Message'])) {
+          const currentMessage = element.properties['Message']
+          if (
+            element.componentId !== WHATSAPP_PANEL_ITEM_ID
+            || !isUntouchedWhatsAppDefaultMessage(currentMessage)
+            || currentMessage === defaultMessage
+          ) {
             return element
           }
           changed = true
@@ -3595,7 +3600,7 @@ export function BuildPage({
       }))
       return changed ? next : prev
     })
-  }, [appTitle])
+  }, [appTitle, pages])
   // App name/description are the app identity, edited from the builder chrome /
   // Settings — NOT from the app header (now an independent hero banner). They
   // only seed the header's default title/subtitle when its own are unset.
