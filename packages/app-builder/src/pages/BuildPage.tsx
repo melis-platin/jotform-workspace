@@ -1855,8 +1855,10 @@ function createDefaultWhatsAppMessage(appName: string): string {
 
 function isUntouchedWhatsAppDefaultMessage(message: unknown): boolean {
   const value = String(message ?? '')
-  return value === LEGACY_WHATSAPP_MESSAGE
+  return value === DEFAULT_WHATSAPP_MESSAGE
+    || value === LEGACY_WHATSAPP_MESSAGE
     || value === PREVIOUS_DEFAULT_WHATSAPP_MESSAGE
+    || /^Hi .+! I'd like to ask a question\.$/.test(value)
     || /^Hi .+! I’d like to learn more about your services\.$/.test(value)
 }
 
