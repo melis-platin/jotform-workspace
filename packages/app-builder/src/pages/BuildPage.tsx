@@ -3479,6 +3479,7 @@ export function BuildPage({
     return initial.activePageId
   })
   const [dragSession, setDragSession] = useState<DragSourceData | null>(null)
+  const [floatingWhatsAppScrollTarget, setFloatingWhatsAppScrollTarget] = useState<string | null>(null)
   const isDragging = dragSession !== null
   const draggedCanvasId = dragSession?.type === 'canvas' ? dragSession.elementId : null
   const headerActionsSlotRef = useRef<HTMLDivElement>(null)
@@ -5116,6 +5117,12 @@ export function BuildPage({
     })
   }, [isMobileView])
 
+  useEffect(() => {
+    if (!floatingWhatsAppScrollTarget) return
+    scrollToCanvasElement(floatingWhatsAppScrollTarget)
+    setFloatingWhatsAppScrollTarget(null)
+  }, [floatingWhatsAppScrollTarget, scrollToCanvasElement])
+
   const handleAddElement = useCallback((comp: RegisteredComponent) => {
     const whatsappAlreadyAdded = comp.id === WHATSAPP_PANEL_ITEM_ID && (
       pagesRef.current.some((page) => page.elements.some((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID))
@@ -5661,10 +5668,15 @@ export function BuildPage({
           if (!comp) return
           const newEl = createCanvasElement(comp, nextElementId(pagesRef.current, headerActionsRef.current))
           const targetPageId = (targetData as { pageId: string }).pageId
+          const isFloatingWhatsApp = data.componentId === WHATSAPP_PANEL_ITEM_ID
+            && String(newEl.properties['Display Style'] ?? 'Floating') === 'Floating'
 
           setPages((prev) =>
             prev.map((page) => {
               if (page.id !== targetPageId) return page
+              if (isFloatingWhatsApp) {
+                return { ...page, elements: [...page.elements, newEl] }
+              }
               if (targetData.type === 'page') {
                 return { ...page, elements: [...page.elements, newEl] }
               }
@@ -5685,6 +5697,7 @@ export function BuildPage({
           setSelectedElementId(newEl.id)
           setActivePageId(targetPageId)
           setRightPanel('properties')
+          if (isFloatingWhatsApp) setFloatingWhatsAppScrollTarget(newEl.id)
           return
         }
 
@@ -5699,10 +5712,12 @@ export function BuildPage({
         const movingEl = sourcePage.elements.find((el) => el.id === sourceId)
         if (!movingEl) return
         const targetPageId = targetData.pageId
+        const isFloatingWhatsApp = movingEl.componentId === WHATSAPP_PANEL_ITEM_ID
+          && String(movingEl.properties['Display Style'] ?? 'Floating') === 'Floating'
 
-        if (targetData.type === 'element' && targetData.elementId === sourceId) return
+        if (targetData.type === 'element' && targetData.elementId === sourceId && !isFloatingWhatsApp) return
 
-        const sourceEl = withShrinked(movingEl, isHorizontal)
+        const sourceEl = withShrinked(movingEl, isFloatingWhatsApp ? false : isHorizontal)
 
         setPages((prev) => {
           let insertIdx: number | null = null
@@ -5717,6 +5732,10 @@ export function BuildPage({
           })
           const next = withoutSource.map((page) => {
             if (page.id !== targetPageId) return page
+            if (isFloatingWhatsApp) {
+              insertIdx = page.elements.length
+              return { ...page, elements: [...page.elements, sourceEl] }
+            }
             if (targetData.type === 'page') {
               insertIdx = page.elements.length
               return { ...page, elements: [...page.elements, sourceEl] }
@@ -5747,6 +5766,7 @@ export function BuildPage({
           }
           return next
         })
+        if (isFloatingWhatsApp) setFloatingWhatsAppScrollTarget(sourceId)
       },
     })
   }, [])
