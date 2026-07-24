@@ -7761,6 +7761,16 @@ body {
 .whatsapp-properties__segment:last-child { border-right: 0; }
 .whatsapp-properties__segment--selected { background: var(--blue-500); }
 
+.whatsapp-properties__show-on-help {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-xs);
+  color: var(--ds-text-tertiary);
+  font-family: var(--ds-font-family);
+  font-size: var(--ds-font-size-xs);
+  line-height: var(--ds-line-height-xs);
+}
+
 .whatsapp-availability {
   display: flex;
   flex-direction: column;

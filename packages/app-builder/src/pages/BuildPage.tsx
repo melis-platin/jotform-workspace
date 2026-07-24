@@ -7207,6 +7207,9 @@ export function BuildPage({
                     </div>
                   }
                   if (isWhatsApp && propertyTab === 'general') {
+                    const elementPage = pages.find((page) => page.elements.some((element) => element.id === selectedElement.id))
+                    const currentPageId = elementPage?.id ?? activePageId
+                    const showOnAllPages = String(selectedElement.properties['Include Pages to Display'] ?? 'All Pages') === 'All Pages'
                     return (
                       <div className="property-panel__body property-panel__body--whatsapp">
                         <div className="property-panel__field">
@@ -7237,17 +7240,16 @@ export function BuildPage({
                           </DSFormField>
                         </div>
                         <div className="property-panel__field">
-                          <DSFormField title="Include Pages to Display" size="md" showDescription={false} showHelpText={false}>
-                            <DSDropdownSingle
-                              value={String(selectedElement.properties['Include Pages to Display'] ?? 'All Pages')}
-                              onChange={(v) => handlePropertyChange(selectedElement.id, 'Include Pages to Display', v)}
-                              showLeadingIcon={false}
-                              options={[
-                                { value: 'All Pages', label: 'All Pages' },
-                                ...pages.map((page) => ({ value: page.id, label: page.name })),
-                              ]}
-                            />
+                          <DSFormField title="Show on" size="md" showDescription={false} showHelpText={false}>
+                            <div className="whatsapp-properties__segmented whatsapp-properties__segmented--2">
+                              <button type="button" className={`whatsapp-properties__segment${showOnAllPages ? ' whatsapp-properties__segment--selected' : ''}`} onClick={() => handlePropertyChange(selectedElement.id, 'Include Pages to Display', 'All Pages')}>All Pages</button>
+                              <button type="button" className={`whatsapp-properties__segment${!showOnAllPages ? ' whatsapp-properties__segment--selected' : ''}`} onClick={() => handlePropertyChange(selectedElement.id, 'Include Pages to Display', currentPageId)}>This Page Only</button>
+                            </div>
                           </DSFormField>
+                          <span className="whatsapp-properties__show-on-help">
+                            <Icon name="info-circle-filled" category="general" size={16} />
+                            {showOnAllPages ? 'Appears on every page, including ones you add later.' : 'Appears only on this page.'}
+                          </span>
                         </div>
                         <div className="property-panel__field property-panel__field--inline">
                           <DSFormField title="Set Availability" description="Show real online / away status" size="md" showDescription showHelpText={false}><DSToggle size="lg" checked={Boolean(selectedElement.properties['Set Availability Hours'])} onChange={(e) => handlePropertyChange(selectedElement.id, 'Set Availability Hours', e.target.checked)} /></DSFormField>
