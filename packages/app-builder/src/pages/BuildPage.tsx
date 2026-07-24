@@ -7170,6 +7170,19 @@ export function BuildPage({
                     const displayStyle = String(selectedElement.properties['Display Style'] ?? 'Floating')
                     const buttonText = String(selectedElement.properties['Button Text'] ?? 'Message us')
                     const displayedButtonText = buttonText === 'Message us on WhatsApp' ? 'Message us' : buttonText
+                    const elementPage = pages.find((page) => page.elements.some((element) => element.id === selectedElement.id))
+                    const currentPageId = elementPage?.id ?? activePageId
+                    const dynamicSourceElement = elementPage?.dynamic
+                      ? pages.flatMap((page) => page.elements).find((element) => element.id === elementPage.dynamicSourceElementId)
+                      : undefined
+                    const dynamicItems = elementPage?.dynamic ? resolveListItems(dynamicSourceElement) : []
+                    const dynamicIndex = elementPage?.dynamic
+                      ? Math.min(dynamicPreviewIndex[elementPage.id] ?? 0, Math.max(dynamicItems.length - 1, 0))
+                      : 0
+                    const currentPageName = elementPage?.dynamic
+                      ? dynamicItems[dynamicIndex]?.title || elementPage.name
+                      : elementPage?.name ?? pages.find((page) => page.id === activePageId)?.name ?? 'this page'
+                    const showOnAllPages = String(selectedElement.properties['Include Pages to Display'] ?? 'All Pages') === 'All Pages'
                     return <div className="property-panel__body property-panel__body--whatsapp">
                       {renderWhatsAppStyleOptions('Display Style', 'Display Style', ['Floating', 'Button'])}
                       {displayStyle === 'Button' ? <>
@@ -7187,6 +7200,18 @@ export function BuildPage({
                         {renderWhatsAppStyleOptions('Button Width', 'Button Width', ['Auto', 'Full'])}
                         {renderWhatsAppStyleOptions('Alignment', 'Button Alignment', ['Left', 'Center', 'Right'])}
                       </> : <>
+                        <div className="property-panel__field">
+                          <DSFormField title="Show on" size="md" showDescription={false} showHelpText={false}>
+                            <div className="whatsapp-properties__segmented whatsapp-properties__segmented--2">
+                              <button type="button" className={`whatsapp-properties__segment${showOnAllPages ? ' whatsapp-properties__segment--selected' : ''}`} onClick={() => handlePropertyChange(selectedElement.id, 'Include Pages to Display', 'All Pages')}>All Pages</button>
+                              <button type="button" className={`whatsapp-properties__segment${!showOnAllPages ? ' whatsapp-properties__segment--selected' : ''}`} onClick={() => handlePropertyChange(selectedElement.id, 'Include Pages to Display', currentPageId)}>This Page Only</button>
+                            </div>
+                          </DSFormField>
+                          <span className="whatsapp-properties__show-on-help">
+                            <Icon name="info-circle-filled" category="general" size={16} />
+                            {showOnAllPages ? 'Appears on every page, including ones you add later.' : `Only appears on the page you placed it on (${currentPageName}).`}
+                          </span>
+                        </div>
                         {renderWhatsAppStyleOptions('Size', 'Size', ['Small', 'Medium', 'Large'])}
                         {renderWhatsAppStyleOptions('Alignment', 'Alignment', ['Left', 'Right'])}
                         <div className="property-panel__field property-panel__field--inline">
@@ -7211,19 +7236,6 @@ export function BuildPage({
                     </div>
                   }
                   if (isWhatsApp && propertyTab === 'general') {
-                    const elementPage = pages.find((page) => page.elements.some((element) => element.id === selectedElement.id))
-                    const currentPageId = elementPage?.id ?? activePageId
-                    const dynamicSourceElement = elementPage?.dynamic
-                      ? pages.flatMap((page) => page.elements).find((element) => element.id === elementPage.dynamicSourceElementId)
-                      : undefined
-                    const dynamicItems = elementPage?.dynamic ? resolveListItems(dynamicSourceElement) : []
-                    const dynamicIndex = elementPage?.dynamic
-                      ? Math.min(dynamicPreviewIndex[elementPage.id] ?? 0, Math.max(dynamicItems.length - 1, 0))
-                      : 0
-                    const currentPageName = elementPage?.dynamic
-                      ? dynamicItems[dynamicIndex]?.title || elementPage.name
-                      : elementPage?.name ?? pages.find((page) => page.id === activePageId)?.name ?? 'this page'
-                    const showOnAllPages = String(selectedElement.properties['Include Pages to Display'] ?? 'All Pages') === 'All Pages'
                     return (
                       <div className="property-panel__body property-panel__body--whatsapp">
                         <div className="property-panel__field">
@@ -7264,18 +7276,6 @@ export function BuildPage({
                               onChange={(event) => handlePropertyChange(selectedElement.id, 'Message', event.target.value)}
                             />
                           </DSFormField>
-                        </div>
-                        <div className="property-panel__field">
-                          <DSFormField title="Show on" size="md" showDescription={false} showHelpText={false}>
-                            <div className="whatsapp-properties__segmented whatsapp-properties__segmented--2">
-                              <button type="button" className={`whatsapp-properties__segment${showOnAllPages ? ' whatsapp-properties__segment--selected' : ''}`} onClick={() => handlePropertyChange(selectedElement.id, 'Include Pages to Display', 'All Pages')}>All Pages</button>
-                              <button type="button" className={`whatsapp-properties__segment${!showOnAllPages ? ' whatsapp-properties__segment--selected' : ''}`} onClick={() => handlePropertyChange(selectedElement.id, 'Include Pages to Display', currentPageId)}>This Page Only</button>
-                            </div>
-                          </DSFormField>
-                          <span className="whatsapp-properties__show-on-help">
-                            <Icon name="info-circle-filled" category="general" size={16} />
-                            {showOnAllPages ? 'Appears on every page, including ones you add later.' : `Only appears on the page you placed it on (${currentPageName}).`}
-                          </span>
                         </div>
                         <div className="property-panel__field property-panel__field--inline">
                           <DSFormField title="Show availability hours" description="Show real online / away status" size="md" showDescription showHelpText={false}><DSToggle size="lg" checked={Boolean(selectedElement.properties['Set Availability Hours'])} onChange={(e) => handlePropertyChange(selectedElement.id, 'Set Availability Hours', e.target.checked)} /></DSFormField>
