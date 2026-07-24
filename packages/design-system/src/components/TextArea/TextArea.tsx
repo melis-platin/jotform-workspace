@@ -4,7 +4,7 @@ import './TextArea.scss';
 
 export interface TextAreaProps extends Omit<TextareaHTMLAttributes<HTMLTextAreaElement>, 'size'> {
   size?: 'md' | 'lg';
-  height?: 'default' | 'compact' | 'tall';
+  height?: 'default' | 'compact' | 'message' | 'tall';
   status?: 'default' | 'error' | 'readonly';
   showCount?: boolean;
   showDrag?: boolean;

@@ -181,6 +181,12 @@
     height: 92px;
   }
 
+  // Compact message composer used when a label and helper copy sit directly above.
+  // Combined with the 36px label and 8px gap, it matches the 160px field group.
+  &--height-message {
+    height: 116px;
+  }
+
   &--height-tall {
     height: 156px;
   }

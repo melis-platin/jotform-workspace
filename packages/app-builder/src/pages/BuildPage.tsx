@@ -7350,7 +7350,7 @@ export function BuildPage({
                         )}
                         <div className="property-panel__field">
                           <DSFormField title="Message" description="Automatically added to the chat so users can send in one tap." size="md" showDescription showHelpText={false}>
-                            <DSTextArea size="md" rows={4} maxLength={300} showCount value={quickChatMessage} onChange={(e) => handlePropertyChange(selectedElement.id, 'Message', e.target.value)} />
+                            <DSTextArea size="md" height="message" maxLength={200} showCount value={quickChatMessage} onChange={(e) => handlePropertyChange(selectedElement.id, 'Message', e.target.value)} />
                           </DSFormField>
                         </div>
                       </div>
