@@ -7321,7 +7321,16 @@ export function BuildPage({
                     const quickChatMessage = String(selectedElement.properties['Message'] ?? '')
                     const buttonActionOptions = [
                       { value: 'Open WhatsApp', label: 'Open Whatsapp', icon: 'arrow-up-right-from-square-sm', category: 'arrows' },
-                      { value: 'Quick Chat', label: 'Quick Chat', icon: 'message-filled', category: 'communication', disabled: quickChatIsUnavailable },
+                      {
+                        value: 'Quick Chat',
+                        label: 'Quick Chat',
+                        icon: 'message-filled',
+                        category: 'communication',
+                        disabled: quickChatIsUnavailable,
+                        tooltip: quickChatIsUnavailable
+                          ? 'Quick Chat is available only when this button appears on all pages.'
+                          : undefined,
+                      },
                     ]
                     return (
                       <div className="property-panel__body property-panel__body--whatsapp">
@@ -7337,6 +7346,7 @@ export function BuildPage({
                                 value: action.value,
                                 label: action.label,
                                 disabled: action.disabled,
+                                tooltip: action.tooltip,
                                 leading: <Icon name={action.icon} category={action.category} size={20} />,
                               }))}
                             />

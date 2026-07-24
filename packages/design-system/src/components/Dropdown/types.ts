@@ -8,6 +8,8 @@ export interface DropdownOption {
   label: string;
   /** Excludes this option from selection while keeping it visible in the menu. */
   disabled?: boolean;
+  /** Explains why a visible option is unavailable. */
+  tooltip?: string;
   leading?: ReactNode;
   trailing?: ReactNode;
   /** Render a divider directly above this option in the menu. */

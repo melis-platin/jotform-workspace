@@ -172,6 +172,7 @@ export const DropdownSingle = forwardRef<DropdownHandle, DropdownSingleProps>(
                       role="option"
                       aria-selected={isSelected}
                       aria-disabled={isDisabled || undefined}
+                      title={opt.tooltip}
                       data-dd-index={i}
                       onMouseEnter={() => !isDisabled && onItemHover?.(opt.value)}
                       onMouseDown={(e) => {
