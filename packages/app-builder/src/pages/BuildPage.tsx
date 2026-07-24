@@ -3487,6 +3487,10 @@ export function BuildPage({
   const [mobileElementsSheet, setMobileElementsSheet] = useState(false)
   const [forceTargetPageId, setForceTargetPageId] = useState<string | null>(null)
   const [isMobileView, setIsMobileView] = useState(() => window.matchMedia('(max-width: 768px)').matches)
+  // An All Pages WhatsApp element keeps the precise position chosen by the app
+  // owner. It begins following the currently visible page only after canvas
+  // scrolling starts, and a new drag places it back under direct control.
+  const [whatsappFollowsCanvas, setWhatsappFollowsCanvas] = useState(false)
   const canvasRef = useRef<HTMLElement>(null)
 
   const pagesRef = useRef<AppPage[]>([])
@@ -5066,11 +5070,11 @@ export function BuildPage({
     .find((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)
   const whatsappDisplayPages = String(whatsappPageElement?.properties['Include Pages to Display'] ?? '')
 
-  // “All Pages” has one persisted WhatsApp instance, which follows the page
-  // the app owner is currently editing. Keeping it last preserves the expected
-  // page order while avoiding duplicate elements in the app data.
+  // “All Pages” has one persisted WhatsApp instance. Once canvas scrolling has
+  // started it follows the visible page and stays last in that page's order;
+  // before then, it remains exactly where the app owner dropped it.
   useEffect(() => {
-    if (whatsappDisplayPages !== 'All Pages') return
+    if (whatsappDisplayPages !== 'All Pages' || !whatsappFollowsCanvas) return
 
     setPages((prev) => {
       const whatsapp = prev.flatMap((page) => page.elements)
@@ -5091,12 +5095,11 @@ export function BuildPage({
             : { ...page, elements: elementsWithoutWhatsApp }
       })
     })
-  }, [activePageId, whatsappDisplayPages])
+  }, [activePageId, whatsappDisplayPages, whatsappFollowsCanvas])
 
   // The builder renders every page in one scrollable canvas. When WhatsApp is
-  // displayed on all pages, follow the page that occupies the largest visible
-  // portion of that canvas — including when the owner scrolls without using a
-  // page tab.
+  // displayed on all pages, scrolling makes it follow the page that occupies
+  // the largest visible portion of that canvas.
   useEffect(() => {
     if (whatsappDisplayPages !== 'All Pages') return
 
@@ -5132,12 +5135,14 @@ export function BuildPage({
       frameId = window.requestAnimationFrame(syncFocusedPageToViewport)
     }
 
-    requestViewportSync()
-    canvas.addEventListener('scroll', requestViewportSync, { passive: true })
-    window.addEventListener('resize', requestViewportSync)
+    const handleCanvasScroll = () => {
+      setWhatsappFollowsCanvas(true)
+      requestViewportSync()
+    }
+
+    canvas.addEventListener('scroll', handleCanvasScroll, { passive: true })
     return () => {
-      canvas.removeEventListener('scroll', requestViewportSync)
-      window.removeEventListener('resize', requestViewportSync)
+      canvas.removeEventListener('scroll', handleCanvasScroll)
       if (frameId !== null) window.cancelAnimationFrame(frameId)
     }
   }, [whatsappDisplayPages])
@@ -5491,6 +5496,9 @@ export function BuildPage({
       onDragStart: ({ source }) => {
         const data = source.data as DragSourceData
         setDragSession(data)
+        if (data.type === 'canvas' && data.componentId === WHATSAPP_PANEL_ITEM_ID) {
+          setWhatsappFollowsCanvas(false)
+        }
         if (data.type === 'panel') {
           setSelectedElementId(null)
           setRightPanel('preview')
