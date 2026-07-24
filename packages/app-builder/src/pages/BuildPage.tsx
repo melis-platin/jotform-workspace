@@ -7280,6 +7280,8 @@ export function BuildPage({
                   }
                   if (isWhatsApp && propertyTab === 'action') {
                     const buttonAction = String(selectedElement.properties['When a User Clicks'] ?? 'Open WhatsApp')
+                    const quickChatAppName = appTitle.trim() || 'Your business'
+                    const quickChatMessage = String(selectedElement.properties['Message'] ?? '')
                     const buttonActionOptions = [
                       { value: 'Open WhatsApp', label: 'Open Whatsapp', icon: 'arrow-up-right-from-square-sm', category: 'arrows' },
                       { value: 'Quick Chat', label: 'Quick Chat', icon: 'message-filled', category: 'communication' },
@@ -7299,9 +7301,39 @@ export function BuildPage({
                             />
                           </DSFormField>
                         </div>
+                        {buttonAction === 'Quick Chat' && (
+                          <div className="property-panel__field whatsapp-quick-chat-preview">
+                            <span className="whatsapp-quick-chat-preview__title">Quick Chat Preview</span>
+                            <div className="whatsapp-quick-chat-preview__frame">
+                              <div className="whatsapp-quick-chat-preview__chat" aria-label="Quick Chat preview">
+                                <div className="whatsapp-quick-chat-preview__header">
+                                  <div className="whatsapp-quick-chat-preview__identity">
+                                    <span className="whatsapp-quick-chat-preview__avatar">
+                                      <Icon name="whatsapp-filled" category="brands" size={24} />
+                                    </span>
+                                    <span className="whatsapp-quick-chat-preview__name">
+                                      <strong>{quickChatAppName}</strong>
+                                      <span><i />Online now</span>
+                                    </span>
+                                  </div>
+                                  <Icon name="xmark" category="general" size={20} />
+                                </div>
+                                <div className="whatsapp-quick-chat-preview__messages">
+                                  <span>Hi 👋 How can we help you today?</span>
+                                </div>
+                                <div className="whatsapp-quick-chat-preview__composer">
+                                  <span>{quickChatMessage || 'Type your message'}</span>
+                                  <span className="whatsapp-quick-chat-preview__send">
+                                    <Icon name="paper-plane-diagonal-filled" category="communication" size={16} />
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
                         <div className="property-panel__field">
                           <DSFormField title="Message" description="Automatically added to the chat so users can send in one tap." size="md" showDescription showHelpText={false}>
-                            <DSTextArea size="md" rows={4} maxLength={300} showCount value={String(selectedElement.properties['Message'] ?? '')} onChange={(e) => handlePropertyChange(selectedElement.id, 'Message', e.target.value)} />
+                            <DSTextArea size="md" rows={4} maxLength={300} showCount value={quickChatMessage} onChange={(e) => handlePropertyChange(selectedElement.id, 'Message', e.target.value)} />
                           </DSFormField>
                         </div>
                       </div>
