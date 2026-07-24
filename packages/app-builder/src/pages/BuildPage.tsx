@@ -5393,7 +5393,16 @@ export function BuildPage({
         ...page,
         elements: page.elements.map((el) =>
           el.id === elementId
-            ? { ...el, properties: { ...el.properties, [name]: value } }
+            ? (() => {
+                const properties = { ...el.properties, [name]: value }
+                const quickChatIsUnavailable = el.componentId === WHATSAPP_PANEL_ITEM_ID
+                  && String(properties['Display Style'] ?? 'Floating') === 'Button'
+                  && String(properties['Include Pages to Display'] ?? 'All Pages') !== 'All Pages'
+                if (quickChatIsUnavailable && properties['When a User Clicks'] === 'Quick Chat') {
+                  properties['When a User Clicks'] = 'Open WhatsApp'
+                }
+                return { ...el, properties }
+              })()
             : el
         ),
       }))
@@ -5401,7 +5410,16 @@ export function BuildPage({
     setHeaderActions((prev) =>
       prev.map((el) =>
         el.id === elementId
-          ? { ...el, properties: { ...el.properties, [name]: value } }
+          ? (() => {
+              const properties = { ...el.properties, [name]: value }
+              const quickChatIsUnavailable = el.componentId === WHATSAPP_PANEL_ITEM_ID
+                && String(properties['Display Style'] ?? 'Floating') === 'Button'
+                && String(properties['Include Pages to Display'] ?? 'All Pages') !== 'All Pages'
+              if (quickChatIsUnavailable && properties['When a User Clicks'] === 'Quick Chat') {
+                properties['When a User Clicks'] = 'Open WhatsApp'
+              }
+              return { ...el, properties }
+            })()
           : el
       )
     )
@@ -7297,11 +7315,13 @@ export function BuildPage({
                   }
                   if (isWhatsApp && propertyTab === 'action') {
                     const buttonAction = String(selectedElement.properties['When a User Clicks'] ?? 'Open WhatsApp')
+                    const quickChatIsUnavailable = String(selectedElement.properties['Display Style'] ?? 'Floating') === 'Button'
+                      && String(selectedElement.properties['Include Pages to Display'] ?? 'All Pages') !== 'All Pages'
                     const quickChatAppName = appTitle.trim() || 'Your business'
                     const quickChatMessage = String(selectedElement.properties['Message'] ?? '')
                     const buttonActionOptions = [
                       { value: 'Open WhatsApp', label: 'Open Whatsapp', icon: 'arrow-up-right-from-square-sm', category: 'arrows' },
-                      { value: 'Quick Chat', label: 'Quick Chat', icon: 'message-filled', category: 'communication' },
+                      { value: 'Quick Chat', label: 'Quick Chat', icon: 'message-filled', category: 'communication', disabled: quickChatIsUnavailable },
                     ]
                     return (
                       <div className="property-panel__body property-panel__body--whatsapp">
@@ -7309,10 +7329,14 @@ export function BuildPage({
                           <DSFormField title="Button Action" size="md" showDescription={false} showHelpText={false}>
                             <DSDropdownSingle
                               value={buttonAction}
-                              onChange={(value) => handlePropertyChange(selectedElement.id, 'When a User Clicks', value)}
+                              onChange={(value) => {
+                                if (quickChatIsUnavailable && value === 'Quick Chat') return
+                                handlePropertyChange(selectedElement.id, 'When a User Clicks', value)
+                              }}
                               options={buttonActionOptions.map((action) => ({
                                 value: action.value,
                                 label: action.label,
+                                disabled: action.disabled,
                                 leading: <Icon name={action.icon} category={action.category} size={20} />,
                               }))}
                             />
