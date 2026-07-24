@@ -7283,7 +7283,7 @@ export function BuildPage({
                           </DSFormField>
                         </div>
                         <div className="property-panel__field property-panel__field--inline">
-                          <DSFormField title="Set Availability" description="Show real online / away status" size="md" showDescription showHelpText={false}><DSToggle size="md" checked={Boolean(selectedElement.properties['Set Availability Hours'])} onChange={(e) => handlePropertyChange(selectedElement.id, 'Set Availability Hours', e.target.checked)} /></DSFormField>
+                          <DSFormField title="Set Availability" description="Show real online / away status" size="md" showDescription showHelpText={false}><DSToggle size="lg" checked={Boolean(selectedElement.properties['Set Availability Hours'])} onChange={(e) => handlePropertyChange(selectedElement.id, 'Set Availability Hours', e.target.checked)} /></DSFormField>
                           {Boolean(selectedElement.properties['Set Availability Hours']) && (() => {
                             const days = String(selectedElement.properties['Availability Days'] ?? 'M0,T1,W2,T3,F4').split(',')
                             const dayLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
@@ -7306,7 +7306,7 @@ export function BuildPage({
                           })()}
                         </div>
                         <div className="property-panel__field property-panel__field--inline">
-                          <DSFormField title="Shrink" description="Make element smaller." size="md" showDescription showHelpText={false}><DSToggle size="md" checked={Boolean(selectedElement.properties['Shrinked'])} onChange={(e) => handlePropertyChange(selectedElement.id, 'Shrinked', e.target.checked)} /></DSFormField>
+                          <DSFormField title="Shrink" description="Make element smaller." size="md" showDescription showHelpText={false}><DSToggle size="lg" checked={Boolean(selectedElement.properties['Shrinked'])} onChange={(e) => handlePropertyChange(selectedElement.id, 'Shrinked', e.target.checked)} /></DSFormField>
                         </div>
                       </div>
                     )
