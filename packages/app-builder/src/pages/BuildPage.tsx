@@ -5821,7 +5821,8 @@ export function BuildPage({
   const whatsappPreviewComponent = whatsappPreviewElement
     ? ComponentRegistry.get(whatsappPreviewElement.componentId)
     : null
-  const allPagesWhatsAppPreview = String(whatsappPreviewElement?.properties['Display Style'] ?? 'Floating') !== 'Button'
+  const whatsappPreviewDisplayStyle = String(whatsappPreviewElement?.properties['Display Style'] ?? 'Floating')
+  const allPagesWhatsAppPreview = whatsappPreviewDisplayStyle === 'Floating'
     && String(whatsappPreviewElement?.properties['Include Pages to Display'] ?? 'All Pages') === 'All Pages'
   const allPagesWhatsAppOverlay = allPagesWhatsAppPreview
     && whatsappPreviewElement
