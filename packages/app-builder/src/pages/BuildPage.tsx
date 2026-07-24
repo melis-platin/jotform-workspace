@@ -7224,8 +7224,14 @@ export function BuildPage({
                         <div className="property-panel__field">
                           <DSFormField title="Show on" size="md" showDescription={false} showHelpText={false}>
                             <div className="whatsapp-properties__segmented whatsapp-properties__segmented--2">
-                              <button type="button" className={`whatsapp-properties__segment${showOnAllPages ? ' whatsapp-properties__segment--selected' : ''}`} onClick={() => handlePropertyChange(selectedElement.id, 'Include Pages to Display', 'All Pages')}>All Pages</button>
-                              <button type="button" className={`whatsapp-properties__segment${!showOnAllPages ? ' whatsapp-properties__segment--selected' : ''}`} onClick={() => handlePropertyChange(selectedElement.id, 'Include Pages to Display', currentPageId)}>This Page Only</button>
+                              <button type="button" className={`whatsapp-properties__segment${showOnAllPages ? ' whatsapp-properties__segment--selected' : ''}`} onClick={() => handlePropertyChange(selectedElement.id, 'Include Pages to Display', 'All Pages')}>
+                                <Icon name="pages-filled" category="forms-files" size={16} />
+                                All Pages
+                              </button>
+                              <button type="button" className={`whatsapp-properties__segment${!showOnAllPages ? ' whatsapp-properties__segment--selected' : ''}`} onClick={() => handlePropertyChange(selectedElement.id, 'Include Pages to Display', currentPageId)}>
+                                <Icon name="document-filled" category="forms-files" size={16} />
+                                This Page Only
+                              </button>
                             </div>
                           </DSFormField>
                           <span className="whatsapp-properties__show-on-help">

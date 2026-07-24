@@ -7576,6 +7576,10 @@ body {
 .whatsapp-properties__segmented--2 { grid-template-columns: repeat(2, 1fr); }
 .whatsapp-properties__segmented--3 { grid-template-columns: repeat(3, 1fr); }
 .whatsapp-properties__segment {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ds-space-xs);
   border: 0;
   border-right: 1px solid var(--gray-700);
   background: transparent;
