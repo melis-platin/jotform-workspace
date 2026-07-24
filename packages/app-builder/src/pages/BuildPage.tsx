@@ -7209,6 +7209,7 @@ export function BuildPage({
                   if (isWhatsApp && propertyTab === 'general') {
                     const elementPage = pages.find((page) => page.elements.some((element) => element.id === selectedElement.id))
                     const currentPageId = elementPage?.id ?? activePageId
+                    const currentPageName = elementPage?.name ?? pages.find((page) => page.id === activePageId)?.name ?? 'this page'
                     const showOnAllPages = String(selectedElement.properties['Include Pages to Display'] ?? 'All Pages') === 'All Pages'
                     return (
                       <div className="property-panel__body property-panel__body--whatsapp">
@@ -7248,7 +7249,7 @@ export function BuildPage({
                           </DSFormField>
                           <span className="whatsapp-properties__show-on-help">
                             <Icon name="info-circle-filled" category="general" size={16} />
-                            {showOnAllPages ? 'Appears on every page, including ones you add later.' : 'Appears only on this page.'}
+                            {showOnAllPages ? 'Appears on every page, including ones you add later.' : `Only appears on the page you placed it on (${currentPageName}).`}
                           </span>
                         </div>
                         <div className="property-panel__field property-panel__field--inline">
