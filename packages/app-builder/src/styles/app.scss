@@ -5717,6 +5717,13 @@ body {
   --ds-border-selected: var(--border-info);
   --ds-border-width-selected: 4px;
 
+  &--selected {
+    // A selected element owns the canvas action rail. Lift the entire stacking
+    // context so the Properties and Delete controls never sit beneath a later
+    // canvas element (including shrinked, side-by-side layouts).
+    z-index: 10;
+  }
+
   &--shrinked {
     // Width/flow is owned by the shared .themes-view__section--shrinked rule
     // (app-elements, @container app-content) — this element also carries that
