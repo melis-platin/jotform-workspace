@@ -348,6 +348,25 @@
   }
 }
 
+.jf-dropdown__option-tooltip {
+  position: fixed;
+  z-index: 1200;
+  box-sizing: border-box;
+  max-inline-size: calc(var(--spacing-4xl) * 4);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  transform: translate(-50%, calc(-100% - var(--spacing-2xs)));
+  border-radius: var(--radius-sm);
+  background: var(--secondary-background-dark);
+  box-shadow: var(--shadow-md);
+  color: var(--secondary-text-white);
+  font-family: var(--font-family-circular);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-book);
+  line-height: var(--line-height-xs);
+  text-align: center;
+  pointer-events: none;
+}
+
 // Sheet wrappers
 .jf-dropdown__sheet-root {
   position: fixed;

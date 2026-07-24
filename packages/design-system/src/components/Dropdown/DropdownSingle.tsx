@@ -1,4 +1,5 @@
-import { Fragment, forwardRef, useImperativeHandle, type ReactNode } from 'react';
+import { Fragment, forwardRef, useEffect, useImperativeHandle, useRef, useState, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import { Icon } from '../Icon/Icon';
 import { DropdownWrapper } from './DropdownWrapper';
 import { DropdownMenuShell } from './DropdownMenuShell';
@@ -36,6 +37,12 @@ export interface DropdownHandle {
   focus: () => void;
 }
 
+interface DropdownOptionTooltip {
+  content: string;
+  left: number;
+  top: number;
+}
+
 export const DropdownSingle = forwardRef<DropdownHandle, DropdownSingleProps>(
   (
     {
@@ -64,6 +71,20 @@ export const DropdownSingle = forwardRef<DropdownHandle, DropdownSingleProps>(
     const readOnly = status === 'readonly';
     const selectedIdx = options.findIndex((o) => o.value === value);
     const selected = selectedIdx >= 0 ? options[selectedIdx] : null;
+    const [optionTooltip, setOptionTooltip] = useState<DropdownOptionTooltip | null>(null);
+    const optionTooltipTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const dismissOptionTooltip = () => {
+      if (optionTooltipTimerRef.current) {
+        clearTimeout(optionTooltipTimerRef.current);
+        optionTooltipTimerRef.current = null;
+      }
+      setOptionTooltip(null);
+    };
+
+    useEffect(() => () => {
+      if (optionTooltipTimerRef.current) clearTimeout(optionTooltipTimerRef.current);
+    }, []);
 
     const {
       open,
@@ -146,11 +167,15 @@ export const DropdownSingle = forwardRef<DropdownHandle, DropdownSingleProps>(
               menuRef={menuRef}
               triggerRef={triggerRef}
               onClose={() => {
+                dismissOptionTooltip();
                 setOpen(false);
                 onItemHoverEnd?.();
               }}
               onKeyDown={handleMenuKey}
-              onMouseLeave={() => onItemHoverEnd?.()}
+              onMouseLeave={() => {
+                dismissOptionTooltip();
+                onItemHoverEnd?.();
+              }}
             >
               {options.map((opt, i) => {
                 const isSelected = opt.value === value;
@@ -172,9 +197,23 @@ export const DropdownSingle = forwardRef<DropdownHandle, DropdownSingleProps>(
                       role="option"
                       aria-selected={isSelected}
                       aria-disabled={isDisabled || undefined}
-                      title={opt.tooltip}
                       data-dd-index={i}
-                      onMouseEnter={() => !isDisabled && onItemHover?.(opt.value)}
+                      onMouseEnter={(event) => {
+                        if (!isDisabled) {
+                          onItemHover?.(opt.value);
+                          return;
+                        }
+                        if (!opt.tooltip) return;
+
+                        dismissOptionTooltip();
+                        const { left, top, width } = event.currentTarget.getBoundingClientRect();
+                        optionTooltipTimerRef.current = setTimeout(() => {
+                          setOptionTooltip({ content: opt.tooltip!, left: left + width / 2, top });
+                        }, 1000);
+                      }}
+                      onMouseLeave={() => {
+                        if (isDisabled) dismissOptionTooltip();
+                      }}
                       onMouseDown={(e) => {
                         e.preventDefault();
                         if (isDisabled) return;
@@ -196,6 +235,16 @@ export const DropdownSingle = forwardRef<DropdownHandle, DropdownSingleProps>(
             </DropdownMenuShell>
           )}
         </div>
+        {optionTooltip && createPortal(
+          <span
+            className="jf-dropdown__option-tooltip"
+            role="tooltip"
+            style={{ left: optionTooltip.left, top: optionTooltip.top }}
+          >
+            {optionTooltip.content}
+          </span>,
+          document.body,
+        )}
       </DropdownWrapper>
     );
   }
