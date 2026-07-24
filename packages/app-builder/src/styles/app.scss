@@ -7701,14 +7701,15 @@ body {
   box-sizing: border-box;
   height: calc(var(--spacing-4xl) + var(--ds-space-2xs));
   overflow: hidden;
-  padding: var(--ds-space-sm) var(--ds-space-md);
+  padding: var(--ds-space-sm) var(--ds-space-xs);
   border: 1px solid #c8ceed;
   border-radius: var(--radius-sm);
   background: var(--secondary-background-white);
   color: #0a1551;
-  font-size: var(--ds-font-size-sm);
-  line-height: var(--ds-line-height-sm);
-  text-overflow: ellipsis;
+  font-size: var(--font-size-2xs);
+  line-height: var(--line-height-2xs);
+  letter-spacing: calc(var(--ds-space-3xs) / -8);
+  text-overflow: clip;
   white-space: nowrap;
 }
 
