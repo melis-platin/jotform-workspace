@@ -7204,7 +7204,7 @@ export function BuildPage({
                         </div>
                         {renderWhatsAppStyleOptions('Size', 'Size', ['Small', 'Medium', 'Large'])}
                         {renderWhatsAppStyleOptions('Button Width', 'Button Width', ['Auto', 'Full'])}
-                        {renderWhatsAppStyleOptions('Alignment', 'Alignment', ['Left', 'Right'])}
+                        {renderWhatsAppStyleOptions('Alignment', 'Button Alignment', ['Left', 'Center', 'Right'])}
                       </> : <>
                         {renderWhatsAppStyleOptions('Size', 'Size', ['Small', 'Medium', 'Large'])}
                         {renderWhatsAppStyleOptions('Alignment', 'Alignment', ['Left', 'Right'])}
