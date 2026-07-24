@@ -7559,6 +7559,8 @@ body {
 }
 
 .build-page__properties--whatsapp .property-panel__field {
+  padding-top: var(--ds-space-xl);
+  padding-bottom: var(--ds-space-xl);
   padding-right: var(--ds-space-md);
   padding-left: var(--ds-space-md);
 }
