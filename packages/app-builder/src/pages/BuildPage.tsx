@@ -7209,7 +7209,16 @@ export function BuildPage({
                   if (isWhatsApp && propertyTab === 'general') {
                     const elementPage = pages.find((page) => page.elements.some((element) => element.id === selectedElement.id))
                     const currentPageId = elementPage?.id ?? activePageId
-                    const currentPageName = elementPage?.name ?? pages.find((page) => page.id === activePageId)?.name ?? 'this page'
+                    const dynamicSourceElement = elementPage?.dynamic
+                      ? pages.flatMap((page) => page.elements).find((element) => element.id === elementPage.dynamicSourceElementId)
+                      : undefined
+                    const dynamicItems = elementPage?.dynamic ? resolveListItems(dynamicSourceElement) : []
+                    const dynamicIndex = elementPage?.dynamic
+                      ? Math.min(dynamicPreviewIndex[elementPage.id] ?? 0, Math.max(dynamicItems.length - 1, 0))
+                      : 0
+                    const currentPageName = elementPage?.dynamic
+                      ? dynamicItems[dynamicIndex]?.title || elementPage.name
+                      : elementPage?.name ?? pages.find((page) => page.id === activePageId)?.name ?? 'this page'
                     const showOnAllPages = String(selectedElement.properties['Include Pages to Display'] ?? 'All Pages') === 'All Pages'
                     return (
                       <div className="property-panel__body property-panel__body--whatsapp">
