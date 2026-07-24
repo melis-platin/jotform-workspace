@@ -7257,6 +7257,7 @@ export function BuildPage({
                           </DSFormField>
                         </div>
                         {renderWhatsAppStyleOptions('Size', 'Size', ['Small', 'Medium', 'Large'])}
+                        {renderWhatsAppStyleOptions('Button Width', 'Button Width', ['Auto', 'Full'])}
                         {renderWhatsAppStyleOptions('Alignment', 'Alignment', ['Left', 'Right'])}
                       </> : <>
                         {renderWhatsAppStyleOptions('Size', 'Size', ['Small', 'Medium', 'Large'])}
