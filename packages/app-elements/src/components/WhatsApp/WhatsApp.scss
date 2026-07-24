@@ -195,7 +195,9 @@
   min-width: calc(var(--space-10) * 3);
   height: var(--space-10);
   padding: 0 var(--space-3);
-  border-radius: var(--radius-sm);
+  // Match the App Designer's default Button corner token. This intentionally
+  // applies only to the Button display style; Floating keeps its round CTA.
+  border-radius: var(--radius-lg);
   background: var(--whatsapp-fill);
   color: var(--fg-inverse);
 }
