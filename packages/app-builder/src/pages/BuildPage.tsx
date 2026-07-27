@@ -2333,7 +2333,7 @@ function isAutoFlowElement(el: CanvasElement): boolean {
 }
 
 function isElementShrinked(el: CanvasElement): boolean {
-  return el.properties['Shrinked'] === true
+  return el.componentId !== WHATSAPP_PANEL_ITEM_ID && el.properties['Shrinked'] === true
 }
 
 // Returns the pair partner's index within page.elements, or -1 if unpaired.
@@ -5493,7 +5493,7 @@ export function BuildPage({
 
         const withShrinked = (el: CanvasElement, shrinked: boolean): CanvasElement => ({
           ...el,
-          properties: { ...el.properties, Shrinked: shrinked },
+          properties: { ...el.properties, Shrinked: el.componentId === WHATSAPP_PANEL_ITEM_ID ? false : shrinked },
         })
 
         // --- Drop onto a specific header action (reorder / insert at position) ---
@@ -7349,9 +7349,6 @@ export function BuildPage({
                               </div>
                             </div>
                           })()}
-                        </div>
-                        <div className="property-panel__field property-panel__field--inline">
-                          <DSFormField title="Shrink" description="Make element smaller." size="md" showDescription showHelpText={false}><DSToggle size="lg" checked={Boolean(selectedElement.properties['Shrinked'])} onChange={(e) => handlePropertyChange(selectedElement.id, 'Shrinked', e.target.checked)} /></DSFormField>
                         </div>
                       </div>
                     )

@@ -28,7 +28,6 @@ ComponentRegistry.register({
     { name: 'Availability Days', type: 'text', default: 'M0,T1,W2,T3,F4' },
     { name: 'Open Time', type: 'text', default: '09:00 AM' },
     { name: 'Close Time', type: 'text', default: '18:00 PM' },
-    { name: 'Shrinked', type: 'boolean', default: false },
   ],
 
   states: [],
@@ -61,7 +60,6 @@ ComponentRegistry.register({
       <WhatsApp
         phoneNumber={phoneNumber}
         message={message}
-        shrinked={props['Shrinked'] as boolean}
         displayStyle={String(props['Display Style'] ?? 'Floating')}
         size={String(props['Size'] ?? 'Medium')}
         alignment={String(props['Alignment'] ?? 'Right')}

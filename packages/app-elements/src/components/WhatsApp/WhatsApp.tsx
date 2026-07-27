@@ -6,7 +6,6 @@ import './WhatsApp.scss';
 export interface WhatsAppProps {
   phoneNumber?: string;
   message?: string;
-  shrinked?: boolean;
   displayStyle?: string;
   size?: string;
   alignment?: string;
@@ -81,7 +80,6 @@ function isWithinAvailability(
 export const WhatsApp: FC<WhatsAppProps> = ({
   phoneNumber = '',
   message = '',
-  shrinked = false,
   displayStyle = 'Floating',
   size = 'Medium',
   alignment = 'Right',
@@ -108,7 +106,6 @@ export const WhatsApp: FC<WhatsAppProps> = ({
   );
   const whatsappClassName = [
     'jf-whatsapp',
-    shrinked && 'jf-whatsapp--shrinked',
     !isButtonStyle && !showLabel && 'jf-whatsapp--no-label',
     !isButtonStyle && showLabel && `jf-whatsapp--bubble-${bubblePlacement.toLowerCase()}`,
     isButtonStyle

@@ -15,14 +15,6 @@
   width: 100%;
   font-family: var(--font-family);
 
-  &--shrinked {
-    // The shared shrinked section owns the two-column width. Filling that
-    // column keeps WhatsApp equal to its paired element instead of preserving
-    // a smaller, fixed-width control.
-    width: 100%;
-    min-width: 0;
-  }
-
   &--button {
     gap: var(--space-1);
   }
