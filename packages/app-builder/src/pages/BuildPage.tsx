@@ -2151,7 +2151,7 @@ function WhatsAppStartModal({
   onConfirm,
 }: {
   open: boolean
-  selectedStyle: WhatsAppStartStyle
+  selectedStyle: WhatsAppStartStyle | null
   onStyleChange: (style: WhatsAppStartStyle) => void
   onClose: () => void
   onConfirm: () => void
@@ -2242,7 +2242,16 @@ function WhatsAppStartModal({
 
         <footer className="whatsapp-start-modal__footer">
           <DSButton variant="ghost" colorScheme="secondary" shape="rectangle" size="md" onClick={onClose}>Cancel</DSButton>
-          <DSButton variant="filled" colorScheme="primary" shape="rectangle" size="md" onClick={onConfirm}>Add</DSButton>
+          <DSButton
+            variant="filled"
+            colorScheme="primary"
+            shape="rectangle"
+            size="md"
+            onClick={onConfirm}
+            disabled={selectedStyle === null}
+          >
+            Add
+          </DSButton>
         </footer>
       </section>
     </div>,
@@ -3616,14 +3625,14 @@ export function BuildPage({
   const [dragSession, setDragSession] = useState<DragSourceData | null>(null)
   const [floatingWhatsAppScrollTarget, setFloatingWhatsAppScrollTarget] = useState<string | null>(null)
   const [whatsappStartElementId, setWhatsAppStartElementId] = useState<string | null>(null)
-  const [whatsappStartStyle, setWhatsAppStartStyle] = useState<WhatsAppStartStyle>('Floating')
+  const [whatsappStartStyle, setWhatsAppStartStyle] = useState<WhatsAppStartStyle | null>(null)
   const isDragging = dragSession !== null
   const isWhatsAppPanelDrag = dragSession?.type === 'panel'
     && dragSession.componentId === WHATSAPP_PANEL_ITEM_ID
   const draggedCanvasId = dragSession?.type === 'canvas' ? dragSession.elementId : null
 
   const openWhatsAppStartModal = useCallback((elementId: string) => {
-    setWhatsAppStartStyle('Floating')
+    setWhatsAppStartStyle(null)
     setWhatsAppStartElementId(elementId)
   }, [])
 
@@ -3642,7 +3651,8 @@ export function BuildPage({
 
   const confirmWhatsAppStartModal = useCallback(() => {
     const elementId = whatsappStartElementId
-    if (!elementId) return
+    const selectedStyle = whatsappStartStyle
+    if (!elementId || !selectedStyle) return
     setPages((prev) => prev.map((page) => ({
       ...page,
       elements: page.elements.map((element) => element.id === elementId
@@ -3650,9 +3660,9 @@ export function BuildPage({
             ...element,
             properties: {
               ...element.properties,
-              'Display Style': whatsappStartStyle,
-              Size: whatsappStartStyle === 'Floating' ? 'Large' : 'Medium',
-              ...(whatsappStartStyle === 'Button' ? { 'Button Text': 'Chat on WhatsApp' } : {}),
+              'Display Style': selectedStyle,
+              Size: selectedStyle === 'Floating' ? 'Large' : 'Medium',
+              ...(selectedStyle === 'Button' ? { 'Button Text': 'Chat on WhatsApp' } : {}),
             },
           }
         : element),

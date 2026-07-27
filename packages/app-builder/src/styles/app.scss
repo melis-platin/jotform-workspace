@@ -19782,10 +19782,6 @@ body.builder--phone-only {
 .whatsapp-start-modal__option:hover .whatsapp-start-modal__illustration,
 .whatsapp-start-modal__option--selected .whatsapp-start-modal__illustration {
   border-color: transparent;
-  box-shadow: none;
-}
-
-.whatsapp-start-modal__option--selected .whatsapp-start-modal__illustration {
   box-shadow: 0 0 0 var(--spacing-3xs) var(--blue-500);
 }
 
