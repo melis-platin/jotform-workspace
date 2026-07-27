@@ -5465,16 +5465,25 @@ export function BuildPage({
             || type === 'header-actions'
             || type === 'header-action'
         })
-        if (!innerTarget) return
-
-        const targetData = innerTarget.data as
+        // The empty-page affordance is rendered above the page drop target. In
+        // a native drag this can occasionally leave the final target list empty
+        // for a frame. A WhatsApp panel drag must still be accepted: it is a
+        // page-level floating control, so use the focused page as its safe
+        // fallback destination rather than discarding the drop.
+        const fallbackPage = pagesRef.current.find((page) => page.id === activePageId)
+        const targetData = (innerTarget?.data as
           | { type: 'element'; elementId: string; pageId: string }
           | { type: 'page'; pageId: string }
           | { type: 'header-actions' }
           | { type: 'header-action'; elementId: string }
+          | undefined)
+          ?? (data.type === 'panel' && data.componentId === WHATSAPP_PANEL_ITEM_ID && fallbackPage
+            ? { type: 'page' as const, pageId: fallbackPage.id }
+            : undefined)
+        if (!targetData) return
 
         const edge =
-          targetData.type === 'element' || targetData.type === 'header-action'
+          innerTarget && (targetData.type === 'element' || targetData.type === 'header-action')
             ? extractClosestEdge(innerTarget.data)
             : null
         const isHorizontal = edge === 'left' || edge === 'right'
@@ -5783,7 +5792,7 @@ export function BuildPage({
         if (isFloatingWhatsApp) setFloatingWhatsAppScrollTarget(sourceId)
       },
     })
-  }, [appTitle])
+  }, [activePageId, appTitle])
 
   useEffect(() => {
     const canvas = canvasRef.current
