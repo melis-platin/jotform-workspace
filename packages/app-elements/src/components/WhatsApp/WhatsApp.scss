@@ -2,7 +2,7 @@
   --whatsapp-fill: #25D366;
   --whatsapp-label-width: calc(var(--space-10) * 5 + var(--space-3));
   --whatsapp-label-height: var(--space-8);
-  --whatsapp-icon-size: calc(var(--space-10) + var(--space-3));
+  --whatsapp-icon-size: calc(var(--space-10) + var(--space-1));
   --whatsapp-icon-glyph-size: var(--space-6);
   --whatsapp-control-width: calc(var(--whatsapp-label-width) + var(--whatsapp-icon-size) + var(--space-1));
   --whatsapp-presence-size: var(--space-2);
@@ -203,7 +203,7 @@
 }
 
 .jf-whatsapp--button-size-small .jf-whatsapp__cta { height: var(--space-8); }
-.jf-whatsapp--button-size-medium .jf-whatsapp__cta { height: var(--space-10); }
+.jf-whatsapp--button-size-medium .jf-whatsapp__cta { height: calc(var(--space-10) + var(--space-1)); }
 // Large is shared by Icon & Text and Icon Only: both keep the same 56px
 // WhatsApp action height through the canvas and every preview surface.
 .jf-whatsapp--button-size-large .jf-whatsapp__cta { height: calc(var(--space-12) + var(--space-2)); }
