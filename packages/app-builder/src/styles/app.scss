@@ -6207,6 +6207,15 @@ body,
   pointer-events: none;
 }
 
+// A newly inserted WhatsApp element is selected so its configuration state is
+// immediately understandable. Keep the disabled CTA fully visible in that
+// state; once it is unselected, the component's native disabled opacity
+// communicates that a valid phone number is still required.
+.build-page__canvas-element--selected[data-component-id='whatsapp']
+  .jf-whatsapp__cta:disabled {
+  opacity: 1;
+}
+
 // Standard buttons select on the full-width slot, not the button itself, so the
 // selection wrapper is consistent regardless of Width (Auto = content-width, Full
 // = stretched) and the button's own corner radius. A fixed --radius-md slot (like
