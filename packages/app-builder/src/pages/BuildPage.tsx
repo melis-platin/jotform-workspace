@@ -6604,6 +6604,7 @@ export function BuildPage({
               <span className="build-page__preview-btn-tooltip">Live Preview</span>
             </button>
           </div>
+          {isWhatsAppPanelDrag && <div className="build-page__whatsapp-drag-scrim" aria-hidden="true" />}
           {isWhatsAppPanelDrag && (() => {
             const whatsapp = ComponentRegistry.get(WHATSAPP_PANEL_ITEM_ID)
             if (!whatsapp) return null

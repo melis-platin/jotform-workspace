@@ -5837,6 +5837,14 @@ body,
 // is clear; the dashed selected border still distinguishes it from an inserted
 // element. The lower-opacity state applies only after an unconfigured element
 // has been dropped and unselected.
+.build-page__whatsapp-drag-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  background: color-mix(in srgb, var(--fg-primary) 10%, transparent);
+}
+
 .build-page__whatsapp-drop-preview {
   position: fixed;
   right: var(--space-5);
