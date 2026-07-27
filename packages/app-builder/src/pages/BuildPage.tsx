@@ -7234,6 +7234,7 @@ export function BuildPage({
                                   handlePropertyChange(selectedElement.id, 'Size', 'Large')
                                 }
                                 if (property === 'Display Style' && option === 'Button') {
+                                  handlePropertyChange(selectedElement.id, 'Size', 'Medium')
                                   const currentButtonText = String(selectedElement.properties['Button Text'] ?? '')
                                   if (!currentButtonText || currentButtonText === 'Message us' || currentButtonText === 'Message us on WhatsApp') {
                                     handlePropertyChange(selectedElement.id, 'Button Text', 'Chat on WhatsApp')
