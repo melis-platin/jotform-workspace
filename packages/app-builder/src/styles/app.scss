@@ -6173,6 +6173,15 @@ body {
   cursor: pointer;
 }
 
+// A disabled native button does not consistently dispatch pointer/click events
+// to its ancestors. In the builder that CTA is the WhatsApp element's selection
+// surface, so let its wrapper receive the interaction instead. This is scoped
+// to the editing canvas: the real disabled state remains intact in preview.
+.build-page__canvas-element[data-component-id='whatsapp']
+  .jf-whatsapp__cta:disabled {
+  pointer-events: none;
+}
+
 // Standard buttons select on the full-width slot, not the button itself, so the
 // selection wrapper is consistent regardless of Width (Auto = content-width, Full
 // = stretched) and the button's own corner radius. A fixed --radius-md slot (like

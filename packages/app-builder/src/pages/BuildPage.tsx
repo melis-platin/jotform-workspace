@@ -2413,7 +2413,9 @@ const SortableElement = memo(function SortableElement({
 }) {
   const comp = ComponentRegistry.get(element.componentId)
   const isWhatsApp = element.componentId === WHATSAPP_PANEL_ITEM_ID
-  const isShrinked = element.properties['Shrinked'] === true
+  // WhatsApp no longer supports the legacy Shrinked setting. Keep old saved
+  // snapshots from accidentally applying the generic shrinked canvas layout.
+  const isShrinked = !isWhatsApp && element.properties['Shrinked'] === true
   const isFlow = isAutoFlowElement(element)
   const sectionRef = useRef<HTMLElement>(null)
   const handleRef = useRef<HTMLDivElement>(null)
