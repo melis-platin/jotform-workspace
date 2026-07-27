@@ -2214,9 +2214,24 @@ function WhatsAppStartModal({
                   onClick={() => onStyleChange(option.style)}
                 >
                   <span className={`whatsapp-start-modal__illustration whatsapp-start-modal__illustration--${option.style.toLowerCase()}`} aria-hidden="true">
-                    <span className="whatsapp-start-modal__illustration-top" />
-                    <span className="whatsapp-start-modal__illustration-line whatsapp-start-modal__illustration-line--first" />
-                    <span className="whatsapp-start-modal__illustration-line whatsapp-start-modal__illustration-line--second" />
+                    <span className="whatsapp-start-modal__illustration-appbar">
+                      <span className="whatsapp-start-modal__illustration-app-icon" />
+                      <span className="whatsapp-start-modal__illustration-app-name" />
+                      <span className="whatsapp-start-modal__illustration-app-action" />
+                    </span>
+                    <span className="whatsapp-start-modal__illustration-hero">
+                      <span className="whatsapp-start-modal__illustration-eyebrow" />
+                      <span className="whatsapp-start-modal__illustration-title" />
+                      <span className="whatsapp-start-modal__illustration-title whatsapp-start-modal__illustration-title--short" />
+                      <span className="whatsapp-start-modal__illustration-hero-button" />
+                    </span>
+                    <span className="whatsapp-start-modal__illustration-card">
+                      <span className="whatsapp-start-modal__illustration-card-icon" />
+                      <span className="whatsapp-start-modal__illustration-card-copy">
+                        <span />
+                        <span />
+                      </span>
+                    </span>
                     <span className="whatsapp-start-modal__illustration-cta">
                       <Icon name="whatsapp-filled" category="brands" size={option.style === 'Floating' ? 22 : 18} />
                       {option.style === 'Button' && <span>Chat with us</span>}
