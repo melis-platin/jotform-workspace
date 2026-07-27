@@ -3481,6 +3481,8 @@ export function BuildPage({
   const [dragSession, setDragSession] = useState<DragSourceData | null>(null)
   const [floatingWhatsAppScrollTarget, setFloatingWhatsAppScrollTarget] = useState<string | null>(null)
   const isDragging = dragSession !== null
+  const isWhatsAppPanelDrag = dragSession?.type === 'panel'
+    && dragSession.componentId === WHATSAPP_PANEL_ITEM_ID
   const draggedCanvasId = dragSession?.type === 'canvas' ? dragSession.elementId : null
   const headerActionsSlotRef = useRef<HTMLDivElement>(null)
   const [headerSlotDropState, setHeaderSlotDropState] = useState<'idle' | 'accept' | 'reject'>('idle')
@@ -6517,6 +6519,16 @@ export function BuildPage({
               <span className="build-page__preview-btn-tooltip">Live Preview</span>
             </button>
           </div>
+          {isWhatsAppPanelDrag && (() => {
+            const whatsapp = ComponentRegistry.get(WHATSAPP_PANEL_ITEM_ID)
+            if (!whatsapp) return null
+            const preview = createCanvasElement(whatsapp, 'whatsapp-drag-preview')
+            return (
+              <div className="build-page__whatsapp-drop-preview" aria-hidden="true">
+                {whatsapp.render(preview.variants, preview.properties, preview.states)}
+              </div>
+            )
+          })()}
           {rightPanel === 'navigation' ? (
           /* Navigation preview: the left builder area becomes a live preview of
              the app, mirroring the panel's Mobile/Desktop tab (via previewDevice).

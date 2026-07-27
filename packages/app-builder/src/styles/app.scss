@@ -5772,8 +5772,50 @@ body {
   right: calc(var(--build-page-right-panel-width) + var(--space-5));
 }
 
+// Dragging WhatsApp from the element panel reserves its fixed placement before
+// anything is dropped. The subtle skeleton and dashed selected border make the
+// destination clear without competing with the drag image under the pointer.
+.build-page__whatsapp-drop-preview {
+  position: fixed;
+  right: var(--space-5);
+  bottom: var(--build-page-canvas-bottom-inset);
+  z-index: 11;
+  width: fit-content;
+  pointer-events: none;
+  opacity: 0.48;
+
+  .jf-whatsapp,
+  .jf-whatsapp__main,
+  .jf-whatsapp__control {
+    width: fit-content;
+  }
+
+  .jf-whatsapp__main {
+    box-sizing: border-box;
+    padding: var(--space-1);
+    border: 2px dashed var(--border-info);
+    border-radius: var(--radius-sm);
+  }
+
+  .jf-whatsapp__cta:disabled {
+    opacity: 1;
+  }
+
+  .jf-whatsapp__notice {
+    display: none;
+  }
+}
+
+.build-page--right-panel-visible .build-page__whatsapp-drop-preview {
+  right: calc(var(--build-page-right-panel-width) + var(--space-5));
+}
+
 @media (max-width: 768px) {
   .build-page__canvas-element:has(> .build-page__canvas-element-content > .jf-whatsapp:not(.jf-whatsapp--button)) {
+    bottom: var(--space-5);
+  }
+
+  .build-page__whatsapp-drop-preview {
     bottom: var(--space-5);
   }
 }
