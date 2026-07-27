@@ -5455,7 +5455,16 @@ export function BuildPage({
       onDrop: ({ source, location }) => {
         setDragSession(null)
         const data = source.data as DragSourceData
-        const innerTarget = location.current.dropTargets[0]
+        // A drop can surface decorative children before the actual canvas
+        // target. Select the first valid builder target so panel elements are
+        // reliably added when dropped on either a page or an existing element.
+        const innerTarget = location.current.dropTargets.find((target) => {
+          const type = (target.data as { type?: string }).type
+          return type === 'element'
+            || type === 'page'
+            || type === 'header-actions'
+            || type === 'header-action'
+        })
         if (!innerTarget) return
 
         const targetData = innerTarget.data as
@@ -5669,6 +5678,9 @@ export function BuildPage({
           const comp = ComponentRegistry.get(data.componentId)
           if (!comp) return
           const newEl = createCanvasElement(comp, nextElementId(pagesRef.current, headerActionsRef.current))
+          if (data.componentId === WHATSAPP_PANEL_ITEM_ID) {
+            newEl.properties.Message = createDefaultWhatsAppMessage(appTitle)
+          }
           const targetPageId = (targetData as { pageId: string }).pageId
           const isFloatingWhatsApp = data.componentId === WHATSAPP_PANEL_ITEM_ID
             && String(newEl.properties['Display Style'] ?? 'Floating') === 'Floating'
@@ -5771,7 +5783,7 @@ export function BuildPage({
         if (isFloatingWhatsApp) setFloatingWhatsAppScrollTarget(sourceId)
       },
     })
-  }, [])
+  }, [appTitle])
 
   useEffect(() => {
     const canvas = canvasRef.current
