@@ -229,6 +229,13 @@ const CAMP_CALLBACK_FIELDS = [
   { name: 'topic', label: 'Question', type: 'textarea', placeholder: 'Tell us what you would like to discuss' },
 ]
 
+const CAMP_CONTACT_FIELDS = [
+  { name: 'name', label: 'Your Name', type: 'text', placeholder: 'e.g. Jamie Morgan' },
+  { name: 'email', label: 'Email', type: 'email', placeholder: 'you@example.com' },
+  { name: 'phone', label: 'Phone', type: 'text', placeholder: '(555) 123-4567' },
+  { name: 'message', label: 'How can we help?', type: 'textarea', placeholder: 'Tell us what you need help with.' },
+]
+
 const NORTHSTAR_APPOINTMENT_FIELDS = [
   { name: 'patientName', label: 'Patient name', type: 'text', placeholder: 'Who is this visit for?' },
   { name: 'reason', label: 'Reason for visit', type: 'textarea', placeholder: 'Share the main concern or care goal' },
@@ -1945,6 +1952,56 @@ const ALL_APP_PRESETS: AppPreset[] = [
           {
             componentId: 'social-follow',
             variants: { Layout: 'Wrap', Variant: 'Secondary', Filled: 'No' },
+          },
+        ],
+      },
+      {
+        id: 'page-8',
+        name: 'Contact',
+        icon: 'Mail',
+        elements: [
+          {
+            componentId: 'heading',
+            variants: { Size: 'Large', Alignment: 'Left' },
+            properties: {
+              Heading: 'Contact Camp Pinecrest',
+              Subheading: 'Questions about registration, camp days, or your family account? Our office is here to help.',
+            },
+          },
+          {
+            componentId: 'card',
+            variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' },
+            properties: {
+              Title: 'Call the camp office',
+              Description: '(555) 014-2026 · Monday-Friday, 8:00 AM-5:00 PM',
+              Icon: 'Phone',
+              Shrinked: true,
+            },
+          },
+          {
+            componentId: 'card',
+            variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' },
+            properties: {
+              Title: 'Email our team',
+              Description: 'hello@camppinecrest.app · We reply within one business day.',
+              Icon: 'Mail',
+              Shrinked: true,
+            },
+          },
+          {
+            componentId: 'spacer',
+            properties: { Height: 24 },
+          },
+          {
+            componentId: 'form',
+            variants: { 'Layout Type': 'Form' },
+            properties: {
+              'Form Title': 'Send us a message',
+              'Form Description': 'Tell us how we can help and the Pinecrest office will follow up.',
+              'Submit Label': 'Send message',
+              'Form Fields': JSON.stringify(CAMP_CONTACT_FIELDS),
+              'Show Border': true,
+            },
           },
         ],
       },

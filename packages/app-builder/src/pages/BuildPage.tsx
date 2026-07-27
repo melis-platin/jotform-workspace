@@ -1065,12 +1065,40 @@ function removeCampPinecrestPaymentElements(pages: AppPage[]): AppPage[] {
   })
 }
 
+function ensureCampPinecrestContactPage(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {
+  if (preset?.id !== 'camp-registration') return pages
+  if (pages.some((page) => !page.dynamic && page.name.trim().toLowerCase() === 'contact')) return pages
+
+  const contactPresetPage = preset.pages.find((page) => page.name.trim().toLowerCase() === 'contact')
+  if (!contactPresetPage) return pages
+
+  const elementIds = pages.flatMap((page) => page.elements.map((element) => element.id))
+  const nextElementId = elementIds.reduce((maxId, id) => {
+    const match = id.match(/^element-(\d+)$/)
+    return Math.max(maxId, match ? Number.parseInt(match[1], 10) : 0)
+  }, 0) + 1
+  const contactElements = buildCanvasElementsFromPreset(contactPresetPage.elements, nextElementId).elements
+
+  return [
+    ...pages,
+    {
+      id: nextNumericId('page', pages.map((page) => page.id)),
+      name: contactPresetPage.name,
+      icon: contactPresetPage.icon,
+      landing: contactPresetPage.landing,
+      requireLogin: contactPresetPage.requireLogin,
+      elements: contactElements,
+    },
+  ]
+}
+
 function normalizeCampPinecrestPages(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {
   if (preset?.id !== 'camp-registration') return pages
   const basePages = hasCampPinecrestStructure(pages)
     ? pages
     : buildAppPagesFromPresetPages(preset.pages, 1).pages
-  return ensureDynamicPagesForOpenDynamicLists(removeCampPinecrestPaymentElements(removeCampPinecrestFormsIntro(basePages)), preset)
+  const normalizedPages = removeCampPinecrestPaymentElements(removeCampPinecrestFormsIntro(basePages))
+  return ensureDynamicPagesForOpenDynamicLists(ensureCampPinecrestContactPage(normalizedPages, preset), preset)
 }
 
 function normalizeGoldenHivePages(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {
