@@ -5786,6 +5786,18 @@ body {
   right: calc(var(--build-page-right-panel-width) + var(--space-5));
 }
 
+// A selected WhatsApp reserves room for its action rail. This preserves an
+// 8px clear gap between the action buttons and the properties panel instead
+// of letting the controls overlap the panel's edge.
+.build-page--right-panel-visible .build-page__canvas-element--selected:has(> .build-page__canvas-element-content > .jf-whatsapp) {
+  right: calc(
+    var(--build-page-right-panel-width)
+    + var(--space-5)
+    + var(--ds-canvas-element-action-width)
+    + var(--ds-space-xs)
+  );
+}
+
 // Dragging WhatsApp from the element panel reserves its fixed placement before
 // anything is dropped. The subtle skeleton and dashed selected border make the
 // destination clear without competing with the drag image under the pointer.
