@@ -19785,6 +19785,10 @@ body.builder--phone-only {
   box-shadow: none;
 }
 
+.whatsapp-start-modal__option--selected .whatsapp-start-modal__illustration {
+  box-shadow: 0 0 0 var(--spacing-3xs) var(--blue-500);
+}
+
 .whatsapp-start-modal__illustration-phone {
   position: absolute;
   bottom: 0;
