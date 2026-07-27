@@ -1199,6 +1199,15 @@ body {
   overflow: hidden;
 }
 
+// The WhatsApp editor control is fixed to the builder viewport. Keep the app
+// canvas itself in the normal full-width layout so adding or selecting that
+// control can never change the header's available inline size or alignment.
+.build-page__canvas > .app-scope,
+.build-page__canvas > .app-scope > .themes-view__device {
+  width: 100%;
+  min-width: 0;
+}
+
 .build-page__canvas {
   position: relative;
   flex: 1;
