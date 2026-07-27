@@ -5759,6 +5759,19 @@ body {
     width: fit-content;
   }
 
+  > .build-page__canvas-element-content,
+  > .build-page__canvas-element-content > .jf-whatsapp {
+    align-items: flex-end;
+  }
+
+  // The setup warning is part of the fixed control's footprint. Align it to
+  // the same right edge as the CTA so selecting the element never shifts the
+  // floating control away from its 20px placement.
+  > .build-page__canvas-element-content > .jf-whatsapp > .jf-whatsapp__notice {
+    align-self: flex-end;
+    margin-left: auto;
+  }
+
   // Keep the selected-element rail out of the 20px gap reserved for the right
   // panel. It still sits above all canvas content, just to the control's left.
   > .build-page__canvas-element-actions {
