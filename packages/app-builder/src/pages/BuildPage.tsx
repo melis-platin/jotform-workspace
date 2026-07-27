@@ -6700,9 +6700,16 @@ export function BuildPage({
                     }}
                   >
                     {(() => {
-                      const visibleCount = draggedCanvasId
-                        ? page.elements.filter((el) => el.id !== draggedCanvasId).length
-                        : page.elements.length
+                      // A floating WhatsApp control lives above the page canvas and
+                      // must not replace the page's empty-state affordance. The page
+                      // should continue to show “Drag your first element…” until it
+                      // contains a real in-flow element.
+                      const visibleCount = page.elements.filter((el) => {
+                        if (el.id === draggedCanvasId) return false
+                        const isFloatingWhatsApp = el.componentId === WHATSAPP_PANEL_ITEM_ID
+                          && String(el.properties['Display Style'] ?? 'Floating') === 'Floating'
+                        return !isFloatingWhatsApp
+                      }).length
                       const virtuallyEmpty = visibleCount === 0
                       return (
                         <DroppablePage
