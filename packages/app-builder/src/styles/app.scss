@@ -150,6 +150,7 @@ body,
   min-width: 0;
   max-width: 100%;
   overflow-x: hidden;
+  overscroll-behavior-x: none;
   font-family: var(--font-family-circular);
 
   @media (max-width: 768px) {
@@ -551,6 +552,7 @@ body,
   min-width: 0;
   max-width: 100%;
   overflow-x: hidden;
+  overscroll-behavior-x: none;
   position: relative;
 }
 
@@ -1241,6 +1243,7 @@ body,
   // already `overflow-x: hidden`. Drag handles sit at the page card's left
   // edge (inside the canvas) so they are not clipped.
   overflow-x: hidden;
+  overscroll-behavior-x: none;
   background: var(--bg-page, #f3f3fe);
   scrollbar-width: none;
 

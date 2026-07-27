@@ -3480,6 +3480,46 @@ export function BuildPage({
   const isWhatsAppPanelDrag = dragSession?.type === 'panel'
     && dragSession.componentId === WHATSAPP_PANEL_ITEM_ID
   const draggedCanvasId = dragSession?.type === 'canvas' ? dragSession.elementId : null
+
+  // Native drag and drop can try to auto-scroll every scrollable ancestor when
+  // the pointer reaches an edge. The builder only has a vertical editing flow,
+  // so explicitly keep each possible scroll host pinned to x: 0 for the full
+  // duration of a drag. This also covers the custom native drag preview, which
+  // is rendered outside of the canvas subtree.
+  useEffect(() => {
+    if (!isDragging) return
+
+    const horizontalScrollHosts = [
+      document.scrollingElement,
+      document.documentElement,
+      document.body,
+      document.querySelector<HTMLElement>('.builder'),
+      document.querySelector<HTMLElement>('.build-page'),
+      document.querySelector<HTMLElement>('.build-page__canvas'),
+    ].filter((host): host is HTMLElement => host instanceof HTMLElement)
+
+    const lockHorizontalPosition = () => {
+      horizontalScrollHosts.forEach((host) => {
+        if (host.scrollLeft !== 0) host.scrollLeft = 0
+      })
+      if (window.scrollX !== 0) window.scrollTo(0, window.scrollY)
+    }
+
+    lockHorizontalPosition()
+    document.addEventListener('scroll', lockHorizontalPosition, true)
+    let frame = 0
+    const keepLocked = () => {
+      lockHorizontalPosition()
+      frame = window.requestAnimationFrame(keepLocked)
+    }
+    frame = window.requestAnimationFrame(keepLocked)
+
+    return () => {
+      document.removeEventListener('scroll', lockHorizontalPosition, true)
+      window.cancelAnimationFrame(frame)
+    }
+  }, [isDragging])
+
   const headerActionsSlotRef = useRef<HTMLDivElement>(null)
   const [headerSlotDropState, setHeaderSlotDropState] = useState<'idle' | 'accept' | 'reject'>('idle')
   const [headerDropTarget, setHeaderDropTarget] = useState<DropTarget | null>(null)
