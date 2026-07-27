@@ -33,7 +33,7 @@
 .jf-whatsapp--size-small {
   --whatsapp-label-width: calc(var(--space-10) * 5 + var(--space-2));
   --whatsapp-label-height: var(--space-8);
-  --whatsapp-icon-size: calc(var(--space-10) + var(--space-2));
+  --whatsapp-icon-size: var(--space-8);
   --whatsapp-icon-glyph-size: var(--space-5);
 }
 
