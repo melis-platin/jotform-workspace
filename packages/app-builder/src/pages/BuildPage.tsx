@@ -2770,7 +2770,7 @@ function DroppablePage({
       <div
         ref={ref}
         data-page-id={pageId}
-        className={`themes-view__app ${showEmptyState && isOverEmpty ? 'build-page__droppable--over' : ''}`}
+        className={`themes-view__app ${showEmptyState && isOverEmpty && !suppressDropLine ? 'build-page__droppable--over' : ''}`}
       >
         {showEmptyState && (
           <section
