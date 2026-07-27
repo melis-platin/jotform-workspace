@@ -19773,7 +19773,7 @@ body.builder--phone-only {
 .whatsapp-start-modal__illustration--button {
   height: 130px;
   overflow: hidden;
-  border: 0;
+  border: var(--spacing-3xs) solid transparent;
   border-radius: var(--radius-md);
   background: var(--navy-75);
   box-shadow: none;
@@ -19781,8 +19781,23 @@ body.builder--phone-only {
 
 .whatsapp-start-modal__option:hover .whatsapp-start-modal__illustration,
 .whatsapp-start-modal__option--selected .whatsapp-start-modal__illustration {
-  border-color: transparent;
-  box-shadow: 0 0 0 var(--spacing-3xs) var(--blue-500);
+  border-color: var(--blue-500);
+}
+
+.whatsapp-start-modal__selection-overlay {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  border-radius: inherit;
+  background: rgb(0 0 0 / 8%);
+  color: var(--blue-500);
+  pointer-events: none;
+}
+
+.whatsapp-start-modal__option--selected .whatsapp-start-modal__option-copy strong {
+  color: var(--blue-500);
 }
 
 .whatsapp-start-modal__illustration-phone {

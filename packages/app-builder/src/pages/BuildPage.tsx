@@ -2229,6 +2229,11 @@ function WhatsAppStartModal({
                       <Icon name="whatsapp-filled" category="brands" size={option.style === 'Floating' ? 14 : 16} />
                       {option.style === 'Button' && <span>Chat with us</span>}
                     </span>
+                    {selected && (
+                      <span className="whatsapp-start-modal__selection-overlay">
+                        <Icon name="check-circle-filled" category="general" size={44} />
+                      </span>
+                    )}
                   </span>
                   <span className="whatsapp-start-modal__option-copy">
                     <strong>{option.title}</strong>
