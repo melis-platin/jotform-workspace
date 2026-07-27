@@ -2141,6 +2141,106 @@ type DragSourceData =
   | { type: 'panel'; componentId: string }
   | { type: 'canvas'; elementId: string; componentId: string }
 
+type WhatsAppStartStyle = 'Floating' | 'Button'
+
+function WhatsAppStartModal({
+  open,
+  selectedStyle,
+  onStyleChange,
+  onClose,
+  onConfirm,
+}: {
+  open: boolean
+  selectedStyle: WhatsAppStartStyle
+  onStyleChange: (style: WhatsAppStartStyle) => void
+  onClose: () => void
+  onConfirm: () => void
+}) {
+  if (!open) return null
+
+  const options: Array<{
+    style: WhatsAppStartStyle
+    title: string
+    description: string
+  }> = [
+    {
+      style: 'Floating',
+      title: 'Icon only',
+      description: 'A compact floating button',
+    },
+    {
+      style: 'Button',
+      title: 'Icon & text',
+      description: 'A floating button with a label',
+    },
+  ]
+
+  return createPortal(
+    <div className="whatsapp-start-modal__backdrop" role="presentation" onMouseDown={onClose}>
+      <section
+        className="whatsapp-start-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="whatsapp-start-modal-title"
+        onMouseDown={(event) => event.stopPropagation()}
+      >
+        <header className="whatsapp-start-modal__header">
+          <div className="whatsapp-start-modal__header-main">
+            <div className="whatsapp-start-modal__header-icon" aria-hidden="true">
+              <Icon name="whatsapp-filled" category="brands" size={28} />
+            </div>
+            <div>
+              <h2 id="whatsapp-start-modal-title">Add WhatsApp</h2>
+              <p>Choose how the floating WhatsApp button appears in your app.</p>
+            </div>
+          </div>
+          <button type="button" className="whatsapp-start-modal__close" aria-label="Close" onClick={onClose}>
+            <Icon name="xmark" size={24} />
+          </button>
+        </header>
+
+        <div className="whatsapp-start-modal__body">
+          <p className="whatsapp-start-modal__intro">WhatsApp stays in the bottom-right corner of your app, so visitors can always reach you.</p>
+          <div className="whatsapp-start-modal__options" role="radiogroup" aria-label="WhatsApp display style">
+            {options.map((option) => {
+              const selected = selectedStyle === option.style
+              return (
+                <button
+                  key={option.style}
+                  type="button"
+                  role="radio"
+                  aria-checked={selected}
+                  className={`whatsapp-start-modal__option${selected ? ' whatsapp-start-modal__option--selected' : ''}`}
+                  onClick={() => onStyleChange(option.style)}
+                >
+                  <span className={`whatsapp-start-modal__illustration whatsapp-start-modal__illustration--${option.style.toLowerCase()}`} aria-hidden="true">
+                    <span className="whatsapp-start-modal__illustration-top" />
+                    <span className="whatsapp-start-modal__illustration-line whatsapp-start-modal__illustration-line--first" />
+                    <span className="whatsapp-start-modal__illustration-line whatsapp-start-modal__illustration-line--second" />
+                    <span className="whatsapp-start-modal__illustration-cta">
+                      <Icon name="whatsapp-filled" category="brands" size={option.style === 'Floating' ? 22 : 18} />
+                      {option.style === 'Button' && <span>Chat with us</span>}
+                    </span>
+                    {selected && <span className="whatsapp-start-modal__check"><Icon name="check" size={18} /></span>}
+                  </span>
+                  <strong>{option.title}</strong>
+                  <span>{option.description}</span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+
+        <footer className="whatsapp-start-modal__footer">
+          <DSButton variant="ghost" colorScheme="secondary" shape="rectangle" size="md" onClick={onClose}>Cancel</DSButton>
+          <DSButton variant="filled" colorScheme="primary" shape="rectangle" size="md" onClick={onConfirm}>Continue</DSButton>
+        </footer>
+      </section>
+    </div>,
+    document.body,
+  )
+}
+
 type DropEdgeChange = (elementId: string, edge: Edge | null) => void
 const DropEdgeContext = createContext<DropEdgeChange | null>(null)
 
@@ -3506,10 +3606,61 @@ export function BuildPage({
   })
   const [dragSession, setDragSession] = useState<DragSourceData | null>(null)
   const [floatingWhatsAppScrollTarget, setFloatingWhatsAppScrollTarget] = useState<string | null>(null)
+  const [whatsappStartElementId, setWhatsAppStartElementId] = useState<string | null>(null)
+  const [whatsappStartStyle, setWhatsAppStartStyle] = useState<WhatsAppStartStyle>('Floating')
   const isDragging = dragSession !== null
   const isWhatsAppPanelDrag = dragSession?.type === 'panel'
     && dragSession.componentId === WHATSAPP_PANEL_ITEM_ID
   const draggedCanvasId = dragSession?.type === 'canvas' ? dragSession.elementId : null
+
+  const openWhatsAppStartModal = useCallback((elementId: string) => {
+    setWhatsAppStartStyle('Floating')
+    setWhatsAppStartElementId(elementId)
+  }, [])
+
+  const dismissWhatsAppStartModal = useCallback(() => {
+    const elementId = whatsappStartElementId
+    setWhatsAppStartElementId(null)
+    if (!elementId) return
+    setPages((prev) => prev.map((page) => ({
+      ...page,
+      elements: page.elements.filter((element) => element.id !== elementId),
+    })))
+    setHeaderActions((prev) => prev.filter((element) => element.id !== elementId))
+    setSelectedElementId((current) => current === elementId ? null : current)
+    setRightPanel('preview')
+  }, [whatsappStartElementId])
+
+  const confirmWhatsAppStartModal = useCallback(() => {
+    const elementId = whatsappStartElementId
+    if (!elementId) return
+    setPages((prev) => prev.map((page) => ({
+      ...page,
+      elements: page.elements.map((element) => element.id === elementId
+        ? {
+            ...element,
+            properties: {
+              ...element.properties,
+              'Display Style': whatsappStartStyle,
+              Size: whatsappStartStyle === 'Floating' ? 'Large' : 'Medium',
+              ...(whatsappStartStyle === 'Button' ? { 'Button Text': 'Chat on WhatsApp' } : {}),
+            },
+          }
+        : element),
+    })))
+    setWhatsAppStartElementId(null)
+    setSelectedElementId(elementId)
+    setRightPanel('properties')
+  }, [whatsappStartElementId, whatsappStartStyle])
+
+  useEffect(() => {
+    if (!whatsappStartElementId) return
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') dismissWhatsAppStartModal()
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [dismissWhatsAppStartModal, whatsappStartElementId])
 
   // Native drag and drop can try to auto-scroll every scrollable ancestor when
   // the pointer reaches an edge. The builder only has a vertical editing flow,
@@ -5233,7 +5384,8 @@ export function BuildPage({
       setRightPanel('properties')
     }
     scrollToCanvasElement(element.id)
-  }, [activePageId, appTitle, mobileElementsSheet, selectedElementId, forceTargetPageId, scrollToCanvasElement])
+    if (comp.id === WHATSAPP_PANEL_ITEM_ID) openWhatsAppStartModal(element.id)
+  }, [activePageId, appTitle, mobileElementsSheet, selectedElementId, forceTargetPageId, scrollToCanvasElement, openWhatsAppStartModal])
 
   const handleSelectElement = useCallback((elementId: string) => {
     const ownerPage = pagesRef.current.find((page) => page.elements.some((element) => element.id === elementId))
@@ -5787,6 +5939,7 @@ export function BuildPage({
           setActivePageId(targetPageId)
           setRightPanel('properties')
           if (isFloatingWhatsApp) setFloatingWhatsAppScrollTarget(newEl.id)
+          if (data.componentId === WHATSAPP_PANEL_ITEM_ID) openWhatsAppStartModal(newEl.id)
           return
         }
 
@@ -5858,7 +6011,7 @@ export function BuildPage({
         if (isFloatingWhatsApp) setFloatingWhatsAppScrollTarget(sourceId)
       },
     })
-  }, [activePageId, appTitle])
+  }, [activePageId, appTitle, openWhatsAppStartModal])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -10942,6 +11095,14 @@ export function BuildPage({
         </div>
       </div>
     </BottomSheet>
+
+    <WhatsAppStartModal
+      open={whatsappStartElementId !== null}
+      selectedStyle={whatsappStartStyle}
+      onStyleChange={setWhatsAppStartStyle}
+      onClose={dismissWhatsAppStartModal}
+      onConfirm={confirmWhatsAppStartModal}
+    />
 
     {/* List items editor modal */}
     {editItemsOpen && selectedComponent?.id === 'list' && selectedElement && (() => {
