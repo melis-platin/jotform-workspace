@@ -519,6 +519,14 @@ body {
 // Build Page
 // ============================================
 .build-page {
+  // The right-side panel is five 80px token units plus one 40px unit wide.
+  // Keeping this as a shared token expression lets the floating WhatsApp
+  // placement stay exactly one 20px space away when the panel is visible.
+  --build-page-right-panel-width: calc(
+    var(--space-20) + var(--space-20) + var(--space-20) + var(--space-20) + var(--space-20) + var(--space-10)
+  );
+  --build-page-canvas-bottom-inset: calc(var(--space-10) + var(--space-4) + var(--space-5));
+
   display: flex;
   height: 100%;
   position: relative;
@@ -1292,7 +1300,7 @@ body {
 }
 
 .build-page__right {
-  width: 440px;
+  width: var(--build-page-right-panel-width);
   flex-shrink: 0;
   background: var(--secondary-background-medium);
   border-left: none;
@@ -1305,7 +1313,7 @@ body {
   transition: margin-right 0.3s ease, box-shadow 0.3s ease;
 
   &--hidden {
-    margin-right: -440px;
+    margin-right: calc(-1 * var(--build-page-right-panel-width));
     box-shadow: none;
   }
 
@@ -5729,6 +5737,44 @@ body {
     // (app-elements, @container app-content) — this element also carries that
     // class. Keep only the editor-canvas-specific top alignment here.
     align-self: flex-start;
+  }
+}
+
+// A floating WhatsApp is a builder-level control, not an in-flow page block.
+// Keep it pinned to the canvas' bottom-right corner with the same 20px inset
+// whether the live preview/properties panel is open or closed. Button display
+// style intentionally remains an ordinary page element.
+.build-page__canvas-element:has(> .build-page__canvas-element-content > .jf-whatsapp:not(.jf-whatsapp--button)) {
+  position: fixed;
+  right: var(--space-5);
+  bottom: var(--build-page-canvas-bottom-inset);
+  z-index: 11;
+  width: fit-content;
+  contain: style;
+
+  > .build-page__canvas-element-content,
+  > .build-page__canvas-element-content > .jf-whatsapp,
+  > .build-page__canvas-element-content > .jf-whatsapp > .jf-whatsapp__main,
+  > .build-page__canvas-element-content > .jf-whatsapp > .jf-whatsapp__main > .jf-whatsapp__control {
+    width: fit-content;
+  }
+
+  // Keep the selected-element rail out of the 20px gap reserved for the right
+  // panel. It still sits above all canvas content, just to the control's left.
+  > .build-page__canvas-element-actions {
+    right: auto;
+    left: calc(-1 * (var(--ds-canvas-element-action-width) + var(--ds-space-md)));
+    z-index: 1;
+  }
+}
+
+.build-page--right-panel-visible .build-page__canvas-element:has(> .build-page__canvas-element-content > .jf-whatsapp:not(.jf-whatsapp--button)) {
+  right: calc(var(--build-page-right-panel-width) + var(--space-5));
+}
+
+@media (max-width: 768px) {
+  .build-page__canvas-element:has(> .build-page__canvas-element-content > .jf-whatsapp:not(.jf-whatsapp--button)) {
+    bottom: var(--space-5);
   }
 }
 

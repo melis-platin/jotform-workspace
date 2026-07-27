@@ -6387,7 +6387,7 @@ export function BuildPage({
         roleOptions={appUserRoles}
       />
     )}
-    <div className="build-page">
+    <div className={`build-page${isLivePreviewVisible || rightPanel !== 'preview' ? ' build-page--right-panel-visible' : ''}`}>
       {/* Left Panel - App Elements */}
       {!chromeless && (
       <aside className={`build-page__left${leftPanelOpen ? '' : ' build-page__left--hidden'}`}>
