@@ -5772,12 +5772,13 @@ body {
     margin-left: auto;
   }
 
-  // Keep the selected-element rail out of the 20px gap reserved for the right
-  // panel. It still sits above all canvas content, just to the control's left.
+  // Keep the selected-element rail immediately outside the selected stroke.
+  // The 8px design-system gap makes the actions clearly associated with the
+  // WhatsApp control while preserving its fixed lower-right position.
   > .build-page__canvas-element-actions {
-    right: auto;
-    left: calc(-1 * (var(--ds-canvas-element-action-width) + var(--ds-space-md)));
-    z-index: 1;
+    right: calc(-1 * (var(--ds-canvas-element-action-width) + var(--ds-space-xs)));
+    left: auto;
+    z-index: 3;
   }
 }
 

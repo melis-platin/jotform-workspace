@@ -2412,6 +2412,7 @@ const SortableElement = memo(function SortableElement({
   onPropertyChange: (elementId: string, property: string, value: string | boolean | number) => void
 }) {
   const comp = ComponentRegistry.get(element.componentId)
+  const isWhatsApp = element.componentId === WHATSAPP_PANEL_ITEM_ID
   const isShrinked = element.properties['Shrinked'] === true
   const isFlow = isAutoFlowElement(element)
   const sectionRef = useRef<HTMLElement>(null)
@@ -2429,7 +2430,7 @@ const SortableElement = memo(function SortableElement({
   useEffect(() => {
     const section = sectionRef.current
     const handle = handleRef.current
-    if (!section) return
+    if (!section || isWhatsApp) return
     const reportEdge = (edge: Edge | null) => onDropEdgeChange?.(element.id, edge)
     return combine(
       draggable({
@@ -2496,7 +2497,7 @@ const SortableElement = memo(function SortableElement({
         onDrop: () => reportEdge(null),
       })
     )
-  }, [element.id, element.componentId, pageId, selfShrinkable, onDropEdgeChange])
+  }, [element.id, element.componentId, isWhatsApp, pageId, selfShrinkable, onDropEdgeChange])
 
   useEffect(() => {
     const container = contentRef.current
@@ -2612,9 +2613,9 @@ const SortableElement = memo(function SortableElement({
         onSelect(element.id)
       }}
     >
-      <div ref={handleRef} className="build-page__drag-handle">
+      {!isWhatsApp && <div ref={handleRef} className="build-page__drag-handle">
         <Icon name="grid-dots-vertical" category="general" size={24} />
-      </div>
+      </div>}
       {isSelected && (
         <div className="build-page__canvas-element-actions">
           <button
