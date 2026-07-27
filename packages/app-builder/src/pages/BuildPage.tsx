@@ -2722,11 +2722,13 @@ function DraggablePanelItem({
 function DroppablePage({
   pageId,
   showEmptyState,
+  suppressDropLine = false,
   onEmptyStateClick,
   children,
 }: {
   pageId: string
   showEmptyState: boolean
+  suppressDropLine?: boolean
   onEmptyStateClick: (e: React.MouseEvent) => void
   children?: React.ReactNode
 }) {
@@ -2779,7 +2781,7 @@ function DroppablePage({
           </section>
         )}
         {children}
-        <CanvasDropLine target={dropTarget} containerRef={ref} />
+        {!suppressDropLine && <CanvasDropLine target={dropTarget} containerRef={ref} />}
       </div>
     </DropEdgeContext.Provider>
   )
@@ -6784,6 +6786,7 @@ export function BuildPage({
                         <DroppablePage
                           pageId={page.id}
                           showEmptyState={virtuallyEmpty}
+                          suppressDropLine={isWhatsAppPanelDrag}
                           onEmptyStateClick={(e) => {
                             e.stopPropagation()
                             setActivePageId(page.id)
