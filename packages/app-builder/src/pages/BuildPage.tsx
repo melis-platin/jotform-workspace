@@ -6707,15 +6707,13 @@ export function BuildPage({
                     }}
                   >
                     {(() => {
-                      // A floating WhatsApp control lives above the page canvas and
+                      // WhatsApp is an app-level control in both display styles and
                       // must not replace the page's empty-state affordance. The page
                       // should continue to show “Drag your first element…” until it
                       // contains a real in-flow element.
                       const visibleCount = page.elements.filter((el) => {
                         if (el.id === draggedCanvasId) return false
-                        const isFloatingWhatsApp = el.componentId === WHATSAPP_PANEL_ITEM_ID
-                          && String(el.properties['Display Style'] ?? 'Floating') === 'Floating'
-                        return !isFloatingWhatsApp
+                        return el.componentId !== WHATSAPP_PANEL_ITEM_ID
                       }).length
                       const virtuallyEmpty = visibleCount === 0
                       return (
@@ -6768,7 +6766,7 @@ export function BuildPage({
                     })()}
                   </div>
 
-                  {(pageIndex > 0 || page.elements.length > 0 || isDragging) && (
+                  {(pageIndex > 0 || page.elements.some((element) => element.componentId !== WHATSAPP_PANEL_ITEM_ID) || isDragging) && (
                     <AddPageDivider onClick={() => handleAddPage(page.id)} />
                   )}
                 </div>
