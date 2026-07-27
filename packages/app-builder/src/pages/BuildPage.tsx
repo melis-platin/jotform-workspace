@@ -5856,17 +5856,15 @@ export function BuildPage({
     </div>
   )
 
-  // "All Pages" is a preview-only rule for the Floating style. A Button-style
-  // WhatsApp element behaves like every other canvas button and remains where
-  // its owner placed it.
+  // WhatsApp is always an app-level action in preview. Both display styles are
+  // anchored to the lower-right corner rather than participating in a page's
+  // content flow; the style only changes the CTA's visual treatment.
   const whatsappPreviewElement = pages.flatMap((page) => page.elements).find((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)
     ?? headerActions.find((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)
   const whatsappPreviewComponent = whatsappPreviewElement
     ? ComponentRegistry.get(whatsappPreviewElement.componentId)
     : null
-  const whatsappPreviewDisplayStyle = String(whatsappPreviewElement?.properties['Display Style'] ?? 'Floating')
-  const allPagesWhatsAppPreview = whatsappPreviewDisplayStyle === 'Floating'
-    && String(whatsappPreviewElement?.properties['Include Pages to Display'] ?? 'All Pages') === 'All Pages'
+  const allPagesWhatsAppPreview = String(whatsappPreviewElement?.properties['Include Pages to Display'] ?? 'All Pages') === 'All Pages'
   const allPagesWhatsAppOverlay = allPagesWhatsAppPreview
     && whatsappPreviewElement
     && whatsappPreviewComponent

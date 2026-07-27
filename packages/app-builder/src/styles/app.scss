@@ -3069,7 +3069,7 @@ body {
 // WhatsApp is a floating app action in the phone preview, rather than a card
 // in the page flow. The content canvas is rendered at 0.9x, so compensate the
 // logical inset to keep the visible edge clearance at --space-4 (16px).
-.live-preview__phone-screen .live-preview__content .jf-whatsapp:not(.jf-whatsapp--button) {
+.live-preview__phone-screen .live-preview__content .jf-whatsapp {
   position: fixed;
   right: calc(var(--space-4) / 0.9);
   bottom: calc(var(--space-4) / 0.9);
@@ -3084,7 +3084,7 @@ body {
 // Tablet follows the phone preview interaction model for every WhatsApp
 // display style. Unlike the 0.9x phone canvas, tablet content is unscaled, so
 // use the native 16px inset while anchoring to the tablet screen.
-.live-preview__tablet-screen .live-preview__content .jf-whatsapp:not(.jf-whatsapp--button) {
+.live-preview__tablet-screen .live-preview__content .jf-whatsapp {
   position: absolute;
   right: var(--space-4);
   bottom: var(--space-4);
@@ -3112,7 +3112,7 @@ body {
 
 // The source element stays in the builder data model, but the desktop preview
 // renders its floating version through the app-level overlay above.
-.app-preview-screen .app-preview-screen__desktop .themes-view__section:has(.jf-whatsapp:not(.jf-whatsapp--button)) {
+.app-preview-screen .app-preview-screen__desktop .themes-view__section:has(.jf-whatsapp) {
   display: none;
 }
 
@@ -3131,7 +3131,7 @@ body {
   }
 }
 
-.build-page__nav-preview--desktop .themes-view__section:has(.jf-whatsapp:not(.jf-whatsapp--button)) {
+.build-page__nav-preview--desktop .themes-view__section:has(.jf-whatsapp) {
   display: none;
 }
 
@@ -5742,9 +5742,9 @@ body {
 
 // A floating WhatsApp is a builder-level control, not an in-flow page block.
 // Keep it pinned to the canvas' bottom-right corner with the same 20px inset
-// whether the live preview/properties panel is open or closed. Button display
-// style intentionally remains an ordinary page element.
-.build-page__canvas-element:has(> .build-page__canvas-element-content > .jf-whatsapp:not(.jf-whatsapp--button)) {
+// whether the live preview/properties panel is open or closed. Both display
+// styles are floating app actions; Icon & Text only changes the CTA treatment.
+.build-page__canvas-element:has(> .build-page__canvas-element-content > .jf-whatsapp) {
   position: fixed;
   right: var(--space-5);
   bottom: var(--build-page-canvas-bottom-inset);
@@ -5781,7 +5781,7 @@ body {
   }
 }
 
-.build-page--right-panel-visible .build-page__canvas-element:has(> .build-page__canvas-element-content > .jf-whatsapp:not(.jf-whatsapp--button)) {
+.build-page--right-panel-visible .build-page__canvas-element:has(> .build-page__canvas-element-content > .jf-whatsapp) {
   right: calc(var(--build-page-right-panel-width) + var(--space-5));
 }
 
@@ -5824,7 +5824,7 @@ body {
 }
 
 @media (max-width: 768px) {
-  .build-page__canvas-element:has(> .build-page__canvas-element-content > .jf-whatsapp:not(.jf-whatsapp--button)) {
+  .build-page__canvas-element:has(> .build-page__canvas-element-content > .jf-whatsapp) {
     bottom: var(--space-5);
   }
 
