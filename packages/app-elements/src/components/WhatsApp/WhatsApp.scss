@@ -28,12 +28,12 @@
   }
 }
 
-// Small maps to the Figma reference's 166×24 bubble and 40px icon after the
-// builder canvas scale is applied.
+// Small keeps a 40px action target in both Icon Only and Icon & Text modes.
+// This preserves a consistent tap target even at the smallest visual size.
 .jf-whatsapp--size-small {
   --whatsapp-label-width: calc(var(--space-10) * 5 + var(--space-2));
-  --whatsapp-label-height: var(--space-8);
-  --whatsapp-icon-size: var(--space-8);
+  --whatsapp-label-height: var(--space-10);
+  --whatsapp-icon-size: var(--space-10);
   --whatsapp-icon-glyph-size: var(--space-5);
 }
 
@@ -202,7 +202,7 @@
   color: var(--fg-inverse);
 }
 
-.jf-whatsapp--button-size-small .jf-whatsapp__cta { height: var(--space-8); }
+.jf-whatsapp--button-size-small .jf-whatsapp__cta { height: var(--space-10); }
 .jf-whatsapp--button-size-medium .jf-whatsapp__cta { height: calc(var(--space-10) + var(--space-1)); }
 // Large is shared by Icon & Text and Icon Only: both keep the same 56px
 // WhatsApp action height through the canvas and every preview surface.
