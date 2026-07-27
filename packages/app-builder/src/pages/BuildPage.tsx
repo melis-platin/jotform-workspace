@@ -2152,7 +2152,7 @@ function WhatsAppStartModal({
 }: {
   open: boolean
   selectedStyle: WhatsAppStartStyle | null
-  onStyleChange: (style: WhatsAppStartStyle) => void
+  onStyleChange: (style: WhatsAppStartStyle | null) => void
   onClose: () => void
   onConfirm: () => void
 }) {
@@ -2210,7 +2210,7 @@ function WhatsAppStartModal({
                   role="radio"
                   aria-checked={selected}
                   className={`whatsapp-start-modal__option${selected ? ' whatsapp-start-modal__option--selected' : ''}`}
-                  onClick={() => onStyleChange(option.style)}
+                  onClick={() => onStyleChange(selected ? null : option.style)}
                 >
                   <span className={`whatsapp-start-modal__illustration whatsapp-start-modal__illustration--${option.style.toLowerCase()}`} aria-hidden="true">
                     <span className="whatsapp-start-modal__illustration-phone">
