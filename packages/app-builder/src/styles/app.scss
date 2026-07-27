@@ -6120,6 +6120,16 @@ body {
 // WhatsApp uses the Figma selection container instead of the generic outer
 // outline: its 2px info border encloses the full CTA slot with 4px padding,
 // while its configuration notice stays outside the selected control.
+.build-page__canvas-element:not(.build-page__canvas-element--selected):has(> .build-page__canvas-element-content > .jf-whatsapp):hover
+  > .build-page__canvas-element-content
+  > .jf-whatsapp
+  > .jf-whatsapp__main {
+  cursor: pointer;
+  outline: 2px solid var(--border-info);
+  outline-offset: var(--space-1);
+  border-radius: var(--radius-sm);
+}
+
 .build-page__canvas-element--selected
   > .build-page__canvas-element-content
   > .jf-whatsapp {
