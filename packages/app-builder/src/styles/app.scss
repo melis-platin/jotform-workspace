@@ -19914,22 +19914,26 @@ body.builder--phone-only {
 
 // Icon Button preview is a scaled app canvas: keep its tiny phone mockup
 // aligned to the Figma source rather than sharing the wider text-button layout.
-.whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-phone {
+.whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-phone,
+.whatsapp-start-modal__illustration--button .whatsapp-start-modal__illustration-phone {
   width: 104px;
   height: 114px;
 }
 
-.whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-phone-header {
+.whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-phone-header,
+.whatsapp-start-modal__illustration--button .whatsapp-start-modal__illustration-phone-header {
   height: var(--spacing-2xl);
 }
 
-.whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-profile {
+.whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-profile,
+.whatsapp-start-modal__illustration--button .whatsapp-start-modal__illustration-profile {
   top: calc(var(--spacing-xl) - var(--spacing-2xs));
   flex-direction: column;
   gap: var(--spacing-3xs);
 }
 
-.whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-avatar {
+.whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-avatar,
+.whatsapp-start-modal__illustration--button .whatsapp-start-modal__illustration-avatar {
   width: var(--spacing-lg);
   height: var(--spacing-lg);
   flex-basis: var(--spacing-lg);
@@ -19937,22 +19941,26 @@ body.builder--phone-only {
   background: var(--background-white);
 }
 
-.whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-profile-lines {
+.whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-profile-lines,
+.whatsapp-start-modal__illustration--button .whatsapp-start-modal__illustration-profile-lines {
   justify-items: center;
   gap: var(--spacing-3xs);
 }
 
-.whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-profile-lines span {
+.whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-profile-lines span,
+.whatsapp-start-modal__illustration--button .whatsapp-start-modal__illustration-profile-lines span {
   width: calc(var(--spacing-2xl) + var(--spacing-xs));
   background: var(--navy-200);
 }
 
-.whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-profile-lines span:last-child {
+.whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-profile-lines span:last-child,
+.whatsapp-start-modal__illustration--button .whatsapp-start-modal__illustration-profile-lines span:last-child {
   width: var(--spacing-xl);
   background: var(--navy-75);
 }
 
-.whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-list {
+.whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-list,
+.whatsapp-start-modal__illustration--button .whatsapp-start-modal__illustration-list {
   top: calc(var(--spacing-2xl) + var(--spacing-lg));
   right: var(--spacing-xs);
   bottom: auto;
@@ -19960,7 +19968,8 @@ body.builder--phone-only {
   gap: var(--spacing-3xs);
 }
 
-.whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-list > span {
+.whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-list > span,
+.whatsapp-start-modal__illustration--button .whatsapp-start-modal__illustration-list > span {
   box-sizing: border-box;
   height: var(--spacing-sm);
   gap: var(--spacing-2xs);
@@ -19969,7 +19978,8 @@ body.builder--phone-only {
   background: var(--navy-25);
 }
 
-.whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-list i {
+.whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-list i,
+.whatsapp-start-modal__illustration--button .whatsapp-start-modal__illustration-list i {
   width: var(--spacing-xs);
   height: var(--spacing-xs);
   flex-basis: var(--spacing-xs);
@@ -19977,12 +19987,14 @@ body.builder--phone-only {
   background: color-mix(in srgb, var(--purple-100) 70%, var(--background-white));
 }
 
-.whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-list b {
+.whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-list b,
+.whatsapp-start-modal__illustration--button .whatsapp-start-modal__illustration-list b {
   height: var(--spacing-3xs);
   background: var(--navy-100);
 }
 
-.whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-list > span:nth-child(2) b {
+.whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-list > span:nth-child(2) b,
+.whatsapp-start-modal__illustration--button .whatsapp-start-modal__illustration-list > span:nth-child(2) b {
   width: calc(100% - var(--spacing-xs));
 }
 
@@ -19992,6 +20004,21 @@ body.builder--phone-only {
   left: auto;
   width: var(--spacing-xl);
   height: var(--spacing-xl);
+}
+
+.whatsapp-start-modal__illustration--button .whatsapp-start-modal__illustration-cta {
+  right: auto;
+  bottom: var(--spacing-xs);
+  left: calc(50% - (var(--spacing-xl) - var(--spacing-3xs)));
+  min-width: 0;
+  width: auto;
+  height: calc(var(--spacing-xl) + var(--spacing-3xs));
+  gap: var(--spacing-3xs);
+  padding: 0 var(--spacing-sm) 0 calc(var(--spacing-xs) + var(--spacing-3xs));
+  border-radius: var(--radius-rounded);
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-2xs);
 }
 
 .whatsapp-start-modal__footer {
