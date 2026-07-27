@@ -2165,13 +2165,13 @@ function WhatsAppStartModal({
   }> = [
     {
       style: 'Floating',
-      title: 'Icon only',
-      description: 'A compact floating button',
+      title: 'Icon Button',
+      description: 'Compact icon that takes up the least space.',
     },
     {
       style: 'Button',
-      title: 'Icon & text',
-      description: 'A floating button with a label',
+      title: 'Icon & Text Button',
+      description: 'Icon with a short label, easier to spot.',
     },
   ]
 
@@ -2187,11 +2187,11 @@ function WhatsAppStartModal({
         <header className="whatsapp-start-modal__header">
           <div className="whatsapp-start-modal__header-main">
             <div className="whatsapp-start-modal__header-icon" aria-hidden="true">
-              <Icon name="whatsapp-filled" category="brands" size={28} />
+              <Icon name="whatsapp-filled" category="brands" size={24} />
             </div>
             <div>
-              <h2 id="whatsapp-start-modal-title">Add WhatsApp</h2>
-              <p>Choose how the floating WhatsApp button appears in your app.</p>
+              <h2 id="whatsapp-start-modal-title">WhatsApp Button</h2>
+              <p>Choose how your button looks on the page.</p>
             </div>
           </div>
           <button type="button" className="whatsapp-start-modal__close" aria-label="Close" onClick={onClose}>
@@ -2200,7 +2200,6 @@ function WhatsAppStartModal({
         </header>
 
         <div className="whatsapp-start-modal__body">
-          <p className="whatsapp-start-modal__intro">WhatsApp stays in the bottom-right corner of your app, so visitors can always reach you.</p>
           <div className="whatsapp-start-modal__options" role="radiogroup" aria-label="WhatsApp display style">
             {options.map((option) => {
               const selected = selectedStyle === option.style
@@ -2214,30 +2213,27 @@ function WhatsAppStartModal({
                   onClick={() => onStyleChange(option.style)}
                 >
                   <span className={`whatsapp-start-modal__illustration whatsapp-start-modal__illustration--${option.style.toLowerCase()}`} aria-hidden="true">
-                    {option.style === 'Floating' ? (
-                      <span className="whatsapp-start-modal__illustration-form">
-                        <span className="whatsapp-start-modal__illustration-form-header" />
-                        <span className="whatsapp-start-modal__illustration-form-field" />
-                        <span className="whatsapp-start-modal__illustration-form-field" />
-                        <span className="whatsapp-start-modal__illustration-form-field whatsapp-start-modal__illustration-form-field--short" />
-                        <span className="whatsapp-start-modal__illustration-form-submit" />
+                    <span className="whatsapp-start-modal__illustration-phone">
+                      <span className="whatsapp-start-modal__illustration-phone-header" />
+                      <span className="whatsapp-start-modal__illustration-profile">
+                        <span className="whatsapp-start-modal__illustration-avatar" />
+                        <span className="whatsapp-start-modal__illustration-profile-lines"><span /><span /></span>
                       </span>
-                    ) : (
-                      <span className="whatsapp-start-modal__illustration-calendar">
-                        <span className="whatsapp-start-modal__illustration-calendar-header" />
-                        <span className="whatsapp-start-modal__illustration-calendar-grid">
-                          {Array.from({ length: 12 }, (_, index) => <span key={index} className={index === 6 ? 'whatsapp-start-modal__illustration-calendar-day--selected' : ''} />)}
-                        </span>
+                      <span className="whatsapp-start-modal__illustration-list">
+                        <span><i /><b /></span>
+                        <span><i /><b /></span>
+                        <span><i /><b /></span>
                       </span>
-                    )}
+                    </span>
                     <span className="whatsapp-start-modal__illustration-cta">
-                      <Icon name="whatsapp-filled" category="brands" size={option.style === 'Floating' ? 22 : 18} />
+                      <Icon name="whatsapp-filled" category="brands" size={option.style === 'Floating' ? 14 : 16} />
                       {option.style === 'Button' && <span>Chat with us</span>}
                     </span>
-                    {selected && <span className="whatsapp-start-modal__check"><Icon name="check" size={18} /></span>}
                   </span>
-                  <strong>{option.title}</strong>
-                  <span>{option.description}</span>
+                  <span className="whatsapp-start-modal__option-copy">
+                    <strong>{option.title}</strong>
+                    <span>{option.description}</span>
+                  </span>
                 </button>
               )
             })}
@@ -2246,7 +2242,7 @@ function WhatsAppStartModal({
 
         <footer className="whatsapp-start-modal__footer">
           <DSButton variant="ghost" colorScheme="secondary" shape="rectangle" size="md" onClick={onClose}>Cancel</DSButton>
-          <DSButton variant="filled" colorScheme="primary" shape="rectangle" size="md" onClick={onConfirm}>Continue</DSButton>
+          <DSButton variant="filled" colorScheme="primary" shape="rectangle" size="md" onClick={onConfirm}>Add</DSButton>
         </footer>
       </section>
     </div>,

@@ -19726,6 +19726,181 @@ body.builder--phone-only {
   border-top: 1px solid var(--navy-50);
 }
 
+// WhatsApp start modal — mirrors the compact builder setup dialog. The visual
+// previews are deliberately made from the same UI primitives as the canvas,
+// so their scale and colors stay stable while a user chooses a display style.
+.whatsapp-start-modal {
+  width: 560px;
+  max-width: calc(100vw - (var(--spacing-4xl) * 2));
+  overflow: hidden;
+}
+
+.whatsapp-start-modal__body {
+  gap: 0;
+  padding: var(--spacing-2xl);
+}
+
+.whatsapp-start-modal__options {
+  gap: var(--spacing-sm);
+}
+
+.whatsapp-start-modal__option {
+  gap: var(--spacing-sm);
+
+  > .whatsapp-start-modal__option-copy {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2xs);
+    width: 100%;
+  }
+
+  > .whatsapp-start-modal__option-copy strong {
+    color: var(--text-darkest);
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-md);
+  }
+
+  > .whatsapp-start-modal__option-copy span {
+    color: var(--text-medium);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-book);
+    line-height: var(--line-height-md);
+  }
+}
+
+.whatsapp-start-modal__illustration,
+.whatsapp-start-modal__illustration--button {
+  height: 130px;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--navy-75);
+  box-shadow: none;
+}
+
+.whatsapp-start-modal__option:hover .whatsapp-start-modal__illustration,
+.whatsapp-start-modal__option--selected .whatsapp-start-modal__illustration {
+  border-color: transparent;
+  box-shadow: none;
+}
+
+.whatsapp-start-modal__illustration-phone {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  display: block;
+  width: 104px;
+  height: 114px;
+  overflow: hidden;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  background: var(--background-white);
+  box-shadow: var(--shadow-sm);
+  transform: translateX(-50%);
+}
+
+.whatsapp-start-modal__illustration-phone-header {
+  display: block;
+  height: var(--spacing-2xl);
+  background: #8d5df8;
+}
+
+.whatsapp-start-modal__illustration-profile {
+  position: absolute;
+  top: calc(var(--spacing-2xl) + var(--spacing-xs));
+  left: 50%;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  transform: translateX(-50%);
+}
+
+.whatsapp-start-modal__illustration-avatar {
+  width: var(--spacing-lg);
+  height: var(--spacing-lg);
+  flex: 0 0 var(--spacing-lg);
+  border-radius: var(--radius-rounded);
+  background: var(--navy-50);
+}
+
+.whatsapp-start-modal__illustration-profile-lines {
+  display: grid;
+  gap: var(--spacing-2xs);
+}
+
+.whatsapp-start-modal__illustration-profile-lines span {
+  display: block;
+  width: var(--spacing-2xl);
+  height: var(--spacing-2xs);
+  border-radius: var(--radius-rounded);
+  background: var(--navy-50);
+}
+
+.whatsapp-start-modal__illustration-profile-lines span:last-child {
+  width: var(--spacing-xl);
+}
+
+.whatsapp-start-modal__illustration-list {
+  position: absolute;
+  right: var(--spacing-md);
+  bottom: var(--spacing-md);
+  left: var(--spacing-md);
+  display: grid;
+  gap: var(--spacing-xs);
+}
+
+.whatsapp-start-modal__illustration-list > span {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+}
+
+.whatsapp-start-modal__illustration-list i,
+.whatsapp-start-modal__illustration-list b {
+  display: block;
+  height: var(--spacing-2xs);
+  border-radius: var(--radius-rounded);
+  background: var(--navy-50);
+}
+
+.whatsapp-start-modal__illustration-list i {
+  width: var(--spacing-sm);
+  flex: 0 0 var(--spacing-sm);
+}
+
+.whatsapp-start-modal__illustration-list b {
+  width: 100%;
+}
+
+.whatsapp-start-modal__illustration-cta {
+  right: auto;
+  bottom: var(--spacing-sm);
+  left: calc(50% + var(--spacing-xl) + var(--spacing-md));
+  width: var(--spacing-xl);
+  height: var(--spacing-xl);
+  border-radius: var(--radius-rounded);
+  background: var(--whatsapp-fill, #25D366);
+  box-shadow: none;
+}
+
+.whatsapp-start-modal__illustration--button .whatsapp-start-modal__illustration-cta {
+  right: auto;
+  bottom: var(--spacing-xs);
+  left: calc(50% - var(--spacing-xl));
+  min-width: 128px;
+  height: 26px;
+  padding: 0 var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  background: var(--whatsapp-fill, #25D366);
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-2xs);
+}
+
+.whatsapp-start-modal__footer {
+  padding: var(--spacing-md) var(--spacing-2xl);
+}
+
 @media (max-width: 640px) {
   .whatsapp-start-modal__backdrop {
     align-items: end;
