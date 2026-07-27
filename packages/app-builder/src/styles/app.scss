@@ -19593,18 +19593,128 @@ body.builder--phone-only {
   right: calc(var(--spacing-4xl) + var(--spacing-xl));
 }
 
+// Setup choices deliberately use the warm, flat illustration language from
+// the builder's selection dialogs: a solid panel, a single centered UI mockup
+// and a clear blue confirmation state.
+.whatsapp-start-modal__illustration {
+  height: 196px;
+  border-width: var(--spacing-2xs);
+  border-color: transparent;
+  border-radius: var(--radius-md);
+  background: var(--orange-100);
+}
+
+.whatsapp-start-modal__illustration--button {
+  background: var(--yellow-400);
+}
+
+.whatsapp-start-modal__option:hover .whatsapp-start-modal__illustration,
+.whatsapp-start-modal__option--selected .whatsapp-start-modal__illustration {
+  border-color: var(--yellow-400);
+}
+
+.whatsapp-start-modal__option--selected .whatsapp-start-modal__illustration {
+  box-shadow: none;
+}
+
+.whatsapp-start-modal__illustration-form,
+.whatsapp-start-modal__illustration-calendar {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  width: calc(var(--spacing-4xl) * 2 + var(--spacing-2xl));
+  height: calc(var(--spacing-4xl) * 2 + var(--spacing-sm));
+  padding: var(--spacing-md);
+  border-radius: var(--radius-sm);
+  background: var(--background-white);
+  box-shadow: var(--shadow-sm);
+  transform: translate(-50%, -50%);
+}
+
+.whatsapp-start-modal__illustration-form-header,
+.whatsapp-start-modal__illustration-calendar-header {
+  display: block;
+  height: var(--spacing-md);
+  margin: calc(var(--spacing-md) * -1) calc(var(--spacing-md) * -1) var(--spacing-md);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  background: var(--orange-200);
+}
+
+.whatsapp-start-modal__illustration-form-field {
+  display: block;
+  height: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  background: var(--navy-50);
+}
+
+.whatsapp-start-modal__illustration-form-field--short {
+  width: 64%;
+}
+
+.whatsapp-start-modal__illustration-form-submit {
+  display: block;
+  height: var(--spacing-md);
+  margin-top: auto;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--success-default) 32%, var(--background-white));
+}
+
+.whatsapp-start-modal__illustration-calendar-header {
+  background: var(--orange-500);
+}
+
+.whatsapp-start-modal__illustration-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--spacing-xs);
+}
+
+.whatsapp-start-modal__illustration-calendar-grid span {
+  display: block;
+  height: var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  background: var(--navy-50);
+}
+
+.whatsapp-start-modal__illustration-calendar-grid .whatsapp-start-modal__illustration-calendar-day--selected {
+  background: color-mix(in srgb, var(--success-default) 50%, var(--background-white));
+}
+
+.whatsapp-start-modal__illustration-cta {
+  right: calc(50% - var(--spacing-2xl));
+  bottom: var(--spacing-md);
+  width: var(--spacing-4xl);
+  height: var(--spacing-4xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.whatsapp-start-modal__illustration--button .whatsapp-start-modal__illustration-cta {
+  right: calc(50% - var(--spacing-4xl));
+  bottom: var(--spacing-md);
+  min-width: calc(var(--spacing-4xl) * 2 + var(--spacing-2xl));
+  height: var(--spacing-4xl);
+  border-radius: var(--radius-sm);
+}
+
 .whatsapp-start-modal__check {
   position: absolute;
-  top: var(--spacing-sm);
-  right: var(--spacing-sm);
-  width: var(--spacing-2xl);
-  height: var(--spacing-2xl);
+  top: 50%;
+  right: auto;
+  left: 50%;
+  width: var(--spacing-3xl);
+  height: var(--spacing-3xl);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-rounded);
-  background: var(--success-default);
+  background: var(--blue-500);
   color: var(--secondary-text-white);
+  box-shadow: var(--shadow-md);
+  transform: translate(-50%, -50%);
 }
 
 .whatsapp-start-modal__footer {
