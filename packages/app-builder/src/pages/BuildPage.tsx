@@ -7262,7 +7262,6 @@ export function BuildPage({
                         </div>
                       </>}
                       {renderWhatsAppStyleOptions('Size', 'Size', ['Small', 'Medium', 'Large'])}
-                      {renderWhatsAppStyleOptions('Alignment', 'Alignment', ['Left', 'Right'])}
                       {displayStyle !== 'Button' && <>
                         <div className="property-panel__field property-panel__field--inline">
                           <DSFormField title="Show Bubble" description="Text shown with the button" size="md" showDescription showHelpText={false}>
