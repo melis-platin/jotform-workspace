@@ -1272,21 +1272,6 @@ body {
     padding: var(--space-6);
     position: relative;
 
-    // Floating WhatsApp controls are fixed in the builder, so retain enough
-    // document space for the last canvas content to remain visible above it.
-    &:has(> .build-page__canvas-element > .build-page__canvas-element-content > .jf-whatsapp:not(.jf-whatsapp--button)) {
-      padding-bottom: calc(var(--space-20) + var(--space-5));
-    }
-
-    // An otherwise empty app would collapse to its padding because the
-    // floating control is removed from document flow. Keep an intentional
-    // canvas area without affecting pages that already contain content.
-    &:has(> .build-page__canvas-element:only-child > .build-page__canvas-element-content > .jf-whatsapp:not(.jf-whatsapp--button)) {
-      min-height: calc(
-        var(--space-20) + var(--space-20) + var(--space-20) + var(--space-20) + var(--space-10)
-      );
-    }
-
     @media (max-width: 768px) {
       padding: var(--space-4);
       gap: var(--space-3);
