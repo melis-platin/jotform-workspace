@@ -19810,7 +19810,7 @@ body.builder--phone-only {
   overflow: hidden;
   border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   background: var(--background-white);
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-xs);
   transform: translateX(-50%);
 }
 
@@ -19939,6 +19939,7 @@ body.builder--phone-only {
   flex-basis: var(--spacing-lg);
   border-radius: var(--radius-sm);
   background: var(--background-white);
+  box-shadow: var(--shadow-xs);
 }
 
 .whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-profile-lines,
@@ -19965,15 +19966,15 @@ body.builder--phone-only {
   right: var(--spacing-xs);
   bottom: auto;
   left: var(--spacing-xs);
-  gap: var(--spacing-3xs);
+  gap: var(--spacing-2xs);
 }
 
 .whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-list > span,
 .whatsapp-start-modal__illustration--button .whatsapp-start-modal__illustration-list > span {
   box-sizing: border-box;
-  height: var(--spacing-sm);
+  height: calc(var(--spacing-sm) + var(--spacing-2xs) + var(--spacing-3xs));
   gap: var(--spacing-2xs);
-  padding: var(--spacing-3xs) var(--spacing-2xs);
+  padding: var(--spacing-2xs) calc(var(--spacing-2xs) + var(--spacing-3xs));
   border-radius: var(--radius-sm);
   background: var(--navy-25);
 }
@@ -19989,13 +19990,20 @@ body.builder--phone-only {
 
 .whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-list b,
 .whatsapp-start-modal__illustration--button .whatsapp-start-modal__illustration-list b {
+  flex: 0 0 auto;
+  width: calc(var(--spacing-xl) + var(--spacing-md));
   height: var(--spacing-3xs);
   background: var(--navy-100);
 }
 
 .whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-list > span:nth-child(2) b,
 .whatsapp-start-modal__illustration--button .whatsapp-start-modal__illustration-list > span:nth-child(2) b {
-  width: calc(100% - var(--spacing-xs));
+  width: var(--spacing-2xl);
+}
+
+.whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-list > span:nth-child(3) b,
+.whatsapp-start-modal__illustration--button .whatsapp-start-modal__illustration-list > span:nth-child(3) b {
+  width: calc(var(--spacing-2xl) + (var(--spacing-xs) / 2));
 }
 
 .whatsapp-start-modal__illustration--floating .whatsapp-start-modal__illustration-cta {
