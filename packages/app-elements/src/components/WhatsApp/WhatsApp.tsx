@@ -146,7 +146,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
               </>}
             </button>
           </div>
-          {isButtonStyle && <div className="jf-whatsapp__availability" aria-label={isAvailable ? 'Online now' : 'Offline now'}>
+          {isButtonStyle && availabilityEnabled && <div className="jf-whatsapp__availability" aria-label={isAvailable ? 'Online now' : 'Offline now'}>
             <span className={`jf-whatsapp__availability-dot${isAvailable ? '' : ' jf-whatsapp__availability-dot--offline'}`} aria-hidden="true" />
             <span>{isAvailable ? 'Online now' : 'Offline now'}</span>
           </div>}
