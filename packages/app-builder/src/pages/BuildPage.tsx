@@ -2601,12 +2601,14 @@ const SortableElement = memo(function SortableElement({
       data-element-id={element.id}
       data-component-id={element.componentId}
       style={hideDuringDrag ? { display: 'none' } : undefined}
-      onPointerDownCapture={() => {
-        // Disabled native buttons do not emit click events. Selecting here
-        // keeps the element selectable without cancelling the CTA click.
-        if (!isSelected && element.componentId === 'whatsapp') {
-          onSelect(element.id)
-        }
+      onPointerDownCapture={(event) => {
+        // In the builder, the complete WhatsApp control is one selection
+        // target. Capture the pointer before its CTA can handle the event so
+        // a click anywhere on the fixed control consistently selects it.
+        if (!isWhatsApp || (event.target as HTMLElement).closest('.build-page__canvas-element-actions')) return
+        event.preventDefault()
+        event.stopPropagation()
+        onSelect(element.id)
       }}
       onClick={(e) => {
         e.stopPropagation()
