@@ -7216,6 +7216,7 @@ export function BuildPage({
                   const isSocialFollow = selectedComponent.id === 'social-follow'
                   const isWhatsApp = selectedComponent.id === 'whatsapp'
                   if (isWhatsApp && propertyTab === 'style') {
+                    const displayStyle = String(selectedElement.properties['Display Style'] ?? 'Floating')
                     const renderWhatsAppStyleOptions = (title: string, property: string, options: string[]) => (
                       <div className="property-panel__field">
                         <DSFormField title={title} size="md" showDescription={false} showHelpText={false}>
@@ -7224,8 +7225,14 @@ export function BuildPage({
                               const label = property === 'Display Style'
                                 ? (option === 'Floating' ? 'Icon Only' : 'Icon & Text')
                                 : option
-                              return <button key={option} type="button" className={`whatsapp-properties__segment${String(selectedElement.properties[property] ?? ({ 'Display Style': 'Floating', Size: 'Medium', Alignment: 'Right', 'Bubble Placement': 'Beside' }[property] ?? '')) === option ? ' whatsapp-properties__segment--selected' : ''}`} onClick={() => {
+                              const defaultValue = property === 'Size'
+                                ? (displayStyle === 'Floating' ? 'Large' : 'Medium')
+                                : ({ 'Display Style': 'Floating', Alignment: 'Right', 'Bubble Placement': 'Beside' }[property] ?? '')
+                              return <button key={option} type="button" className={`whatsapp-properties__segment${String(selectedElement.properties[property] ?? defaultValue) === option ? ' whatsapp-properties__segment--selected' : ''}`} onClick={() => {
                                 handlePropertyChange(selectedElement.id, property, option)
+                                if (property === 'Display Style' && option === 'Floating') {
+                                  handlePropertyChange(selectedElement.id, 'Size', 'Large')
+                                }
                                 if (property === 'Display Style' && option === 'Button') {
                                   const currentButtonText = String(selectedElement.properties['Button Text'] ?? '')
                                   if (!currentButtonText || currentButtonText === 'Message us' || currentButtonText === 'Message us on WhatsApp') {
@@ -7238,7 +7245,6 @@ export function BuildPage({
                         </DSFormField>
                       </div>
                     )
-                    const displayStyle = String(selectedElement.properties['Display Style'] ?? 'Floating')
                     const buttonText = String(selectedElement.properties['Button Text'] ?? 'Chat on WhatsApp')
                     const displayedButtonText = ['Message us', 'Message us on WhatsApp'].includes(buttonText) ? 'Chat on WhatsApp' : buttonText
                     return <div className="property-panel__body property-panel__body--whatsapp">
