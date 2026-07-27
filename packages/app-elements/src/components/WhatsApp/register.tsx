@@ -17,7 +17,7 @@ ComponentRegistry.register({
     { name: 'Alignment', type: 'select', default: 'Right', options: ['Left', 'Right'] },
     { name: 'Show Label', type: 'boolean', default: true },
     { name: 'Bubble Placement', type: 'select', default: 'Beside', options: ['Beside', 'Above'] },
-    { name: 'Bubble Text', type: 'text', default: 'Message us on WhatsApp', maxLength: 30 },
+    { name: 'Bubble Text', type: 'text', default: 'Chat on WhatsApp', maxLength: 30 },
     { name: 'Button Width', type: 'select', default: 'Auto', options: ['Auto', 'Full'] },
     { name: 'Button Alignment', type: 'select', default: 'Center', options: ['Left', 'Center', 'Right'] },
     { name: 'Button Text', type: 'text', default: 'Chat on WhatsApp', maxLength: 30 },
@@ -66,7 +66,7 @@ ComponentRegistry.register({
         size={String(props['Size'] ?? 'Medium')}
         alignment={String(props['Alignment'] ?? 'Right')}
         showLabel={props['Show Label'] !== false}
-        bubbleText={String(props['Bubble Text'] ?? 'Message us on WhatsApp')}
+        bubbleText={String(props['Bubble Text'] ?? 'Chat on WhatsApp')}
         bubblePlacement={String(props['Bubble Placement'] ?? 'Beside')}
         buttonWidth={String(props['Button Width'] ?? 'Auto')}
         buttonAlignment={String(props['Alignment'] ?? 'Right')}

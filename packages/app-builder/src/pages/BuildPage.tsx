@@ -7274,9 +7274,9 @@ export function BuildPage({
                           <div className="property-panel__field">
                             <DSFormField title="Bubble Text" size="md" showDescription={false} showHelpText={false}>
                               <DSInput
-                                value={String(selectedElement.properties['Bubble Text'] ?? 'Message us on WhatsApp')}
+                                value={String(selectedElement.properties['Bubble Text'] ?? 'Chat on WhatsApp')}
                                 maxLength={30}
-                                rightContent={<span className="property-panel__char-count">{String(selectedElement.properties['Bubble Text'] ?? 'Message us on WhatsApp').length}/30</span>}
+                                rightContent={<span className="property-panel__char-count">{String(selectedElement.properties['Bubble Text'] ?? 'Chat on WhatsApp').length}/30</span>}
                                 onChange={(e) => handlePropertyChange(selectedElement.id, 'Bubble Text', e.target.value.slice(0, 30))}
                               />
                             </DSFormField>
