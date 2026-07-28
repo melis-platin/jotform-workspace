@@ -650,9 +650,9 @@ interface PanelGroup {
 }
 
 const BASIC_GROUPS: PanelGroup[] = [
-  { elementIds: ['form', 'heading', 'banner', 'list', 'paragraph', 'card', 'sign-document', 'document', 'image', 'image-gallery', 'button', 'whatsapp', 'spacer'] },
+  { elementIds: ['form', 'heading', 'banner', 'list', 'paragraph', 'card', 'sign-document', 'document', 'image', 'image-gallery', 'button', 'spacer'] },
   { label: 'PAYMENT ELEMENTS', elementIds: ['product-list', 'donation-box'] },
-  { label: 'FEATURED WIDGETS', elementIds: ['social-follow', 'testimonial', 'faq'] },
+  { label: 'FEATURED WIDGETS', elementIds: ['whatsapp', 'social-follow', 'testimonial', 'faq'] },
   { label: 'DATA ELEMENTS', elementIds: ['table'] },
 ]
 
