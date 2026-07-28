@@ -7178,6 +7178,7 @@ export function BuildPage({
                                 }
                                 if (property === 'Display Style' && option === 'Button') {
                                   handlePropertyChange(selectedElement.id, 'Size', 'Medium')
+                                  handlePropertyChange(selectedElement.id, 'Bubble Placement', 'Above')
                                   const currentButtonText = String(selectedElement.properties['Button Text'] ?? '')
                                   if (!currentButtonText || currentButtonText === 'Message us' || currentButtonText === 'Message us on WhatsApp') {
                                     handlePropertyChange(selectedElement.id, 'Button Text', 'Chat on WhatsApp')
@@ -7212,7 +7213,7 @@ export function BuildPage({
                         </DSFormField>
                       </div>
                       {selectedElement.properties['Show Label'] === true && <>
-                        {renderWhatsAppStyleOptions('Bubble Placement', 'Bubble Placement', ['Beside', 'Above'])}
+                        {displayStyle !== 'Button' && renderWhatsAppStyleOptions('Bubble Placement', 'Bubble Placement', ['Beside', 'Above'])}
                         <div className="property-panel__field">
                           <DSFormField title="Bubble Text" size="md" showDescription={false} showHelpText={false}>
                             <DSInput

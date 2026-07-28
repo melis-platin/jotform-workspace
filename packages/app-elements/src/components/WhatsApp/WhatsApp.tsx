@@ -70,9 +70,8 @@ export const WhatsApp: FC<WhatsAppProps> = ({
     <div className={whatsappClassName}>
       <div className="jf-whatsapp__main">
         <div className="jf-whatsapp__main-content">
-          {isButtonStyle && showLabel && bubblePlacement === 'Above' && <span className="jf-whatsapp__bubble">{floatingLabel}</span>}
+          {isButtonStyle && showLabel && <span className="jf-whatsapp__bubble">{floatingLabel}</span>}
           <div className="jf-whatsapp__action-row">
-            {isButtonStyle && showLabel && bubblePlacement === 'Beside' && <span className="jf-whatsapp__bubble">{floatingLabel}</span>}
             <div className="jf-whatsapp__control">
               <button
                 type="button"
