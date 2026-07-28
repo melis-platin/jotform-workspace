@@ -7186,7 +7186,7 @@ export function BuildPage({
                                 if (property === 'Display Style' && option === 'Button') {
                                   handlePropertyChange(selectedElement.id, 'Size', 'Medium')
                                   handlePropertyChange(selectedElement.id, 'Bubble Placement', 'Above')
-                                  handlePropertyChange(selectedElement.id, 'Show Label', true)
+                                  handlePropertyChange(selectedElement.id, 'Show Label', false)
                                   handlePropertyChange(selectedElement.id, 'Bubble Text', '')
                                 }
                               }}>{label}</button>
@@ -7264,7 +7264,7 @@ export function BuildPage({
 
                       handlePropertyChange(selectedElement.id, 'Size', 'Medium')
                       handlePropertyChange(selectedElement.id, 'Bubble Placement', 'Above')
-                      handlePropertyChange(selectedElement.id, 'Show Label', true)
+                      handlePropertyChange(selectedElement.id, 'Show Label', false)
                       handlePropertyChange(selectedElement.id, 'Bubble Text', '')
                     }
                     return (
