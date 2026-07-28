@@ -5976,6 +5976,18 @@ body,
   outline-offset: 4px;
 }
 
+// In the builder, the full WhatsApp slot is an element-selection surface. This
+// must remain true before a phone number is configured, when the native CTA is
+// disabled: route pointer input to the section so any click opens Properties.
+.build-page__canvas-element[data-component-id='whatsapp'] .jf-whatsapp__cta {
+  cursor: pointer;
+}
+
+.build-page__canvas-element[data-component-id='whatsapp'] .jf-whatsapp__cta:disabled {
+  cursor: pointer;
+  pointer-events: none;
+}
+
 // Standard buttons select on the full-width slot, not the button itself, so the
 // selection wrapper is consistent regardless of Width (Auto = content-width, Full
 // = stretched) and the button's own corner radius. A fixed --radius-md slot (like
