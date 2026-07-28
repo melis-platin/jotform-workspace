@@ -7292,6 +7292,7 @@ export function BuildPage({
                         {displayStyle === 'Floating' && <div className="property-panel__field">
                           <DSFormField title="Show on" size="md" showDescription={false} showHelpText={false}>
                             <DSDropdownSingle
+                              showLeadingIcon={false}
                               value={String(selectedElement.properties['Show On'] ?? 'All Pages')}
                               onChange={(value) => handlePropertyChange(selectedElement.id, 'Show On', value)}
                               options={[
