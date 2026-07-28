@@ -112,6 +112,11 @@ const PUSH_NOTIFICATION_HISTORY_FILTER_OPTIONS = [
     label: 'Sent',
     leading: <Icon name="check-circle-filled" category="general" size={20} />,
   },
+  {
+    value: 'canceled',
+    label: 'Canceled',
+    leading: <Icon name="xmark-circle-filled" category="general" size={20} />,
+  },
 ]
 
 const SCHEDULE_TIMEZONE_OPTIONS = [
@@ -1075,7 +1080,7 @@ export interface PushNotificationsPanelProps {
   isPublishComposer?: boolean
 }
 
-export type PushNotificationHistoryStatus = 'scheduled' | 'sent'
+export type PushNotificationHistoryStatus = 'scheduled' | 'sent' | 'canceled'
 export type PushNotificationPanelView = 'composer' | 'history'
 
 export interface PushComposerSelectedImage {
@@ -1277,7 +1282,7 @@ export function PushNotificationsPanel({
   const createBaseHistoryItem = (status: PushNotificationHistoryStatus) => ({
     id: `${Date.now()}-${Math.random().toString(36).slice(2)}`,
     status,
-    statusLabel: status === 'scheduled' ? 'Scheduled' : 'Sent',
+    statusLabel: status === 'scheduled' ? 'Scheduled' : status === 'canceled' ? 'Canceled' : 'Sent',
     title: getComposerHistoryText(
       notificationTitle,
       notificationTitleFields,
@@ -1365,7 +1370,12 @@ export function PushNotificationsPanel({
   const confirmScheduledNotificationCancel = () => {
     if (!cancelingNotification) return
 
-    onHistoryItemDelete(cancelingNotification.id)
+    onHistoryItemUpdate({
+      ...cancelingNotification,
+      status: 'canceled',
+      statusLabel: 'Canceled',
+      liveInLabel: 'Canceled',
+    })
     closeScheduledNotificationCancel()
   }
   const openSentNotificationDelete = (notification: PushNotificationHistoryItem) => {
@@ -2090,18 +2100,21 @@ function PushNotificationHistory({
 
   const hasScheduledNotifications = notifications.some((notification) => notification.status === 'scheduled')
   const hasSentNotifications = notifications.some((notification) => notification.status === 'sent')
+  const hasCanceledNotifications = notifications.some((notification) => notification.status === 'canceled')
   const filterOptions = PUSH_NOTIFICATION_HISTORY_FILTER_OPTIONS.map((option) => ({
     ...option,
     disabled: (option.value === 'scheduled' && !hasScheduledNotifications)
-      || (option.value === 'sent' && !hasSentNotifications),
+      || (option.value === 'sent' && !hasSentNotifications)
+      || (option.value === 'canceled' && !hasCanceledNotifications),
   }))
 
   useEffect(() => {
     if ((statusFilter === 'scheduled' && !hasScheduledNotifications)
-      || (statusFilter === 'sent' && !hasSentNotifications)) {
+      || (statusFilter === 'sent' && !hasSentNotifications)
+      || (statusFilter === 'canceled' && !hasCanceledNotifications)) {
       setStatusFilter(undefined)
     }
-  }, [hasScheduledNotifications, hasSentNotifications, statusFilter])
+  }, [hasCanceledNotifications, hasScheduledNotifications, hasSentNotifications, statusFilter])
 
   if (notifications.length === 0) return null
 
@@ -2194,7 +2207,8 @@ function PushNotificationHistoryCard({
   onPreview,
 }: PushNotificationHistoryCardProps) {
   const isScheduled = notification.status === 'scheduled'
-  const statusBadgeLabel = isScheduled ? notification.statusLabel : 'Sent'
+  const isCanceled = notification.status === 'canceled'
+  const statusBadgeLabel = notification.statusLabel
   const audienceLabel = getDisplayAudienceHistoryLabel(notification.audienceLabel)
   const audienceRoleTooltip = getHistoryAudienceRoleTooltip(notification, appUserRoles)
   const destinationLabel = getDisplayDeepLinkLabel(notification.deepLinkLabel)
@@ -2292,7 +2306,7 @@ function PushNotificationHistoryCard({
     >
       <div className="push-notification-history-card__rail" aria-hidden="true">
         <Icon
-          name={isScheduled ? 'clock-filled' : 'check-circle-filled'}
+          name={isScheduled ? 'clock-filled' : isCanceled ? 'xmark-circle-filled' : 'check-circle-filled'}
           category={isScheduled ? 'time-date' : 'general'}
           size={18}
         />
@@ -2334,7 +2348,7 @@ function PushNotificationHistoryCard({
             <Icon name="clock-filled" category="time-date" size={12} />
             <span>{notification.liveInLabel}</span>
           </span>
-        ) : (
+        ) : !isCanceled ? (
           <>
             <span className="push-notification-history-card__divider" aria-hidden="true" />
             <div className="push-notification-history-card__metrics" aria-label="Notification delivery metrics">
@@ -2346,7 +2360,7 @@ function PushNotificationHistoryCard({
               ))}
             </div>
           </>
-        )}
+        ) : null}
       </div>
       <button
         ref={actionsMenuButtonRef}

@@ -16182,6 +16182,17 @@ body.builder--phone-only {
   }
 }
 
+.push-notification-history-card--canceled {
+  .push-notification-history-card__rail {
+    background: var(--error-default);
+  }
+
+  .push-notification-history-card__badge {
+    background: var(--error-lightest);
+    color: var(--error-default);
+  }
+}
+
 .push-preview-phone {
   position: relative;
   width: 100%;
