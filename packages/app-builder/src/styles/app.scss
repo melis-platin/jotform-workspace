@@ -7535,6 +7535,78 @@ body,
 .whatsapp-properties__segment:last-child { border-right: 0; }
 .whatsapp-properties__segment--selected { background: var(--blue-500); }
 
+.whatsapp-properties__display-style-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--ds-space-md);
+  width: 100%;
+}
+
+.whatsapp-properties__display-style-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--ds-space-sm);
+  min-height: 112px;
+  padding: var(--ds-space-md) var(--ds-space-sm);
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--gray-500);
+  color: var(--ds-text-primary);
+  font-family: var(--ds-font-family);
+  font-size: var(--ds-font-size-sm);
+  font-weight: var(--ds-font-weight-bold);
+  line-height: var(--ds-line-height-sm);
+  cursor: pointer;
+}
+
+.whatsapp-properties__display-style-card--selected {
+  background: var(--blue-500);
+}
+
+.whatsapp-properties__display-style-preview {
+  position: relative;
+  flex: 0 0 44px;
+  width: 44px;
+  height: 44px;
+  overflow: hidden;
+  border: 2px solid color-mix(in srgb, var(--ds-text-primary) 60%, transparent);
+  border-radius: var(--radius-sm);
+}
+
+.whatsapp-properties__display-style-preview-line,
+.whatsapp-properties__display-style-preview-action {
+  position: absolute;
+  display: block;
+  border-radius: var(--radius-pill);
+}
+
+.whatsapp-properties__display-style-preview-line {
+  left: 6px;
+  height: 3px;
+  background: color-mix(in srgb, var(--ds-text-primary) 60%, transparent);
+}
+
+.whatsapp-properties__display-style-preview-line--first { top: 6px; width: 29px; }
+.whatsapp-properties__display-style-preview-line--second { top: 13px; width: 29px; }
+.whatsapp-properties__display-style-preview-line--third { top: 20px; width: 20px; }
+
+.whatsapp-properties__display-style-preview-action {
+  top: 28px;
+  left: 6px;
+  width: 28px;
+  height: 6px;
+  background: var(--ds-text-primary);
+}
+
+.whatsapp-properties__display-style-preview--floating .whatsapp-properties__display-style-preview-action {
+  left: 28px;
+  width: 8px;
+  height: 8px;
+}
+
 .whatsapp-properties__show-on-help {
   display: flex;
   align-items: center;

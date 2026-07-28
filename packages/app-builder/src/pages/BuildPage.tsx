@@ -7312,14 +7312,20 @@ export function BuildPage({
                         </div>
                         <div className="property-panel__field">
                           <DSFormField title="Display Style" size="md" showDescription={false} showHelpText={false}>
-                            <div className="whatsapp-properties__segmented whatsapp-properties__segmented--2">
-                              {(['Floating', 'Button'] as const).map((option) => (
+                            <div className="whatsapp-properties__display-style-cards">
+                              {(['Button', 'Floating'] as const).map((option) => (
                                 <button
                                   key={option}
                                   type="button"
-                                  className={`whatsapp-properties__segment${displayStyle === option ? ' whatsapp-properties__segment--selected' : ''}`}
+                                  className={`whatsapp-properties__display-style-card${displayStyle === option ? ' whatsapp-properties__display-style-card--selected' : ''}`}
                                   onClick={() => selectDisplayStyle(option)}
                                 >
+                                  <span className={`whatsapp-properties__display-style-preview whatsapp-properties__display-style-preview--${option.toLowerCase()}`} aria-hidden="true">
+                                    <span className="whatsapp-properties__display-style-preview-line whatsapp-properties__display-style-preview-line--first" />
+                                    <span className="whatsapp-properties__display-style-preview-line whatsapp-properties__display-style-preview-line--second" />
+                                    <span className="whatsapp-properties__display-style-preview-line whatsapp-properties__display-style-preview-line--third" />
+                                    <span className="whatsapp-properties__display-style-preview-action" />
+                                  </span>
                                   {option}
                                 </button>
                               ))}
