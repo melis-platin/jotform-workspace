@@ -2746,7 +2746,7 @@ function DroppablePage({
       <div
         ref={ref}
         data-page-id={pageId}
-        className={`themes-view__app ${showEmptyState && isOverEmpty && !suppressDropLine ? 'build-page__droppable--over' : ''}`}
+        className={`themes-view__app ${isOverEmpty && !suppressDropLine ? 'build-page__droppable--over' : ''}`}
       >
         {showEmptyState && (
           <section
