@@ -7547,8 +7547,8 @@ body,
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: var(--ds-space-sm);
-  min-height: 112px;
+  gap: var(--ds-space-xs);
+  min-height: 104px;
   padding: var(--ds-space-md) var(--ds-space-sm);
   overflow: hidden;
   border: 0;
@@ -7559,6 +7559,7 @@ body,
   font-size: var(--ds-font-size-sm);
   font-weight: var(--ds-font-weight-bold);
   line-height: var(--ds-line-height-sm);
+  letter-spacing: -0.084px;
   cursor: pointer;
 }
 
