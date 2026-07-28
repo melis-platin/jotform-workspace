@@ -103,14 +103,14 @@ const SENT_NOTIFICATION_METRICS = [
 
 const PUSH_NOTIFICATION_HISTORY_FILTER_OPTIONS = [
   {
-    value: 'scheduled',
-    label: 'Scheduled',
-    leading: <Icon name="clock-filled" category="time-date" size={20} />,
-  },
-  {
     value: 'sent',
     label: 'Sent',
     leading: <Icon name="check-circle-filled" category="general" size={20} />,
+  },
+  {
+    value: 'scheduled',
+    label: 'Scheduled',
+    leading: <Icon name="clock-filled" category="time-date" size={20} />,
   },
   {
     value: 'canceled',
