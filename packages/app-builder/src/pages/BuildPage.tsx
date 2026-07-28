@@ -7161,7 +7161,8 @@ export function BuildPage({
                   const isWhatsApp = selectedComponent.id === 'whatsapp'
                   if (isWhatsApp && propertyTab === 'style') {
                     const displayStyle = String(selectedElement.properties['Display Style'] ?? 'Button')
-                    const showBubble = selectedElement.properties['Show Label'] !== false
+                    const showBubble = selectedElement.properties['Show Label'] === true
+                      || (selectedElement.properties['Show Label'] === undefined && displayStyle === 'Floating')
                     const renderWhatsAppStyleOptions = (title: string, property: string, options: string[]) => (
                       <div className="property-panel__field">
                         <DSFormField title={title} size="md" showDescription={false} showHelpText={false}>
@@ -7234,7 +7235,7 @@ export function BuildPage({
 
                       handlePropertyChange(selectedElement.id, 'Size', 'Medium')
                       handlePropertyChange(selectedElement.id, 'Bubble Placement', 'Above')
-                      handlePropertyChange(selectedElement.id, 'Show Label', true)
+                      handlePropertyChange(selectedElement.id, 'Show Label', false)
                       handlePropertyChange(selectedElement.id, 'Bubble Text', '')
                     }
                     return (
