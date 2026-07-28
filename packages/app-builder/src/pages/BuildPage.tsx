@@ -7204,7 +7204,7 @@ export function BuildPage({
                       </div>
                     )
                     return <div className="property-panel__body property-panel__body--whatsapp">
-                      {displayStyle === 'Floating' && renderWhatsAppStyleOptions('Display Style', 'Floating Display Style', ['Icon Only', 'Icon & Text'])}
+                      {displayStyle === 'Floating' && renderWhatsAppStyleOptions('Button Style', 'Floating Display Style', ['Icon Only', 'Icon & Text'])}
                       {renderWhatsAppStyleOptions(displayStyle === 'Button' ? 'Button Size' : 'Size', 'Size', ['Small', 'Medium', 'Large'])}
                       {displayStyle === 'Floating' && renderWhatsAppStyleOptions('Alignment', 'Alignment', ['Left', 'Right'])}
                       {displayStyle === 'Button' && <>
