@@ -12,6 +12,7 @@ export interface WhatsAppProps {
   showLabel?: boolean;
   bubbleText?: string;
   bubblePlacement?: string;
+  buttonDisplayStyle?: string;
   buttonWidth?: string;
   buttonAlignment?: string;
   buttonText?: string;
@@ -40,6 +41,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
   showLabel = false,
   bubbleText = '',
   bubblePlacement = 'Beside',
+  buttonDisplayStyle = 'Icon Only',
   buttonWidth = 'Auto',
   buttonAlignment = 'Center',
   buttonText = 'Message us',
@@ -48,6 +50,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
   const number = getWhatsAppNumber(phoneNumber);
   const isEnabled = isValidWhatsAppPhoneNumber(phoneNumber, number);
   const isButtonStyle = displayStyle === 'Button';
+  const isButtonIconAndText = buttonDisplayStyle === 'Icon & Text';
   const whatsappClassName = [
     'jf-whatsapp',
     !isButtonStyle && !showLabel && 'jf-whatsapp--no-label',
@@ -71,6 +74,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
       <div className="jf-whatsapp__main">
         <div className="jf-whatsapp__main-content">
           <div className="jf-whatsapp__action-row">
+            {isButtonStyle && showLabel && floatingLabel && <span className="jf-whatsapp__bubble">{floatingLabel}</span>}
             <div className="jf-whatsapp__control">
               <button
                 type="button"
@@ -82,7 +86,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
                 {isButtonStyle && <span className="jf-whatsapp__icon" aria-hidden="true">
                   <img className="jf-whatsapp__icon-image" src={whatsAppIcon} alt="" />
                 </span>}
-                {(isButtonStyle || (showLabel && floatingLabel)) && <span className="jf-whatsapp__label">{isButtonStyle ? buttonText : floatingLabel}</span>}
+                {((isButtonStyle && isButtonIconAndText) || (showLabel && floatingLabel && !isButtonStyle)) && <span className="jf-whatsapp__label">{isButtonStyle ? buttonText : floatingLabel}</span>}
                 {!isButtonStyle && <>
                   <span className="jf-whatsapp__icon" aria-hidden="true">
                     <img className="jf-whatsapp__icon-image" src={whatsAppIcon} alt="" />

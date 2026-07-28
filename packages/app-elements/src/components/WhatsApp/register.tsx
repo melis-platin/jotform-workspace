@@ -15,9 +15,10 @@ ComponentRegistry.register({
     { name: 'Display Style', type: 'select', default: 'Button', options: ['Floating', 'Button'] },
     { name: 'Size', type: 'select', default: 'Medium', options: ['Small', 'Medium', 'Large'] },
     { name: 'Alignment', type: 'select', default: 'Right', options: ['Left', 'Right'] },
-    { name: 'Show Label', type: 'boolean', default: false },
+    { name: 'Show Label', type: 'boolean', default: true },
     { name: 'Bubble Placement', type: 'select', default: 'Beside', options: ['Beside', 'Above'] },
     { name: 'Bubble Text', type: 'text', default: '', maxLength: 120 },
+    { name: 'Button Display Style', type: 'select', default: 'Icon Only', options: ['Icon Only', 'Icon & Text'] },
     { name: 'Button Width', type: 'select', default: 'Auto', options: ['Auto', 'Full'] },
     { name: 'Button Alignment', type: 'select', default: 'Center', options: ['Left', 'Center', 'Right'] },
     { name: 'Button Text', type: 'text', default: 'Message us', maxLength: 30 },
@@ -63,6 +64,7 @@ ComponentRegistry.register({
         showLabel={props['Show Label'] === true}
         bubbleText={String(props['Bubble Text'] ?? '')}
         bubblePlacement={String(props['Bubble Placement'] ?? 'Beside')}
+        buttonDisplayStyle={String(props['Button Display Style'] ?? 'Icon Only')}
         buttonWidth={String(props['Button Width'] ?? 'Auto')}
         buttonAlignment={String(props['Button Alignment'] ?? 'Center')}
         buttonText={buttonText}
