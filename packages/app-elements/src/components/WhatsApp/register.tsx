@@ -13,7 +13,7 @@ ComponentRegistry.register({
 
   properties: [
     { name: 'Display Style', type: 'select', default: 'Button', options: ['Floating', 'Button'] },
-    { name: 'Size', type: 'select', default: 'Medium', options: ['Small', 'Medium', 'Large'] },
+    { name: 'Size', type: 'select', default: 'Large', options: ['Small', 'Medium', 'Large'] },
     { name: 'Alignment', type: 'select', default: 'Right', options: ['Left', 'Right'] },
     { name: 'Show Label', type: 'boolean', default: false },
     { name: 'Bubble Placement', type: 'select', default: 'Beside', options: ['Beside', 'Above'] },

@@ -7172,7 +7172,7 @@ export function BuildPage({
                                 ? (option === 'Floating' ? 'Icon Only' : 'Icon & Text')
                                 : option
                               const defaultValue = property === 'Size'
-                                ? 'Medium'
+                                ? (displayStyle === 'Button' ? 'Large' : 'Medium')
                                 : ({ 'Display Style': 'Button', 'Floating Display Style': 'Icon Only', Alignment: 'Right', 'Bubble Placement': 'Beside', 'Button Alignment': 'Center', 'Button Width': 'Auto' }[property] ?? '')
                               return <button key={option} type="button" className={`whatsapp-properties__segment${String(selectedElement.properties[property] ?? defaultValue) === option ? ' whatsapp-properties__segment--selected' : ''}`} onClick={() => {
                                 handlePropertyChange(selectedElement.id, property, option)
@@ -7184,7 +7184,7 @@ export function BuildPage({
                                   handlePropertyChange(selectedElement.id, 'Bubble Text', '')
                                 }
                                 if (property === 'Display Style' && option === 'Button') {
-                                  handlePropertyChange(selectedElement.id, 'Size', 'Medium')
+                                  handlePropertyChange(selectedElement.id, 'Size', 'Large')
                                   handlePropertyChange(selectedElement.id, 'Bubble Placement', 'Above')
                                   handlePropertyChange(selectedElement.id, 'Show Label', false)
                                   handlePropertyChange(selectedElement.id, 'Bubble Text', '')
@@ -7262,7 +7262,7 @@ export function BuildPage({
                         return
                       }
 
-                      handlePropertyChange(selectedElement.id, 'Size', 'Medium')
+                      handlePropertyChange(selectedElement.id, 'Size', 'Large')
                       handlePropertyChange(selectedElement.id, 'Bubble Placement', 'Above')
                       handlePropertyChange(selectedElement.id, 'Show Label', false)
                       handlePropertyChange(selectedElement.id, 'Bubble Text', '')
