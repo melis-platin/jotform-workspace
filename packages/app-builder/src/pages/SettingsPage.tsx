@@ -103,18 +103,13 @@ const SENT_NOTIFICATION_METRICS = [
 
 const PUSH_NOTIFICATION_HISTORY_FILTER_OPTIONS = [
   {
-    value: 'all',
-    label: 'See All',
-    leading: <Icon name="eye-filled" category="general" size={20} />,
-  },
-  {
     value: 'scheduled',
     label: 'Scheduled',
     leading: <Icon name="clock-filled" category="time-date" size={20} />,
   },
   {
     value: 'sent',
-    label: 'Send',
+    label: 'Sent',
     leading: <Icon name="check-circle-filled" category="general" size={20} />,
   },
 ]
@@ -2091,7 +2086,7 @@ function PushNotificationHistory({
 }: PushNotificationHistoryProps) {
   const [visibleCount, setVisibleCount] = useState(5)
   const [searchQuery, setSearchQuery] = useState('')
-  const [statusFilter, setStatusFilter] = useState<PushNotificationHistoryStatus | 'all'>('all')
+  const [statusFilter, setStatusFilter] = useState<PushNotificationHistoryStatus | undefined>()
 
   const hasScheduledNotifications = notifications.some((notification) => notification.status === 'scheduled')
   const hasSentNotifications = notifications.some((notification) => notification.status === 'sent')
@@ -2104,7 +2099,7 @@ function PushNotificationHistory({
   useEffect(() => {
     if ((statusFilter === 'scheduled' && !hasScheduledNotifications)
       || (statusFilter === 'sent' && !hasSentNotifications)) {
-      setStatusFilter('all')
+      setStatusFilter(undefined)
     }
   }, [hasScheduledNotifications, hasSentNotifications, statusFilter])
 
@@ -2112,7 +2107,7 @@ function PushNotificationHistory({
 
   const normalizedSearchQuery = searchQuery.trim().toLocaleLowerCase()
   const filteredNotifications = notifications.filter((notification) => (
-    (statusFilter === 'all' || notification.status === statusFilter) &&
+    (!statusFilter || notification.status === statusFilter) &&
     (!normalizedSearchQuery || [notification.title, notification.content, notification.audienceLabel]
       .some((value) => value.toLocaleLowerCase().includes(normalizedSearchQuery)))
   ))
@@ -2142,8 +2137,10 @@ function PushNotificationHistory({
           size="md"
           options={filterOptions}
           value={statusFilter}
+          placeholder="Select"
+          showLeadingIcon={false}
           onChange={(value) => {
-            setStatusFilter(value as PushNotificationHistoryStatus | 'all')
+            setStatusFilter(value as PushNotificationHistoryStatus)
             setVisibleCount(5)
           }}
           menuClassName="push-notification-history__filter-menu"
