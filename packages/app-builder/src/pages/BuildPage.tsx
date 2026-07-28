@@ -661,7 +661,6 @@ const WIDGETS_GROUPS: PanelGroup[] = [
 ]
 
 const HIDDEN_ELEMENTS = ['empty-state', 'app-header', 'bottom-navigation', 'color-picker']
-const WHATSAPP_PANEL_ITEM_ID = 'whatsapp'
 const LEGACY_PRESET_HEADER_IMAGES: Record<string, string[]> = {
   'gym-club': [
     'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=1000&h=600&fit=crop',
@@ -1869,27 +1868,6 @@ const APP_HEADER_DESC_PLACEHOLDER = 'Add a short description to tell people what
 // The app's default name (mirrors appPresets.ts). Until the app is renamed, the header
 // title falls back to this — treated as an unfilled placeholder, not a real title.
 const DEFAULT_APP_TITLE = 'App Title'
-const LEGACY_WHATSAPP_MESSAGE = 'Hi Bloom Café! I’d like to ask about my order.'
-const PREVIOUS_DEFAULT_WHATSAPP_MESSAGE = 'Hi! I’d like to learn more about your services.'
-const DEFAULT_WHATSAPP_MESSAGE = "Hi! I'd like to ask a question."
-
-function createDefaultWhatsAppMessage(appName: string): string {
-  const name = appName.trim()
-  const isUnnamedApp = !name || [APP_HEADER_TITLE_PLACEHOLDER, DEFAULT_APP_TITLE, 'New App'].includes(name)
-  return isUnnamedApp
-    ? DEFAULT_WHATSAPP_MESSAGE
-    : `Hi ${name}! I'd like to ask a question.`
-}
-
-function isUntouchedWhatsAppDefaultMessage(message: unknown): boolean {
-  const value = String(message ?? '')
-  return value === DEFAULT_WHATSAPP_MESSAGE
-    || value === LEGACY_WHATSAPP_MESSAGE
-    || value === PREVIOUS_DEFAULT_WHATSAPP_MESSAGE
-    || /^Hi .+! I'd like to ask a question\.$/.test(value)
-    || /^Hi .+! I’d like to learn more about your services\.$/.test(value)
-}
-
 // The header banner's title for display: an explicit value (including '' to hide
 // it) wins; otherwise a real app name shows through, else an archetype-specific
 // placeholder (Hero gets 'Hero Title', the rest get 'Your App Title').
@@ -2141,129 +2119,6 @@ type DragSourceData =
   | { type: 'panel'; componentId: string }
   | { type: 'canvas'; elementId: string; componentId: string }
 
-type WhatsAppStartStyle = 'Floating' | 'Button'
-
-function WhatsAppStartModal({
-  open,
-  selectedStyle,
-  onStyleChange,
-  onClose,
-  onConfirm,
-}: {
-  open: boolean
-  selectedStyle: WhatsAppStartStyle | null
-  onStyleChange: (style: WhatsAppStartStyle | null) => void
-  onClose: () => void
-  onConfirm: () => void
-}) {
-  if (!open) return null
-
-  const options: Array<{
-    style: WhatsAppStartStyle
-    title: string
-    description: string
-  }> = [
-    {
-      style: 'Floating',
-      title: 'Icon Button',
-      description: 'Compact icon that takes up the least space.',
-    },
-    {
-      style: 'Button',
-      title: 'Icon & Text Button',
-      description: 'Icon with a short label, easier to spot.',
-    },
-  ]
-
-  return createPortal(
-    <div className="whatsapp-start-modal__backdrop" role="presentation" onMouseDown={onClose}>
-      <section
-        className="whatsapp-start-modal"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="whatsapp-start-modal-title"
-        onMouseDown={(event) => event.stopPropagation()}
-      >
-        <header className="whatsapp-start-modal__header">
-          <div className="whatsapp-start-modal__header-main">
-            <div className="whatsapp-start-modal__header-icon" aria-hidden="true">
-              <Icon name="whatsapp-filled" category="brands" size={24} />
-            </div>
-            <div>
-              <h2 id="whatsapp-start-modal-title">WhatsApp Button</h2>
-              <p>Choose how your button looks on the page.</p>
-            </div>
-          </div>
-          <button type="button" className="whatsapp-start-modal__close" aria-label="Close" onClick={onClose}>
-            <Icon name="xmark" size={24} />
-          </button>
-        </header>
-
-        <div className="whatsapp-start-modal__body">
-          <div className="whatsapp-start-modal__options" role="radiogroup" aria-label="WhatsApp display style">
-            {options.map((option) => {
-              const selected = selectedStyle === option.style
-              return (
-                <button
-                  key={option.style}
-                  type="button"
-                  role="radio"
-                  aria-checked={selected}
-                  className={`whatsapp-start-modal__option${selected ? ' whatsapp-start-modal__option--selected' : ''}`}
-                  onClick={() => onStyleChange(selected ? null : option.style)}
-                >
-                  <span className={`whatsapp-start-modal__illustration whatsapp-start-modal__illustration--${option.style.toLowerCase()}`} aria-hidden="true">
-                    <span className="whatsapp-start-modal__illustration-phone">
-                      <span className="whatsapp-start-modal__illustration-phone-header" />
-                      <span className="whatsapp-start-modal__illustration-profile">
-                        <span className="whatsapp-start-modal__illustration-avatar" />
-                        <span className="whatsapp-start-modal__illustration-profile-lines"><span /><span /></span>
-                      </span>
-                      <span className="whatsapp-start-modal__illustration-list">
-                        <span><i /><b /></span>
-                        <span><i /><b /></span>
-                        <span><i /><b /></span>
-                      </span>
-                    </span>
-                    <span className="whatsapp-start-modal__illustration-cta">
-                      <Icon name="whatsapp-filled" category="brands" size={option.style === 'Floating' ? 14 : 16} />
-                      {option.style === 'Button' && <span>Chat with us</span>}
-                    </span>
-                    {selected && (
-                      <span className="whatsapp-start-modal__selection-overlay">
-                        <Icon name="check-circle-filled" category="general" size={44} />
-                      </span>
-                    )}
-                  </span>
-                  <span className="whatsapp-start-modal__option-copy">
-                    <strong>{option.title}</strong>
-                    <span>{option.description}</span>
-                  </span>
-                </button>
-              )
-            })}
-          </div>
-        </div>
-
-        <footer className="whatsapp-start-modal__footer">
-          <DSButton variant="ghost" colorScheme="secondary" shape="rectangle" size="md" onClick={onClose}>Cancel</DSButton>
-          <DSButton
-            variant="filled"
-            colorScheme="primary"
-            shape="rectangle"
-            size="md"
-            onClick={onConfirm}
-            disabled={selectedStyle === null}
-          >
-            Add
-          </DSButton>
-        </footer>
-      </section>
-    </div>,
-    document.body,
-  )
-}
-
 type DropEdgeChange = (elementId: string, edge: Edge | null) => void
 const DropEdgeContext = createContext<DropEdgeChange | null>(null)
 
@@ -2484,7 +2339,7 @@ function isAutoFlowElement(el: CanvasElement): boolean {
 }
 
 function isElementShrinked(el: CanvasElement): boolean {
-  return el.componentId !== WHATSAPP_PANEL_ITEM_ID && el.properties['Shrinked'] === true
+  return el.properties['Shrinked'] === true
 }
 
 // Returns the pair partner's index within page.elements, or -1 if unpaired.
@@ -2563,10 +2418,7 @@ const SortableElement = memo(function SortableElement({
   onPropertyChange: (elementId: string, property: string, value: string | boolean | number) => void
 }) {
   const comp = ComponentRegistry.get(element.componentId)
-  const isWhatsApp = element.componentId === WHATSAPP_PANEL_ITEM_ID
-  // WhatsApp no longer supports the legacy Shrinked setting. Keep old saved
-  // snapshots from accidentally applying the generic shrinked canvas layout.
-  const isShrinked = !isWhatsApp && element.properties['Shrinked'] === true
+  const isShrinked = element.properties['Shrinked'] === true
   const isFlow = isAutoFlowElement(element)
   const sectionRef = useRef<HTMLElement>(null)
   const handleRef = useRef<HTMLDivElement>(null)
@@ -2583,7 +2435,7 @@ const SortableElement = memo(function SortableElement({
   useEffect(() => {
     const section = sectionRef.current
     const handle = handleRef.current
-    if (!section || isWhatsApp) return
+    if (!section) return
     const reportEdge = (edge: Edge | null) => onDropEdgeChange?.(element.id, edge)
     return combine(
       draggable({
@@ -2650,7 +2502,7 @@ const SortableElement = memo(function SortableElement({
         onDrop: () => reportEdge(null),
       })
     )
-  }, [element.id, element.componentId, isWhatsApp, pageId, selfShrinkable, onDropEdgeChange])
+  }, [element.id, element.componentId, pageId, selfShrinkable, onDropEdgeChange])
 
   useEffect(() => {
     const container = contentRef.current
@@ -2759,9 +2611,9 @@ const SortableElement = memo(function SortableElement({
         onSelect(element.id)
       }}
     >
-      {!isWhatsApp && <div ref={handleRef} className="build-page__drag-handle">
+      <div ref={handleRef} className="build-page__drag-handle">
         <Icon name="grid-dots-vertical" category="general" size={24} />
-      </div>}
+      </div>
       {isSelected && (
         <div className="build-page__canvas-element-actions">
           <button
@@ -3628,63 +3480,8 @@ export function BuildPage({
     return initial.activePageId
   })
   const [dragSession, setDragSession] = useState<DragSourceData | null>(null)
-  const [floatingWhatsAppScrollTarget, setFloatingWhatsAppScrollTarget] = useState<string | null>(null)
-  const [whatsappStartElementId, setWhatsAppStartElementId] = useState<string | null>(null)
-  const [whatsappStartStyle, setWhatsAppStartStyle] = useState<WhatsAppStartStyle | null>(null)
   const isDragging = dragSession !== null
-  const isWhatsAppPanelDrag = dragSession?.type === 'panel'
-    && dragSession.componentId === WHATSAPP_PANEL_ITEM_ID
   const draggedCanvasId = dragSession?.type === 'canvas' ? dragSession.elementId : null
-
-  const openWhatsAppStartModal = useCallback((elementId: string) => {
-    setWhatsAppStartStyle(null)
-    setWhatsAppStartElementId(elementId)
-  }, [])
-
-  const dismissWhatsAppStartModal = useCallback(() => {
-    const elementId = whatsappStartElementId
-    setWhatsAppStartElementId(null)
-    if (!elementId) return
-    setPages((prev) => prev.map((page) => ({
-      ...page,
-      elements: page.elements.filter((element) => element.id !== elementId),
-    })))
-    setHeaderActions((prev) => prev.filter((element) => element.id !== elementId))
-    setSelectedElementId((current) => current === elementId ? null : current)
-    setRightPanel('preview')
-  }, [whatsappStartElementId])
-
-  const confirmWhatsAppStartModal = useCallback(() => {
-    const elementId = whatsappStartElementId
-    const selectedStyle = whatsappStartStyle
-    if (!elementId || !selectedStyle) return
-    setPages((prev) => prev.map((page) => ({
-      ...page,
-      elements: page.elements.map((element) => element.id === elementId
-        ? {
-            ...element,
-            properties: {
-              ...element.properties,
-              'Display Style': selectedStyle,
-              Size: selectedStyle === 'Floating' ? 'Large' : 'Medium',
-              ...(selectedStyle === 'Button' ? { 'Button Text': 'Chat on WhatsApp' } : {}),
-            },
-          }
-        : element),
-    })))
-    setWhatsAppStartElementId(null)
-    setSelectedElementId(elementId)
-    setRightPanel('properties')
-  }, [whatsappStartElementId, whatsappStartStyle])
-
-  useEffect(() => {
-    if (!whatsappStartElementId) return
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') dismissWhatsAppStartModal()
-    }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [dismissWhatsAppStartModal, whatsappStartElementId])
 
   // Native drag and drop can try to auto-scroll every scrollable ancestor when
   // the pointer reaches an edge. The builder only has a vertical editing flow,
@@ -3817,34 +3614,6 @@ export function BuildPage({
   }, [])
 
   const appTitle = appTitleProp
-  // Replace the old, app-specific demo copy only. Any message the app owner has
-  // customized stays intact, while an untouched WhatsApp element adopts the
-  // current app name when there is one.
-  useEffect(() => {
-    const defaultMessage = createDefaultWhatsAppMessage(appTitle)
-    setPages((prev) => {
-      let changed = false
-      const next = prev.map((page) => ({
-        ...page,
-        elements: page.elements.map((element) => {
-          const currentMessage = element.properties['Message']
-          if (
-            element.componentId !== WHATSAPP_PANEL_ITEM_ID
-            || !isUntouchedWhatsAppDefaultMessage(currentMessage)
-            || currentMessage === defaultMessage
-          ) {
-            return element
-          }
-          changed = true
-          return {
-            ...element,
-            properties: { ...element.properties, Message: defaultMessage },
-          }
-        }),
-      }))
-      return changed ? next : prev
-    })
-  }, [appTitle, pages])
   // App name/description are the app identity, edited from the builder chrome /
   // Settings — NOT from the app header (now an independent hero banner). They
   // only seed the header's default title/subtitle when its own are unset.
@@ -5319,8 +5088,6 @@ export function BuildPage({
     if (!HIDDEN_ELEMENTS.includes(comp.id)) acc[comp.id] = comp
     return acc
   }, {})
-  const whatsappInUse = pages.some((page) => page.elements.some((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID))
-    || headerActions.some((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)
   const baseGroups = activeTab === 'basic' ? BASIC_GROUPS : WIDGETS_GROUPS
   const widgetSearchTerm = widgetSearch.trim().toLowerCase()
   const activeGroups = activeTab === 'widgets' && widgetSearchTerm
@@ -5360,30 +5127,11 @@ export function BuildPage({
     })
   }, [isMobileView])
 
-  useEffect(() => {
-    if (!floatingWhatsAppScrollTarget) return
-    scrollToCanvasElement(floatingWhatsAppScrollTarget)
-    setFloatingWhatsAppScrollTarget(null)
-  }, [floatingWhatsAppScrollTarget, scrollToCanvasElement])
-
   const handleAddElement = useCallback((comp: RegisteredComponent) => {
-    const whatsappAlreadyAdded = comp.id === WHATSAPP_PANEL_ITEM_ID && (
-      pagesRef.current.some((page) => page.elements.some((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID))
-      || headerActionsRef.current.some((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)
-    )
-    if (whatsappAlreadyAdded) return
-
     const element = createCanvasElement(comp, nextElementId(pagesRef.current, headerActionsRef.current))
-    if (comp.id === WHATSAPP_PANEL_ITEM_ID) {
-      element.properties.Message = createDefaultWhatsAppMessage(appTitle)
-    }
     setPages((prev) => {
       let targetPageId = activePageId
-      if (comp.id === WHATSAPP_PANEL_ITEM_ID) {
-        // A panel click places WhatsApp at the bottom of the currently focused
-        // page, regardless of which element is currently selected.
-        targetPageId = activePageId
-      } else if (forceTargetPageId) {
+      if (forceTargetPageId) {
         targetPageId = forceTargetPageId
       } else if (selectedElementId) {
         const selectedPage = prev.find((p) => p.elements.some((el) => el.id === selectedElementId))
@@ -5391,7 +5139,7 @@ export function BuildPage({
       }
       return prev.map((page) => {
         if (page.id !== targetPageId) return page
-        const selectedIdx = comp.id !== WHATSAPP_PANEL_ITEM_ID && selectedElementId && !forceTargetPageId
+        const selectedIdx = selectedElementId && !forceTargetPageId
           ? page.elements.findIndex((el) => el.id === selectedElementId)
           : -1
         if (selectedIdx !== -1) {
@@ -5408,8 +5156,7 @@ export function BuildPage({
       setRightPanel('properties')
     }
     scrollToCanvasElement(element.id)
-    if (comp.id === WHATSAPP_PANEL_ITEM_ID) openWhatsAppStartModal(element.id)
-  }, [activePageId, appTitle, mobileElementsSheet, selectedElementId, forceTargetPageId, scrollToCanvasElement, openWhatsAppStartModal])
+  }, [activePageId, mobileElementsSheet, selectedElementId, forceTargetPageId, scrollToCanvasElement])
 
   const handleSelectElement = useCallback((elementId: string) => {
     const ownerPage = pagesRef.current.find((page) => page.elements.some((element) => element.id === elementId))
@@ -5707,21 +5454,12 @@ export function BuildPage({
             || type === 'header-actions'
             || type === 'header-action'
         })
-        // The empty-page affordance is rendered above the page drop target. In
-        // a native drag this can occasionally leave the final target list empty
-        // for a frame. A WhatsApp panel drag must still be accepted: it is a
-        // page-level floating control, so use the focused page as its safe
-        // fallback destination rather than discarding the drop.
-        const fallbackPage = pagesRef.current.find((page) => page.id === activePageId)
         const targetData = (innerTarget?.data as
           | { type: 'element'; elementId: string; pageId: string }
           | { type: 'page'; pageId: string }
           | { type: 'header-actions' }
           | { type: 'header-action'; elementId: string }
           | undefined)
-          ?? (data.type === 'panel' && data.componentId === WHATSAPP_PANEL_ITEM_ID && fallbackPage
-            ? { type: 'page' as const, pageId: fallbackPage.id }
-            : undefined)
         if (!targetData) return
 
         const edge =
@@ -5732,7 +5470,7 @@ export function BuildPage({
 
         const withShrinked = (el: CanvasElement, shrinked: boolean): CanvasElement => ({
           ...el,
-          properties: { ...el.properties, Shrinked: el.componentId === WHATSAPP_PANEL_ITEM_ID ? false : shrinked },
+          properties: { ...el.properties, Shrinked: shrinked },
         })
 
         // --- Drop onto a specific header action (reorder / insert at position) ---
@@ -5929,19 +5667,11 @@ export function BuildPage({
           const comp = ComponentRegistry.get(data.componentId)
           if (!comp) return
           const newEl = createCanvasElement(comp, nextElementId(pagesRef.current, headerActionsRef.current))
-          if (data.componentId === WHATSAPP_PANEL_ITEM_ID) {
-            newEl.properties.Message = createDefaultWhatsAppMessage(appTitle)
-          }
           const targetPageId = (targetData as { pageId: string }).pageId
-          const isFloatingWhatsApp = data.componentId === WHATSAPP_PANEL_ITEM_ID
-            && String(newEl.properties['Display Style'] ?? 'Floating') === 'Floating'
 
           setPages((prev) =>
             prev.map((page) => {
               if (page.id !== targetPageId) return page
-              if (isFloatingWhatsApp) {
-                return { ...page, elements: [...page.elements, newEl] }
-              }
               if (targetData.type === 'page') {
                 return { ...page, elements: [...page.elements, newEl] }
               }
@@ -5962,8 +5692,6 @@ export function BuildPage({
           setSelectedElementId(newEl.id)
           setActivePageId(targetPageId)
           setRightPanel('properties')
-          if (isFloatingWhatsApp) setFloatingWhatsAppScrollTarget(newEl.id)
-          if (data.componentId === WHATSAPP_PANEL_ITEM_ID) openWhatsAppStartModal(newEl.id)
           return
         }
 
@@ -5978,12 +5706,10 @@ export function BuildPage({
         const movingEl = sourcePage.elements.find((el) => el.id === sourceId)
         if (!movingEl) return
         const targetPageId = targetData.pageId
-        const isFloatingWhatsApp = movingEl.componentId === WHATSAPP_PANEL_ITEM_ID
-          && String(movingEl.properties['Display Style'] ?? 'Floating') === 'Floating'
 
-        if (targetData.type === 'element' && targetData.elementId === sourceId && !isFloatingWhatsApp) return
+        if (targetData.type === 'element' && targetData.elementId === sourceId) return
 
-        const sourceEl = withShrinked(movingEl, isFloatingWhatsApp ? false : isHorizontal)
+        const sourceEl = withShrinked(movingEl, isHorizontal)
 
         setPages((prev) => {
           let insertIdx: number | null = null
@@ -5998,10 +5724,6 @@ export function BuildPage({
           })
           const next = withoutSource.map((page) => {
             if (page.id !== targetPageId) return page
-            if (isFloatingWhatsApp) {
-              insertIdx = page.elements.length
-              return { ...page, elements: [...page.elements, sourceEl] }
-            }
             if (targetData.type === 'page') {
               insertIdx = page.elements.length
               return { ...page, elements: [...page.elements, sourceEl] }
@@ -6032,10 +5754,9 @@ export function BuildPage({
           }
           return next
         })
-        if (isFloatingWhatsApp) setFloatingWhatsAppScrollTarget(sourceId)
       },
     })
-  }, [activePageId, appTitle, openWhatsAppStartModal])
+  }, [])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -6098,29 +5819,6 @@ export function BuildPage({
       </div>
     </div>
   )
-
-  // WhatsApp is always an app-level action in preview. Both display styles are
-  // anchored to the lower-right corner rather than participating in a page's
-  // content flow; the style only changes the CTA's visual treatment.
-  const whatsappPreviewElement = pages.flatMap((page) => page.elements).find((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)
-    ?? headerActions.find((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)
-  const whatsappPreviewComponent = whatsappPreviewElement
-    ? ComponentRegistry.get(whatsappPreviewElement.componentId)
-    : null
-  const allPagesWhatsAppPreview = String(whatsappPreviewElement?.properties['Include Pages to Display'] ?? 'All Pages') === 'All Pages'
-  const allPagesWhatsAppOverlay = allPagesWhatsAppPreview
-    && whatsappPreviewElement
-    && whatsappPreviewComponent
-    ? (
-      <div className="live-preview__whatsapp-overlay app-scope">
-        {whatsappPreviewComponent.render(
-          whatsappPreviewElement.variants,
-          whatsappPreviewElement.properties,
-          whatsappPreviewElement.states,
-        )}
-      </div>
-    )
-    : null
 
   const phoneScreenContent = (
     <CollectionsProvider navigateToPage={navigateToPage}>
@@ -6554,7 +6252,6 @@ export function BuildPage({
               <div className={`themes-view__canvas${isFirstPage && appHeaderState.show ? ' themes-view__canvas--first' : ''}`}>
                 <div className="themes-view__app">
                   {activePage.elements.map((element) => {
-                    if (allPagesWhatsAppPreview && element.id === whatsappPreviewElement?.id) return null
                     const comp = ComponentRegistry.get(element.componentId)
                     if (!comp) return null
                     // Dynamic detail page: bind each seeded element to the previewed row.
@@ -6592,7 +6289,6 @@ export function BuildPage({
               </>
             ) : null
           })()}
-          {allPagesWhatsAppOverlay}
         </div>
       </div>
       {pages.length > 1 && bottomNavEnabled && !isNotificationsPageOpen && !isPreviewSearchOpen && !isPreviewCartOpen && !isPreviewCheckoutOpen && !isPreviewDetailOpen && !isPreviewProfileOpen && !showLandingNav && !activePageIsDynamic && (
@@ -6683,7 +6379,7 @@ export function BuildPage({
             <div className="build-page__widget-search-empty">No widgets found</div>
           )}
           {activeGroups.map((group, groupIndex) => {
-            const validItemIds = group.elementIds.filter((id) => id === WHATSAPP_PANEL_ITEM_ID || componentMap[id])
+            const validItemIds = group.elementIds.filter((id) => componentMap[id])
             if (validItemIds.length === 0) return null
 
             return (
@@ -6692,25 +6388,6 @@ export function BuildPage({
                   <div className="build-page__separator">{group.label}</div>
                 )}
                 {validItemIds.map((itemId, itemIndex) => {
-                  if (itemId === WHATSAPP_PANEL_ITEM_ID && whatsappInUse) {
-                    return (
-                      <div key={itemId}>
-                        <div className="build-page__element-item build-page__element-item--in-use" aria-disabled="true">
-                          <div className="build-page__element-icon">
-                            <Icon name="whatsapp-filled" category="brands" size={24} />
-                          </div>
-                          <div className="build-page__element-content">
-                            <span className="build-page__element-name">WhatsApp</span>
-                            <span className="build-page__element-in-use-badge">IN USE</span>
-                          </div>
-                        </div>
-                        {itemIndex < validItemIds.length - 1 && (
-                          <hr className="build-page__element-divider" />
-                        )}
-                      </div>
-                    )
-                  }
-
                   const comp = componentMap[itemId]
                   if (!comp) return null
                   const iconInfo = ELEMENT_ICON_MAP[comp.id]
@@ -6781,17 +6458,6 @@ export function BuildPage({
               <span className="build-page__preview-btn-tooltip">Live Preview</span>
             </button>
           </div>
-          {isWhatsAppPanelDrag && <div className="build-page__whatsapp-drag-scrim" aria-hidden="true" />}
-          {isWhatsAppPanelDrag && (() => {
-            const whatsapp = ComponentRegistry.get(WHATSAPP_PANEL_ITEM_ID)
-            if (!whatsapp) return null
-            const preview = createCanvasElement(whatsapp, 'whatsapp-drag-preview')
-            return (
-              <div className="build-page__whatsapp-drop-preview" aria-hidden="true">
-                {whatsapp.render(preview.variants, preview.properties, preview.states)}
-              </div>
-            )
-          })()}
           {rightPanel === 'navigation' ? (
           /* Navigation preview: the left builder area becomes a live preview of
              the app, mirroring the panel's Mobile/Desktop tab (via previewDevice).
@@ -6951,20 +6617,11 @@ export function BuildPage({
                     }}
                   >
                     {(() => {
-                      // WhatsApp is an app-level control in both display styles and
-                      // must not replace the page's empty-state affordance. The page
-                      // should continue to show “Drag your first element…” until it
-                      // contains a real in-flow element.
-                      const visibleCount = page.elements.filter((el) => {
-                        if (el.id === draggedCanvasId) return false
-                        return el.componentId !== WHATSAPP_PANEL_ITEM_ID
-                      }).length
-                      const virtuallyEmpty = visibleCount === 0
+                      const virtuallyEmpty = page.elements.every((el) => el.id === draggedCanvasId)
                       return (
                         <DroppablePage
                           pageId={page.id}
                           showEmptyState={virtuallyEmpty}
-                          suppressDropLine={isWhatsAppPanelDrag}
                           onEmptyStateClick={(e) => {
                             e.stopPropagation()
                             setActivePageId(page.id)
@@ -7011,7 +6668,7 @@ export function BuildPage({
                     })()}
                   </div>
 
-                  {(pageIndex > 0 || page.elements.some((element) => element.componentId !== WHATSAPP_PANEL_ITEM_ID) || isDragging) && (
+                  {(pageIndex > 0 || page.elements.length > 0 || isDragging) && (
                     <AddPageDivider onClick={() => handleAddPage(page.id)} />
                   )}
                 </div>
@@ -11071,7 +10728,7 @@ export function BuildPage({
             <div className="build-page__widget-search-empty">No widgets found</div>
           )}
           {activeGroups.map((group, groupIndex) => {
-            const validItemIds = group.elementIds.filter((id) => id === WHATSAPP_PANEL_ITEM_ID || componentMap[id])
+            const validItemIds = group.elementIds.filter((id) => componentMap[id])
             if (validItemIds.length === 0) return null
             return (
               <div key={group.label || groupIndex}>
@@ -11080,18 +10737,6 @@ export function BuildPage({
                 )}
                 <div className="mobile-elements-grid">
                   {validItemIds.map((itemId) => {
-                    if (itemId === WHATSAPP_PANEL_ITEM_ID && whatsappInUse) {
-                      return (
-                        <div key={itemId} className="mobile-elements-grid__item mobile-elements-grid__item--in-use" aria-disabled="true">
-                          <div className="mobile-elements-grid__icon">
-                            <Icon name="whatsapp-filled" category="brands" size={24} />
-                          </div>
-                          <span className="mobile-elements-grid__label">WhatsApp</span>
-                          <span className="mobile-elements-grid__in-use-badge">IN USE</span>
-                        </div>
-                      )
-                    }
-
                     const comp = componentMap[itemId]
                     if (!comp) return null
                     const iconInfo = ELEMENT_ICON_MAP[comp.id]
@@ -11119,14 +10764,6 @@ export function BuildPage({
         </div>
       </div>
     </BottomSheet>
-
-    <WhatsAppStartModal
-      open={whatsappStartElementId !== null}
-      selectedStyle={whatsappStartStyle}
-      onStyleChange={setWhatsAppStartStyle}
-      onClose={dismissWhatsAppStartModal}
-      onConfirm={confirmWhatsAppStartModal}
-    />
 
     {/* List items editor modal */}
     {editItemsOpen && selectedComponent?.id === 'list' && selectedElement && (() => {
