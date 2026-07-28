@@ -64,6 +64,7 @@ ComponentRegistry.register({
         showLabel={props['Show Label'] === true}
         bubbleText={String(props['Bubble Text'] ?? '')}
         bubblePlacement={String(props['Bubble Placement'] ?? 'Beside')}
+        floatingDisplayStyle={String(props['Floating Display Style'] ?? 'Icon Only')}
         buttonWidth={String(props['Button Width'] ?? 'Auto')}
         buttonAlignment={String(props['Button Alignment'] ?? 'Center')}
         buttonText={buttonText}

@@ -11,6 +11,7 @@ export interface WhatsAppProps {
   showLabel?: boolean;
   bubbleText?: string;
   bubblePlacement?: string;
+  floatingDisplayStyle?: string;
   buttonWidth?: string;
   buttonAlignment?: string;
   buttonText?: string;
@@ -39,6 +40,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
   showLabel = false,
   bubbleText = '',
   bubblePlacement = 'Beside',
+  floatingDisplayStyle = 'Icon Only',
   buttonWidth = 'Auto',
   buttonAlignment = 'Center',
   buttonText = 'Message us',
@@ -47,12 +49,15 @@ export const WhatsApp: FC<WhatsAppProps> = ({
   const number = getWhatsAppNumber(phoneNumber);
   const isEnabled = isValidWhatsAppPhoneNumber(phoneNumber, number);
   const isButtonStyle = displayStyle === 'Button';
+  const isFloatingIconAndText = !isButtonStyle && floatingDisplayStyle === 'Icon & Text';
+  const usesButtonAppearance = isButtonStyle || isFloatingIconAndText;
+  const effectiveButtonAlignment = isButtonStyle ? buttonAlignment : alignment;
   const whatsappClassName = [
     'jf-whatsapp',
-    !isButtonStyle && !showLabel && 'jf-whatsapp--no-label',
-    !isButtonStyle && showLabel && `jf-whatsapp--bubble-${bubblePlacement.toLowerCase()}`,
-    isButtonStyle
-      ? `jf-whatsapp--button jf-whatsapp--button-size-${size.toLowerCase()} jf-whatsapp--button-width-${buttonWidth.toLowerCase()} jf-whatsapp--button-align-${buttonAlignment.toLowerCase()}`
+    !usesButtonAppearance && !showLabel && 'jf-whatsapp--no-label',
+    !usesButtonAppearance && showLabel && `jf-whatsapp--bubble-${bubblePlacement.toLowerCase()}`,
+    usesButtonAppearance
+      ? `jf-whatsapp--button jf-whatsapp--button-size-${size.toLowerCase()} jf-whatsapp--button-width-${buttonWidth.toLowerCase()} jf-whatsapp--button-align-${effectiveButtonAlignment.toLowerCase()}`
       : `jf-whatsapp--size-${size.toLowerCase()} jf-whatsapp--align-${alignment.toLowerCase()}`,
   ].filter(Boolean).join(' ');
 
@@ -70,20 +75,20 @@ export const WhatsApp: FC<WhatsAppProps> = ({
       <div className="jf-whatsapp__main">
         <div className="jf-whatsapp__main-content">
           <div className="jf-whatsapp__action-row">
-            {isButtonStyle && showLabel && floatingLabel && <span className="jf-whatsapp__bubble">{floatingLabel}</span>}
+            {usesButtonAppearance && showLabel && floatingLabel && <span className="jf-whatsapp__bubble">{floatingLabel}</span>}
             <div className="jf-whatsapp__control">
               <button
                 type="button"
                 className="jf-whatsapp__cta"
                 disabled={!isEnabled}
                 onClick={openWhatsApp}
-                aria-label={isButtonStyle ? buttonText : 'Message us on WhatsApp'}
+                aria-label={usesButtonAppearance ? buttonText : 'Message us on WhatsApp'}
               >
-                {isButtonStyle && <span className="jf-whatsapp__icon" aria-hidden="true">
+                {usesButtonAppearance && <span className="jf-whatsapp__icon" aria-hidden="true">
                   <img className="jf-whatsapp__icon-image" src={whatsAppIcon} alt="" />
                 </span>}
-                {(isButtonStyle || (showLabel && floatingLabel)) && <span className="jf-whatsapp__label">{isButtonStyle ? buttonText : floatingLabel}</span>}
-                {!isButtonStyle && <>
+                {(usesButtonAppearance || (showLabel && floatingLabel)) && <span className="jf-whatsapp__label">{usesButtonAppearance ? buttonText : floatingLabel}</span>}
+                {!usesButtonAppearance && <>
                   <span className="jf-whatsapp__icon" aria-hidden="true">
                     <img className="jf-whatsapp__icon-image" src={whatsAppIcon} alt="" />
                   </span>
