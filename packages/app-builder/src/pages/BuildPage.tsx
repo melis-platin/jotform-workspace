@@ -7173,7 +7173,7 @@ export function BuildPage({
                                 : option
                               const defaultValue = property === 'Size'
                                 ? 'Medium'
-                                : ({ 'Display Style': 'Button', 'Button Display Style': 'Icon Only', Alignment: 'Right', 'Bubble Placement': 'Beside', 'Button Alignment': 'Center', 'Button Width': 'Auto' }[property] ?? '')
+                                : ({ 'Display Style': 'Button', 'Button Display Style': 'Icon Only', 'Floating Display Style': 'Icon Only', Alignment: 'Right', 'Bubble Placement': 'Beside', 'Button Alignment': 'Center', 'Button Width': 'Auto' }[property] ?? '')
                               return <button key={option} type="button" className={`whatsapp-properties__segment${String(selectedElement.properties[property] ?? defaultValue) === option ? ' whatsapp-properties__segment--selected' : ''}`} onClick={() => {
                                 handlePropertyChange(selectedElement.id, property, option)
                                 if (property === 'Display Style' && option === 'Floating') {
@@ -7197,6 +7197,7 @@ export function BuildPage({
                       </div>
                     )
                     return <div className="property-panel__body property-panel__body--whatsapp">
+                      {displayStyle === 'Floating' && renderWhatsAppStyleOptions('Display Style', 'Floating Display Style', ['Icon Only', 'Icon & Text'])}
                       {renderWhatsAppStyleOptions(displayStyle === 'Button' ? 'Button Size' : 'Size', 'Size', ['Small', 'Medium', 'Large'])}
                       {displayStyle === 'Floating' && renderWhatsAppStyleOptions('Alignment', 'Alignment', ['Left', 'Right'])}
                       {displayStyle === 'Button' && <>

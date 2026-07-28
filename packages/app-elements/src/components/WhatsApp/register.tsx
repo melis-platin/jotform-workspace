@@ -19,6 +19,7 @@ ComponentRegistry.register({
     { name: 'Bubble Placement', type: 'select', default: 'Beside', options: ['Beside', 'Above'] },
     { name: 'Bubble Text', type: 'text', default: '', maxLength: 120 },
     { name: 'Button Display Style', type: 'select', default: 'Icon Only', options: ['Icon Only', 'Icon & Text'] },
+    { name: 'Floating Display Style', type: 'select', default: 'Icon Only', options: ['Icon Only', 'Icon & Text'] },
     { name: 'Button Width', type: 'select', default: 'Auto', options: ['Auto', 'Full'] },
     { name: 'Button Alignment', type: 'select', default: 'Center', options: ['Left', 'Center', 'Right'] },
     { name: 'Button Text', type: 'text', default: 'Message us', maxLength: 30 },
