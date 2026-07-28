@@ -7213,7 +7213,7 @@ export function BuildPage({
                       </>}
                       {displayStyle === 'Floating' && <>
                         <div className="property-panel__field property-panel__field--inline">
-                          <DSFormField title="Show Chat Bubble" description="Show text next to or above the button." size="md" showDescription showHelpText={false}>
+                          <DSFormField title="Show Chat Bubble" description="Show a chat bubble next to or above the button" size="md" showDescription showHelpText={false}>
                             <DSToggle size="md" checked={showBubble} onChange={(e) => handlePropertyChange(selectedElement.id, 'Show Label', e.target.checked)} />
                           </DSFormField>
                         </div>
@@ -7236,7 +7236,7 @@ export function BuildPage({
                       </>}
                       {displayStyle === 'Button' && <>
                         <div className="property-panel__field property-panel__field--inline">
-                          <DSFormField title="Show Chat Bubble" description="Show text next to or above the button." size="md" showDescription showHelpText={false}>
+                          <DSFormField title="Show Chat Bubble" description="Show a chat bubble next to or above the button" size="md" showDescription showHelpText={false}>
                             <DSToggle size="md" checked={showBubble} onChange={(e) => handlePropertyChange(selectedElement.id, 'Show Label', e.target.checked)} />
                           </DSFormField>
                         </div>
