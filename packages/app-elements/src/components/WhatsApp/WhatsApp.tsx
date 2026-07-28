@@ -56,6 +56,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
     'jf-whatsapp',
     !usesButtonAppearance && !showLabel && 'jf-whatsapp--no-label',
     !usesButtonAppearance && showLabel && `jf-whatsapp--bubble-${bubblePlacement.toLowerCase()}`,
+    isButtonStyle && showLabel && 'jf-whatsapp--button-label-above',
     isFloatingIconAndText && 'jf-whatsapp--button-bubble-above',
     usesButtonAppearance
       ? `jf-whatsapp--button jf-whatsapp--button-size-${size.toLowerCase()} jf-whatsapp--button-width-${buttonWidth.toLowerCase()} jf-whatsapp--button-align-${effectiveButtonAlignment.toLowerCase()}`
