@@ -7317,7 +7317,7 @@ export function BuildPage({
                           </DSFormField>
                         </div>
                         <div className="property-panel__field">
-                          <DSFormField title="Display Style" size="md" showDescription={false} showHelpText={false}>
+                          <DSFormField title="Display Mode" size="md" showDescription={false} showHelpText={false}>
                             <div className="whatsapp-properties__display-style-cards">
                               {(['Button', 'Floating'] as const).map((option) => (
                                 <button
