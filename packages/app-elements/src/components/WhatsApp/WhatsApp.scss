@@ -133,6 +133,16 @@
   white-space: nowrap;
 }
 
+.jf-whatsapp--size-small .jf-whatsapp__label {
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-sm);
+}
+
+.jf-whatsapp--size-medium .jf-whatsapp__label {
+  font-size: var(--font-size-md);
+  line-height: var(--line-height-md);
+}
+
 .jf-whatsapp--size-large .jf-whatsapp__label {
   font-size: var(--font-size-lg);
   line-height: var(--line-height-lg);
