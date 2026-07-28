@@ -37,7 +37,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
   displayStyle = 'Button',
   size = 'Medium',
   alignment = 'Right',
-  showLabel = true,
+  showLabel = false,
   bubbleText = 'Chat on WhatsApp',
   bubblePlacement = 'Beside',
   buttonWidth = 'Auto',
@@ -70,24 +70,28 @@ export const WhatsApp: FC<WhatsAppProps> = ({
     <div className={whatsappClassName}>
       <div className="jf-whatsapp__main">
         <div className="jf-whatsapp__main-content">
-          <div className="jf-whatsapp__control">
-            <button
-              type="button"
-              className="jf-whatsapp__cta"
-              disabled={!isEnabled}
-              onClick={openWhatsApp}
-              aria-label={isButtonStyle ? buttonText : 'Message us on WhatsApp'}
-            >
-              {isButtonStyle && <span className="jf-whatsapp__icon" aria-hidden="true">
-                <img className="jf-whatsapp__icon-image" src={whatsAppIcon} alt="" />
-              </span>}
-              {showLabel && <span className="jf-whatsapp__label">{isButtonStyle ? buttonText : floatingLabel}</span>}
-              {!isButtonStyle && <>
-                <span className="jf-whatsapp__icon" aria-hidden="true">
+          {isButtonStyle && showLabel && bubblePlacement === 'Above' && <span className="jf-whatsapp__bubble">{floatingLabel}</span>}
+          <div className="jf-whatsapp__action-row">
+            {isButtonStyle && showLabel && bubblePlacement === 'Beside' && <span className="jf-whatsapp__bubble">{floatingLabel}</span>}
+            <div className="jf-whatsapp__control">
+              <button
+                type="button"
+                className="jf-whatsapp__cta"
+                disabled={!isEnabled}
+                onClick={openWhatsApp}
+                aria-label={isButtonStyle ? buttonText : 'Message us on WhatsApp'}
+              >
+                {isButtonStyle && <span className="jf-whatsapp__icon" aria-hidden="true">
                   <img className="jf-whatsapp__icon-image" src={whatsAppIcon} alt="" />
-                </span>
-              </>}
-            </button>
+                </span>}
+                {(isButtonStyle || showLabel) && <span className="jf-whatsapp__label">{isButtonStyle ? buttonText : floatingLabel}</span>}
+                {!isButtonStyle && <>
+                  <span className="jf-whatsapp__icon" aria-hidden="true">
+                    <img className="jf-whatsapp__icon-image" src={whatsAppIcon} alt="" />
+                  </span>
+                </>}
+              </button>
+            </div>
           </div>
         </div>
       </div>

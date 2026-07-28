@@ -111,6 +111,28 @@
   width: 100%;
 }
 
+.jf-whatsapp__action-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.jf-whatsapp__bubble {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: var(--whatsapp-label-height);
+  padding: 0 var(--space-4);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-rounded);
+  background: var(--bg-fill);
+  color: var(--fg-primary);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-book);
+  line-height: var(--line-height-md);
+  white-space: nowrap;
+}
+
 .jf-whatsapp--size-large .jf-whatsapp__label {
   font-size: var(--font-size-lg);
   line-height: var(--line-height-lg);
@@ -204,6 +226,15 @@
   width: 100%;
 }
 
+.jf-whatsapp--button .jf-whatsapp__action-row {
+  justify-content: center;
+  gap: var(--space-1);
+}
+
+.jf-whatsapp--button .jf-whatsapp__bubble {
+  font-size: var(--font-size-sm);
+}
+
 .jf-whatsapp--button .jf-whatsapp__label {
   flex: 0 0 auto;
   width: auto;
@@ -221,6 +252,9 @@
 .jf-whatsapp--button-size-small .jf-whatsapp__label { font-size: var(--font-size-xs); }
 .jf-whatsapp--button-size-medium .jf-whatsapp__label { font-size: var(--font-size-sm); }
 .jf-whatsapp--button-size-large .jf-whatsapp__label { font-size: var(--font-size-lg); }
+.jf-whatsapp--button-size-small .jf-whatsapp__bubble { font-size: var(--font-size-xs); }
+.jf-whatsapp--button-size-medium .jf-whatsapp__bubble { font-size: var(--font-size-sm); }
+.jf-whatsapp--button-size-large .jf-whatsapp__bubble { font-size: var(--font-size-lg); }
 
 .jf-whatsapp--button .jf-whatsapp__icon {
   flex: 0 0 var(--space-6);

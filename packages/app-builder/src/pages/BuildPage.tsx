@@ -7208,10 +7208,10 @@ export function BuildPage({
                       {renderWhatsAppStyleOptions('Size', 'Size', ['Small', 'Medium', 'Large'])}
                       <div className="property-panel__field property-panel__field--inline">
                         <DSFormField title="Show Bubble" description="Text shown with the button" size="md" showDescription showHelpText={false}>
-                          <DSToggle size="md" checked={selectedElement.properties['Show Label'] !== false} onChange={(e) => handlePropertyChange(selectedElement.id, 'Show Label', e.target.checked)} />
+                          <DSToggle size="md" checked={selectedElement.properties['Show Label'] === true} onChange={(e) => handlePropertyChange(selectedElement.id, 'Show Label', e.target.checked)} />
                         </DSFormField>
                       </div>
-                      {displayStyle !== 'Button' && selectedElement.properties['Show Label'] !== false && <>
+                      {selectedElement.properties['Show Label'] === true && <>
                         {renderWhatsAppStyleOptions('Bubble Placement', 'Bubble Placement', ['Beside', 'Above'])}
                         <div className="property-panel__field">
                           <DSFormField title="Bubble Text" size="md" showDescription={false} showHelpText={false}>
