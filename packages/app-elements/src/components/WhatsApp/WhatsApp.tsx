@@ -1,5 +1,4 @@
 import type { FC, MouseEvent } from 'react';
-import { Icon } from '@jf/design-system';
 import whatsAppIcon from '../../assets/whatsapp-figma.svg';
 import './WhatsApp.scss';
 
@@ -12,7 +11,6 @@ export interface WhatsAppProps {
   showLabel?: boolean;
   bubbleText?: string;
   bubblePlacement?: string;
-  buttonDisplayStyle?: string;
   buttonWidth?: string;
   buttonAlignment?: string;
   buttonText?: string;
@@ -41,7 +39,6 @@ export const WhatsApp: FC<WhatsAppProps> = ({
   showLabel = false,
   bubbleText = '',
   bubblePlacement = 'Beside',
-  buttonDisplayStyle = 'Icon Only',
   buttonWidth = 'Auto',
   buttonAlignment = 'Center',
   buttonText = 'Message us',
@@ -50,12 +47,10 @@ export const WhatsApp: FC<WhatsAppProps> = ({
   const number = getWhatsAppNumber(phoneNumber);
   const isEnabled = isValidWhatsAppPhoneNumber(phoneNumber, number);
   const isButtonStyle = displayStyle === 'Button';
-  const isButtonIconAndText = buttonDisplayStyle === 'Icon & Text';
   const whatsappClassName = [
     'jf-whatsapp',
     !isButtonStyle && !showLabel && 'jf-whatsapp--no-label',
     !isButtonStyle && showLabel && `jf-whatsapp--bubble-${bubblePlacement.toLowerCase()}`,
-    isButtonStyle && !isButtonIconAndText && 'jf-whatsapp--button-icon-only',
     isButtonStyle
       ? `jf-whatsapp--button jf-whatsapp--button-size-${size.toLowerCase()} jf-whatsapp--button-width-${buttonWidth.toLowerCase()} jf-whatsapp--button-align-${buttonAlignment.toLowerCase()}`
       : `jf-whatsapp--size-${size.toLowerCase()} jf-whatsapp--align-${alignment.toLowerCase()}`,
@@ -87,7 +82,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
                 {isButtonStyle && <span className="jf-whatsapp__icon" aria-hidden="true">
                   <img className="jf-whatsapp__icon-image" src={whatsAppIcon} alt="" />
                 </span>}
-                {((isButtonStyle && isButtonIconAndText) || (showLabel && floatingLabel && !isButtonStyle)) && <span className="jf-whatsapp__label">{isButtonStyle ? buttonText : floatingLabel}</span>}
+                {(isButtonStyle || (showLabel && floatingLabel)) && <span className="jf-whatsapp__label">{isButtonStyle ? buttonText : floatingLabel}</span>}
                 {!isButtonStyle && <>
                   <span className="jf-whatsapp__icon" aria-hidden="true">
                     <img className="jf-whatsapp__icon-image" src={whatsAppIcon} alt="" />
@@ -98,12 +93,6 @@ export const WhatsApp: FC<WhatsAppProps> = ({
           </div>
         </div>
       </div>
-      {!isEnabled && (
-        <div className="jf-whatsapp__notice" role="status">
-          <Icon name="exclamation-circle-filled" category="general" size={16} />
-          <span>This element won&apos;t be visible until a phone number is added.</span>
-        </div>
-      )}
     </div>
   );
 };
