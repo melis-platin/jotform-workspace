@@ -7164,7 +7164,9 @@ export function BuildPage({
                     const isFloatingIconAndText = displayStyle === 'Floating'
                       && selectedElement.properties['Floating Display Style'] === 'Icon & Text'
                     const showBubble = selectedElement.properties['Show Label'] === true
-                      || (selectedElement.properties['Show Label'] === undefined && displayStyle === 'Floating')
+                      || (selectedElement.properties['Show Label'] === undefined
+                        && displayStyle === 'Floating'
+                        && !isFloatingIconAndText)
                     const renderWhatsAppStyleOptions = (title: string, property: string, options: string[]) => (
                       <div className="property-panel__field">
                         <DSFormField title={title} size="md" showDescription={false} showHelpText={false}>
@@ -7180,6 +7182,7 @@ export function BuildPage({
                                 handlePropertyChange(selectedElement.id, property, option)
                                 if (property === 'Floating Display Style' && option === 'Icon & Text') {
                                   handlePropertyChange(selectedElement.id, 'Bubble Placement', 'Above')
+                                  handlePropertyChange(selectedElement.id, 'Show Label', false)
                                 }
                                 if (property === 'Display Style' && option === 'Floating') {
                                   handlePropertyChange(selectedElement.id, 'Size', 'Medium')
