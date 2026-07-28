@@ -80,7 +80,7 @@ function isWithinAvailability(
 export const WhatsApp: FC<WhatsAppProps> = ({
   phoneNumber = '',
   message = '',
-  displayStyle = 'Floating',
+  displayStyle = 'Button',
   size = 'Medium',
   alignment = 'Right',
   showLabel = true,

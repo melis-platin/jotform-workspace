@@ -12,8 +12,8 @@ ComponentRegistry.register({
   variants: {},
 
   properties: [
-    { name: 'Display Style', type: 'select', default: 'Floating', options: ['Floating', 'Button'] },
-    { name: 'Size', type: 'select', default: 'Large', options: ['Small', 'Medium', 'Large'] },
+    { name: 'Display Style', type: 'select', default: 'Button', options: ['Floating', 'Button'] },
+    { name: 'Size', type: 'select', default: 'Medium', options: ['Small', 'Medium', 'Large'] },
     { name: 'Alignment', type: 'select', default: 'Right', options: ['Left', 'Right'] },
     { name: 'Show Label', type: 'boolean', default: true },
     { name: 'Bubble Placement', type: 'select', default: 'Beside', options: ['Beside', 'Above'] },
@@ -59,7 +59,7 @@ ComponentRegistry.register({
       <WhatsApp
         phoneNumber={phoneNumber}
         message={message}
-        displayStyle={String(props['Display Style'] ?? 'Floating')}
+        displayStyle={String(props['Display Style'] ?? 'Button')}
         size={String(props['Size'] ?? 'Medium')}
         alignment={String(props['Alignment'] ?? 'Right')}
         showLabel={props['Show Label'] !== false}
