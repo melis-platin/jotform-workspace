@@ -7612,6 +7612,12 @@ body,
   background: var(--core-white);
 }
 
+.whatsapp-properties__display-style-preview--button,
+.whatsapp-properties__display-style-preview--button .whatsapp-properties__display-style-preview-line,
+.whatsapp-properties__display-style-preview--button .whatsapp-properties__display-style-preview-action {
+  border-radius: var(--ds-radius-sm);
+}
+
 .whatsapp-properties__display-style-preview--floating .whatsapp-properties__display-style-preview-action {
   top: 28px;
   left: 28px;
