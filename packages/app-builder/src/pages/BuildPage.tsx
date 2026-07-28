@@ -7206,25 +7206,23 @@ export function BuildPage({
                         </div>
                       </>}
                       {renderWhatsAppStyleOptions('Size', 'Size', ['Small', 'Medium', 'Large'])}
-                      {displayStyle !== 'Button' && <>
-                        <div className="property-panel__field property-panel__field--inline">
-                          <DSFormField title="Show Bubble" description="Text shown with the button" size="md" showDescription showHelpText={false}>
-                            <DSToggle size="md" checked={selectedElement.properties['Show Label'] !== false} onChange={(e) => handlePropertyChange(selectedElement.id, 'Show Label', e.target.checked)} />
+                      <div className="property-panel__field property-panel__field--inline">
+                        <DSFormField title="Show Bubble" description="Text shown with the button" size="md" showDescription showHelpText={false}>
+                          <DSToggle size="md" checked={selectedElement.properties['Show Label'] !== false} onChange={(e) => handlePropertyChange(selectedElement.id, 'Show Label', e.target.checked)} />
+                        </DSFormField>
+                      </div>
+                      {displayStyle !== 'Button' && selectedElement.properties['Show Label'] !== false && <>
+                        {renderWhatsAppStyleOptions('Bubble Placement', 'Bubble Placement', ['Beside', 'Above'])}
+                        <div className="property-panel__field">
+                          <DSFormField title="Bubble Text" size="md" showDescription={false} showHelpText={false}>
+                            <DSInput
+                              value={String(selectedElement.properties['Bubble Text'] ?? 'Chat on WhatsApp')}
+                              maxLength={30}
+                              rightContent={<span className="property-panel__char-count">{String(selectedElement.properties['Bubble Text'] ?? 'Chat on WhatsApp').length}/30</span>}
+                              onChange={(e) => handlePropertyChange(selectedElement.id, 'Bubble Text', e.target.value.slice(0, 30))}
+                            />
                           </DSFormField>
                         </div>
-                        {selectedElement.properties['Show Label'] !== false && <>
-                          {renderWhatsAppStyleOptions('Bubble Placement', 'Bubble Placement', ['Beside', 'Above'])}
-                          <div className="property-panel__field">
-                            <DSFormField title="Bubble Text" size="md" showDescription={false} showHelpText={false}>
-                              <DSInput
-                                value={String(selectedElement.properties['Bubble Text'] ?? 'Chat on WhatsApp')}
-                                maxLength={30}
-                                rightContent={<span className="property-panel__char-count">{String(selectedElement.properties['Bubble Text'] ?? 'Chat on WhatsApp').length}/30</span>}
-                                onChange={(e) => handlePropertyChange(selectedElement.id, 'Bubble Text', e.target.value.slice(0, 30))}
-                              />
-                            </DSFormField>
-                          </div>
-                        </>}
                       </>}
                     </div>
                   }

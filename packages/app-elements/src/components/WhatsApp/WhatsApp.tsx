@@ -81,7 +81,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
               {isButtonStyle && <span className="jf-whatsapp__icon" aria-hidden="true">
                 <img className="jf-whatsapp__icon-image" src={whatsAppIcon} alt="" />
               </span>}
-              {(isButtonStyle || showLabel) && <span className="jf-whatsapp__label">{isButtonStyle ? buttonText : floatingLabel}</span>}
+              {showLabel && <span className="jf-whatsapp__label">{isButtonStyle ? buttonText : floatingLabel}</span>}
               {!isButtonStyle && <>
                 <span className="jf-whatsapp__icon" aria-hidden="true">
                   <img className="jf-whatsapp__icon-image" src={whatsAppIcon} alt="" />
