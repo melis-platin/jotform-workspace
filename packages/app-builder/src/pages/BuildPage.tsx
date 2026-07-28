@@ -7333,6 +7333,11 @@ export function BuildPage({
                                 </button>
                               ))}
                             </div>
+                            {displayStyle === 'Floating' && (
+                              <p className="whatsapp-properties__display-style-help-text">
+                                Floating buttons stay visible on the selected pages.
+                              </p>
+                            )}
                           </DSFormField>
                         </div>
                         {displayStyle === 'Button' && <div className="property-panel__field">
