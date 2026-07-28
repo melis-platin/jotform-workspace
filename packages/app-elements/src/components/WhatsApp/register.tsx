@@ -17,7 +17,7 @@ ComponentRegistry.register({
     { name: 'Alignment', type: 'select', default: 'Right', options: ['Left', 'Right'] },
     { name: 'Show Label', type: 'boolean', default: false },
     { name: 'Bubble Placement', type: 'select', default: 'Beside', options: ['Beside', 'Above'] },
-    { name: 'Bubble Text', type: 'text', default: 'We are here to help 7/24', maxLength: 120 },
+    { name: 'Bubble Text', type: 'text', default: '', maxLength: 120 },
     { name: 'Button Width', type: 'select', default: 'Auto', options: ['Auto', 'Full'] },
     { name: 'Button Alignment', type: 'select', default: 'Center', options: ['Left', 'Center', 'Right'] },
     { name: 'Button Text', type: 'text', default: 'Message us', maxLength: 30 },
@@ -61,7 +61,7 @@ ComponentRegistry.register({
         size={String(props['Size'] ?? 'Medium')}
         alignment={String(props['Alignment'] ?? 'Right')}
         showLabel={props['Show Label'] === true}
-        bubbleText={String(props['Bubble Text'] ?? 'We are here to help 7/24')}
+        bubbleText={String(props['Bubble Text'] ?? '')}
         bubblePlacement={String(props['Bubble Placement'] ?? 'Beside')}
         buttonWidth={String(props['Button Width'] ?? 'Auto')}
         buttonAlignment={String(props['Button Alignment'] ?? 'Center')}

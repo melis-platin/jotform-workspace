@@ -7177,11 +7177,17 @@ export function BuildPage({
                               return <button key={option} type="button" className={`whatsapp-properties__segment${String(selectedElement.properties[property] ?? defaultValue) === option ? ' whatsapp-properties__segment--selected' : ''}`} onClick={() => {
                                 handlePropertyChange(selectedElement.id, property, option)
                                 if (property === 'Display Style' && option === 'Floating') {
-                                  handlePropertyChange(selectedElement.id, 'Size', 'Large')
+                                  handlePropertyChange(selectedElement.id, 'Size', 'Medium')
+                                  handlePropertyChange(selectedElement.id, 'Alignment', 'Right')
+                                  handlePropertyChange(selectedElement.id, 'Show Label', true)
+                                  handlePropertyChange(selectedElement.id, 'Bubble Placement', 'Beside')
+                                  handlePropertyChange(selectedElement.id, 'Bubble Text', '')
                                 }
                                 if (property === 'Display Style' && option === 'Button') {
                                   handlePropertyChange(selectedElement.id, 'Size', 'Medium')
                                   handlePropertyChange(selectedElement.id, 'Bubble Placement', 'Above')
+                                  handlePropertyChange(selectedElement.id, 'Show Label', false)
+                                  handlePropertyChange(selectedElement.id, 'Bubble Text', '')
                                 }
                               }}>{label}</button>
                             })}
@@ -7190,6 +7196,7 @@ export function BuildPage({
                       </div>
                     )
                     return <div className="property-panel__body property-panel__body--whatsapp">
+                      {renderWhatsAppStyleOptions('Display Style', 'Display Style', ['Floating', 'Button'])}
                       {renderWhatsAppStyleOptions(displayStyle === 'Button' ? 'Button Size' : 'Size', 'Size', ['Small', 'Medium', 'Large'])}
                       {displayStyle === 'Floating' && renderWhatsAppStyleOptions('Alignment', 'Alignment', ['Left', 'Right'])}
                       {displayStyle === 'Button' && <>
@@ -7198,12 +7205,12 @@ export function BuildPage({
                       </>}
                       {displayStyle === 'Floating' && <>
                         <div className="property-panel__field property-panel__field--inline">
-                          <DSFormField title="Show Button Label" description="Show text next to or above the button" size="md" showDescription showHelpText={false}>
+                          <DSFormField title="Show Bubble" description="Text shown with the button" size="md" showDescription showHelpText={false}>
                             <DSToggle size="md" checked={showBubble} onChange={(e) => handlePropertyChange(selectedElement.id, 'Show Label', e.target.checked)} />
                           </DSFormField>
                         </div>
                         {showBubble && <>
-                          {renderWhatsAppStyleOptions('Label Position', 'Bubble Placement', ['Beside', 'Above'])}
+                          {renderWhatsAppStyleOptions('Bubble Placement', 'Bubble Placement', ['Beside', 'Above'])}
                           <div className="property-panel__field">
                             <DSFormField title="Bubble Text" size="md" showDescription={false} showHelpText={false}>
                               <DSTextArea
@@ -7212,7 +7219,7 @@ export function BuildPage({
                                 maxLength={120}
                                 showDrag={false}
                                 showCount
-                                value={String(selectedElement.properties['Bubble Text'] ?? 'We are here to help 7/24')}
+                                value={String(selectedElement.properties['Bubble Text'] ?? '')}
                                 onChange={(event) => handlePropertyChange(selectedElement.id, 'Bubble Text', event.target.value)}
                               />
                             </DSFormField>
@@ -7230,7 +7237,7 @@ export function BuildPage({
                         handlePropertyChange(selectedElement.id, 'Alignment', 'Right')
                         handlePropertyChange(selectedElement.id, 'Show Label', true)
                         handlePropertyChange(selectedElement.id, 'Bubble Placement', 'Beside')
-                        handlePropertyChange(selectedElement.id, 'Bubble Text', 'We are here to help 7/24')
+                        handlePropertyChange(selectedElement.id, 'Bubble Text', '')
                         handlePropertyChange(selectedElement.id, 'Shrinked', false)
                         return
                       }
