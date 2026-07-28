@@ -661,6 +661,7 @@ const WIDGETS_GROUPS: PanelGroup[] = [
 ]
 
 const HIDDEN_ELEMENTS = ['empty-state', 'app-header', 'bottom-navigation', 'color-picker']
+const WHATSAPP_PANEL_ITEM_ID = 'whatsapp'
 const LEGACY_PRESET_HEADER_IMAGES: Record<string, string[]> = {
   'gym-club': [
     'https://images.unsplash.com/photo-1540497077202-7c8a3999166f?w=1000&h=600&fit=crop',
@@ -5088,6 +5089,8 @@ export function BuildPage({
     if (!HIDDEN_ELEMENTS.includes(comp.id)) acc[comp.id] = comp
     return acc
   }, {})
+  const whatsappInUse = pages.some((page) => page.elements.some((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID))
+    || headerActions.some((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)
   const baseGroups = activeTab === 'basic' ? BASIC_GROUPS : WIDGETS_GROUPS
   const widgetSearchTerm = widgetSearch.trim().toLowerCase()
   const activeGroups = activeTab === 'widgets' && widgetSearchTerm
@@ -5128,6 +5131,12 @@ export function BuildPage({
   }, [isMobileView])
 
   const handleAddElement = useCallback((comp: RegisteredComponent) => {
+    const whatsappAlreadyAdded = comp.id === WHATSAPP_PANEL_ITEM_ID && (
+      pagesRef.current.some((page) => page.elements.some((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID))
+      || headerActionsRef.current.some((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)
+    )
+    if (whatsappAlreadyAdded) return
+
     const element = createCanvasElement(comp, nextElementId(pagesRef.current, headerActionsRef.current))
     setPages((prev) => {
       let targetPageId = activePageId
@@ -5444,6 +5453,14 @@ export function BuildPage({
       onDrop: ({ source, location }) => {
         setDragSession(null)
         const data = source.data as DragSourceData
+        if (
+          data.type === 'panel'
+          && data.componentId === WHATSAPP_PANEL_ITEM_ID
+          && (
+            pagesRef.current.some((page) => page.elements.some((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID))
+            || headerActionsRef.current.some((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID)
+          )
+        ) return
         // A drop can surface decorative children before the actual canvas
         // target. Select the first valid builder target so panel elements are
         // reliably added when dropped on either a page or an existing element.
@@ -6394,6 +6411,23 @@ export function BuildPage({
                   <div className="build-page__separator">{group.label}</div>
                 )}
                 {validItemIds.map((itemId, itemIndex) => {
+                  if (itemId === WHATSAPP_PANEL_ITEM_ID && whatsappInUse) {
+                    return (
+                      <div key={itemId}>
+                        <div className="build-page__element-item build-page__element-item--in-use" aria-disabled="true">
+                          <div className="build-page__element-icon">
+                            <Icon name="whatsapp-filled" category="brands" size={24} />
+                          </div>
+                          <div className="build-page__element-content">
+                            <span className="build-page__element-name">WhatsApp</span>
+                            <span className="build-page__element-in-use-badge">IN USE</span>
+                          </div>
+                        </div>
+                        {itemIndex < validItemIds.length - 1 && <hr className="build-page__element-divider" />}
+                      </div>
+                    )
+                  }
+
                   const comp = componentMap[itemId]
                   if (!comp) return null
                   const iconInfo = ELEMENT_ICON_MAP[comp.id]
@@ -10743,6 +10777,18 @@ export function BuildPage({
                 )}
                 <div className="mobile-elements-grid">
                   {validItemIds.map((itemId) => {
+                    if (itemId === WHATSAPP_PANEL_ITEM_ID && whatsappInUse) {
+                      return (
+                        <div key={itemId} className="mobile-elements-grid__item mobile-elements-grid__item--in-use" aria-disabled="true">
+                          <div className="mobile-elements-grid__icon">
+                            <Icon name="whatsapp-filled" category="brands" size={24} />
+                          </div>
+                          <span className="mobile-elements-grid__label">WhatsApp</span>
+                          <span className="mobile-elements-grid__in-use-badge">IN USE</span>
+                        </div>
+                      )
+                    }
+
                     const comp = componentMap[itemId]
                     if (!comp) return null
                     const iconInfo = ELEMENT_ICON_MAP[comp.id]
