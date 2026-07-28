@@ -37,8 +37,8 @@ export const WhatsApp: FC<WhatsAppProps> = ({
   displayStyle = 'Button',
   size = 'Medium',
   alignment = 'Right',
-  showLabel = false,
-  bubbleText = 'Chat on WhatsApp',
+  showLabel = true,
+  bubbleText = '',
   bubblePlacement = 'Beside',
   buttonWidth = 'Auto',
   buttonAlignment = 'Center',
@@ -70,7 +70,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
     <div className={whatsappClassName}>
       <div className="jf-whatsapp__main">
         <div className="jf-whatsapp__main-content">
-          {isButtonStyle && showLabel && <span className="jf-whatsapp__bubble">{floatingLabel}</span>}
+          {isButtonStyle && showLabel && floatingLabel && <span className="jf-whatsapp__bubble">{floatingLabel}</span>}
           <div className="jf-whatsapp__action-row">
             <div className="jf-whatsapp__control">
               <button
@@ -83,7 +83,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
                 {isButtonStyle && <span className="jf-whatsapp__icon" aria-hidden="true">
                   <img className="jf-whatsapp__icon-image" src={whatsAppIcon} alt="" />
                 </span>}
-                {(isButtonStyle || showLabel) && <span className="jf-whatsapp__label">{isButtonStyle ? buttonText : floatingLabel}</span>}
+                {(isButtonStyle || (showLabel && floatingLabel)) && <span className="jf-whatsapp__label">{isButtonStyle ? buttonText : floatingLabel}</span>}
                 {!isButtonStyle && <>
                   <span className="jf-whatsapp__icon" aria-hidden="true">
                     <img className="jf-whatsapp__icon-image" src={whatsAppIcon} alt="" />
