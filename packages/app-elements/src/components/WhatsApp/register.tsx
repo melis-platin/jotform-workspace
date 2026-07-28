@@ -23,10 +23,6 @@ ComponentRegistry.register({
     { name: 'Button Text', type: 'text', default: 'Chat on WhatsApp', maxLength: 30 },
     { name: 'Phone Number', type: 'text', default: '', placeholder: '+0 000-000-0000', maxLength: 16, description: 'Use the international format: +1 541-754-3010' },
     { name: 'Message', type: 'text', default: "Hi! I'd like to ask a question.", maxLength: 300, description: 'Automatically added to the chat so users can send in one tap.' },
-    { name: 'Set Availability Hours', type: 'boolean', default: false },
-    { name: 'Availability Days', type: 'text', default: 'M0,T1,W2,T3,F4' },
-    { name: 'Open Time', type: 'text', default: '09:00 AM' },
-    { name: 'Close Time', type: 'text', default: '18:00 PM' },
   ],
 
   states: [],
@@ -68,10 +64,6 @@ ComponentRegistry.register({
         buttonWidth={String(props['Button Width'] ?? 'Auto')}
         buttonAlignment={String(props['Alignment'] ?? 'Right')}
         buttonText={['Message us', 'Message us on WhatsApp'].includes(buttonText) ? 'Chat on WhatsApp' : buttonText}
-        availabilityEnabled={Boolean(props['Set Availability Hours'])}
-        availabilityDays={String(props['Availability Days'] ?? 'M0,T1,W2,T3,F4')}
-        openTime={String(props['Open Time'] ?? '09:00 AM')}
-        closeTime={String(props['Close Time'] ?? '18:00 PM')}
       />
     );
   },

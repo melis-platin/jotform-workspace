@@ -15,10 +15,6 @@ export interface WhatsAppProps {
   buttonWidth?: string;
   buttonAlignment?: string;
   buttonText?: string;
-  availabilityEnabled?: boolean;
-  availabilityDays?: string;
-  openTime?: string;
-  closeTime?: string;
 }
 
 function getWhatsAppNumber(phoneNumber: string): string {
@@ -35,48 +31,6 @@ function isValidWhatsAppPhoneNumber(phoneNumber: string, normalizedNumber: strin
     && normalizedNumber.length > 0;
 }
 
-const AVAILABILITY_DAY_IDS = ['M0', 'T1', 'W2', 'T3', 'F4', 'S5', 'S6'];
-
-function parseTime(value: string): number | null {
-  const match = value.trim().match(/^(\d{1,2}):(\d{2})(?:\s*([AaPp][Mm]))?$/);
-  if (!match) return null;
-
-  let hours = Number(match[1]);
-  const minutes = Number(match[2]);
-  const period = match[3]?.toUpperCase();
-  if (hours > 23 || minutes > 59) return null;
-  if (period === 'AM' && hours === 12) hours = 0;
-  if (period === 'PM' && hours < 12) hours += 12;
-  return hours * 60 + minutes;
-}
-
-function isWithinAvailability(
-  enabled: boolean,
-  days: string,
-  openTime: string,
-  closeTime: string,
-  now = new Date(),
-): boolean {
-  if (!enabled) return true;
-
-  const selectedDays = days.split(',').filter(Boolean);
-  const todayIndex = (now.getDay() + 6) % 7;
-  const todayId = AVAILABILITY_DAY_IDS[todayIndex];
-  const legacyDayLabel = todayId[0];
-  const isSelectedToday = selectedDays.includes(todayId)
-    || (todayIndex < 5 && selectedDays.includes(legacyDayLabel));
-  if (!isSelectedToday) return false;
-
-  const start = parseTime(openTime);
-  const end = parseTime(closeTime);
-  if (start === null || end === null) return false;
-
-  const current = now.getHours() * 60 + now.getMinutes();
-  return start <= end
-    ? current >= start && current <= end
-    : current >= start || current <= end;
-}
-
 export const WhatsApp: FC<WhatsAppProps> = ({
   phoneNumber = '',
   message = '',
@@ -89,21 +43,11 @@ export const WhatsApp: FC<WhatsAppProps> = ({
   buttonWidth = 'Auto',
   buttonAlignment = 'Center',
   buttonText = 'Message us',
-  availabilityEnabled = false,
-  availabilityDays = 'M0,T1,W2,T3,F4',
-  openTime = '09:00 AM',
-  closeTime = '18:00 PM',
 }) => {
   const floatingLabel = bubbleText.slice(0, 30);
   const number = getWhatsAppNumber(phoneNumber);
   const isEnabled = isValidWhatsAppPhoneNumber(phoneNumber, number);
   const isButtonStyle = displayStyle === 'Button';
-  const isAvailable = isWithinAvailability(
-    availabilityEnabled,
-    availabilityDays,
-    openTime,
-    closeTime,
-  );
   const whatsappClassName = [
     'jf-whatsapp',
     !isButtonStyle && !showLabel && 'jf-whatsapp--no-label',
@@ -142,14 +86,9 @@ export const WhatsApp: FC<WhatsAppProps> = ({
                 <span className="jf-whatsapp__icon" aria-hidden="true">
                   <img className="jf-whatsapp__icon-image" src={whatsAppIcon} alt="" />
                 </span>
-                {availabilityEnabled && <span className={`jf-whatsapp__presence${isAvailable ? '' : ' jf-whatsapp__presence--offline'}`} aria-hidden="true" />}
               </>}
             </button>
           </div>
-          {isButtonStyle && availabilityEnabled && <div className="jf-whatsapp__availability" aria-label={isAvailable ? 'Online now' : 'Offline now'}>
-            <span className={`jf-whatsapp__availability-dot${isAvailable ? '' : ' jf-whatsapp__availability-dot--offline'}`} aria-hidden="true" />
-            <span>{isAvailable ? 'Online now' : 'Offline now'}</span>
-          </div>}
         </div>
       </div>
       {!isEnabled && (

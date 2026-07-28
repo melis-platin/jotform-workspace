@@ -163,10 +163,6 @@
   box-shadow: 0 0 0 var(--whatsapp-presence-outline) var(--bg-fill);
 }
 
-.jf-whatsapp__presence--offline {
-  background: var(--fg-warning);
-}
-
 .jf-whatsapp__notice {
   // The builder reveals this configuration-only notice while the element is
   // selected. It stays hidden in the app itself and in every other state.
@@ -272,26 +268,4 @@
   width: 100%;
   margin: 0;
   justify-content: center;
-}
-
-.jf-whatsapp__availability {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-1);
-  color: var(--fg-primary);
-  font-size: var(--font-size-xs);
-  font-weight: var(--font-weight-book);
-  line-height: var(--line-height-xs);
-}
-
-.jf-whatsapp__availability-dot {
-  width: var(--space-2);
-  height: var(--space-2);
-  border-radius: var(--radius-rounded);
-  background: var(--whatsapp-fill);
-}
-
-.jf-whatsapp__availability-dot--offline {
-  background: var(--fg-warning);
 }
