@@ -6114,6 +6114,12 @@ body,
   z-index: 2;
 }
 
+// WhatsApp is deleted from its canvas action rail, so do not duplicate the
+// destructive control in the Properties panel header.
+.build-page__properties--whatsapp .property-panel__close[title='Delete element'] {
+  display: none;
+}
+
 .property-panel__body {
   flex: 1;
   overflow-y: auto;
