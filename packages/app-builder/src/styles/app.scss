@@ -7548,8 +7548,8 @@ body,
   align-items: center;
   justify-content: center;
   gap: var(--ds-space-xs);
-  min-height: 104px;
-  padding: var(--ds-space-md) var(--ds-space-sm);
+  height: 104px;
+  padding: var(--ds-space-md) var(--ds-space-xs);
   overflow: hidden;
   border: 0;
   border-radius: var(--radius-sm);
@@ -7603,6 +7603,7 @@ body,
 }
 
 .whatsapp-properties__display-style-preview--floating .whatsapp-properties__display-style-preview-action {
+  top: 28px;
   left: 28px;
   width: 8px;
   height: 8px;
