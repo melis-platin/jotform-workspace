@@ -3140,6 +3140,14 @@ body {
     max-width: 100%;
   }
 
+  // WhatsApp's Shrink setting must also be visible when it is the only
+  // shrinked element on a page. Unlike paired tiles, it does not grow back to
+  // the whole row.
+  .themes-view__section--whatsapp-shrinked {
+    flex: 0 1 calc((100% - var(--grid-gap)) / 2);
+    max-width: calc((100% - var(--grid-gap)) / 2);
+  }
+
   // When two buttons are paired side-by-side (shrinked, two-up), a Width:Auto
   // button fills its half-column instead of hugging its content — so the pair
   // reads as two equal full-width buttons. Stacked (single column, < 560px) it

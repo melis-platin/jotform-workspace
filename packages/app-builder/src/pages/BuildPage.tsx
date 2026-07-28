@@ -2603,7 +2603,7 @@ const SortableElement = memo(function SortableElement({
   return (
     <section
       ref={sectionRef}
-      className={`themes-view__section build-page__canvas-element ${isSelected ? 'build-page__canvas-element--selected' : ''} ${isShrinked ? 'themes-view__section--shrinked build-page__canvas-element--shrinked' : ''} ${isFlow ? 'themes-view__section--flow' : ''}`}
+      className={`themes-view__section build-page__canvas-element ${isSelected ? 'build-page__canvas-element--selected' : ''} ${isShrinked ? 'themes-view__section--shrinked build-page__canvas-element--shrinked' : ''} ${element.componentId === 'whatsapp' && isShrinked ? 'themes-view__section--whatsapp-shrinked' : ''} ${isFlow ? 'themes-view__section--flow' : ''}`}
       data-element-id={element.id}
       data-component-id={element.componentId}
       style={hideDuringDrag ? { display: 'none' } : undefined}
@@ -6298,7 +6298,7 @@ export function BuildPage({
                       <section
                         key={activePage.dynamic ? `${element.id}:${dynPreview?.index ?? 0}` : element.id}
                         data-live-preview-element-id={element.id}
-                        className={`themes-view__section${isShrinked ? ' themes-view__section--shrinked' : ''}${isFlow ? ' themes-view__section--flow' : ''}${isListLink ? ' themes-view__section--list-link' : ''}`}
+                        className={`themes-view__section${isShrinked ? ' themes-view__section--shrinked' : ''}${element.componentId === 'whatsapp' && isShrinked ? ' themes-view__section--whatsapp-shrinked' : ''}${isFlow ? ' themes-view__section--flow' : ''}${isListLink ? ' themes-view__section--list-link' : ''}`}
                         onClick={isListLink ? (e) => handlePreviewListClick(e, element.id) : undefined}
                       >
                         {comp.render(renderEl.variants, previewProps, renderEl.states)}
@@ -10692,7 +10692,7 @@ export function BuildPage({
                                       <section
                                         key={activePage.dynamic ? `${element.id}:${dynPreview?.index ?? 0}` : element.id}
                                         data-live-preview-element-id={element.id}
-                                        className={`themes-view__section${isShrinked ? ' themes-view__section--shrinked' : ''}${isFlow ? ' themes-view__section--flow' : ''}${isListLink ? ' themes-view__section--list-link' : ''}`}
+                                        className={`themes-view__section${isShrinked ? ' themes-view__section--shrinked' : ''}${element.componentId === 'whatsapp' && isShrinked ? ' themes-view__section--whatsapp-shrinked' : ''}${isFlow ? ' themes-view__section--flow' : ''}${isListLink ? ' themes-view__section--list-link' : ''}`}
                                         onClick={isListLink ? (e) => handlePreviewListClick(e, element.id) : undefined}
                                       >
                                         {comp.render(renderEl.variants, previewProps, renderEl.states)}
