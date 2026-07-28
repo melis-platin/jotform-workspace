@@ -228,6 +228,25 @@
 // nearest shared spacing token, so the remaining adjustment stays local.
 .jf-whatsapp--button-size-large .jf-whatsapp__cta { height: calc(var(--space-12) - 3px); }
 
+// Icon Only uses a square hit area. The corner radius intentionally remains
+// inherited from the app's Button token so App Designer controls it.
+.jf-whatsapp--button-icon-only .jf-whatsapp__cta {
+  min-width: 0;
+  padding: 0;
+}
+
+.jf-whatsapp--button-icon-only.jf-whatsapp--button-size-medium .jf-whatsapp__cta {
+  width: var(--space-10);
+}
+
+.jf-whatsapp--button-icon-only.jf-whatsapp--button-size-small .jf-whatsapp__cta {
+  width: calc(var(--space-8) + var(--space-1));
+}
+
+.jf-whatsapp--button-icon-only.jf-whatsapp--button-size-large .jf-whatsapp__cta {
+  width: calc(var(--space-12) - 3px);
+}
+
 .jf-whatsapp--button .jf-whatsapp__main-content {
   display: flex;
   flex-direction: column;
