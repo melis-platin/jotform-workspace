@@ -6888,7 +6888,7 @@ export function BuildPage({
                       <span className="property-panel__title">Testimonial</span>
                     </div>
                   ) : (
-                    <span className="property-panel__title">{selectedComponent.id === 'whatsapp' ? 'Whatsapp Properties' : selectedComponent.name}</span>
+                    <span className="property-panel__title">{selectedComponent.id === 'whatsapp' ? 'WhatsApp Properties' : selectedComponent.name}</span>
                   )}
                   <div className="property-panel__header-actions">
                     {!(selectedComponent.id === 'product-list' && propertyTab === 'products' && editingProductIndex !== null) && !(selectedComponent.id === 'faq' && propertyTab === 'general' && editingFaqIndex !== null) && !(selectedComponent.id === 'testimonial' && propertyTab === 'general' && editingTestimonialIndex !== null) && selectedElement.id !== APP_HEADER_ID && (
