@@ -20,9 +20,10 @@ ComponentRegistry.register({
     { name: 'Bubble Text', type: 'text', default: 'Chat on WhatsApp', maxLength: 30 },
     { name: 'Button Width', type: 'select', default: 'Auto', options: ['Auto', 'Full'] },
     { name: 'Button Alignment', type: 'select', default: 'Center', options: ['Left', 'Center', 'Right'] },
-    { name: 'Button Text', type: 'text', default: 'Chat on WhatsApp', maxLength: 30 },
+    { name: 'Button Text', type: 'text', default: 'Message us', maxLength: 30 },
     { name: 'Phone Number', type: 'text', default: '', placeholder: '+0 000-000-0000', maxLength: 16, description: 'Use the international format: +1 541-754-3010' },
-    { name: 'Message', type: 'text', default: "Hi! I'd like to ask a question.", maxLength: 300, description: 'Automatically added to the chat so users can send in one tap.' },
+    { name: 'Message', type: 'text', default: 'Hi Bloom Café! I’d like to ask about my order.', maxLength: 300, description: 'Automatically added to the chat so users can send in one tap.' },
+    { name: 'Shrinked', type: 'boolean', default: false },
   ],
 
   states: [],
@@ -50,7 +51,7 @@ ComponentRegistry.register({
   render(_variants: VariantValues, props: PropertyValues, _states: StateValues): React.ReactNode {
     const phoneNumber = String(props['Phone Number'] ?? '');
     const message = String(props['Message'] ?? '');
-    const buttonText = String(props['Button Text'] ?? 'Chat on WhatsApp');
+    const buttonText = String(props['Button Text'] ?? 'Message us');
     return (
       <WhatsApp
         phoneNumber={phoneNumber}
@@ -63,7 +64,7 @@ ComponentRegistry.register({
         bubblePlacement={String(props['Bubble Placement'] ?? 'Beside')}
         buttonWidth={String(props['Button Width'] ?? 'Auto')}
         buttonAlignment={String(props['Alignment'] ?? 'Right')}
-        buttonText={['Message us', 'Message us on WhatsApp'].includes(buttonText) ? 'Chat on WhatsApp' : buttonText}
+        buttonText={buttonText}
       />
     );
   },

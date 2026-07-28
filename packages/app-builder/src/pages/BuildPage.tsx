@@ -6981,6 +6981,7 @@ export function BuildPage({
                                   ? [
                                       { value: 'general', label: 'General' },
                                       { value: 'style', label: 'Style' },
+                                      { value: 'action', label: 'Action' },
                                       { value: 'condition', label: 'Condition' },
                                     ]
                                 : selectedComponent.id === 'social-follow'
@@ -7179,10 +7180,6 @@ export function BuildPage({
                                 if (property === 'Display Style' && option === 'Button') {
                                   handlePropertyChange(selectedElement.id, 'Size', 'Medium')
                                   handlePropertyChange(selectedElement.id, 'Bubble Placement', 'Above')
-                                  const currentButtonText = String(selectedElement.properties['Button Text'] ?? '')
-                                  if (!currentButtonText || currentButtonText === 'Message us' || currentButtonText === 'Message us on WhatsApp') {
-                                    handlePropertyChange(selectedElement.id, 'Button Text', 'Chat on WhatsApp')
-                                  }
                                 }
                               }}>{label}</button>
                             })}
@@ -7190,21 +7187,7 @@ export function BuildPage({
                         </DSFormField>
                       </div>
                     )
-                    const buttonText = String(selectedElement.properties['Button Text'] ?? 'Chat on WhatsApp')
-                    const displayedButtonText = ['Message us', 'Message us on WhatsApp'].includes(buttonText) ? 'Chat on WhatsApp' : buttonText
                     return <div className="property-panel__body property-panel__body--whatsapp">
-                      {displayStyle === 'Button' && <>
-                        <div className="property-panel__field">
-                          <DSFormField title="Button Text" size="md" showDescription={false} showHelpText={false}>
-                            <DSInput
-                              value={displayedButtonText}
-                              maxLength={30}
-                              rightContent={<span className="property-panel__char-count">{displayedButtonText.length}/30</span>}
-                              onChange={(e) => handlePropertyChange(selectedElement.id, 'Button Text', e.target.value)}
-                            />
-                          </DSFormField>
-                        </div>
-                      </>}
                       {renderWhatsAppStyleOptions('Size', 'Size', ['Small', 'Medium', 'Large'])}
                       <div className="property-panel__field property-panel__field--inline">
                         <DSFormField title="Show Bubble" description="Text shown with the button" size="md" showDescription showHelpText={false}>
@@ -7237,29 +7220,9 @@ export function BuildPage({
 
                       handlePropertyChange(selectedElement.id, 'Size', 'Medium')
                       handlePropertyChange(selectedElement.id, 'Bubble Placement', 'Above')
-                      const currentButtonText = String(selectedElement.properties['Button Text'] ?? '')
-                      if (!currentButtonText || currentButtonText === 'Message us' || currentButtonText === 'Message us on WhatsApp') {
-                        handlePropertyChange(selectedElement.id, 'Button Text', 'Chat on WhatsApp')
-                      }
                     }
                     return (
                       <div className="property-panel__body property-panel__body--whatsapp">
-                        <div className="property-panel__field">
-                          <DSFormField title="Element Type" size="md" showDescription={false} showHelpText={false}>
-                            <div className="whatsapp-properties__segmented whatsapp-properties__segmented--2">
-                              {(['Floating', 'Button'] as const).map((option) => (
-                                <button
-                                  key={option}
-                                  type="button"
-                                  className={`whatsapp-properties__segment${displayStyle === option ? ' whatsapp-properties__segment--selected' : ''}`}
-                                  onClick={() => selectDisplayStyle(option)}
-                                >
-                                  {option}
-                                </button>
-                              ))}
-                            </div>
-                          </DSFormField>
-                        </div>
                         <div className="property-panel__field">
                           <DSFormField title="Whatsapp Number" description="Use the international format: +1 541-754-3010" required size="md" showDescription showHelpText={false}>
                             <DSInput
@@ -7292,10 +7255,45 @@ export function BuildPage({
                             <DSTextArea
                               size="md"
                               height="message"
-                              maxLength={200}
+                              maxLength={300}
                               showCount
                               value={String(selectedElement.properties['Message'] ?? '')}
                               onChange={(event) => handlePropertyChange(selectedElement.id, 'Message', event.target.value)}
+                            />
+                          </DSFormField>
+                        </div>
+                        <div className="property-panel__field">
+                          <DSFormField title="Display Style" size="md" showDescription={false} showHelpText={false}>
+                            <div className="whatsapp-properties__segmented whatsapp-properties__segmented--2">
+                              {(['Floating', 'Button'] as const).map((option) => (
+                                <button
+                                  key={option}
+                                  type="button"
+                                  className={`whatsapp-properties__segment${displayStyle === option ? ' whatsapp-properties__segment--selected' : ''}`}
+                                  onClick={() => selectDisplayStyle(option)}
+                                >
+                                  {option}
+                                </button>
+                              ))}
+                            </div>
+                          </DSFormField>
+                        </div>
+                        {displayStyle === 'Button' && <div className="property-panel__field">
+                          <DSFormField title="Button Text" size="md" showDescription={false} showHelpText={false}>
+                            <DSInput
+                              value={String(selectedElement.properties['Button Text'] ?? 'Message us')}
+                              maxLength={30}
+                              rightContent={<span className="property-panel__char-count">{String(selectedElement.properties['Button Text'] ?? 'Message us').length}/30</span>}
+                              onChange={(event) => handlePropertyChange(selectedElement.id, 'Button Text', event.target.value)}
+                            />
+                          </DSFormField>
+                        </div>}
+                        <div className="property-panel__field property-panel__field--inline">
+                          <DSFormField title="Shrink" description="Make element smaller." size="md" showDescription showHelpText={false}>
+                            <DSToggle
+                              size="md"
+                              checked={Boolean(selectedElement.properties['Shrinked'])}
+                              onChange={(event) => handlePropertyChange(selectedElement.id, 'Shrinked', event.target.checked)}
                             />
                           </DSFormField>
                         </div>
