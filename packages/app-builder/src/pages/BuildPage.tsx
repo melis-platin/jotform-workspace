@@ -2698,12 +2698,14 @@ function DraggablePanelItem({
 function DroppablePage({
   pageId,
   showEmptyState,
+  showDropFeedback = false,
   suppressDropLine = false,
   onEmptyStateClick,
   children,
 }: {
   pageId: string
   showEmptyState: boolean
+  showDropFeedback?: boolean
   suppressDropLine?: boolean
   onEmptyStateClick: (e: React.MouseEvent) => void
   children?: React.ReactNode
@@ -2746,7 +2748,7 @@ function DroppablePage({
       <div
         ref={ref}
         data-page-id={pageId}
-        className={`themes-view__app ${isOverEmpty && !suppressDropLine ? 'build-page__droppable--over' : ''}`}
+        className={`themes-view__app ${(isOverEmpty || showDropFeedback) && !suppressDropLine ? 'build-page__droppable--over' : ''}`}
       >
         {showEmptyState && (
           <section
@@ -3482,6 +3484,7 @@ export function BuildPage({
   })
   const [dragSession, setDragSession] = useState<DragSourceData | null>(null)
   const isDragging = dragSession !== null
+  const isWhatsAppPanelDrag = dragSession?.type === 'panel' && dragSession.componentId === WHATSAPP_PANEL_ITEM_ID
   const draggedCanvasId = dragSession?.type === 'canvas' ? dragSession.elementId : null
 
   // Native drag and drop can try to auto-scroll every scrollable ancestor when
@@ -6662,6 +6665,7 @@ export function BuildPage({
                         <DroppablePage
                           pageId={page.id}
                           showEmptyState={virtuallyEmpty}
+                          showDropFeedback={isWhatsAppPanelDrag && virtuallyEmpty}
                           onEmptyStateClick={(e) => {
                             e.stopPropagation()
                             setActivePageId(page.id)
