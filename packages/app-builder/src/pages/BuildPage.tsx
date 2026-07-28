@@ -7215,6 +7215,7 @@ export function BuildPage({
                       handlePropertyChange(selectedElement.id, 'Display Style', nextDisplayStyle)
                       if (nextDisplayStyle === 'Floating') {
                         handlePropertyChange(selectedElement.id, 'Size', 'Large')
+                        handlePropertyChange(selectedElement.id, 'Shrinked', false)
                         return
                       }
 
@@ -7288,7 +7289,7 @@ export function BuildPage({
                             />
                           </DSFormField>
                         </div>}
-                        <div className="property-panel__field property-panel__field--inline">
+                        {displayStyle === 'Button' && <div className="property-panel__field property-panel__field--inline">
                           <DSFormField title="Shrink" description="Make element smaller." size="md" showDescription showHelpText={false}>
                             <DSToggle
                               size="md"
@@ -7296,7 +7297,7 @@ export function BuildPage({
                               onChange={(event) => handlePropertyChange(selectedElement.id, 'Shrinked', event.target.checked)}
                             />
                           </DSFormField>
-                        </div>
+                        </div>}
                       </div>
                     )
                   }
