@@ -7161,6 +7161,8 @@ export function BuildPage({
                   const isWhatsApp = selectedComponent.id === 'whatsapp'
                   if (isWhatsApp && propertyTab === 'style') {
                     const displayStyle = String(selectedElement.properties['Display Style'] ?? 'Button')
+                    const isFloatingIconAndText = displayStyle === 'Floating'
+                      && selectedElement.properties['Floating Display Style'] === 'Icon & Text'
                     const showBubble = selectedElement.properties['Show Label'] === true
                       || (selectedElement.properties['Show Label'] === undefined && displayStyle === 'Floating')
                     const renderWhatsAppStyleOptions = (title: string, property: string, options: string[]) => (
@@ -7176,6 +7178,9 @@ export function BuildPage({
                                 : ({ 'Display Style': 'Button', 'Floating Display Style': 'Icon Only', Alignment: 'Right', 'Bubble Placement': 'Beside', 'Button Alignment': 'Center', 'Button Width': 'Auto' }[property] ?? '')
                               return <button key={option} type="button" className={`whatsapp-properties__segment${String(selectedElement.properties[property] ?? defaultValue) === option ? ' whatsapp-properties__segment--selected' : ''}`} onClick={() => {
                                 handlePropertyChange(selectedElement.id, property, option)
+                                if (property === 'Floating Display Style' && option === 'Icon & Text') {
+                                  handlePropertyChange(selectedElement.id, 'Bubble Placement', 'Above')
+                                }
                                 if (property === 'Display Style' && option === 'Floating') {
                                   handlePropertyChange(selectedElement.id, 'Size', 'Medium')
                                   handlePropertyChange(selectedElement.id, 'Alignment', 'Right')
@@ -7210,7 +7215,7 @@ export function BuildPage({
                           </DSFormField>
                         </div>
                         {showBubble && <>
-                          {renderWhatsAppStyleOptions('Bubble Placement', 'Bubble Placement', ['Beside', 'Above'])}
+                          {!isFloatingIconAndText && renderWhatsAppStyleOptions('Bubble Placement', 'Bubble Placement', ['Beside', 'Above'])}
                           <div className="property-panel__field">
                             <DSFormField title="Bubble Text" size="md" showDescription={false} showHelpText={false}>
                               <DSTextArea

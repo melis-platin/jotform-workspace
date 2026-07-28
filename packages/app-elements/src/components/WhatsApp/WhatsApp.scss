@@ -241,6 +241,19 @@
   gap: var(--space-1);
 }
 
+.jf-whatsapp--button-bubble-above .jf-whatsapp__action-row {
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.jf-whatsapp--button-bubble-above.jf-whatsapp--button-align-left .jf-whatsapp__action-row {
+  align-items: flex-start;
+}
+
+.jf-whatsapp--button-bubble-above.jf-whatsapp--button-align-center .jf-whatsapp__action-row {
+  align-items: center;
+}
+
 .jf-whatsapp--button .jf-whatsapp__bubble {
   align-self: flex-end;
   font-size: var(--font-size-sm);
