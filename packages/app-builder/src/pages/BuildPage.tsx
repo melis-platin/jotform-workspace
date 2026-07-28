@@ -7289,6 +7289,20 @@ export function BuildPage({
                             />
                           </DSFormField>
                         </div>}
+                        {displayStyle === 'Floating' && <div className="property-panel__field">
+                          <DSFormField title="Show on" size="md" showDescription={false} showHelpText={false}>
+                            <DSDropdownSingle
+                              value={String(selectedElement.properties['Show On'] ?? 'All Pages')}
+                              onChange={(value) => handlePropertyChange(selectedElement.id, 'Show On', value)}
+                              options={[
+                                { value: 'All Pages', label: 'All Pages' },
+                                ...pages
+                                  .filter((page) => !page.dynamic)
+                                  .map((page) => ({ value: page.id, label: page.name })),
+                              ]}
+                            />
+                          </DSFormField>
+                        </div>}
                         {displayStyle === 'Button' && <div className="property-panel__field property-panel__field--inline">
                           <DSFormField title="Shrink" description="Make element smaller." size="md" showDescription showHelpText={false}>
                             <DSToggle
