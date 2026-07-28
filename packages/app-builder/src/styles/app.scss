@@ -7572,7 +7572,7 @@ body,
   width: 44px;
   height: 44px;
   overflow: hidden;
-  border: 2px solid color-mix(in srgb, var(--ds-text-primary) 60%, transparent);
+  border: 2px solid color-mix(in srgb, var(--navy-100) 60%, transparent);
   border-radius: var(--radius-sm);
 }
 
@@ -7586,7 +7586,7 @@ body,
 .whatsapp-properties__display-style-preview-line {
   left: 6px;
   height: 3px;
-  background: color-mix(in srgb, var(--ds-text-primary) 60%, transparent);
+  background: color-mix(in srgb, var(--navy-100) 60%, transparent);
 }
 
 .whatsapp-properties__display-style-preview-line--first { top: 6px; width: 29px; }
@@ -7598,7 +7598,7 @@ body,
   left: 6px;
   width: 28px;
   height: 6px;
-  background: var(--ds-text-primary);
+  background: var(--core-white);
 }
 
 .whatsapp-properties__display-style-preview--floating .whatsapp-properties__display-style-preview-action {
