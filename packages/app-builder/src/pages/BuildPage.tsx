@@ -7203,7 +7203,7 @@ export function BuildPage({
                           </DSFormField>
                         </div>
                         {showBubble && <>
-                          {renderWhatsAppStyleOptions('Label position', 'Bubble Placement', ['Beside', 'Above'])}
+                          {renderWhatsAppStyleOptions('Label Position', 'Bubble Placement', ['Beside', 'Above'])}
                           <div className="property-panel__field">
                             <DSFormField title="Bubble Text" size="md" showDescription={false} showHelpText={false}>
                               <DSTextArea
