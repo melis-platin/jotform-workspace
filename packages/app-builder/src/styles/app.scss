@@ -2305,7 +2305,7 @@ body,
   width: 240px;
   background: var(--bg-fill);
   border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--ds-radius-sm);
   box-shadow: var(--shadow-md);
   padding: var(--space-1) 0;
 
@@ -2531,7 +2531,7 @@ body,
   height: 32px;
   padding: 0;
   border: 0;
-  border-radius: var(--radius-sm);
+  border-radius: var(--ds-radius-sm);
   background: transparent;
   color: var(--fg-secondary);
   cursor: pointer;
