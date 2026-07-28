@@ -7198,7 +7198,7 @@ export function BuildPage({
                       </>}
                       {displayStyle === 'Floating' && <>
                         <div className="property-panel__field property-panel__field--inline">
-                          <DSFormField title="Show button label" description="Show text next to or above the button" size="md" showDescription showHelpText={false}>
+                          <DSFormField title="Show Button Label" description="Show text next to or above the button" size="md" showDescription showHelpText={false}>
                             <DSToggle size="md" checked={showBubble} onChange={(e) => handlePropertyChange(selectedElement.id, 'Show Label', e.target.checked)} />
                           </DSFormField>
                         </div>
