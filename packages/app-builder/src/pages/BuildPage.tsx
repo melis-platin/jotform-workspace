@@ -7212,7 +7212,7 @@ export function BuildPage({
                                 maxLength={120}
                                 showDrag={false}
                                 showCount
-                                value={String(selectedElement.properties['Bubble Text'] ?? '')}
+                                value={String(selectedElement.properties['Bubble Text'] ?? 'We are here to help 7/24')}
                                 onChange={(event) => handlePropertyChange(selectedElement.id, 'Bubble Text', event.target.value)}
                               />
                             </DSFormField>
@@ -7230,7 +7230,7 @@ export function BuildPage({
                         handlePropertyChange(selectedElement.id, 'Alignment', 'Right')
                         handlePropertyChange(selectedElement.id, 'Show Label', true)
                         handlePropertyChange(selectedElement.id, 'Bubble Placement', 'Beside')
-                        handlePropertyChange(selectedElement.id, 'Bubble Text', '')
+                        handlePropertyChange(selectedElement.id, 'Bubble Text', 'We are here to help 7/24')
                         handlePropertyChange(selectedElement.id, 'Shrinked', false)
                         return
                       }
