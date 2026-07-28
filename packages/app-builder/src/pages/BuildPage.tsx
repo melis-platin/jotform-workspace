@@ -5460,6 +5460,12 @@ export function BuildPage({
           | { type: 'header-actions' }
           | { type: 'header-action'; elementId: string }
           | undefined)
+          // The empty-page affordance can be the browser's final native drop
+          // target instead of its parent page. Panel elements still belong on
+          // the focused page in that case, exactly as a normal page drop.
+          ?? (data.type === 'panel' && pagesRef.current.some((page) => page.id === activePageId)
+            ? { type: 'page' as const, pageId: activePageId }
+            : undefined)
         if (!targetData) return
 
         const edge =
@@ -5756,7 +5762,7 @@ export function BuildPage({
         })
       },
     })
-  }, [])
+  }, [activePageId])
 
   useEffect(() => {
     const canvas = canvasRef.current
