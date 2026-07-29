@@ -7163,10 +7163,16 @@ export function BuildPage({
                     const displayStyle = String(selectedElement.properties['Display Style'] ?? 'Button')
                     const isFloatingIconAndText = displayStyle === 'Floating'
                       && selectedElement.properties['Floating Display Style'] === 'Icon & Text'
+                    const bubbleUserPreference = selectedElement.properties['Show Label User Preference']
+                    const hasBubbleUserPreference = typeof bubbleUserPreference === 'boolean'
                     const showBubble = selectedElement.properties['Show Label'] === true
                       || (selectedElement.properties['Show Label'] === undefined
                         && displayStyle === 'Floating'
                         && !isFloatingIconAndText)
+                    const setShowBubbleFromUser = (checked: boolean) => {
+                      handlePropertyChange(selectedElement.id, 'Show Label User Preference', checked)
+                      handlePropertyChange(selectedElement.id, 'Show Label', checked)
+                    }
                     const renderWhatsAppStyleOptions = (title: string, property: string, options: string[]) => (
                       <div className="property-panel__field">
                         <DSFormField title={title} size="md" showDescription={false} showHelpText={false}>
@@ -7182,7 +7188,18 @@ export function BuildPage({
                                 handlePropertyChange(selectedElement.id, property, option)
                                 if (property === 'Floating Display Style' && option === 'Icon & Text') {
                                   handlePropertyChange(selectedElement.id, 'Bubble Placement', 'Above')
-                                  handlePropertyChange(selectedElement.id, 'Show Label', false)
+                                  handlePropertyChange(
+                                    selectedElement.id,
+                                    'Show Label',
+                                    hasBubbleUserPreference ? bubbleUserPreference : false,
+                                  )
+                                }
+                                if (property === 'Floating Display Style' && option === 'Icon Only') {
+                                  handlePropertyChange(
+                                    selectedElement.id,
+                                    'Show Label',
+                                    hasBubbleUserPreference ? bubbleUserPreference : true,
+                                  )
                                 }
                                 if (property === 'Display Style' && option === 'Floating') {
                                   handlePropertyChange(selectedElement.id, 'Size', 'Medium')
@@ -7214,7 +7231,7 @@ export function BuildPage({
                       {displayStyle === 'Floating' && <>
                         <div className="property-panel__field property-panel__field--inline">
                           <DSFormField title="Show Chat Bubble" description="Show a message next to or above the button" size="md" showDescription showHelpText={false}>
-                            <DSToggle size="md" checked={showBubble} onChange={(e) => handlePropertyChange(selectedElement.id, 'Show Label', e.target.checked)} />
+                            <DSToggle size="md" checked={showBubble} onChange={(e) => setShowBubbleFromUser(e.target.checked)} />
                           </DSFormField>
                         </div>
                         {showBubble && <>
@@ -7237,7 +7254,7 @@ export function BuildPage({
                       {displayStyle === 'Button' && <>
                         <div className="property-panel__field property-panel__field--inline">
                           <DSFormField title="Show Chat Bubble" description="Show a message next to or above the button" size="md" showDescription showHelpText={false}>
-                            <DSToggle size="md" checked={showBubble} onChange={(e) => handlePropertyChange(selectedElement.id, 'Show Label', e.target.checked)} />
+                            <DSToggle size="md" checked={showBubble} onChange={(e) => setShowBubbleFromUser(e.target.checked)} />
                           </DSFormField>
                         </div>
                         {showBubble && <div className="property-panel__field">
@@ -7258,12 +7275,18 @@ export function BuildPage({
                   }
                   if (isWhatsApp && propertyTab === 'general') {
                     const displayStyle = String(selectedElement.properties['Display Style'] ?? 'Button')
+                    const bubbleUserPreference = selectedElement.properties['Show Label User Preference']
+                    const hasBubbleUserPreference = typeof bubbleUserPreference === 'boolean'
                     const selectDisplayStyle = (nextDisplayStyle: 'Floating' | 'Button') => {
                       handlePropertyChange(selectedElement.id, 'Display Style', nextDisplayStyle)
                       if (nextDisplayStyle === 'Floating') {
                         handlePropertyChange(selectedElement.id, 'Size', 'Medium')
                         handlePropertyChange(selectedElement.id, 'Alignment', 'Right')
-                        handlePropertyChange(selectedElement.id, 'Show Label', true)
+                        handlePropertyChange(
+                          selectedElement.id,
+                          'Show Label',
+                          hasBubbleUserPreference ? bubbleUserPreference : true,
+                        )
                         handlePropertyChange(selectedElement.id, 'Bubble Placement', 'Beside')
                         handlePropertyChange(selectedElement.id, 'Bubble Text', 'We are here to help 7/27')
                         handlePropertyChange(selectedElement.id, 'Shrinked', false)
@@ -7272,7 +7295,11 @@ export function BuildPage({
 
                       handlePropertyChange(selectedElement.id, 'Size', 'Large')
                       handlePropertyChange(selectedElement.id, 'Bubble Placement', 'Above')
-                      handlePropertyChange(selectedElement.id, 'Show Label', false)
+                      handlePropertyChange(
+                        selectedElement.id,
+                        'Show Label',
+                        hasBubbleUserPreference ? bubbleUserPreference : false,
+                      )
                       handlePropertyChange(selectedElement.id, 'Bubble Text', '')
                     }
                     return (
