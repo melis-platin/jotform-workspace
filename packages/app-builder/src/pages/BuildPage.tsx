@@ -7205,7 +7205,7 @@ export function BuildPage({
                                   handlePropertyChange(selectedElement.id, 'Alignment', 'Right')
                                   handlePropertyChange(selectedElement.id, 'Show Label', true)
                                   handlePropertyChange(selectedElement.id, 'Bubble Placement', 'Beside')
-                                  handlePropertyChange(selectedElement.id, 'Bubble Text', 'We are here to help 7/27')
+                                  handlePropertyChange(selectedElement.id, 'Bubble Text', 'We are here to help 7/24')
                                 }
                                 if (property === 'Display Style' && option === 'Button') {
                                   handlePropertyChange(selectedElement.id, 'Size', 'Large')
@@ -7287,7 +7287,7 @@ export function BuildPage({
                           hasBubbleUserPreference ? bubbleUserPreference : true,
                         )
                         handlePropertyChange(selectedElement.id, 'Bubble Placement', 'Beside')
-                        handlePropertyChange(selectedElement.id, 'Bubble Text', 'We are here to help 7/27')
+                        handlePropertyChange(selectedElement.id, 'Bubble Text', 'We are here to help 7/24')
                         handlePropertyChange(selectedElement.id, 'Shrinked', false)
                         return
                       }
