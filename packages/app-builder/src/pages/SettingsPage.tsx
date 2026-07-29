@@ -94,6 +94,7 @@ const SCHEDULE_NOTIFICATION_CONTENT_PLACEHOLDER = 'Enter notification content'
 const NOTIFICATION_CONTENT_MAX_LENGTH = 150
 const NOTIFICATION_DEEP_LINK_PLACEHOLDER = 'Choose a page or form'
 const NOTIFICATION_AUDIENCE_PLACEHOLDER = 'Choose audience'
+const DEFAULT_PUSH_NOTIFICATION_OWNER_NAME = 'Melis Platin'
 const SENT_NOTIFICATION_METRICS = [
   { label: 'SUBSCRIBES', value: '600' },
   { label: 'SENT', value: '500' },
@@ -1104,6 +1105,8 @@ export interface PushNotificationHistoryItem {
   scheduleTimezone?: string
   scheduledAtLabel: string
   liveInLabel: string
+  canceledByLabel?: string
+  canceledAtLabel?: string
 }
 
 export function PushNotificationsPanel({
@@ -1251,7 +1254,7 @@ export function PushNotificationsPanel({
     setActiveView('composer')
   }
   const duplicateNotification = (notification: PushNotificationHistoryItem) => {
-    const isScheduledDuplicate = notification.status === 'scheduled'
+    const isScheduledDuplicate = notification.status !== 'sent'
 
     setNotificationTitle(notification.title)
     setNotificationTitleFields([])
@@ -1375,6 +1378,8 @@ export function PushNotificationsPanel({
       status: 'canceled',
       statusLabel: 'Canceled',
       liveInLabel: 'Canceled',
+      canceledByLabel: fieldValues['user-name']?.trim() || DEFAULT_PUSH_NOTIFICATION_OWNER_NAME,
+      canceledAtLabel: getNowHistoryDateTimeLabel(),
     })
     closeScheduledNotificationCancel()
   }
@@ -2360,7 +2365,37 @@ function PushNotificationHistoryCard({
               ))}
             </div>
           </>
-        ) : null}
+        ) : (
+          <>
+            <span className="push-notification-history-card__divider" aria-hidden="true" />
+            <div className="push-notification-history-card__canceled-summary">
+              <div className="push-notification-history-card__canceled-copy">
+                <div className="push-notification-history-card__canceled-meta">
+                  <span className="push-notification-history-card__canceled-by">
+                    <Icon name="ban" category="general" size={16} />
+                    <span>
+                      Canceled by {notification.canceledByLabel ?? DEFAULT_PUSH_NOTIFICATION_OWNER_NAME}
+                    </span>
+                  </span>
+                  <span className="push-notification-history-card__canceled-dot" aria-hidden="true" />
+                  <span>{notification.canceledAtLabel ?? 'Canceled recently'}</span>
+                </div>
+                <p className="push-notification-history-card__canceled-description">
+                  Nothing was delivered.
+                </p>
+              </div>
+              <Button
+                className="push-notification-history-card__reschedule"
+                variant="ghost"
+                colorScheme="secondary"
+                size="sm"
+                onClick={() => onDuplicate(notification)}
+              >
+                Duplicate &amp; Reschedule
+              </Button>
+            </div>
+          </>
+        )}
       </div>
       <button
         ref={actionsMenuButtonRef}
