@@ -1155,6 +1155,7 @@ export function PushNotificationsPanel({
   const handledReturnToHistoryRequestIdRef = useRef(returnToHistoryRequestId)
   const [isScheduleModalOpen, setIsScheduleModalOpen] = useState(false)
   const [isTestNotificationModalOpen, setIsTestNotificationModalOpen] = useState(false)
+  const [isDisableConfirmationOpen, setIsDisableConfirmationOpen] = useState(false)
   const [scheduleDate, setScheduleDate] = useState('')
   const [scheduleTime, setScheduleTime] = useState('')
   const [scheduleTimezone, setScheduleTimezone] = useState(SCHEDULE_TIMEZONE_OPTIONS[0].value)
@@ -1187,24 +1188,34 @@ export function PushNotificationsPanel({
     areNotificationActionsDisabled ||
     !hasValidScheduleDate ||
     !hasValidScheduleTime
-  const disablePushNotifications = () => {
+  const scheduledNotifications = historyItems.filter(
+    (notification) => notification.status === 'scheduled',
+  )
+  const confirmDisablePushNotifications = () => {
     const canceledAtLabel = getNowHistoryDateTimeLabel()
     const canceledByLabel = fieldValues['user-name']?.trim() || DEFAULT_PUSH_NOTIFICATION_OWNER_NAME
 
-    historyItems
-      .filter((notification) => notification.status === 'scheduled')
-      .forEach((notification) => {
-        onHistoryItemUpdate({
-          ...notification,
-          status: 'canceled',
-          statusLabel: 'Canceled',
-          liveInLabel: 'Canceled',
-          canceledByLabel,
-          canceledAtLabel,
-        })
+    scheduledNotifications.forEach((notification) => {
+      onHistoryItemUpdate({
+        ...notification,
+        status: 'canceled',
+        statusLabel: 'Canceled',
+        liveInLabel: 'Canceled',
+        canceledByLabel,
+        canceledAtLabel,
       })
+    })
 
+    setIsDisableConfirmationOpen(false)
     onDisable()
+  }
+  const requestDisablePushNotifications = () => {
+    if (scheduledNotifications.length === 0) {
+      onDisable()
+      return
+    }
+
+    setIsDisableConfirmationOpen(true)
   }
   const removeNotificationContentField = (fieldIndex: number) => {
     const nextFields = notificationContentFields.filter((_, index) => index !== fieldIndex)
@@ -1457,7 +1468,7 @@ export function PushNotificationsPanel({
           isDisabled={isDisabled}
           onCreateNotification={openNotificationComposer}
           onScheduleNotification={isPublishComposer ? openScheduleNotificationComposer : openNotificationComposer}
-          onDisable={disablePushNotifications}
+          onDisable={requestDisablePushNotifications}
           onEnable={onEnable}
           onPermissionMessageEdit={onPermissionMessageEdit}
         />
@@ -1486,7 +1497,7 @@ export function PushNotificationsPanel({
             image={notificationImage}
             setImage={setNotificationImage}
             isDisabled={isDisabled}
-            onDisable={disablePushNotifications}
+            onDisable={requestDisablePushNotifications}
             onEnable={onEnable}
             onPermissionMessageEdit={onPermissionMessageEdit}
             isInitialPushNotification={usesInitialComposerLayout}
@@ -1693,6 +1704,12 @@ export function PushNotificationsPanel({
         closeLabel="Close delete notification confirmation"
         onClose={closeSentNotificationDelete}
         onConfirm={confirmSentNotificationDelete}
+      />
+      <PushDisableNotificationsDialog
+        open={isDisableConfirmationOpen}
+        notifications={scheduledNotifications}
+        onClose={() => setIsDisableConfirmationOpen(false)}
+        onConfirm={confirmDisablePushNotifications}
       />
     </>
   )
@@ -2096,6 +2113,123 @@ function PushCancelNotificationDialog({
       </section>
     </div>,
     document.body
+  )
+}
+
+interface PushDisableNotificationsDialogProps {
+  open: boolean
+  notifications: PushNotificationHistoryItem[]
+  onClose: () => void
+  onConfirm: () => void
+}
+
+function PushDisableNotificationsDialog({
+  open,
+  notifications,
+  onClose,
+  onConfirm,
+}: PushDisableNotificationsDialogProps) {
+  useEffect(() => {
+    if (!open) return undefined
+
+    const previousBodyOverflow = document.body.style.overflow
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        event.stopPropagation()
+        onClose()
+      }
+    }
+
+    document.body.style.overflow = 'hidden'
+    document.addEventListener('keydown', closeOnEscape, true)
+
+    return () => {
+      document.body.style.overflow = previousBodyOverflow
+      document.removeEventListener('keydown', closeOnEscape, true)
+    }
+  }, [onClose, open])
+
+  if (!open) return null
+
+  const visibleNotifications = notifications.slice(0, 2)
+  const hiddenNotificationCount = Math.max(0, notifications.length - visibleNotifications.length)
+  const notificationCount = notifications.length
+  const notificationNoun = notificationCount === 1 ? 'notification is' : 'notifications are'
+  const recordPronoun = notificationCount === 1 ? 'it' : 'them'
+  const recordNoun = notificationCount === 1 ? 'It stays' : 'They stay'
+  const recordLabel = notificationCount === 1 ? 'a canceled record' : 'canceled records'
+
+  return createPortal(
+    <div
+      className="push-cancel-notification-dialog__backdrop"
+      role="presentation"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose()
+      }}
+    >
+      <section
+        className="push-disable-notifications-dialog"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="push-disable-notifications-dialog-title"
+        aria-describedby="push-disable-notifications-dialog-description"
+        onMouseDown={(event) => event.stopPropagation()}
+      >
+        <button
+          className="push-disable-notifications-dialog__close"
+          type="button"
+          aria-label="Close disable push notifications confirmation"
+          onClick={onClose}
+        >
+          <Icon name="xmark" category="general" size={16} />
+        </button>
+
+        <div className="push-disable-notifications-dialog__layout">
+          <span className="push-disable-notifications-dialog__thumbnail" aria-hidden="true">
+            <Icon name="exclamation-circle" category="general" size={40} />
+          </span>
+
+          <div className="push-disable-notifications-dialog__copy">
+            <h2 id="push-disable-notifications-dialog-title">Disable push notifications?</h2>
+            <p id="push-disable-notifications-dialog-description">
+              {notificationCount} {notificationNoun} scheduled and will not be sent. Disabling
+              cancels {recordPronoun}. {recordNoun} in your list as {recordLabel}.
+            </p>
+          </div>
+
+          <div className="push-disable-notifications-dialog__scheduled-list">
+            {visibleNotifications.map((notification) => (
+              <div className="push-disable-notifications-dialog__scheduled-item" key={notification.id}>
+                <Icon name="clock-filled" category="time-date" size={16} />
+                <div className="push-disable-notifications-dialog__scheduled-copy">
+                  <strong>{notification.title}</strong>
+                  <span className="push-disable-notifications-dialog__scheduled-meta">
+                    <span>{notification.scheduledAtLabel}</span>
+                    <i aria-hidden="true" />
+                    <span>{notification.liveInLabel.replace(/^Goes live\s+/i, '')}</span>
+                  </span>
+                </div>
+              </div>
+            ))}
+            {hiddenNotificationCount > 0 && (
+              <div className="push-disable-notifications-dialog__more">
+                +{hiddenNotificationCount} more scheduled notification{hiddenNotificationCount === 1 ? '' : 's'}
+              </div>
+            )}
+          </div>
+
+          <footer className="push-disable-notifications-dialog__footer">
+            <Button variant="ghost" colorScheme="secondary" onClick={onClose}>
+              No, Keep
+            </Button>
+            <Button colorScheme="primary" onClick={onConfirm}>
+              Yes, Disable
+            </Button>
+          </footer>
+        </div>
+      </section>
+    </div>,
+    document.body,
   )
 }
 
