@@ -1187,6 +1187,25 @@ export function PushNotificationsPanel({
     areNotificationActionsDisabled ||
     !hasValidScheduleDate ||
     !hasValidScheduleTime
+  const disablePushNotifications = () => {
+    const canceledAtLabel = getNowHistoryDateTimeLabel()
+    const canceledByLabel = fieldValues['user-name']?.trim() || DEFAULT_PUSH_NOTIFICATION_OWNER_NAME
+
+    historyItems
+      .filter((notification) => notification.status === 'scheduled')
+      .forEach((notification) => {
+        onHistoryItemUpdate({
+          ...notification,
+          status: 'canceled',
+          statusLabel: 'Canceled',
+          liveInLabel: 'Canceled',
+          canceledByLabel,
+          canceledAtLabel,
+        })
+      })
+
+    onDisable()
+  }
   const removeNotificationContentField = (fieldIndex: number) => {
     const nextFields = notificationContentFields.filter((_, index) => index !== fieldIndex)
 
@@ -1438,7 +1457,7 @@ export function PushNotificationsPanel({
           isDisabled={isDisabled}
           onCreateNotification={openNotificationComposer}
           onScheduleNotification={isPublishComposer ? openScheduleNotificationComposer : openNotificationComposer}
-          onDisable={onDisable}
+          onDisable={disablePushNotifications}
           onEnable={onEnable}
           onPermissionMessageEdit={onPermissionMessageEdit}
         />
@@ -1467,7 +1486,7 @@ export function PushNotificationsPanel({
             image={notificationImage}
             setImage={setNotificationImage}
             isDisabled={isDisabled}
-            onDisable={onDisable}
+            onDisable={disablePushNotifications}
             onEnable={onEnable}
             onPermissionMessageEdit={onPermissionMessageEdit}
             isInitialPushNotification={usesInitialComposerLayout}
