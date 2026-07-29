@@ -2406,6 +2406,7 @@ const SortableElement = memo(function SortableElement({
   onSelect,
   onRemove,
   onPropertyChange,
+  onSeePreview,
 }: {
   element: CanvasElement
   pageId: string
@@ -2417,10 +2418,15 @@ const SortableElement = memo(function SortableElement({
   onSelect: (id: string) => void
   onRemove: (id: string) => void
   onPropertyChange: (elementId: string, property: string, value: string | boolean | number) => void
+  onSeePreview: () => void
 }) {
   const comp = ComponentRegistry.get(element.componentId)
   const isShrinked = element.properties['Shrinked'] === true
   const isFlow = isAutoFlowElement(element)
+  const showFloatingWhatsAppNotice =
+    isSelected &&
+    element.componentId === 'whatsapp' &&
+    String(element.properties['Display Style'] ?? 'Button') === 'Floating'
   const sectionRef = useRef<HTMLElement>(null)
   const handleRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
@@ -2646,6 +2652,24 @@ const SortableElement = memo(function SortableElement({
       <div ref={contentRef} className="build-page__canvas-element-content">
         {comp.render(element.variants, element.properties, element.states, (name, value) => onPropertyChange(element.id, name, value))}
       </div>
+      {showFloatingWhatsAppNotice && (
+        <div className="build-page__whatsapp-preview-notice" role="status">
+          <span className="build-page__whatsapp-preview-notice-copy">
+            <Icon name="exclamation-circle-filled" category="general" size={16} />
+            <span>This WhatsApp button appears on every page</span>
+          </span>
+          <DSLink
+            size="sm"
+            rightIcon={<Icon name="angle-right" category="arrows" size={16} />}
+            onClick={(event) => {
+              event.stopPropagation()
+              onSeePreview()
+            }}
+          >
+            See Preview
+          </DSLink>
+        </div>
+      )}
     </section>
   )
 })
@@ -3107,6 +3131,7 @@ interface BuildPageProps {
   openAttributionSheet?: boolean
   previewMode?: boolean
   onPreviewClose?: () => void
+  onPreviewOpen?: () => void
   onDeepLinkTargetsChange?: (targets: DeepLinkTarget[]) => void
   onSearchableElementCountChange?: (count: number) => void
   onDataBackedElementCountChange?: (count: number) => void
@@ -3313,6 +3338,7 @@ export function BuildPage({
   openAttributionSheet = false,
   previewMode = false,
   onPreviewClose,
+  onPreviewOpen,
   onDeepLinkTargetsChange,
   onSearchableElementCountChange,
   onDataBackedElementCountChange,
@@ -3723,6 +3749,10 @@ export function BuildPage({
   }, [onPushNotificationRead, viewingAsRole])
   const [previewDevice, setPreviewDevice] = useState<'phone' | 'tablet' | 'desktop'>('phone')
   const [isLivePreviewVisible, setIsLivePreviewVisible] = useState(true)
+  const handleFloatingWhatsAppPreview = useCallback(() => {
+    setPreviewDevice('desktop')
+    onPreviewOpen?.()
+  }, [onPreviewOpen])
   const previewSearchInteractionsEnabled =
     previewMode ||
     chromeless ||
@@ -6727,6 +6757,7 @@ export function BuildPage({
                                 onSelect={handleSelectElement}
                                 onRemove={handleRemoveElement}
                                 onPropertyChange={handlePropertyChange}
+                                onSeePreview={handleFloatingWhatsAppPreview}
                               />
                             )
                           })}

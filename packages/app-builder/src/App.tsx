@@ -442,6 +442,7 @@ export function App() {
             openAttributionSheet={urlOpenAttributionSheet}
             previewMode={previewMode}
             onPreviewClose={() => setPreviewMode(false)}
+            onPreviewOpen={() => setPreviewMode(true)}
             onDeepLinkTargetsChange={setDeepLinkTargets}
             onSearchableElementCountChange={handleSearchableElementCountChange}
             onDataBackedElementCountChange={setDataBackedElementCount}

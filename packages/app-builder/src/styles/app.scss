@@ -5779,6 +5779,34 @@ body,
   width: 100%;
 }
 
+.build-page__whatsapp-preview-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+  height: var(--spacing-2xl);
+  margin-top: var(--ds-space-xs);
+  padding: var(--ds-space-xs);
+  border-radius: var(--ds-radius-sm);
+  background: var(--blue-100);
+  color: var(--blue-400);
+  font-family: var(--ds-font-family);
+  font-size: var(--ds-font-size-xs);
+  font-weight: var(--ds-font-weight-book);
+  line-height: var(--ds-line-height-xs);
+
+  .jf-link {
+    flex-shrink: 0;
+  }
+}
+
+.build-page__whatsapp-preview-notice-copy {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ds-space-2xs);
+  min-width: 0;
+}
+
 .build-page__canvas-element-actions {
   position: absolute;
   top: 0;
