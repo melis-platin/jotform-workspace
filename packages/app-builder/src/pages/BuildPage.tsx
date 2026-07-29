@@ -5133,6 +5133,29 @@ export function BuildPage({
     })
   }, [isMobileView])
 
+  const moveCanvasElementToPageEndAndScroll = useCallback((elementId: string) => {
+    setPages((prev) =>
+      prev.map((page) => {
+        const elementIndex = page.elements.findIndex((element) => element.id === elementId)
+        if (elementIndex === -1 || elementIndex === page.elements.length - 1) return page
+        const nextElements = [...page.elements]
+        const [element] = nextElements.splice(elementIndex, 1)
+        nextElements.push(element)
+        return { ...page, elements: nextElements }
+      }),
+    )
+
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        const scrollContainer = isMobileView
+          ? document.querySelector<HTMLElement>('.builder')
+          : canvasRef.current
+        if (!scrollContainer) return
+        scrollContainer.scrollTo({ top: scrollContainer.scrollHeight, behavior: 'smooth' })
+      }, 100)
+    })
+  }, [isMobileView])
+
   const handleAddElement = useCallback((comp: RegisteredComponent) => {
     const whatsappAlreadyAdded = comp.id === WHATSAPP_PANEL_ITEM_ID && (
       pagesRef.current.some((page) => page.elements.some((element) => element.componentId === WHATSAPP_PANEL_ITEM_ID))
@@ -7206,6 +7229,7 @@ export function BuildPage({
                                   handlePropertyChange(selectedElement.id, 'Show Label', true)
                                   handlePropertyChange(selectedElement.id, 'Bubble Placement', 'Beside')
                                   handlePropertyChange(selectedElement.id, 'Bubble Text', 'We are here to help 7/24')
+                                  moveCanvasElementToPageEndAndScroll(selectedElement.id)
                                 }
                                 if (property === 'Display Style' && option === 'Button') {
                                   handlePropertyChange(selectedElement.id, 'Size', 'Large')
@@ -7289,6 +7313,7 @@ export function BuildPage({
                         handlePropertyChange(selectedElement.id, 'Bubble Placement', 'Beside')
                         handlePropertyChange(selectedElement.id, 'Bubble Text', 'We are here to help 7/24')
                         handlePropertyChange(selectedElement.id, 'Shrinked', false)
+                        moveCanvasElementToPageEndAndScroll(selectedElement.id)
                         return
                       }
 
