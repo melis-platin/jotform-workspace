@@ -2155,11 +2155,6 @@ function PushDisableNotificationsDialog({
 
   const visibleNotifications = notifications.slice(0, 2)
   const hiddenNotificationCount = Math.max(0, notifications.length - visibleNotifications.length)
-  const notificationCount = notifications.length
-  const notificationNoun = notificationCount === 1 ? 'notification is' : 'notifications are'
-  const recordPronoun = notificationCount === 1 ? 'it' : 'them'
-  const recordNoun = notificationCount === 1 ? 'It stays' : 'They stay'
-  const recordLabel = notificationCount === 1 ? 'a canceled record' : 'canceled records'
 
   return createPortal(
     <div
@@ -2194,8 +2189,8 @@ function PushDisableNotificationsDialog({
           <div className="push-disable-notifications-dialog__copy">
             <h2 id="push-disable-notifications-dialog-title">Disable push notifications?</h2>
             <p id="push-disable-notifications-dialog-description">
-              {notificationCount} {notificationNoun} scheduled and will not be sent. Disabling
-              cancels {recordPronoun}. {recordNoun} in your list as {recordLabel}.
+              <span>2 scheduled notifications won&apos;t be sent.</span>
+              <span>They&apos;ll stay in your list as canceled.</span>
             </p>
           </div>
 

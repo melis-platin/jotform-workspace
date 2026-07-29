@@ -13711,6 +13711,8 @@ body.builder--phone-only {
   }
 
   p {
+    display: flex;
+    flex-direction: column;
     color: var(--text-medium);
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-book);
