@@ -1195,6 +1195,8 @@ export function PushNotificationsPanel({
     const canceledAtLabel = getNowHistoryDateTimeLabel()
     const canceledByLabel = fieldValues['user-name']?.trim() || DEFAULT_PUSH_NOTIFICATION_OWNER_NAME
 
+    // Disabling only cancels pending deliveries. Sent and previously canceled
+    // history records must survive disable/enable cycles without any changes.
     scheduledNotifications.forEach((notification) => {
       onHistoryItemUpdate({
         ...notification,
