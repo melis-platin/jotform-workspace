@@ -6979,10 +6979,9 @@ export function BuildPage({
                                   ]
                                 : selectedComponent.id === 'whatsapp'
                                   ? [
-                                      { value: 'general', label: 'General' },
-                                      { value: 'style', label: 'Style' },
-                                      { value: 'action', label: 'Action' },
-                                      { value: 'condition', label: 'Condition' },
+                                      { value: 'general', label: 'GENERAL' },
+                                      { value: 'style', label: 'STYLE' },
+                                      { value: 'condition', label: 'CONDITION' },
                                     ]
                                 : selectedComponent.id === 'social-follow'
                                   ? [
