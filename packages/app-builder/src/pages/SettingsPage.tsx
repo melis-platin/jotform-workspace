@@ -4354,7 +4354,7 @@ export function SettingsPage({
             onClick={() => setIsMobileContentOpen(false)}
           >
             <span className="side-nav-mobile-back__icon" aria-hidden="true">
-              <Icon name="chevron-left" category="arrows" size={16} />
+              <Icon name="chevron-left" category="arrows" size={24} />
             </span>
           </button>
           <div className="mobile-subpage-header__copy">
