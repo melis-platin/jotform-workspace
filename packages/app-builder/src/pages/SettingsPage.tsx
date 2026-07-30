@@ -4353,7 +4353,9 @@ export function SettingsPage({
             aria-label="Back to settings menu"
             onClick={() => setIsMobileContentOpen(false)}
           >
-            <Icon name="chevron-left" category="arrows" size={28} />
+            <span className="side-nav-mobile-back__icon" aria-hidden="true">
+              <Icon name="chevron-left" category="arrows" size={16} />
+            </span>
           </button>
           <div className="mobile-subpage-header__copy">
             <h1>{active.title}</h1>

@@ -16621,6 +16621,21 @@ body.builder--phone-only {
     }
   }
 
+  .side-nav-mobile-back__icon {
+    width: var(--spacing-2xl);
+    height: var(--spacing-2xl);
+    flex: 0 0 var(--spacing-2xl);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    .jf-icon,
+    svg {
+      width: var(--spacing-md);
+      height: var(--spacing-md);
+    }
+  }
+
   .mobile-subpage-header__copy {
     min-width: 0;
     display: flex;
