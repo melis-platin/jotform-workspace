@@ -4291,6 +4291,7 @@ export function SettingsPage({
   setSearchBarEnabled,
 }: SettingsPageProps) {
   const [activeId, setActiveId] = useState('app-settings')
+  const [isMobileContentOpen, setIsMobileContentOpen] = useState(false)
 
   const appName = appTitle
   const setAppName = (value: string) => onAppTitleChange?.(value)
@@ -4334,14 +4335,25 @@ export function SettingsPage({
   const showPreview = TABS_WITH_PREVIEW.has(activeId)
 
   return (
-    <div className={`settings-page${showPreview ? ' settings-page--with-preview' : ''}`}>
+    <div className={`settings-page${showPreview ? ' settings-page--with-preview' : ''}${isMobileContentOpen ? ' settings-page--mobile-content-open' : ''}`}>
       <SideNav
         items={NAV_ITEMS}
         activeId={activeId}
-        onChange={setActiveId}
+        onChange={(nextId) => {
+          setActiveId(nextId)
+          setIsMobileContentOpen(true)
+        }}
         className="side-nav--settings-figma"
       />
       <main className="settings-page__content">
+        <button
+          type="button"
+          className="side-nav-mobile-back"
+          onClick={() => setIsMobileContentOpen(false)}
+        >
+          <Icon name="chevron-left" category="arrows" size={20} />
+          <span>Settings menu</span>
+        </button>
         <div className="settings-page__main">
           <PanelHeader
             icon={active.icon}

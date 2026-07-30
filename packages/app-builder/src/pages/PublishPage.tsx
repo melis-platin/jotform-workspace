@@ -520,6 +520,7 @@ export function PublishPage({
   pushComposerFieldValues = {},
 }: PublishPageProps) {
   const [activeId, setActiveId] = useState('quick-share')
+  const [isMobileContentOpen, setIsMobileContentOpen] = useState(false)
   const [notificationTitle, setNotificationTitle] = useState('')
   const [notificationTitleFields, setNotificationTitleFields] = useState<PushComposerFieldOption[]>([])
   const [notificationTitleSuffix, setNotificationTitleSuffix] = useState('')
@@ -613,10 +614,11 @@ export function PublishPage({
     )
     setIsPushScheduleComposer(false)
     setActiveId(nextId)
+    setIsMobileContentOpen(true)
   }
 
   return (
-    <div className={`publish-page${shouldShowPreview ? ' publish-page--with-preview' : ''}${usesFigmaPushLayout ? ' publish-page--figma-push' : ''}${isFigmaPushInitial ? ' publish-page--figma-push-initial' : ''}${usesFigmaPushComposerLayout ? ' publish-page--figma-push-composer' : ''}`}>
+    <div className={`publish-page${shouldShowPreview ? ' publish-page--with-preview' : ''}${usesFigmaPushLayout ? ' publish-page--figma-push' : ''}${isFigmaPushInitial ? ' publish-page--figma-push-initial' : ''}${usesFigmaPushComposerLayout ? ' publish-page--figma-push-composer' : ''}${isMobileContentOpen ? ' publish-page--mobile-content-open' : ''}`}>
       <SideNav
         items={NAV_ITEMS}
         activeId={activeId}
@@ -624,6 +626,18 @@ export function PublishPage({
         className="side-nav--publish-figma"
       />
       <main className="publish-page__content">
+        <button
+          type="button"
+          className="side-nav-mobile-back"
+          onClick={() => {
+            setIsPermissionRequestModalOpen(false)
+            setPreviewedPushNotificationId(null)
+            setIsMobileContentOpen(false)
+          }}
+        >
+          <Icon name="chevron-left" category="arrows" size={20} />
+          <span>Publish menu</span>
+        </button>
         <div className="publish-page__main">
           {isPermissionRequestModalOpen ? (
             <PushPermissionMessageEditor
