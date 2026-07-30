@@ -5800,11 +5800,27 @@ body,
   }
 }
 
+.build-page__whatsapp-preview-notice--warning {
+  justify-content: flex-start;
+  background: color-mix(in srgb, var(--yellow-200) 50%, transparent);
+  color: var(--yellow-600);
+
+  .build-page__whatsapp-preview-notice-copy {
+    gap: var(--ds-space-xs);
+  }
+}
+
 .build-page__whatsapp-preview-notice-copy {
   display: inline-flex;
   align-items: center;
   gap: var(--ds-space-2xs);
   min-width: 0;
+
+  > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 .build-page__canvas-element-actions {

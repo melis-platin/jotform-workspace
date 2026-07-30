@@ -608,6 +608,11 @@ function getDynamicHostPageId(activePage: AppPage | undefined, allPages: AppPage
   return allPages.find((p) => p.elements.some((el) => el.id === activePage.dynamicSourceElementId))?.id
 }
 
+function isWhatsAppElementReadyForPreview(element: CanvasElement): boolean {
+  return element.componentId !== 'whatsapp'
+    || String(element.properties['Phone Number'] ?? '').trim().length > 0
+}
+
 function nextNumericId(prefix: string, existingIds: string[]): string {
   const re = new RegExp(`^${prefix}-(\\d+)$`)
   const max = existingIds.reduce((m, id) => {
@@ -2423,9 +2428,13 @@ const SortableElement = memo(function SortableElement({
   const comp = ComponentRegistry.get(element.componentId)
   const isShrinked = element.properties['Shrinked'] === true
   const isFlow = isAutoFlowElement(element)
+  const isWhatsApp = element.componentId === 'whatsapp'
+  const isWhatsAppNumberMissing = isWhatsApp && !isWhatsAppElementReadyForPreview(element)
+  const showWhatsAppNumberWarning = isSelected && isWhatsAppNumberMissing
   const showFloatingWhatsAppNotice =
     isSelected &&
-    element.componentId === 'whatsapp' &&
+    isWhatsApp &&
+    !isWhatsAppNumberMissing &&
     String(element.properties['Display Style'] ?? 'Button') === 'Floating'
   const sectionRef = useRef<HTMLElement>(null)
   const handleRef = useRef<HTMLDivElement>(null)
@@ -2652,6 +2661,14 @@ const SortableElement = memo(function SortableElement({
       <div ref={contentRef} className="build-page__canvas-element-content">
         {comp.render(element.variants, element.properties, element.states, (name, value) => onPropertyChange(element.id, name, value))}
       </div>
+      {showWhatsAppNumberWarning && (
+        <div className="build-page__whatsapp-preview-notice build-page__whatsapp-preview-notice--warning" role="status">
+          <span className="build-page__whatsapp-preview-notice-copy">
+            <Icon name="exclamation-circle-filled" category="general" size={16} />
+            <span>This element won't be visible until a phone number is added.</span>
+          </span>
+        </div>
+      )}
       {showFloatingWhatsAppNotice && (
         <div className="build-page__whatsapp-preview-notice" role="status">
           <span className="build-page__whatsapp-preview-notice-copy">
@@ -6332,7 +6349,7 @@ export function BuildPage({
                     heroCtaActive ? <HeroCtaButton cta={heroCtaConfig} interactive onNavigate={navigateToPage} /> : null
                   ) : appHeaderIsDefault ? null : headerActions.map((el) => {
                     const comp = ComponentRegistry.get(el.componentId)
-                    if (!comp) return null
+                    if (!comp || !isWhatsAppElementReadyForPreview(el)) return null
                     const isShrinked = el.componentId === 'button' && el.properties['Shrinked'] === true
                     return (
                       <div
@@ -6350,7 +6367,7 @@ export function BuildPage({
                 <div className="themes-view__app">
                   {activePage.elements.map((element) => {
                     const comp = ComponentRegistry.get(element.componentId)
-                    if (!comp) return null
+                    if (!comp || !isWhatsAppElementReadyForPreview(element)) return null
                     // Dynamic detail page: bind each seeded element to the previewed row.
                     const dynPreview = getDynamicPreviewItem(activePage, pages, dynamicPreviewIndex)
                     const renderEl = activePage.dynamic ? applyDynamicBinding(element, dynPreview?.item) : element
@@ -10768,7 +10785,7 @@ export function BuildPage({
                                     heroCtaActive ? <HeroCtaButton cta={heroCtaConfig} interactive onNavigate={navigateToPage} /> : null
                                   ) : appHeaderIsDefault ? null : headerActions.map((el) => {
                                     const comp = ComponentRegistry.get(el.componentId)
-                                    if (!comp) return null
+                                    if (!comp || !isWhatsAppElementReadyForPreview(el)) return null
                                     const isShrinked = el.componentId === 'button' && el.properties['Shrinked'] === true
                                     return (
                                       <div
@@ -10786,7 +10803,7 @@ export function BuildPage({
                                 <div className="themes-view__app">
                                   {activePage.elements.map((element) => {
                                     const comp = ComponentRegistry.get(element.componentId)
-                                    if (!comp) return null
+                                    if (!comp || !isWhatsAppElementReadyForPreview(element)) return null
                                     // Dynamic detail page: bind each seeded element to the previewed row.
                                     const dynPreview = getDynamicPreviewItem(activePage, pages, dynamicPreviewIndex)
                                     const renderEl = activePage.dynamic ? applyDynamicBinding(element, dynPreview?.item) : element
