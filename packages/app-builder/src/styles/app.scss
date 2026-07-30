@@ -16586,7 +16586,8 @@ body.builder--phone-only {
 
   .mobile-subpage-header {
     width: 100%;
-    min-height: calc(var(--spacing-4xl) + var(--spacing-2xl) + var(--spacing-xs));
+    height: calc(var(--spacing-4xl) + var(--spacing-2xs) + var(--spacing-3xs));
+    min-height: calc(var(--spacing-4xl) + var(--spacing-2xs) + var(--spacing-3xs));
     flex: 0 0 auto;
     display: grid;
     grid-template-columns:
@@ -16626,14 +16627,16 @@ body.builder--phone-only {
     flex-direction: column;
     justify-content: center;
     gap: var(--spacing-2xs);
-    padding: var(--spacing-md) var(--spacing-lg);
+    padding: var(--spacing-xs) var(--spacing-lg);
     font-family: var(--font-family-circular);
 
     h1,
     p {
       width: 100%;
       margin: 0;
-      overflow-wrap: anywhere;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     h1 {
