@@ -1066,8 +1066,6 @@ export interface PushNotificationsPanelProps {
   setAudience: (audience: string[]) => void
   deepLink: string
   setDeepLink: (deepLink: string) => void
-  notificationImage: PushComposerSelectedImage | null
-  setNotificationImage: (image: PushComposerSelectedImage | null) => void
   isDisabled: boolean
   onDisable: () => void
   onEnable: () => void
@@ -1133,8 +1131,6 @@ export function PushNotificationsPanel({
   setAudience,
   deepLink,
   setDeepLink,
-  notificationImage,
-  setNotificationImage,
   isDisabled,
   onDisable,
   onEnable,
@@ -1254,7 +1250,6 @@ export function PushNotificationsPanel({
     setNotificationContentSuffix('')
     setAudience([ALL_USERS_AUDIENCE_ID])
     setDeepLink('')
-    setNotificationImage(null)
     setScheduleDate('')
     setScheduleTime('')
     setScheduleQuickPick('custom')
@@ -1296,7 +1291,6 @@ export function PushNotificationsPanel({
     setNotificationContentSuffix('')
     setAudience(getHistoryAudienceValue(notification, appUserRoles))
     setDeepLink(getHistoryDeepLinkValue(notification, deepLinkTargets))
-    setNotificationImage(notification.image ?? null)
     setScheduleDate(isScheduledDuplicate ? getHistoryScheduleDateValue(notification) : '')
     setScheduleTime(isScheduledDuplicate ? getHistoryScheduleTimeValue(notification) : '')
     setScheduleTimezone(notification.scheduleTimezone ?? SCHEDULE_TIMEZONE_OPTIONS[0].value)
@@ -1332,7 +1326,7 @@ export function PushNotificationsPanel({
       NOTIFICATION_CONTENT_PLACEHOLDER,
       fieldValues,
     ),
-    image: notificationImage,
+    image: null,
     audience,
     audienceLabel: getAudienceHistoryLabel(audience, appUserRoles),
     deepLink,
@@ -1385,7 +1379,6 @@ export function PushNotificationsPanel({
     setNotificationContentSuffix('')
     setAudience(getHistoryAudienceValue(notification, appUserRoles))
     setDeepLink(getHistoryDeepLinkValue(notification, deepLinkTargets))
-    setNotificationImage(notification.image ?? null)
     setScheduleDate(getHistoryScheduleDateValue(notification))
     setScheduleTime(getHistoryScheduleTimeValue(notification))
     setScheduleTimezone(notification.scheduleTimezone ?? SCHEDULE_TIMEZONE_OPTIONS[0].value)
@@ -1496,8 +1489,6 @@ export function PushNotificationsPanel({
             deepLinkTargets={deepLinkTargets}
             deepLink={deepLink}
             setDeepLink={setDeepLink}
-            image={notificationImage}
-            setImage={setNotificationImage}
             isDisabled={isDisabled}
             onDisable={requestDisablePushNotifications}
             onEnable={onEnable}
@@ -3333,8 +3324,6 @@ interface PushNotificationComposerProps {
   deepLinkTargets: DeepLinkTarget[]
   deepLink: string
   setDeepLink: (deepLink: string) => void
-  image: PushComposerSelectedImage | null
-  setImage: (image: PushComposerSelectedImage | null) => void
   isDisabled: boolean
   onDisable: () => void
   onEnable: () => void
@@ -3653,8 +3642,6 @@ function PushNotificationComposer({
   deepLinkTargets,
   deepLink,
   setDeepLink,
-  image,
-  setImage,
   isDisabled,
   onDisable,
   onEnable,
@@ -3665,7 +3652,6 @@ function PushNotificationComposer({
   contentPlaceholder = NOTIFICATION_CONTENT_PLACEHOLDER,
   scheduleContent,
 }: PushNotificationComposerProps) {
-  const imageInputRef = useRef<HTMLInputElement>(null)
   const contextMenuRef = useRef<HTMLDivElement>(null)
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
   const isTitleEmpty =
@@ -3811,59 +3797,6 @@ function PushNotificationComposer({
               onSuffixChange={setContentSuffix}
               onRemoveField={onContentFieldRemove}
             />
-          </div>
-          <div className="push-composer-image-field">
-            <span className="push-composer-image-field__label">Image</span>
-            <input
-              ref={imageInputRef}
-              type="file"
-              accept="image/*"
-              hidden
-              onChange={(event) => {
-                const file = event.target.files?.[0]
-                event.currentTarget.value = ''
-
-                if (!file) return
-
-                compressImageFile(file).then((url) => {
-                  setImage({ url, name: file.name })
-                })
-              }}
-            />
-            {image ? (
-              <div className="push-composer-image-field__preview">
-                <img
-                  className="push-composer-image-field__thumbnail"
-                  src={image.url}
-                  alt=""
-                />
-                <div className="push-composer-image-field__details">
-                  <span className="push-composer-image-field__name" title={image.name}>
-                    {image.name}
-                  </span>
-                  <Button
-                    className="push-composer-image-field__remove"
-                    variant="filled"
-                    colorScheme="secondary"
-                    size="sm"
-                    leftIcon={<Icon name="trash-filled" category="general" size={16} />}
-                    onClick={() => setImage(null)}
-                  >
-                    Remove Image
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <Button
-                className="push-composer-image-field__button"
-                variant="filled"
-                colorScheme="secondary"
-                leftIcon={<Icon name="image-plus-filled" category="media" size={20} />}
-                onClick={() => imageInputRef.current?.click()}
-              >
-                Upload Image
-              </Button>
-            )}
           </div>
         </div>
       </div>

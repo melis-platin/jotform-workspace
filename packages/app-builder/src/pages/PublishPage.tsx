@@ -27,7 +27,6 @@ import {
   type PushComposerFieldOption,
   type PushComposerFieldValues,
   type PushNotificationPanelView,
-  type PushComposerSelectedImage,
   type PushNotificationHistoryItem,
 } from './SettingsPage'
 
@@ -529,7 +528,6 @@ export function PublishPage({
   const [notificationContentSuffix, setNotificationContentSuffix] = useState('')
   const [notificationAudience, setNotificationAudience] = useState<string[]>([ALL_USERS_AUDIENCE_ID])
   const [notificationDeepLink, setNotificationDeepLink] = useState('')
-  const [notificationImage, setNotificationImage] = useState<PushComposerSelectedImage | null>(null)
   const [pushNotificationView, setPushNotificationView] = useState<PushNotificationPanelView>(() => (
     pushNotificationHistoryItems.length > 0 ? 'history' : 'composer'
   ))
@@ -697,8 +695,6 @@ export function PublishPage({
                   setAudience={setNotificationAudience}
                   deepLink={notificationDeepLink}
                   setDeepLink={setNotificationDeepLink}
-                  notificationImage={notificationImage}
-                  setNotificationImage={setNotificationImage}
                   isDisabled={arePushNotificationsDisabled}
                   onDisable={() => onPushNotificationsDisabledChange(true)}
                   onEnable={() => onPushNotificationsDisabledChange(false)}
@@ -734,7 +730,7 @@ export function PublishPage({
                   <PushNotificationPreview
                     title={pushPreviewNotification?.title ?? previewNotificationTitle}
                     content={pushPreviewNotification?.content ?? previewNotificationContent}
-                    image={pushPreviewNotification?.image ?? notificationImage}
+                    image={pushPreviewNotification?.image}
                     appIconVariant={appIcon.variant}
                     appIconImageUrl={appIcon.imageUrl}
                     appIconName={appIcon.icon}
