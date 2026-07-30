@@ -5164,6 +5164,10 @@ export function BuildPage({
   }, [isMobileView])
 
   const moveCanvasElementToPageEndAndScroll = useCallback((elementId: string) => {
+    const ownerPageId = pagesRef.current.find((page) => (
+      page.elements.some((element) => element.id === elementId)
+    ))?.id
+
     setPages((prev) =>
       prev.map((page) => {
         const elementIndex = page.elements.findIndex((element) => element.id === elementId)
@@ -5181,7 +5185,21 @@ export function BuildPage({
           ? document.querySelector<HTMLElement>('.builder')
           : canvasRef.current
         if (!scrollContainer) return
-        scrollContainer.scrollTo({ top: scrollContainer.scrollHeight, behavior: 'smooth' })
+
+        const pageElement = ownerPageId
+          ? scrollContainer.querySelector<HTMLElement>(`[data-page-id="${ownerPageId}"]`)
+          : scrollContainer
+              .querySelector<HTMLElement>(`[data-element-id="${elementId}"]`)
+              ?.closest<HTMLElement>('[data-page-id]')
+        if (!pageElement) return
+
+        const containerRect = scrollContainer.getBoundingClientRect()
+        const pageRect = pageElement.getBoundingClientRect()
+        const targetY = Math.min(
+          scrollContainer.scrollHeight - scrollContainer.clientHeight,
+          Math.max(0, scrollContainer.scrollTop + pageRect.bottom - containerRect.bottom),
+        )
+        scrollContainer.scrollTo({ top: targetY, behavior: 'smooth' })
       }, 100)
     })
   }, [isMobileView])
