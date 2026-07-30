@@ -16464,18 +16464,11 @@ body.builder--phone-only {
 }
 
 @media (max-width: 760px) {
-  .publish-page--figma-push {
+  .settings-page,
+  .publish-page {
     min-height: 0;
     flex-direction: column;
-  }
-
-  .publish-page--figma-push .side-nav--publish-figma {
-    width: 100%;
-    flex: 0 0 auto;
-    flex-direction: row;
-    gap: var(--spacing-xs);
-    padding: var(--spacing-xs);
-    overflow-x: auto;
+    overflow-y: auto;
     scrollbar-width: none;
 
     &::-webkit-scrollbar {
@@ -16483,39 +16476,108 @@ body.builder--phone-only {
     }
   }
 
-  .publish-page--figma-push .side-nav--publish-figma .side-nav__item {
-    width: auto;
-    min-width: 112px;
-    min-height: var(--spacing-4xl);
-    flex: 1 0 112px;
-    justify-content: center;
+  .settings-page .side-nav--settings-figma,
+  .publish-page .side-nav--publish-figma {
+    width: 100%;
+    min-height: 100%;
+    flex: 0 0 100%;
+    flex-direction: column;
+    gap: var(--spacing-xl);
+    padding: var(--spacing-2xl) var(--spacing-xs);
+    overflow: visible;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .settings-page .side-nav--settings-figma .side-nav__item,
+  .publish-page .side-nav--publish-figma .side-nav__item {
+    width: 100%;
+    min-width: 0;
+    min-height: calc(var(--spacing-4xl) + var(--spacing-md));
+    flex: 0 0 auto;
+    justify-content: flex-start;
     gap: var(--spacing-2xs);
-    padding: var(--spacing-xs);
-    border-radius: var(--radius-sm);
+    padding:
+      calc(var(--spacing-sm) + var(--spacing-3xs))
+      var(--spacing-2xs);
+    border-radius: 0;
+    background: transparent;
+    color: var(--ds-text-primary);
+
+    &:hover,
+    &:focus-visible,
+    &.side-nav__item--active {
+      outline: none;
+      background: transparent;
+      color: var(--ds-text-primary);
+    }
   }
 
-  .publish-page--figma-push .side-nav--publish-figma .side-nav__icon {
-    width: var(--spacing-xl);
-    height: var(--spacing-xl);
-    flex-basis: var(--spacing-xl);
+  .settings-page .side-nav--settings-figma .side-nav__icon,
+  .publish-page .side-nav--publish-figma .side-nav__icon {
+    width: var(--spacing-3xl);
+    height: var(--spacing-3xl);
+    flex-basis: var(--spacing-3xl);
   }
 
-  .publish-page--figma-push .side-nav--publish-figma .side-nav__text {
-    flex: 0 1 auto;
+  .settings-page .side-nav--settings-figma .side-nav__text,
+  .publish-page .side-nav--publish-figma .side-nav__text {
+    flex: 1 1 auto;
+    gap: var(--spacing-2xs);
   }
 
-  .publish-page--figma-push .side-nav--publish-figma .side-nav__title {
-    font-size: var(--font-size-xs);
-    line-height: var(--line-height-xs);
-    white-space: nowrap;
+  .settings-page .side-nav--settings-figma .side-nav__title,
+  .publish-page .side-nav--publish-figma .side-nav__title {
+    color: inherit;
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-md);
+    white-space: normal;
   }
 
-  .publish-page--figma-push .side-nav--publish-figma .side-nav__desc {
-    display: none;
+  .settings-page .side-nav--settings-figma .side-nav__desc,
+  .settings-page .side-nav--settings-figma .side-nav__item--active .side-nav__desc,
+  .publish-page .side-nav--publish-figma .side-nav__desc,
+  .publish-page .side-nav--publish-figma .side-nav__item--active .side-nav__desc {
+    display: block;
+    color: var(--ds-text-primary);
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-sm);
+    white-space: normal;
   }
 
-  .publish-page--figma-push .publish-page__content {
-    min-height: 0;
+  .settings-page__content,
+  .publish-page__content {
+    min-height: 100%;
+    flex: 0 0 auto;
+  }
+
+  .settings-page__content {
+    flex-direction: column;
+    overflow: visible;
+  }
+
+  .settings-page__main {
+    flex: 0 0 auto;
+    padding:
+      var(--spacing-xl)
+      var(--spacing-md)
+      var(--spacing-2xl);
+    overflow: visible;
+  }
+
+  .settings-page__preview {
+    min-height: 620px;
+    justify-content: center;
+    padding: 0 var(--spacing-md) var(--spacing-xl);
+  }
+
+  .settings-page__preview .quick-preview {
+    width: min(410px, 100%);
+    min-height: 580px;
   }
 
   .publish-page--figma-push .publish-page__main {
