@@ -16664,10 +16664,10 @@ body.builder--phone-only {
 
     p {
       color: inherit;
-      font-size: var(--font-size-sm);
+      font-size: var(--font-size-xs);
       font-weight: var(--font-weight-book);
-      line-height: var(--line-height-sm);
-      letter-spacing: var(--body-sm-letter-spacing);
+      line-height: var(--line-height-xs);
+      letter-spacing: var(--caption-letter-spacing);
     }
   }
 
