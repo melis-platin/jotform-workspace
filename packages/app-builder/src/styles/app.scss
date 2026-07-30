@@ -16412,6 +16412,374 @@ body.builder--phone-only {
   flex-shrink: 0;
 }
 
+// Push notifications keep their desktop Figma geometry at full width, then
+// progressively reflow instead of squeezing the composer and history cards.
+@media (max-width: 1400px) {
+  .publish-page--figma-push.publish-page--with-preview .publish-page__content {
+    flex-direction: column;
+    overflow-y: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .publish-page--figma-push.publish-page--with-preview .publish-page__main {
+    flex: 0 0 auto;
+    overflow: visible;
+  }
+
+  .publish-page--figma-push.publish-page--with-preview .publish-page__preview {
+    flex: 0 0 auto;
+    min-height: 680px;
+    justify-content: center;
+    padding-top: 0;
+  }
+
+  .publish-page--figma-push.publish-page--with-preview .quick-preview {
+    width: min(410px, 100%);
+    min-height: 640px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .publish-page--figma-push .publish-page__main {
+    padding-right: var(--spacing-2xl);
+    padding-left: var(--spacing-2xl);
+  }
+
+  .push-edit-notification-modal__body {
+    flex-direction: column;
+  }
+
+  .push-edit-notification-modal__form {
+    width: 100%;
+    flex-basis: auto;
+  }
+
+  .push-edit-notification-modal__preview {
+    display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .publish-page--figma-push {
+    min-height: 0;
+    flex-direction: column;
+  }
+
+  .publish-page--figma-push .side-nav--publish-figma {
+    width: 100%;
+    flex: 0 0 auto;
+    flex-direction: row;
+    gap: var(--spacing-xs);
+    padding: var(--spacing-xs);
+    overflow-x: auto;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .publish-page--figma-push .side-nav--publish-figma .side-nav__item {
+    width: auto;
+    min-width: 112px;
+    min-height: var(--spacing-4xl);
+    flex: 1 0 112px;
+    justify-content: center;
+    gap: var(--spacing-2xs);
+    padding: var(--spacing-xs);
+    border-radius: var(--radius-sm);
+  }
+
+  .publish-page--figma-push .side-nav--publish-figma .side-nav__icon {
+    width: var(--spacing-xl);
+    height: var(--spacing-xl);
+    flex-basis: var(--spacing-xl);
+  }
+
+  .publish-page--figma-push .side-nav--publish-figma .side-nav__text {
+    flex: 0 1 auto;
+  }
+
+  .publish-page--figma-push .side-nav--publish-figma .side-nav__title {
+    font-size: var(--font-size-xs);
+    line-height: var(--line-height-xs);
+    white-space: nowrap;
+  }
+
+  .publish-page--figma-push .side-nav--publish-figma .side-nav__desc {
+    display: none;
+  }
+
+  .publish-page--figma-push .publish-page__content {
+    min-height: 0;
+  }
+
+  .publish-page--figma-push .publish-page__main {
+    padding:
+      var(--spacing-xl)
+      var(--spacing-md)
+      var(--spacing-2xl);
+  }
+
+  .publish-page--figma-push.publish-page--with-preview .publish-page__preview {
+    min-height: 620px;
+    padding: 0 var(--spacing-md) var(--spacing-xl);
+  }
+
+  .publish-page--figma-push.publish-page--with-preview .quick-preview {
+    min-height: 580px;
+  }
+
+  .panel-header {
+    align-items: flex-start;
+  }
+
+  .panel-header__main {
+    align-items: flex-start;
+  }
+
+  .panel-header__title,
+  .panel-header__desc {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .push-notification-disabled-state {
+    align-items: flex-start;
+    flex-direction: column;
+    padding: var(--spacing-md);
+  }
+
+  .push-notification-disabled-state__actions {
+    align-self: flex-end;
+  }
+
+  .push-notification-overview__reach-card,
+  .push-notification-overview__create-option,
+  .push-composer-panel--initial .push-composer-panel__intro-card,
+  .push-composer-panel--initial .push-composer-panel__content,
+  .push-schedule-composer,
+  .push-permission-editor {
+    padding: var(--spacing-md);
+  }
+
+  .push-composer-panel--initial .push-composer-panel__selection {
+    padding: 0 var(--spacing-md) var(--spacing-md);
+  }
+
+  .push-composer-panel__intro {
+    align-items: flex-start;
+    padding: var(--spacing-md);
+  }
+
+  .push-composer-panel__intro-title,
+  .push-composer-panel__intro-description {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .push-composer-panel__content,
+  .push-composer-panel__selection {
+    padding-right: var(--spacing-md);
+    padding-left: var(--spacing-md);
+  }
+
+  .push-composer-panel__content {
+    padding-top: var(--spacing-md);
+    padding-bottom: var(--spacing-md);
+  }
+
+  .push-composer-panel__selection {
+    padding-bottom: var(--spacing-md);
+  }
+
+  .push-composer-panel__dropdown-row,
+  .push-schedule-composer__date-time-row,
+  .push-schedule-form__row,
+  .push-edit-notification-modal__schedule-row {
+    flex-direction: column;
+  }
+
+  .push-composer-panel__dropdown-row .push-composer-dropdown,
+  .push-schedule-composer .push-schedule-field,
+  .push-schedule-form__row .push-schedule-field,
+  .push-edit-notification-modal__schedule-row .push-schedule-field {
+    width: 100%;
+    flex-basis: auto;
+  }
+
+  .push-schedule-composer__scheduled-notice {
+    align-items: flex-start;
+  }
+
+  .push-schedule-composer__scheduled-notice p {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .push-notification-actions,
+  .push-notification-actions__right {
+    width: 100%;
+  }
+
+  .push-notification-actions__right {
+    justify-content: flex-end;
+  }
+
+  .push-notification-history__toolbar {
+    align-items: stretch;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+
+  .push-notification-history__search,
+  .push-notification-history__filter {
+    width: 100%;
+    flex-basis: auto;
+  }
+
+  .push-notification-history__list {
+    margin-top: var(--spacing-md);
+  }
+
+  .push-notification-history-card {
+    gap: var(--spacing-sm);
+  }
+
+  .push-notification-history-card__rail {
+    width: var(--spacing-2xl);
+    flex-basis: var(--spacing-2xl);
+  }
+
+  .push-notification-history-card__content {
+    gap: var(--spacing-md);
+    padding:
+      var(--spacing-md)
+      calc(var(--spacing-2xl) + var(--spacing-xs))
+      var(--spacing-md)
+      0;
+  }
+
+  .push-notification-history-card__header {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .push-notification-history-card__metadata {
+    flex-wrap: wrap;
+    gap: var(--spacing-xs) var(--spacing-sm);
+  }
+
+  .push-notification-history-card__metadata-separator {
+    display: none;
+  }
+
+  .push-notification-history-card__metadata-item {
+    max-width: 100%;
+  }
+
+  .push-notification-history-card__metrics {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--spacing-md);
+    overflow: visible;
+  }
+
+  .push-notification-history-card__metric {
+    width: 100%;
+    flex-basis: auto;
+  }
+
+  .push-notification-history-card__canceled-summary {
+    align-items: stretch;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+  }
+
+  .push-notification-history-card__canceled-meta {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    white-space: normal;
+  }
+
+  .push-notification-history-card__reschedule {
+    align-self: flex-start;
+  }
+
+  .push-notification-history-card__menu {
+    right: var(--spacing-sm);
+  }
+
+  .push-edit-notification-modal__backdrop,
+  .push-cancel-notification-dialog__backdrop,
+  .push-permission-request-modal__backdrop {
+    align-items: flex-end;
+    padding: var(--spacing-md);
+  }
+
+  .push-edit-notification-modal,
+  .push-cancel-notification-dialog,
+  .push-disable-notifications-dialog,
+  .push-permission-request-modal {
+    width: 100%;
+    max-width: 100%;
+    max-height: calc(100vh - (var(--spacing-md) * 2));
+  }
+
+  .push-edit-notification-modal__header,
+  .push-edit-notification-modal__body,
+  .push-edit-notification-modal__footer,
+  .push-permission-request-modal__header,
+  .push-permission-request-modal__body,
+  .push-permission-request-modal__footer {
+    padding-right: var(--spacing-md);
+    padding-left: var(--spacing-md);
+  }
+
+  .push-permission-request-modal {
+    height: auto;
+  }
+
+  .push-permission-request-modal__header,
+  .push-permission-request-modal__body,
+  .push-permission-request-modal__footer {
+    height: auto;
+    flex-basis: auto;
+  }
+
+  .push-permission-request-modal__heading h2,
+  .push-permission-request-modal__heading p {
+    white-space: normal;
+  }
+
+  .push-disable-notifications-dialog__layout,
+  .push-cancel-notification-dialog__layout {
+    gap: var(--spacing-md);
+    padding: var(--spacing-xl) var(--spacing-md);
+  }
+
+  .push-disable-notifications-dialog__scheduled-meta {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    white-space: normal;
+  }
+
+  .push-disable-notifications-dialog__footer,
+  .push-cancel-notification-dialog__footer {
+    width: 100%;
+  }
+
+  .push-disable-notifications-dialog__footer .jf-btn,
+  .push-cancel-notification-dialog__footer .jf-btn {
+    flex: 1 1 0;
+  }
+}
+
 .push-preview-phone {
   position: relative;
   width: 100%;
