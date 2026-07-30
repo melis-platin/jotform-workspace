@@ -5710,6 +5710,12 @@ body,
   }
 }
 
+.build-page__canvas-element[data-component-id='whatsapp'] {
+  // The notice owns the exact spacing from the selected outline. Remove the
+  // generic section gap so it is not added on top of that 8px distance.
+  gap: 0;
+}
+
 // Drag overlay styling (panel-style compact card)
 .build-page__canvas-element--dragging {
   opacity: 1;
