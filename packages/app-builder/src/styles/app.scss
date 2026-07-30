@@ -93,6 +93,11 @@
   --ds-canvas-element-action-hover-width: 113px;
   --ds-canvas-element-action-hover: #1AB3FF;
   --ds-canvas-element-delete-hover-width: 89px;
+  --ds-canvas-element-outline-width: 2px;
+  --ds-canvas-element-outline-offset: var(--ds-space-2xs);
+  --ds-canvas-element-outline-extent: calc(
+    var(--ds-canvas-element-outline-width) + var(--ds-canvas-element-outline-offset)
+  );
   --ds-canvas-element-delete-hover: #D3381E;
 }
 
@@ -5784,8 +5789,12 @@ body,
   align-items: center;
   justify-content: space-between;
   box-sizing: border-box;
+  width: calc(
+    100% + var(--ds-canvas-element-outline-extent) + var(--ds-canvas-element-outline-extent)
+  );
   height: var(--spacing-2xl);
-  margin-top: var(--ds-space-xs);
+  margin-top: calc(var(--ds-space-xs) + var(--ds-canvas-element-outline-extent));
+  margin-left: calc(-1 * var(--ds-canvas-element-outline-extent));
   padding: var(--ds-space-xs);
   border-radius: var(--ds-radius-sm);
   background: var(--blue-100);
@@ -6016,8 +6025,8 @@ body,
 
 // Builder selected outline — higher specificity to override the rule above
 .build-page__canvas-element--selected > .build-page__canvas-element-content > * {
-  outline: 2px solid var(--border-info);
-  outline-offset: 4px;
+  outline: var(--ds-canvas-element-outline-width) solid var(--border-info);
+  outline-offset: var(--ds-canvas-element-outline-offset);
 }
 
 // In the builder, the full WhatsApp slot is an element-selection surface. This
@@ -6040,8 +6049,8 @@ body,
 // keep the tight `> *` outline.
 .build-page__canvas-element--selected
   > .build-page__canvas-element-content:has(> .jf-btn) {
-  outline: 2px solid var(--border-info);
-  outline-offset: 4px;
+  outline: var(--ds-canvas-element-outline-width) solid var(--border-info);
+  outline-offset: var(--ds-canvas-element-outline-offset);
   border-radius: var(--radius-md);
 }
 .build-page__canvas-element--selected
