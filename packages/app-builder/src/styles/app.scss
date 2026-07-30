@@ -16591,7 +16591,7 @@ body.builder--phone-only {
     flex: 0 0 auto;
     display: grid;
     grid-template-columns:
-      calc(var(--spacing-4xl) + var(--spacing-2xl) + var(--spacing-xs))
+      calc(var(--spacing-4xl) + var(--spacing-2xs) + var(--spacing-3xs))
       minmax(0, 1fr);
     background: var(--navy-700);
     color: var(--background-white);
@@ -16946,7 +16946,7 @@ body.builder--phone-only {
 @media (max-width: 480px) {
   .mobile-subpage-header {
     grid-template-columns:
-      calc(var(--spacing-4xl) + var(--spacing-xs))
+      calc(var(--spacing-4xl) + var(--spacing-2xs) + var(--spacing-3xs))
       minmax(0, 1fr);
   }
 
