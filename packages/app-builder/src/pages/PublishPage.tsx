@@ -626,18 +626,24 @@ export function PublishPage({
         className="side-nav--publish-figma"
       />
       <main className="publish-page__content">
-        <button
-          type="button"
-          className="side-nav-mobile-back"
-          onClick={() => {
-            setIsPermissionRequestModalOpen(false)
-            setPreviewedPushNotificationId(null)
-            setIsMobileContentOpen(false)
-          }}
-        >
-          <Icon name="chevron-left" category="arrows" size={20} />
-          <span>Publish menu</span>
-        </button>
+        <header className="mobile-subpage-header">
+          <button
+            type="button"
+            className="side-nav-mobile-back"
+            aria-label="Back to publish menu"
+            onClick={() => {
+              setIsPermissionRequestModalOpen(false)
+              setPreviewedPushNotificationId(null)
+              setIsMobileContentOpen(false)
+            }}
+          >
+            <Icon name="chevron-left" category="arrows" size={28} />
+          </button>
+          <div className="mobile-subpage-header__copy">
+            <h1>{active.title}</h1>
+            <p>{active.headerDescription ?? active.description}</p>
+          </div>
+        </header>
         <div className="publish-page__main">
           {isPermissionRequestModalOpen ? (
             <PushPermissionMessageEditor
