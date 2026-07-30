@@ -2195,19 +2195,30 @@ function PushDisableNotificationsDialog({
           </div>
 
           <div className="push-disable-notifications-dialog__scheduled-list">
-            {visibleNotifications.map((notification) => (
-              <div className="push-disable-notifications-dialog__scheduled-item" key={notification.id}>
-                <Icon name="clock-filled" category="time-date" size={16} />
-                <div className="push-disable-notifications-dialog__scheduled-copy">
-                  <strong>{notification.title}</strong>
-                  <span className="push-disable-notifications-dialog__scheduled-meta">
-                    <span>{notification.scheduledAtLabel}</span>
-                    <i aria-hidden="true" />
-                    <span>{notification.liveInLabel.replace(/^Goes live\s+/i, '')}</span>
-                  </span>
+            {visibleNotifications.map((notification) => {
+              const scheduledAtLabel =
+                notification.scheduleDate && notification.scheduleTime
+                  ? getScheduleHistoryDateTimeLabel(notification.scheduleDate, notification.scheduleTime)
+                  : notification.scheduledAtLabel
+              const liveInLabel =
+                notification.scheduleDate && notification.scheduleTime
+                  ? getScheduleLiveInLabel(notification.scheduleDate, notification.scheduleTime)
+                  : notification.liveInLabel
+
+              return (
+                <div className="push-disable-notifications-dialog__scheduled-item" key={notification.id}>
+                  <Icon name="clock-filled" category="time-date" size={16} />
+                  <div className="push-disable-notifications-dialog__scheduled-copy">
+                    <strong>{notification.title}</strong>
+                    <span className="push-disable-notifications-dialog__scheduled-meta">
+                      <span>{scheduledAtLabel}</span>
+                      <i aria-hidden="true" />
+                      <span>{liveInLabel.replace(/^Goes live\s+/i, '')}</span>
+                    </span>
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
             {hiddenNotificationCount > 0 && (
               <div className="push-disable-notifications-dialog__more">
                 +{hiddenNotificationCount} more scheduled notification{hiddenNotificationCount === 1 ? '' : 's'}

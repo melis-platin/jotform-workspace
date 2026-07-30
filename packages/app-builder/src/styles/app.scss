@@ -13755,7 +13755,7 @@ body.builder--phone-only {
   flex-direction: column;
   overflow: hidden;
   border: 1px solid var(--border-light);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   background: var(--background-white);
 }
 
@@ -13799,7 +13799,7 @@ body.builder--phone-only {
   display: flex;
   align-items: center;
   gap: var(--spacing-2xs);
-  color: var(--text-light);
+  color: var(--navy-200);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-book);
   line-height: var(--line-height-xs);
@@ -13815,7 +13815,7 @@ body.builder--phone-only {
     height: var(--spacing-3xs);
     flex: 0 0 var(--spacing-3xs);
     border-radius: var(--radius-rounded);
-    background: var(--text-light);
+    background: var(--navy-200);
   }
 }
 
