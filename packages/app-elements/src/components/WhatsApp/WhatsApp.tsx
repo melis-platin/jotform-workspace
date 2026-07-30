@@ -24,8 +24,9 @@ function getWhatsAppNumber(phoneNumber: string): string {
 const WHATSAPP_PHONE_MIN_LENGTH = 11;
 const WHATSAPP_PHONE_MAX_LENGTH = 16;
 
-function isValidWhatsAppPhoneNumber(phoneNumber: string, normalizedNumber: string): boolean {
+export function isValidWhatsAppPhoneNumber(phoneNumber: string): boolean {
   const value = phoneNumber.trim();
+  const normalizedNumber = getWhatsAppNumber(value);
   return value.length >= WHATSAPP_PHONE_MIN_LENGTH
     && value.length <= WHATSAPP_PHONE_MAX_LENGTH
     && normalizedNumber.length > 0;
@@ -47,7 +48,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
 }) => {
   const floatingLabel = bubbleText.slice(0, 30);
   const number = getWhatsAppNumber(phoneNumber);
-  const isEnabled = isValidWhatsAppPhoneNumber(phoneNumber, number);
+  const isEnabled = isValidWhatsAppPhoneNumber(phoneNumber);
   const isButtonStyle = displayStyle === 'Button';
   const isFloatingIconAndText = !isButtonStyle && floatingDisplayStyle === 'Icon & Text';
   const usesButtonAppearance = isButtonStyle || isFloatingIconAndText;

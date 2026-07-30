@@ -39,6 +39,7 @@ import {
   type PropertyValues,
   type StateValues,
   HsvColorPicker,
+  isValidWhatsAppPhoneNumber,
 } from '@jf/app-elements'
 import { Icon, Button as DSButton, Tabs as DSTabs, Segmented, Input as DSInput, Toggle as DSToggle, Slider as DSSlider, NumberInput as DSNumberInput, FormField as DSFormField, TextArea as DSTextArea, DropdownSingle as DSDropdownSingle, FieldMapper as DSFieldMapper, FieldComposer as DSFieldComposer, type FieldToken, Link as DSLink, Modal as DSModal, SearchInput as DSSearchInput, ColorInput as DSColorInput } from '@jf/design-system'
 import phoneHomeIndicator from '@jf/design-system/src/assets/phone-home-indicator.svg'
@@ -610,7 +611,7 @@ function getDynamicHostPageId(activePage: AppPage | undefined, allPages: AppPage
 
 function isWhatsAppElementReadyForPreview(element: CanvasElement): boolean {
   return element.componentId !== 'whatsapp'
-    || String(element.properties['Phone Number'] ?? '').trim().length > 0
+    || isValidWhatsAppPhoneNumber(String(element.properties['Phone Number'] ?? ''))
 }
 
 function nextNumericId(prefix: string, existingIds: string[]): string {
