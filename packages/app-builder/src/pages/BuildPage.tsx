@@ -3159,6 +3159,7 @@ interface BuildPageProps {
   pushNotificationsEnabled?: boolean
   pushNotifications?: LivePreviewPushNotification[]
   initialPushNotificationPreviewId?: string | null
+  initialPushNotificationPreview?: LivePreviewPushNotification | null
   onPushNotificationRead?: (notificationId: string, roleId: string) => void
   appUserRoles?: AppRoleOption[]
 }
@@ -3367,6 +3368,7 @@ export function BuildPage({
   pushNotificationsEnabled = false,
   pushNotifications = [],
   initialPushNotificationPreviewId = null,
+  initialPushNotificationPreview = null,
   onPushNotificationRead,
   appUserRoles = DEFAULT_ROLE_OPTIONS,
 }: BuildPageProps) {
@@ -3763,8 +3765,13 @@ export function BuildPage({
       }))
   ), [pushNotifications, viewingAsRole])
   const previewedPushNotification = useMemo(
-    () => pushNotifications.find((notification) => notification.id === previewedPushNotificationId) ?? null,
-    [previewedPushNotificationId, pushNotifications],
+    () => (
+      pushNotifications.find((notification) => notification.id === previewedPushNotificationId)
+      ?? (initialPushNotificationPreview?.id === previewedPushNotificationId
+        ? initialPushNotificationPreview
+        : null)
+    ),
+    [initialPushNotificationPreview, previewedPushNotificationId, pushNotifications],
   )
   const roleScopedUnreadPushNotificationCount = useMemo(() => (
     roleScopedPushNotifications.filter((notification) => notification.unread).length
@@ -6540,7 +6547,9 @@ export function BuildPage({
         appIconName={appIcon.icon}
         appIconStyle="flat"
         onNotificationClick={() => {
-          markRoleScopedPushNotificationRead(previewedPushNotification.id)
+          if (pushNotifications.some((notification) => notification.id === previewedPushNotification.id)) {
+            markRoleScopedPushNotificationRead(previewedPushNotification.id)
+          }
           handleLivePreviewNotificationOpen(previewedPushNotification)
         }}
       />

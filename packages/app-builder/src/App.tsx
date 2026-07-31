@@ -27,6 +27,8 @@ type ReadPushNotificationDeliveryIdsByPreset = Record<string, Set<string>>
 
 const EMPTY_READ_PUSH_NOTIFICATION_DELIVERY_IDS = new Set<string>()
 
+const getPushNotificationDeliveryId = (notificationId: string, roleId: string) => `${notificationId}:${roleId}`
+
 interface BuildNavigationTarget {
   pageId: string
   elementId: string
@@ -313,23 +315,28 @@ export function App() {
     }))
   }
 
-  const getPushNotificationDeliveryId = (notificationId: string, roleId: string) => `${notificationId}:${roleId}`
+  const toLivePreviewPushNotification = useCallback((item: PushNotificationHistoryItem) => ({
+    id: item.id,
+    title: item.title,
+    content: item.content,
+    image: item.image ?? null,
+    audience: item.audience && item.audience.length > 0 ? item.audience : [ALL_USERS_AUDIENCE_ID],
+    deepLink: item.deepLink,
+    sentAtLabel: item.scheduledAtLabel,
+    readByRoleIds: ['anyone', ...appUserRoleOptions.map((role) => role.id)]
+      .filter((roleId) => readPushNotificationDeliveryIds.has(getPushNotificationDeliveryId(item.id, roleId))),
+  }), [appUserRoleOptions, readPushNotificationDeliveryIds])
 
   const livePreviewPushNotifications = useMemo(() => (
     pushNotificationHistoryItems
       .filter((item) => item.status === 'sent')
-      .map((item) => ({
-        id: item.id,
-        title: item.title,
-        content: item.content,
-        image: item.image ?? null,
-        audience: item.audience && item.audience.length > 0 ? item.audience : [ALL_USERS_AUDIENCE_ID],
-        deepLink: item.deepLink,
-        sentAtLabel: item.scheduledAtLabel,
-        readByRoleIds: ['anyone', ...appUserRoleOptions.map((role) => role.id)]
-          .filter((roleId) => readPushNotificationDeliveryIds.has(getPushNotificationDeliveryId(item.id, roleId))),
-      }))
-  ), [appUserRoleOptions, pushNotificationHistoryItems, readPushNotificationDeliveryIds])
+      .map(toLivePreviewPushNotification)
+  ), [pushNotificationHistoryItems, toLivePreviewPushNotification])
+
+  const previewPushNotification = useMemo(() => {
+    const notification = pushNotificationHistoryItems.find((item) => item.id === previewPushNotificationId)
+    return notification ? toLivePreviewPushNotification(notification) : null
+  }, [previewPushNotificationId, pushNotificationHistoryItems, toLivePreviewPushNotification])
 
   const markPushNotificationRead = (itemId: string, roleId: string) => {
     const deliveryId = getPushNotificationDeliveryId(itemId, roleId)
@@ -461,6 +468,7 @@ export function App() {
             searchBarEnabled={searchBarEnabled}
             pushNotifications={livePreviewPushNotifications}
             initialPushNotificationPreviewId={previewPushNotificationId}
+            initialPushNotificationPreview={previewPushNotification}
             onPushNotificationRead={markPushNotificationRead}
             appUserRoles={livePreviewAppUserRoleOptions}
           />
