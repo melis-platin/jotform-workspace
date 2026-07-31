@@ -617,6 +617,32 @@ export function PublishPage({
     setIsMobileContentOpen(true)
   }
 
+  const shouldReturnWithinPushNotifications =
+    isPermissionRequestModalOpen ||
+    isHistoryNotificationPreviewOpen ||
+    isPushComposerOpen ||
+    canReturnFromPushOverview
+
+  const handleMobileBack = () => {
+    if (isPermissionRequestModalOpen) {
+      setIsPermissionRequestModalOpen(false)
+      return
+    }
+
+    if (isHistoryNotificationPreviewOpen) {
+      setPreviewedPushNotificationId(null)
+      return
+    }
+
+    if (isPushComposerOpen || canReturnFromPushOverview) {
+      setPushHistoryReturnRequestId((requestId) => requestId + 1)
+      return
+    }
+
+    setPreviewedPushNotificationId(null)
+    setIsMobileContentOpen(false)
+  }
+
   return (
     <div className={`publish-page${shouldShowPreview ? ' publish-page--with-preview' : ''}${usesFigmaPushLayout ? ' publish-page--figma-push' : ''}${isFigmaPushInitial ? ' publish-page--figma-push-initial' : ''}${usesFigmaPushComposerLayout ? ' publish-page--figma-push-composer' : ''}${isMobileContentOpen ? ' publish-page--mobile-content-open' : ''}`}>
       <SideNav
@@ -630,12 +656,8 @@ export function PublishPage({
           <button
             type="button"
             className="side-nav-mobile-back"
-            aria-label="Back to publish menu"
-            onClick={() => {
-              setIsPermissionRequestModalOpen(false)
-              setPreviewedPushNotificationId(null)
-              setIsMobileContentOpen(false)
-            }}
+            aria-label={shouldReturnWithinPushNotifications ? 'Back to push notifications' : 'Back to publish menu'}
+            onClick={handleMobileBack}
           >
             <span className="side-nav-mobile-back__icon" aria-hidden="true">
               <Icon name="chevron-left" category="arrows" size={24} />
