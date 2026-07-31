@@ -17285,8 +17285,10 @@ body.builder--phone-only {
   .push-notification-history-card__metadata-item {
     width: 100%;
     max-width: 100%;
+    font-family: var(--ds-font-family);
     font-size: var(--font-size-sm);
     line-height: var(--line-height-xs);
+    letter-spacing: var(--body-sm-letter-spacing);
 
     .jf-icon,
     svg {
@@ -17309,16 +17311,19 @@ body.builder--phone-only {
 
   .push-notification-history-card__metrics {
     width: 100%;
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    display: flex;
     gap: var(--spacing-lg);
     margin-top: var(--spacing-xl);
     overflow: visible;
   }
 
   .push-notification-history-card__metric {
-    width: 100%;
-    flex-basis: auto;
+    width: calc(var(--spacing-4xl) + var(--spacing-xs) - (var(--spacing-3xs) / 2));
+    flex: 0 0 calc(var(--spacing-4xl) + var(--spacing-xs) - (var(--spacing-3xs) / 2));
+  }
+
+  .push-notification-history-card__metric-value {
+    letter-spacing: var(--letter-spacing-xs);
   }
 
   .push-notification-history-card__canceled-summary {
@@ -17410,10 +17415,6 @@ body.builder--phone-only {
 }
 
 @media (max-width: 480px) {
-  .push-notification-history-card__metrics {
-    gap: var(--spacing-md);
-  }
-
   .mobile-subpage-header {
     grid-template-columns:
       calc(var(--spacing-4xl) + var(--spacing-2xs) + var(--spacing-3xs))
