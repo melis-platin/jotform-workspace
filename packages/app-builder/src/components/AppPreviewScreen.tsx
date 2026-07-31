@@ -11,6 +11,7 @@ interface AppPreviewScreenProps {
   device: PreviewDevice
   onDeviceChange: (device: PreviewDevice) => void
   onBack: () => void
+  mobileBackLabel?: string
   appScreen?: ReactNode
   role?: PreviewRole
   onRoleChange?: (role: PreviewRole) => void
@@ -27,6 +28,7 @@ export function AppPreviewScreen({
   device,
   onDeviceChange,
   onBack,
+  mobileBackLabel = 'Back to builder',
   appScreen,
   role = 'anyone',
   onRoleChange,
@@ -49,7 +51,7 @@ export function AppPreviewScreen({
           onClick={onBack}
         >
           <Icon name="chevron-left" category="arrows" size={20} />
-          <span>Back to builder</span>
+          <span>{mobileBackLabel}</span>
         </button>
         <div className="app-preview-screen__role-segment" role="tablist" aria-label="Preview role">
           {roleSegments.map((roleSegment) => {

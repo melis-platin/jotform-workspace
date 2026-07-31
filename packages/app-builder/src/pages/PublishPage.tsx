@@ -485,6 +485,8 @@ function getAssignedRole(user: AppUser, assignedRoleId: string, roleById: Map<st
 }
 
 interface PublishPageProps {
+  initialActiveId?: string
+  initialMobileContentOpen?: boolean
   presetId: string
   roleOptions: AppRoleOption[]
   appUserRoles: AppRoleOption[]
@@ -504,6 +506,8 @@ interface PublishPageProps {
 }
 
 export function PublishPage({
+  initialActiveId = 'quick-share',
+  initialMobileContentOpen = false,
   presetId,
   roleOptions,
   appUserRoles,
@@ -521,8 +525,8 @@ export function PublishPage({
   onPushNotificationsDisabledChange,
   pushComposerFieldValues = {},
 }: PublishPageProps) {
-  const [activeId, setActiveId] = useState('quick-share')
-  const [isMobileContentOpen, setIsMobileContentOpen] = useState(false)
+  const [activeId, setActiveId] = useState(initialActiveId)
+  const [isMobileContentOpen, setIsMobileContentOpen] = useState(initialMobileContentOpen)
   const [notificationTitle, setNotificationTitle] = useState('')
   const [notificationTitleFields, setNotificationTitleFields] = useState<PushComposerFieldOption[]>([])
   const [notificationTitleSuffix, setNotificationTitleSuffix] = useState('')

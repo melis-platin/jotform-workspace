@@ -20,6 +20,7 @@ import { ALL_USERS_AUDIENCE_ID } from './state/pushNotifications.ts'
 import { SEARCH_BAR_AUTO_ENABLE_THRESHOLD } from './state/searchableElements.ts'
 
 type Page = 'build' | 'data' | 'settings' | 'publish'
+type MobilePreviewSource = 'build' | 'push-notifications'
 
 type PushNotificationHistoryByPreset = Record<string, PushNotificationHistoryItem[]>
 type PushNotificationsDisabledByPreset = Record<string, boolean>
@@ -125,6 +126,7 @@ export function App() {
   const [publishResetKey, setPublishResetKey] = useState(0)
   const [previewMode, setPreviewMode] = useState(false)
   const [previewPushNotificationId, setPreviewPushNotificationId] = useState<string | null>(null)
+  const [mobilePreviewSource, setMobilePreviewSource] = useState<MobilePreviewSource>('build')
   const [activePresetId, setActivePresetId] = useState<string>(initialPresetId)
   const [appUserRoleOptions, setAppUserRoleOptions] = useState<AppRoleOption[]>(() => getAppUserRoleOptionsForPreset(initialPresetId))
   const [appUserTableRoleIds, setAppUserTableRoleIds] = useState<string[]>(() => getAppUserTableRoleIdsForPreset(initialPresetId))
@@ -285,6 +287,7 @@ export function App() {
   }
 
   const handlePageChange = (page: Page) => {
+    setMobilePreviewSource('build')
     if (page === 'publish') {
       setPublishResetKey((prev) => prev + 1)
     }
@@ -420,6 +423,7 @@ export function App() {
         previewMode={previewMode}
         onPreviewToggle={() => {
           setPreviewPushNotificationId(null)
+          if (!previewMode) setMobilePreviewSource('build')
           setPreviewMode((prev) => !prev)
         }}
         appName={appTitle}
@@ -453,13 +457,26 @@ export function App() {
             openAttributionSheet={urlOpenAttributionSheet}
             previewMode={previewMode}
             onPreviewClose={() => {
+              const shouldReturnToPushNotifications =
+                mobilePreviewSource === 'push-notifications' &&
+                window.matchMedia('(max-width: 760px)').matches
+
               setPreviewPushNotificationId(null)
               setPreviewMode(false)
+              if (shouldReturnToPushNotifications) {
+                setActivePage('publish')
+              }
             }}
             onPreviewOpen={() => {
               setPreviewPushNotificationId(null)
+              setMobilePreviewSource('build')
               setPreviewMode(true)
             }}
+            previewMobileBackLabel={
+              mobilePreviewSource === 'push-notifications'
+                ? 'Back to push notifications'
+                : 'Back to builder'
+            }
             onDeepLinkTargetsChange={setDeepLinkTargets}
             onSearchableElementCountChange={handleSearchableElementCountChange}
             onDataBackedElementCountChange={setDataBackedElementCount}
@@ -493,6 +510,8 @@ export function App() {
         {activePage === 'publish' && (
           <PublishPage
             key={`${publishResetKey}:${activePresetId}`}
+            initialActiveId={mobilePreviewSource === 'push-notifications' ? 'push-notifications' : undefined}
+            initialMobileContentOpen={mobilePreviewSource === 'push-notifications'}
             presetId={activePresetId}
             roleOptions={appUserRoleOptions}
             appUserRoles={appUserTableRoleOptions}
@@ -506,6 +525,7 @@ export function App() {
             onPushNotificationHistoryItemUpdate={updatePushNotificationHistoryItem}
             onPushNotificationHistoryItemDelete={deletePushNotificationHistoryItem}
             onPushNotificationPreviewRequest={(notification) => {
+              setMobilePreviewSource('push-notifications')
               setPreviewPushNotificationId(notification.id)
               setPreviewMode(true)
               setActivePage('build')

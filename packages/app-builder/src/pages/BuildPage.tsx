@@ -3151,6 +3151,7 @@ interface BuildPageProps {
   previewMode?: boolean
   onPreviewClose?: () => void
   onPreviewOpen?: () => void
+  previewMobileBackLabel?: string
   onDeepLinkTargetsChange?: (targets: DeepLinkTarget[]) => void
   onSearchableElementCountChange?: (count: number) => void
   onDataBackedElementCountChange?: (count: number) => void
@@ -3360,6 +3361,7 @@ export function BuildPage({
   previewMode = false,
   onPreviewClose,
   onPreviewOpen,
+  previewMobileBackLabel,
   onDeepLinkTargetsChange,
   onSearchableElementCountChange,
   onDataBackedElementCountChange,
@@ -6563,6 +6565,7 @@ export function BuildPage({
         device={previewDevice}
         onDeviceChange={setPreviewDevice}
         onBack={() => onPreviewClose?.()}
+        mobileBackLabel={previewMobileBackLabel}
         appScreen={phoneScreenContent}
         role={viewingAsRole}
         onRoleChange={handleViewingRoleChange}
