@@ -14960,6 +14960,11 @@ body.builder--phone-only {
   .push-notification-overview__device-list {
     flex-direction: column;
   }
+
+  .push-notification-overview__device {
+    width: 100%;
+    flex: 0 0 auto;
+  }
 }
 
 .push-composer-panel {
