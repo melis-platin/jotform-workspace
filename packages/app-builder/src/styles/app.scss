@@ -16254,6 +16254,10 @@ body.builder--phone-only {
   color: var(--yellow-600);
 }
 
+.push-notification-history-card__mobile-status {
+  display: none;
+}
+
 .push-notification-history-card__description {
   width: 100%;
   max-width: 100%;
@@ -17193,7 +17197,7 @@ body.builder--phone-only {
   .push-notification-history__toolbar {
     align-items: stretch;
     flex-direction: column;
-    gap: var(--spacing-xs);
+    gap: var(--spacing-md);
   }
 
   .push-notification-history__search,
@@ -17203,35 +17207,71 @@ body.builder--phone-only {
   }
 
   .push-notification-history__list {
+    gap: var(--spacing-md);
     margin-top: var(--spacing-md);
   }
 
   .push-notification-history-card {
-    gap: var(--spacing-sm);
+    gap: var(--spacing-md);
   }
 
   .push-notification-history-card__rail {
-    width: var(--spacing-2xl);
-    flex-basis: var(--spacing-2xl);
+    width: calc(var(--spacing-2xl) + var(--spacing-2xs));
+    flex-basis: calc(var(--spacing-2xl) + var(--spacing-2xs));
   }
 
   .push-notification-history-card__content {
-    gap: var(--spacing-md);
-    padding:
-      var(--spacing-md)
-      calc(var(--spacing-2xl) + var(--spacing-xs))
-      var(--spacing-md)
-      0;
+    gap: 0;
+    padding: var(--spacing-md) var(--spacing-md) var(--spacing-md) 0;
+  }
+
+  .push-notification-history-card__message {
+    gap: var(--spacing-xs);
+  }
+
+  .push-notification-history-card__badge--desktop,
+  .push-notification-history-card__live-pill--desktop {
+    display: none;
   }
 
   .push-notification-history-card__header {
-    align-items: flex-start;
-    flex-wrap: wrap;
+    width: 100%;
+    display: block;
+  }
+
+  .push-notification-history-card__title {
+    width: 100%;
+    overflow: hidden;
+    font-size: var(--font-size-lg);
+    line-height: var(--line-height-md);
+    letter-spacing: var(--body-lg-letter-spacing);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .push-notification-history-card__description {
+    min-height: calc(var(--line-height-sm) * 2);
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .push-notification-history-card__mobile-status {
+    min-height: var(--spacing-xl);
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2xs);
+    margin-top: var(--spacing-sm);
   }
 
   .push-notification-history-card__metadata {
-    flex-wrap: wrap;
-    gap: var(--spacing-xs) var(--spacing-sm);
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    gap: var(--spacing-md);
+    margin-top: var(--spacing-xl);
   }
 
   .push-notification-history-card__metadata-separator {
@@ -17239,14 +17279,36 @@ body.builder--phone-only {
   }
 
   .push-notification-history-card__metadata-item {
+    width: 100%;
     max-width: 100%;
+    font-size: var(--font-size-sm);
+    line-height: var(--line-height-xs);
+
+    .jf-icon,
+    svg {
+      width: var(--spacing-md);
+      height: var(--spacing-md);
+    }
+  }
+
+  .push-notification-history-card__divider {
+    width: 100%;
+    margin-top: var(--spacing-xl);
+    margin-left: 0;
+  }
+
+  .push-notification-history-card--sent .push-notification-history-card__divider,
+  .push-notification-history-card--canceled .push-notification-history-card__divider {
+    width: 100%;
+    margin-left: 0;
   }
 
   .push-notification-history-card__metrics {
     width: 100%;
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: var(--spacing-md);
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-xl);
     overflow: visible;
   }
 
@@ -17259,20 +17321,23 @@ body.builder--phone-only {
     align-items: stretch;
     flex-direction: column;
     gap: var(--spacing-sm);
+    margin-top: var(--spacing-xl);
   }
 
   .push-notification-history-card__canceled-meta {
-    align-items: flex-start;
-    flex-wrap: wrap;
-    white-space: normal;
+    align-items: center;
+    flex-wrap: nowrap;
+    white-space: nowrap;
   }
 
   .push-notification-history-card__reschedule {
-    align-self: flex-start;
+    width: 100%;
+    height: var(--spacing-3xl);
+    align-self: stretch;
   }
 
   .push-notification-history-card__menu {
-    right: var(--spacing-sm);
+    right: var(--spacing-md);
   }
 
   .push-edit-notification-modal__backdrop,
@@ -17341,6 +17406,10 @@ body.builder--phone-only {
 }
 
 @media (max-width: 480px) {
+  .push-notification-history-card__metrics {
+    gap: var(--spacing-md);
+  }
+
   .mobile-subpage-header {
     grid-template-columns:
       calc(var(--spacing-4xl) + var(--spacing-2xs) + var(--spacing-3xs))

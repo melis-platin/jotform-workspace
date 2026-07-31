@@ -2255,6 +2255,9 @@ function PushNotificationHistory({
   const [visibleCount, setVisibleCount] = useState(5)
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState<PushNotificationHistoryStatus | undefined>()
+  const [isMobileViewport, setIsMobileViewport] = useState(() => (
+    typeof window !== 'undefined' && window.matchMedia('(max-width: 760px)').matches
+  ))
 
   const hasScheduledNotifications = notifications.some((notification) => notification.status === 'scheduled')
   const hasSentNotifications = notifications.some((notification) => notification.status === 'sent')
@@ -2274,6 +2277,16 @@ function PushNotificationHistory({
     }
   }, [hasCanceledNotifications, hasScheduledNotifications, hasSentNotifications, statusFilter])
 
+  useEffect(() => {
+    const mobileViewport = window.matchMedia('(max-width: 760px)')
+    const updateMobileViewport = (event: MediaQueryListEvent) => setIsMobileViewport(event.matches)
+
+    setIsMobileViewport(mobileViewport.matches)
+    mobileViewport.addEventListener('change', updateMobileViewport)
+
+    return () => mobileViewport.removeEventListener('change', updateMobileViewport)
+  }, [])
+
   if (notifications.length === 0) return null
 
   const normalizedSearchQuery = searchQuery.trim().toLocaleLowerCase()
@@ -2291,7 +2304,7 @@ function PushNotificationHistory({
         <SearchInput
           className="push-notification-history__search"
           size="md"
-          placeholder="Search notifications"
+          placeholder={isMobileViewport ? 'Search' : 'Search notifications'}
           aria-label="Search notifications"
           value={searchQuery}
           onChange={(event) => {
@@ -2473,9 +2486,20 @@ function PushNotificationHistoryCard({
         <div className="push-notification-history-card__message">
           <div className="push-notification-history-card__header">
             <h3 className="push-notification-history-card__title">{notification.title}</h3>
-            <span className="push-notification-history-card__badge">{statusBadgeLabel}</span>
+            <span className="push-notification-history-card__badge push-notification-history-card__badge--desktop">
+              {statusBadgeLabel}
+            </span>
           </div>
           <p className="push-notification-history-card__description">{notification.content}</p>
+        </div>
+        <div className="push-notification-history-card__mobile-status" aria-hidden="true">
+          <span className="push-notification-history-card__badge">{statusBadgeLabel}</span>
+          {isScheduled && (
+            <span className="push-notification-history-card__live-pill">
+              <Icon name="clock-filled" category="time-date" size={12} />
+              <span>{notification.liveInLabel}</span>
+            </span>
+          )}
         </div>
         <div className="push-notification-history-card__metadata" aria-label="Notification details">
           <span
@@ -2502,7 +2526,7 @@ function PushNotificationHistoryCard({
           </span>
         </div>
         {isScheduled ? (
-          <span className="push-notification-history-card__live-pill">
+          <span className="push-notification-history-card__live-pill push-notification-history-card__live-pill--desktop">
             <Icon name="clock-filled" category="time-date" size={12} />
             <span>{notification.liveInLabel}</span>
           </span>
