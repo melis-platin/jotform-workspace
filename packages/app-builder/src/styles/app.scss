@@ -10580,6 +10580,18 @@ body.builder--phone-only {
   }
 }
 
+@media (max-width: 760px) {
+  .app-preview-screen__canvas--phone
+    .live-preview__push-notification-preview
+    .push-preview-phone__notification {
+    min-height: calc(
+      var(--spacing-4xl) +
+      var(--spacing-md) +
+      var(--spacing-3xs)
+    );
+  }
+}
+
 .app-preview-screen__desktop {
   // Left-sidebar (nav) width — drives the sidebar + the top-header/content shifts.
   --side-nav-width: 255px;
