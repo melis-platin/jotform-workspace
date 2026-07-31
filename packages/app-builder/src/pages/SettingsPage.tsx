@@ -90,6 +90,7 @@ const LANGUAGE_OPTIONS = [
 
 const NOTIFICATION_TITLE_PLACEHOLDER = 'Notification Title'
 const NOTIFICATION_CONTENT_PLACEHOLDER = 'Notification content'
+const SEND_NOTIFICATION_CONTENT_PLACEHOLDER = 'Enter notification content'
 const SCHEDULE_NOTIFICATION_CONTENT_PLACEHOLDER = 'Enter notification content'
 const NOTIFICATION_CONTENT_MAX_LENGTH = 150
 const NOTIFICATION_DEEP_LINK_PLACEHOLDER = 'Choose a page or form'
@@ -1499,7 +1500,7 @@ export function PushNotificationsPanel({
             contentPlaceholder={
               isScheduleComposer
                 ? SCHEDULE_NOTIFICATION_CONTENT_PLACEHOLDER
-                : NOTIFICATION_CONTENT_PLACEHOLDER
+                : SEND_NOTIFICATION_CONTENT_PLACEHOLDER
             }
             scheduleContent={isScheduleComposer ? (
               <PushScheduleComposerSection

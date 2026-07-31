@@ -16996,6 +16996,34 @@ body.builder--phone-only {
     gap: var(--spacing-md);
   }
 
+  .publish-page--figma-push-send-composer .push-composer-field .jf-input {
+    height: var(--space-12);
+    padding-right: var(--space-4);
+    padding-left: var(--space-4);
+  }
+
+  .publish-page--figma-push-send-composer .push-composer-token-editor__text {
+    font-size: var(--font-size-md);
+    line-height: var(--line-height-md);
+    letter-spacing: var(--body-letter-spacing);
+  }
+
+  .publish-page--figma-push-send-composer .push-composer-field--content {
+    height: calc(
+      var(--space-16) +
+      var(--space-16) +
+      var(--space-5) +
+      var(--spacing-3xs)
+    );
+  }
+
+  .publish-page--figma-push-send-composer .push-composer-dropdown .jf-dropdown {
+    height: var(--space-12);
+    font-size: var(--font-size-md);
+    line-height: var(--line-height-xs);
+    letter-spacing: var(--body-letter-spacing);
+  }
+
   .publish-page--figma-push-send-composer .push-notification-actions--with-test {
     position: fixed;
     right: 0;
