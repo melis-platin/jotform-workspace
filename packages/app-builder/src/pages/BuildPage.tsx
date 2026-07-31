@@ -3944,6 +3944,22 @@ export function BuildPage({
     return () => previewContentScalerEl.removeEventListener('scroll', onScroll)
   }, [previewContentScalerEl, previewDevice, desktopNavVariant, desktopNavSticky, pages, activePageId, isPreviewLoggedIn, topNavEnabled, topNavTransparent, appHeaderState.show, isMorePageOpen, isPreviewSearchOpen, isNotificationsPageOpen])
 
+  // A push card temporarily replaces the normal app screen. When it opens its
+  // target page, restore the exact top-of-page state used by Live Preview so a
+  // stale scroll/header transform cannot shift the hero or its surrounding gaps.
+  useLayoutEffect(() => {
+    if (!previewMode || previewedPushNotification || !previewContentScalerEl) return
+
+    previewContentScalerEl.scrollTop = 0
+    setIsPreviewContentScrolled(false)
+    setTopNavOverHero(true)
+
+    const header = previewTopHeaderRef.current
+    if (!header) return
+    header.style.transition = ''
+    header.style.transform = ''
+  }, [previewMode, previewedPushNotification, previewContentScalerEl])
+
   // While the Navigation Properties panel is open, mirror its tab onto the canvas
   // preview device. Pages + Desktop preview on desktop (the default), Mobile on phone.
   useEffect(() => {
@@ -6012,7 +6028,7 @@ export function BuildPage({
           }}
         />
       )}
-      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${topHeaderShowsPageName && isPreviewContentScrolled ? ' live-preview__top-header--page-scrolled' : ''}${isNotificationsPageOpen ? ' live-preview__top-header--notifications-page' : ''}${desktopNavVariant === 'top' ? ' live-preview__top-header--fullwidth' : ''}${desktopNavVariant === 'compact' ? ' live-preview__top-header--compact' : ''}${desktopNavVariant === 'contained' ? ' live-preview__top-header--contained' : ''}${isPreviewLoggedIn ? ' live-preview__top-header--logged-in' : ''}${desktopFullwidthSearchOpen ? ' live-preview__top-header--fullwidth-search-open' : ''}${desktopConstrainedSearchOpen ? ' live-preview__top-header--desktop-profile-search-open' : ''}${desktopAuthSearchOpen ? ' live-preview__top-header--desktop-auth-search-open' : ''}${isDesktopPreviewSearchOpen ? ' live-preview__top-header--desktop-search-open' : ''}${topNavOverlay ? ' live-preview__top-header--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__top-header--over-content' : ''}${topHeaderHidden ? ' live-preview__top-header--hidden' : ''}`} style={topNavOverlay && topNavOverHero ? { color: topNavOverlayFg } : undefined} data-nav-align={desktopNavAlignment}>
+      <div ref={previewTopHeaderRef} className={`live-preview__top-header app-scope${isPreviewContentScrolled ? ' live-preview__top-header--scrolled' : ''}${topHeaderShowsPageName && isPreviewContentScrolled ? ' live-preview__top-header--page-scrolled' : ''}${isNotificationsPageOpen ? ' live-preview__top-header--notifications-page' : ''}${previewDevice !== 'phone' && desktopNavVariant === 'top' ? ' live-preview__top-header--fullwidth' : ''}${previewDevice !== 'phone' && desktopNavVariant === 'compact' ? ' live-preview__top-header--compact' : ''}${previewDevice !== 'phone' && desktopNavVariant === 'contained' ? ' live-preview__top-header--contained' : ''}${isPreviewLoggedIn ? ' live-preview__top-header--logged-in' : ''}${desktopFullwidthSearchOpen ? ' live-preview__top-header--fullwidth-search-open' : ''}${desktopConstrainedSearchOpen ? ' live-preview__top-header--desktop-profile-search-open' : ''}${desktopAuthSearchOpen ? ' live-preview__top-header--desktop-auth-search-open' : ''}${isDesktopPreviewSearchOpen ? ' live-preview__top-header--desktop-search-open' : ''}${topNavOverlay ? ' live-preview__top-header--transparent' : ''}${topNavOverlay && !topNavOverHero ? ' live-preview__top-header--over-content' : ''}${topHeaderHidden ? ' live-preview__top-header--hidden' : ''}`} style={topNavOverlay && topNavOverHero ? { color: topNavOverlayFg } : undefined} data-nav-align={desktopNavAlignment}>
         {(() => {
           // Profile / dynamic-detail back affordance — shared with the right-panel
           // preview via renderTopHeaderBack so the two never diverge.
