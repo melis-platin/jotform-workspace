@@ -5726,6 +5726,19 @@ body,
   gap: 0;
 }
 
+.build-page__canvas-element[data-component-id='whatsapp']:has(> .build-page__whatsapp-preview-notice)
+  > .build-page__drag-handle {
+  // The notice extends the section below the selected element. Keep the drag
+  // handle centred on the blue selection stroke, not on element + notice.
+  bottom: auto;
+  height: calc(
+    100%
+    - var(--spacing-2xl)
+    - var(--ds-space-xs)
+    - var(--ds-canvas-element-outline-extent)
+  );
+}
+
 // Drag overlay styling (panel-style compact card)
 .build-page__canvas-element--dragging {
   opacity: 1;
