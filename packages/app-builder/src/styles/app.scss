@@ -3010,6 +3010,16 @@ body,
   padding-bottom: 0;
 }
 
+.live-preview__floating-whatsapp {
+  position: absolute;
+  right: var(--space-5);
+  bottom: var(--space-5);
+  z-index: 3;
+  display: flex;
+  max-width: calc(100% - var(--space-5) - var(--space-5));
+  pointer-events: auto;
+}
+
 // Landing hamburger menu: a fixed, full-height panel (nav items + a bottom-pinned
 // Login/Sign up footer) sized to fit — it must never scroll. Lock the scaler so
 // the scale-compensation slack (.live-preview__content lays out at 1/0.9 height)

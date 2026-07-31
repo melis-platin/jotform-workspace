@@ -5934,6 +5934,55 @@ export function BuildPage({
     </div>
   )
 
+  const activePreviewPage = pages.find((page) => page.id === activePageId) || pages[0]
+  const floatingWhatsAppElement = pages
+    .flatMap((page) => page.elements)
+    .find((element) => {
+      if (
+        element.componentId !== 'whatsapp'
+        || String(element.properties['Display Style'] ?? 'Button') !== 'Floating'
+        || !isWhatsAppElementReadyForPreview(element)
+      ) {
+        return false
+      }
+
+      const showOn = String(element.properties['Show On'] ?? 'All Pages')
+      return showOn === 'All Pages' || showOn === activePreviewPage?.id
+    })
+  const floatingWhatsAppPreview = (() => {
+    if (
+      !floatingWhatsAppElement
+      || isPreviewProfileOpen
+      || isMorePageOpen
+      || isNotificationsPageOpen
+      || isPreviewSearchOpen
+      || isPreviewCartOpen
+      || isPreviewCheckoutOpen
+      || isPreviewDetailOpen
+    ) {
+      return null
+    }
+
+    const component = ComponentRegistry.get(floatingWhatsAppElement.componentId)
+    if (!component) return null
+
+    return (
+      <div
+        className="live-preview__floating-whatsapp"
+        data-live-preview-element-id={floatingWhatsAppElement.id}
+      >
+        {component.render(
+          floatingWhatsAppElement.variants,
+          {
+            ...floatingWhatsAppElement.properties,
+            'Add New Card': false,
+          },
+          floatingWhatsAppElement.states,
+        )}
+      </div>
+    )
+  })()
+
   const phoneScreenContent = (
     <CollectionsProvider navigateToPage={navigateToPage}>
     <CartProvider>
@@ -6367,7 +6416,10 @@ export function BuildPage({
                 <div className="themes-view__app">
                   {activePage.elements.map((element) => {
                     const comp = ComponentRegistry.get(element.componentId)
-                    if (!comp || !isWhatsAppElementReadyForPreview(element)) return null
+                    const isFloatingWhatsApp =
+                      element.componentId === 'whatsapp'
+                      && String(element.properties['Display Style'] ?? 'Button') === 'Floating'
+                    if (!comp || !isWhatsAppElementReadyForPreview(element) || isFloatingWhatsApp) return null
                     // Dynamic detail page: bind each seeded element to the previewed row.
                     const dynPreview = getDynamicPreviewItem(activePage, pages, dynamicPreviewIndex)
                     const renderEl = activePage.dynamic ? applyDynamicBinding(element, dynPreview?.item) : element
@@ -6405,6 +6457,7 @@ export function BuildPage({
           })()}
         </div>
       </div>
+      {floatingWhatsAppPreview}
       {pages.length > 1 && bottomNavEnabled && !isNotificationsPageOpen && !isPreviewSearchOpen && !isPreviewCartOpen && !isPreviewCheckoutOpen && !isPreviewDetailOpen && !isPreviewProfileOpen && !showLandingNav && !activePageIsDynamic && (
         <div className="live-preview__bottom-nav app-scope">
           <BottomNavigation
@@ -10804,7 +10857,10 @@ export function BuildPage({
                                 <div className="themes-view__app">
                                   {activePage.elements.map((element) => {
                                     const comp = ComponentRegistry.get(element.componentId)
-                                    if (!comp || !isWhatsAppElementReadyForPreview(element)) return null
+                                    const isFloatingWhatsApp =
+                                      element.componentId === 'whatsapp'
+                                      && String(element.properties['Display Style'] ?? 'Button') === 'Floating'
+                                    if (!comp || !isWhatsAppElementReadyForPreview(element) || isFloatingWhatsApp) return null
                                     // Dynamic detail page: bind each seeded element to the previewed row.
                                     const dynPreview = getDynamicPreviewItem(activePage, pages, dynamicPreviewIndex)
                                     const renderEl = activePage.dynamic ? applyDynamicBinding(element, dynPreview?.item) : element
@@ -10842,6 +10898,7 @@ export function BuildPage({
                           })()}
                         </div>
                       </div>
+                      {floatingWhatsAppPreview}
                       {pages.length > 1 && bottomNavEnabled && !isNotificationsPageOpen && !isPreviewSearchOpen && !isPreviewCartOpen && !isPreviewCheckoutOpen && !isPreviewDetailOpen && !isPreviewProfileOpen && !showLandingNav && !activePageIsDynamic && (
                         <div className="live-preview__bottom-nav app-scope">
                           <BottomNavigation
