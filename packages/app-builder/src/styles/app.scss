@@ -10445,6 +10445,10 @@ body.builder--phone-only {
 }
 
 @media (max-width: 768px) {
+  .app-preview-screen__qr-badge {
+    display: none;
+  }
+
   .app-preview-screen__bar {
     height: calc(var(--space-12) + var(--space-2));
     padding: 0 var(--space-2);
