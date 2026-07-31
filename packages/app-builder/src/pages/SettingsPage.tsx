@@ -1518,8 +1518,8 @@ export function PushNotificationsPanel({
               />
             ) : undefined}
           />
-          {!isDisabled && <div className={`push-notification-actions${isPublishComposer ? ' push-notification-actions--publish' : ''}${isPublishComposer && !isScheduleComposer ? ' push-notification-actions--with-test' : ''}`}>
-            {!isScheduleComposer && (
+          {!isDisabled && <div className={`push-notification-actions${isPublishComposer ? ' push-notification-actions--publish push-notification-actions--with-test' : ''}`}>
+            {(!isScheduleComposer || isPublishComposer) && (
               <Button
                 variant="filled"
                 colorScheme="secondary"

@@ -564,6 +564,12 @@ export function PublishPage({
     isPushComposerOpen &&
     !isPushScheduleOpen &&
     !isPermissionRequestModalOpen
+  const usesFigmaPushScheduleComposerLayout =
+    isPushComposerOpen &&
+    isPushScheduleOpen &&
+    !isPermissionRequestModalOpen
+  const usesFigmaPushMobileComposerLayout =
+    usesFigmaPushSendComposerLayout || usesFigmaPushScheduleComposerLayout
   const usesFigmaPushLayout = isPushNotificationsOpen
   const shouldShowPushPreview =
     isPushNotificationsOpen &&
@@ -595,10 +601,10 @@ export function PublishPage({
   }, [previewedPushNotification, previewedPushNotificationId])
 
   useEffect(() => {
-    if (!usesFigmaPushSendComposerLayout) {
+    if (!usesFigmaPushMobileComposerLayout) {
       setIsMobilePushPreviewCollapsed(false)
     }
-  }, [usesFigmaPushSendComposerLayout])
+  }, [usesFigmaPushMobileComposerLayout])
 
   const handlePushNotificationViewChange = useCallback((view: PushNotificationPanelView) => {
     setPushNotificationView(view)
@@ -655,7 +661,7 @@ export function PublishPage({
   }
 
   return (
-    <div className={`publish-page${shouldShowPreview ? ' publish-page--with-preview' : ''}${usesFigmaPushLayout ? ' publish-page--figma-push' : ''}${isFigmaPushInitial ? ' publish-page--figma-push-initial' : ''}${usesFigmaPushComposerLayout ? ' publish-page--figma-push-composer' : ''}${usesFigmaPushSendComposerLayout ? ' publish-page--figma-push-send-composer' : ''}${isMobileContentOpen ? ' publish-page--mobile-content-open' : ''}`}>
+    <div className={`publish-page${shouldShowPreview ? ' publish-page--with-preview' : ''}${usesFigmaPushLayout ? ' publish-page--figma-push' : ''}${isFigmaPushInitial ? ' publish-page--figma-push-initial' : ''}${usesFigmaPushComposerLayout ? ' publish-page--figma-push-composer' : ''}${usesFigmaPushMobileComposerLayout ? ' publish-page--figma-push-mobile-composer' : ''}${usesFigmaPushSendComposerLayout ? ' publish-page--figma-push-send-composer' : ''}${usesFigmaPushScheduleComposerLayout ? ' publish-page--figma-push-schedule-composer' : ''}${isMobileContentOpen ? ' publish-page--mobile-content-open' : ''}`}>
       <SideNav
         items={NAV_ITEMS}
         activeId={activeId}
@@ -776,7 +782,7 @@ export function PublishPage({
               onClose={isHistoryNotificationPreviewOpen ? closeHistoryNotificationPreview : undefined}
               mobileCollapsed={isMobilePushPreviewCollapsed}
               onMobileCollapsedChange={
-                usesFigmaPushSendComposerLayout
+                usesFigmaPushMobileComposerLayout
                   ? setIsMobilePushPreviewCollapsed
                   : undefined
               }

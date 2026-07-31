@@ -16883,15 +16883,15 @@ body.builder--phone-only {
     justify-content: flex-end;
   }
 
-  .publish-page--figma-push-send-composer.publish-page--with-preview .publish-page__content {
+  .publish-page--figma-push-mobile-composer.publish-page--with-preview .publish-page__content {
     flex-direction: column;
   }
 
-  .publish-page--figma-push-send-composer .mobile-subpage-header {
+  .publish-page--figma-push-mobile-composer .mobile-subpage-header {
     order: 0;
   }
 
-  .publish-page--figma-push-send-composer.publish-page--with-preview .publish-page__preview {
+  .publish-page--figma-push-mobile-composer.publish-page--with-preview .publish-page__preview {
     order: 1;
     width: 100%;
     height: calc(var(--spacing-3xl) + var(--spacing-lg) + var(--spacing-4xl) + var(--spacing-3xl) + var(--spacing-xs) + var(--spacing-3xs));
@@ -16901,7 +16901,7 @@ body.builder--phone-only {
     padding: 0;
   }
 
-  .publish-page--figma-push-send-composer.publish-page--with-preview .quick-preview {
+  .publish-page--figma-push-mobile-composer.publish-page--with-preview .quick-preview {
     width: 100%;
     height: 100%;
     min-height: 0;
@@ -16911,19 +16911,19 @@ body.builder--phone-only {
     border-radius: 0;
   }
 
-  .publish-page--figma-push-send-composer .quick-preview__header {
+  .publish-page--figma-push-mobile-composer .quick-preview__header {
     height: calc(var(--spacing-3xl) + var(--spacing-lg));
     flex: 0 0 calc(var(--spacing-3xl) + var(--spacing-lg));
     padding: var(--spacing-sm) var(--spacing-md);
   }
 
-  .publish-page--figma-push-send-composer .quick-preview__title {
+  .publish-page--figma-push-mobile-composer .quick-preview__title {
     font-size: var(--font-size-md);
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-md);
   }
 
-  .publish-page--figma-push-send-composer .quick-preview__mobile-toggle {
+  .publish-page--figma-push-mobile-composer .quick-preview__mobile-toggle {
     display: inline-flex;
     align-items: center;
     gap: var(--spacing-2xs);
@@ -16938,7 +16938,7 @@ body.builder--phone-only {
     cursor: pointer;
   }
 
-  .publish-page--figma-push-send-composer .quick-preview__body {
+  .publish-page--figma-push-mobile-composer .quick-preview__body {
     height: calc(var(--spacing-4xl) + var(--spacing-3xl) + var(--spacing-xs) + var(--spacing-3xs));
     min-height: 0;
     flex: 0 0 calc(var(--spacing-4xl) + var(--spacing-3xl) + var(--spacing-xs) + var(--spacing-3xs));
@@ -16947,19 +16947,19 @@ body.builder--phone-only {
     padding: 0;
   }
 
-  .publish-page--figma-push-send-composer .quick-preview--mobile-collapsed {
+  .publish-page--figma-push-mobile-composer .quick-preview--mobile-collapsed {
     height: calc(var(--spacing-3xl) + var(--spacing-lg));
   }
 
-  .publish-page--figma-push-send-composer .quick-preview--mobile-collapsed .quick-preview__body {
+  .publish-page--figma-push-mobile-composer .quick-preview--mobile-collapsed .quick-preview__body {
     display: none;
   }
 
-  .publish-page--figma-push-send-composer.publish-page--with-preview:has(.quick-preview--mobile-collapsed) .publish-page__preview {
+  .publish-page--figma-push-mobile-composer.publish-page--with-preview:has(.quick-preview--mobile-collapsed) .publish-page__preview {
     height: calc(var(--spacing-3xl) + var(--spacing-lg));
   }
 
-  .publish-page--figma-push-send-composer .basic-phone {
+  .publish-page--figma-push-mobile-composer .basic-phone {
     width: 100%;
     height: 100%;
     max-width: none;
@@ -16969,12 +16969,12 @@ body.builder--phone-only {
     box-shadow: none;
   }
 
-  .publish-page--figma-push-send-composer .push-preview-phone__status,
-  .publish-page--figma-push-send-composer .push-preview-phone__clock {
+  .publish-page--figma-push-mobile-composer .push-preview-phone__status,
+  .publish-page--figma-push-mobile-composer .push-preview-phone__clock {
     display: none;
   }
 
-  .publish-page--figma-push-send-composer .push-preview-phone__notification {
+  .publish-page--figma-push-mobile-composer .push-preview-phone__notification {
     top: var(--spacing-md);
     right: var(--spacing-md);
     bottom: auto;
@@ -16982,7 +16982,7 @@ body.builder--phone-only {
     min-height: calc(var(--spacing-4xl) + var(--spacing-md) + var(--spacing-3xs));
   }
 
-  .publish-page--figma-push-send-composer .publish-page__main {
+  .publish-page--figma-push-mobile-composer .publish-page__main {
     order: 2;
     padding:
       var(--spacing-xl)
@@ -16990,25 +16990,25 @@ body.builder--phone-only {
       calc(var(--spacing-4xl) + var(--spacing-2xl) + var(--spacing-2xs) + var(--spacing-xl));
   }
 
-  .publish-page--figma-push-send-composer .push-composer-panel--initial .push-composer-panel__fields,
-  .publish-page--figma-push-send-composer .push-composer-panel--initial .push-composer-panel__dropdown-row,
-  .publish-page--figma-push-send-composer .push-composer-panel__selection--with-empty-notice {
+  .publish-page--figma-push-mobile-composer .push-composer-panel--initial .push-composer-panel__fields,
+  .publish-page--figma-push-mobile-composer .push-composer-panel--initial .push-composer-panel__dropdown-row,
+  .publish-page--figma-push-mobile-composer .push-composer-panel__selection--with-empty-notice {
     gap: var(--spacing-md);
   }
 
-  .publish-page--figma-push-send-composer .push-composer-field .jf-input {
+  .publish-page--figma-push-mobile-composer .push-composer-field .jf-input {
     height: var(--space-12);
     padding-right: var(--space-4);
     padding-left: var(--space-4);
   }
 
-  .publish-page--figma-push-send-composer .push-composer-token-editor__text {
+  .publish-page--figma-push-mobile-composer .push-composer-token-editor__text {
     font-size: var(--font-size-md);
     line-height: var(--line-height-md);
     letter-spacing: var(--body-letter-spacing);
   }
 
-  .publish-page--figma-push-send-composer .push-composer-field--content {
+  .publish-page--figma-push-mobile-composer .push-composer-field--content {
     height: calc(
       var(--space-16) +
       var(--space-16) +
@@ -17017,14 +17017,33 @@ body.builder--phone-only {
     );
   }
 
-  .publish-page--figma-push-send-composer .push-composer-dropdown .jf-dropdown {
+  .publish-page--figma-push-mobile-composer .push-composer-dropdown .jf-dropdown {
     height: var(--space-12);
     font-size: var(--font-size-md);
     line-height: var(--line-height-xs);
     letter-spacing: var(--body-letter-spacing);
   }
 
-  .publish-page--figma-push-send-composer .push-notification-actions--with-test {
+  .publish-page--figma-push-schedule-composer .push-schedule-composer {
+    gap: var(--space-4);
+    padding: var(--space-4);
+  }
+
+  .publish-page--figma-push-schedule-composer .push-schedule-quick-picks__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2);
+  }
+
+  .publish-page--figma-push-schedule-composer .push-schedule-quick-picks__chip {
+    width: 100%;
+  }
+
+  .publish-page--figma-push-schedule-composer .push-schedule-composer__date-time-row {
+    gap: var(--space-4);
+  }
+
+  .publish-page--figma-push-mobile-composer .push-notification-actions--with-test {
     position: fixed;
     right: 0;
     bottom: 0;
@@ -17045,14 +17064,14 @@ body.builder--phone-only {
       0 0 1px color-mix(in srgb, var(--navy-600) 4%, transparent);
   }
 
-  .publish-page--figma-push-send-composer .push-notification-actions--with-test > .jf-btn,
-  .publish-page--figma-push-send-composer .push-notification-actions--with-test .push-notification-actions__right,
-  .publish-page--figma-push-send-composer .push-notification-actions--with-test .push-notification-actions__right .jf-btn {
+  .publish-page--figma-push-mobile-composer .push-notification-actions--with-test > .jf-btn,
+  .publish-page--figma-push-mobile-composer .push-notification-actions--with-test .push-notification-actions__right,
+  .publish-page--figma-push-mobile-composer .push-notification-actions--with-test .push-notification-actions__right .jf-btn {
     min-width: 0;
     flex: 1 1 0;
   }
 
-  .publish-page--figma-push-send-composer .push-notification-actions--with-test .push-notification-actions__right {
+  .publish-page--figma-push-mobile-composer .push-notification-actions--with-test .push-notification-actions__right {
     width: auto;
     flex-wrap: nowrap;
   }
