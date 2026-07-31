@@ -767,7 +767,9 @@ export function PublishPage({
                     setIsPermissionRequestModalOpen(true)
                   }}
                   onNotificationPreview={(notification) => {
-                    if (onPushNotificationPreviewRequest) {
+                    const shouldOpenAppPreview = window.matchMedia('(max-width: 760px)').matches
+
+                    if (shouldOpenAppPreview && onPushNotificationPreviewRequest) {
                       onPushNotificationPreviewRequest(notification)
                       return
                     }
