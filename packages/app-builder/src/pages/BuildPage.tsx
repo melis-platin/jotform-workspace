@@ -7455,7 +7455,8 @@ export function BuildPage({
                             </div>
                             {displayStyle === 'Floating' && (
                               <p className="whatsapp-properties__display-style-help-text">
-                                Floating buttons stay visible on the selected pages.
+                                <Icon name="info-circle-filled" category="general" size={16} />
+                                <span>Sits in the corner of the page and stays there while people scroll it.</span>
                               </p>
                             )}
                           </DSFormField>

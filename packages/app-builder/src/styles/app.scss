@@ -7602,12 +7602,19 @@ body,
 }
 
 .whatsapp-properties__display-style-help-text {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-2xs);
   margin: var(--ds-space-xs) 0 0;
-  color: var(--ds-text-secondary);
+  color: var(--ds-text-tertiary);
   font-family: var(--ds-font-family);
   font-size: var(--ds-font-size-xs);
   font-weight: var(--ds-font-weight-book);
   line-height: var(--ds-line-height-xs);
+
+  .jf-icon {
+    flex: 0 0 auto;
+  }
 }
 
 .whatsapp-properties__display-style-card {
