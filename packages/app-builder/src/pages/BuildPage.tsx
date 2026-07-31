@@ -7343,7 +7343,7 @@ export function BuildPage({
                                   )
                                 }
                                 if (property === 'Display Style' && option === 'Floating') {
-                                  handlePropertyChange(selectedElement.id, 'Size', 'Medium')
+                                  handlePropertyChange(selectedElement.id, 'Size', 'Large')
                                   handlePropertyChange(selectedElement.id, 'Alignment', 'Right')
                                   handlePropertyChange(selectedElement.id, 'Show Label', true)
                                   handlePropertyChange(selectedElement.id, 'Bubble Placement', 'Beside')
@@ -7422,7 +7422,7 @@ export function BuildPage({
                     const selectDisplayStyle = (nextDisplayStyle: 'Floating' | 'Button') => {
                       handlePropertyChange(selectedElement.id, 'Display Style', nextDisplayStyle)
                       if (nextDisplayStyle === 'Floating') {
-                        handlePropertyChange(selectedElement.id, 'Size', 'Medium')
+                        handlePropertyChange(selectedElement.id, 'Size', 'Large')
                         handlePropertyChange(selectedElement.id, 'Alignment', 'Right')
                         handlePropertyChange(
                           selectedElement.id,
