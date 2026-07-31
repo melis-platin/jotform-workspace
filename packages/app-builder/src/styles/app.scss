@@ -10286,6 +10286,11 @@ body.builder--phone-only {
   gap: var(--ds-space-xs);
 }
 
+.app-preview-screen__mobile-back,
+.app-preview-screen__mobile-role {
+  display: none;
+}
+
 .app-preview-screen__tabs {
   position: absolute;
   left: 50%;
@@ -10437,6 +10442,64 @@ body.builder--phone-only {
 // hide the divider on the segment immediately following the active (filled) one
 .app-preview-screen__role-option--active + .app-preview-screen__role-option {
   border-left-color: transparent;
+}
+
+@media (max-width: 768px) {
+  .app-preview-screen__bar {
+    height: calc(var(--space-12) + var(--space-2));
+    padding: 0 var(--space-2);
+    background: var(--secondary-background-darkest);
+  }
+
+  .app-preview-screen__role-segment,
+  .app-preview-screen__tabs,
+  .app-preview-screen__toggle {
+    display: none;
+  }
+
+  .app-preview-screen__mobile-back {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    height: var(--space-10);
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--secondary-text-white);
+    font-family: var(--font-family-circular);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-md);
+    letter-spacing: var(--body-letter-spacing);
+    cursor: pointer;
+  }
+
+  .app-preview-screen__mobile-back:focus-visible {
+    outline: var(--border-width-default) solid var(--border-brand);
+    outline-offset: var(--space-1);
+    border-radius: var(--radius-sm);
+  }
+
+  .app-preview-screen__mobile-role {
+    width: calc(
+      var(--space-20) +
+      var(--space-16) +
+      var(--space-1) +
+      var(--spacing-3xs)
+    );
+    display: block;
+  }
+
+  .app-preview-screen__mobile-role .jf-dropdown {
+    height: var(--space-10);
+    min-height: var(--space-10);
+  }
+
+  .app-preview-screen__mobile-role .jf-dropdown__trailing {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
 }
 
 .app-preview-screen__canvas {

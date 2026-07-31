@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import { Icon } from '@jf/design-system'
+import { DropdownSingle, Icon } from '@jf/design-system'
 import { QrPlaceholder } from './QrPlaceholder'
 import { TabletStatusBar } from './TabletStatusBar'
 import { DEFAULT_ROLE_OPTIONS, type AppRoleOption } from '../state/appUserRoles'
@@ -43,6 +43,14 @@ export function AppPreviewScreen({
   return (
     <div className="app-preview-screen" role="dialog" aria-label="App preview">
       <header className="app-preview-screen__bar">
+        <button
+          type="button"
+          className="app-preview-screen__mobile-back"
+          onClick={onBack}
+        >
+          <Icon name="chevron-left" category="arrows" size={20} />
+          <span>Back to builder</span>
+        </button>
         <div className="app-preview-screen__role-segment" role="tablist" aria-label="Preview role">
           {roleSegments.map((roleSegment) => {
             const isActive = roleSegment.value === role
@@ -91,6 +99,22 @@ export function AppPreviewScreen({
             <span className="topbar__toggle-track" />
             <span className="topbar__toggle-thumb" />
           </button>
+        </div>
+        <div className="app-preview-screen__mobile-role" data-theme="dark">
+          <DropdownSingle
+            size="md"
+            aria-label="Preview role"
+            options={roleSegments.map((roleSegment) => ({
+              value: roleSegment.value,
+              label: roleSegment.label,
+              leading: <Icon name={roleSegment.icon} category="users" size={20} />,
+            }))}
+            value={role}
+            onChange={(nextRole) => onRoleChange?.(nextRole)}
+            trailingIcon={<Icon name="angle-down" category="arrows" size={16} />}
+            menuPlacement="bottom"
+            mobileBehavior="inline"
+          />
         </div>
       </header>
       <div className={`app-preview-screen__canvas app-preview-screen__canvas--${device}`}>
