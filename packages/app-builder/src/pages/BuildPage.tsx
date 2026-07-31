@@ -2432,11 +2432,10 @@ const SortableElement = memo(function SortableElement({
   const isWhatsApp = element.componentId === 'whatsapp'
   const isWhatsAppNumberMissing = isWhatsApp && !isWhatsAppElementReadyForPreview(element)
   const showWhatsAppNumberWarning = isSelected && isWhatsAppNumberMissing
-  const showFloatingWhatsAppNotice =
+  const showEnabledWhatsAppNotice =
     isSelected &&
     isWhatsApp &&
-    !isWhatsAppNumberMissing &&
-    String(element.properties['Display Style'] ?? 'Button') === 'Floating'
+    !isWhatsAppNumberMissing
   const sectionRef = useRef<HTMLElement>(null)
   const handleRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
@@ -2670,7 +2669,7 @@ const SortableElement = memo(function SortableElement({
           </span>
         </div>
       )}
-      {showFloatingWhatsAppNotice && (
+      {showEnabledWhatsAppNotice && (
         <div className="build-page__whatsapp-preview-notice" role="status">
           <span className="build-page__whatsapp-preview-notice-copy">
             <Icon name="exclamation-circle-filled" category="general" size={16} />
