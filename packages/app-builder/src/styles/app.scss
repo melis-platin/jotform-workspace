@@ -16540,11 +16540,6 @@ body.builder--phone-only {
 @media (max-width: 760px) {
   .builder:has(.settings-page--mobile-content-open) .topbar,
   .builder:has(.publish-page--mobile-content-open) .topbar {
-    top: 0;
-  }
-
-  .builder:has(.settings-page--mobile-content-open) .topbar__main,
-  .builder:has(.publish-page--mobile-content-open) .topbar__main {
     display: none;
   }
 
