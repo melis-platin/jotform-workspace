@@ -17220,6 +17220,10 @@ body.builder--phone-only {
     flex-basis: calc(var(--spacing-2xl) + var(--spacing-2xs));
   }
 
+  .push-notification-history-card--sent .push-notification-history-card__rail {
+    background: var(--success-default);
+  }
+
   .push-notification-history-card__content {
     gap: 0;
     padding: var(--spacing-md) var(--spacing-md) var(--spacing-md) 0;
