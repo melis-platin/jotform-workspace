@@ -118,7 +118,7 @@ export function AppPreviewScreen({
         </div>
       </header>
       <div className={`app-preview-screen__canvas app-preview-screen__canvas--${device}`}>
-        {(device === 'phone' || device === 'tablet') && (
+        {device !== 'phone' && (
           <div className="app-preview-screen__qr-badge" aria-label="Scan QR to view on mobile">
             <span className="app-preview-screen__qr-badge-label">View on mobile</span>
             <QrPlaceholder size={104} className="app-preview-screen__qr-badge-qr" />
