@@ -2674,7 +2674,7 @@ const SortableElement = memo(function SortableElement({
         <div className="build-page__whatsapp-preview-notice" role="status">
           <span className="build-page__whatsapp-preview-notice-copy">
             <Icon name="exclamation-circle-filled" category="general" size={16} />
-            <span>This WhatsApp button appears on every page of your website</span>
+            <span>This WhatsApp button appears on every page of your website.</span>
           </span>
           <DSLink
             size="sm"
