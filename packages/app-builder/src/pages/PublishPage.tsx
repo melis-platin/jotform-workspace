@@ -536,6 +536,7 @@ export function PublishPage({
   const [canReturnToPushHistory, setCanReturnToPushHistory] = useState(false)
   const [isPushScheduleComposer, setIsPushScheduleComposer] = useState(false)
   const [pushHistoryReturnRequestId, setPushHistoryReturnRequestId] = useState(0)
+  const [isMobilePushPreviewCollapsed, setIsMobilePushPreviewCollapsed] = useState(false)
   const [previewedPushNotificationId, setPreviewedPushNotificationId] = useState<string | null>(null)
   const [isPermissionRequestModalOpen, setIsPermissionRequestModalOpen] = useState(false)
   const [permissionRequestTitle, setPermissionRequestTitle] = useState(PUSH_PERMISSION_REQUEST_DEFAULT_TITLE)
@@ -559,6 +560,10 @@ export function PublishPage({
   const canReturnFromPushOverview =
     !isPushDisabledOverview && isFigmaPushInitial && pushNotificationHistoryItems.length > 0
   const usesFigmaPushComposerLayout = isPushComposerOpen
+  const usesFigmaPushSendComposerLayout =
+    isPushComposerOpen &&
+    !isPushScheduleOpen &&
+    !isPermissionRequestModalOpen
   const usesFigmaPushLayout = isPushNotificationsOpen
   const shouldShowPushPreview =
     isPushNotificationsOpen &&
@@ -588,6 +593,12 @@ export function PublishPage({
       setPreviewedPushNotificationId(null)
     }
   }, [previewedPushNotification, previewedPushNotificationId])
+
+  useEffect(() => {
+    if (!usesFigmaPushSendComposerLayout) {
+      setIsMobilePushPreviewCollapsed(false)
+    }
+  }, [usesFigmaPushSendComposerLayout])
 
   const handlePushNotificationViewChange = useCallback((view: PushNotificationPanelView) => {
     setPushNotificationView(view)
@@ -644,7 +655,7 @@ export function PublishPage({
   }
 
   return (
-    <div className={`publish-page${shouldShowPreview ? ' publish-page--with-preview' : ''}${usesFigmaPushLayout ? ' publish-page--figma-push' : ''}${isFigmaPushInitial ? ' publish-page--figma-push-initial' : ''}${usesFigmaPushComposerLayout ? ' publish-page--figma-push-composer' : ''}${isMobileContentOpen ? ' publish-page--mobile-content-open' : ''}`}>
+    <div className={`publish-page${shouldShowPreview ? ' publish-page--with-preview' : ''}${usesFigmaPushLayout ? ' publish-page--figma-push' : ''}${isFigmaPushInitial ? ' publish-page--figma-push-initial' : ''}${usesFigmaPushComposerLayout ? ' publish-page--figma-push-composer' : ''}${usesFigmaPushSendComposerLayout ? ' publish-page--figma-push-send-composer' : ''}${isMobileContentOpen ? ' publish-page--mobile-content-open' : ''}`}>
       <SideNav
         items={NAV_ITEMS}
         activeId={activeId}
@@ -763,6 +774,12 @@ export function PublishPage({
           <div className="publish-page__preview">
             <QuickPreview
               onClose={isHistoryNotificationPreviewOpen ? closeHistoryNotificationPreview : undefined}
+              mobileCollapsed={isMobilePushPreviewCollapsed}
+              onMobileCollapsedChange={
+                usesFigmaPushSendComposerLayout
+                  ? setIsMobilePushPreviewCollapsed
+                  : undefined
+              }
             >
               <BasicPhonePreview>
                 {isPermissionRequestModalOpen ? (
