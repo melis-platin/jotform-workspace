@@ -7510,7 +7510,7 @@ export function BuildPage({
                             {displayStyle === 'Floating' && (
                               <p className="whatsapp-properties__display-style-help-text">
                                 <Icon name="info-circle-filled" category="general" size={16} />
-                                <span>Sits in the corner of the page and stays there while people scroll it.</span>
+                                <span>Stays in the corner of the page while people scroll.</span>
                               </p>
                             )}
                           </DSFormField>
