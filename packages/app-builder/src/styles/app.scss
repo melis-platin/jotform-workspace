@@ -16872,6 +16872,14 @@ body.builder--phone-only {
       var(--spacing-2xl);
   }
 
+  .publish-page--figma-push .publish-page__main:has(> .push-notification-dashboard) {
+    padding-top: var(--spacing-md);
+  }
+
+  .publish-page--figma-push .publish-page__main > .push-notification-dashboard {
+    margin-top: 0;
+  }
+
   .publish-page--figma-push.publish-page--with-preview .publish-page__preview {
     min-height: 620px;
     padding: 0 var(--spacing-md) var(--spacing-xl);
