@@ -122,6 +122,7 @@ export function App() {
   const [activePage, setActivePage] = useState<Page>('build')
   const [publishResetKey, setPublishResetKey] = useState(0)
   const [previewMode, setPreviewMode] = useState(false)
+  const [previewPushNotificationId, setPreviewPushNotificationId] = useState<string | null>(null)
   const [activePresetId, setActivePresetId] = useState<string>(initialPresetId)
   const [appUserRoleOptions, setAppUserRoleOptions] = useState<AppRoleOption[]>(() => getAppUserRoleOptionsForPreset(initialPresetId))
   const [appUserTableRoleIds, setAppUserTableRoleIds] = useState<string[]>(() => getAppUserTableRoleIdsForPreset(initialPresetId))
@@ -410,7 +411,10 @@ export function App() {
         activePage={activePage}
         onPageChange={handlePageChange}
         previewMode={previewMode}
-        onPreviewToggle={() => setPreviewMode((prev) => !prev)}
+        onPreviewToggle={() => {
+          setPreviewPushNotificationId(null)
+          setPreviewMode((prev) => !prev)
+        }}
         appName={appTitle}
         onAppNameChange={setAppTitle}
         presets={APP_PRESETS.map((p) => {
@@ -441,8 +445,14 @@ export function App() {
             chromeless={urlFullscreen || isFigmaCapture}
             openAttributionSheet={urlOpenAttributionSheet}
             previewMode={previewMode}
-            onPreviewClose={() => setPreviewMode(false)}
-            onPreviewOpen={() => setPreviewMode(true)}
+            onPreviewClose={() => {
+              setPreviewPushNotificationId(null)
+              setPreviewMode(false)
+            }}
+            onPreviewOpen={() => {
+              setPreviewPushNotificationId(null)
+              setPreviewMode(true)
+            }}
             onDeepLinkTargetsChange={setDeepLinkTargets}
             onSearchableElementCountChange={handleSearchableElementCountChange}
             onDataBackedElementCountChange={setDataBackedElementCount}
@@ -450,6 +460,7 @@ export function App() {
             pushNotificationsEnabled={pushNotificationsEnabled}
             searchBarEnabled={searchBarEnabled}
             pushNotifications={livePreviewPushNotifications}
+            initialPushNotificationPreviewId={previewPushNotificationId}
             onPushNotificationRead={markPushNotificationRead}
             appUserRoles={livePreviewAppUserRoleOptions}
           />
@@ -486,6 +497,11 @@ export function App() {
             onPushNotificationHistoryItemCreate={addPushNotificationHistoryItem}
             onPushNotificationHistoryItemUpdate={updatePushNotificationHistoryItem}
             onPushNotificationHistoryItemDelete={deletePushNotificationHistoryItem}
+            onPushNotificationPreviewRequest={(notification) => {
+              setPreviewPushNotificationId(notification.id)
+              setPreviewMode(true)
+              setActivePage('build')
+            }}
             arePushNotificationsDisabled={arePushNotificationsDisabled}
             onPushNotificationsDisabledChange={setActivePresetPushNotificationsDisabled}
             pushComposerFieldValues={{ 'user-name': getAppUserNameFieldValueForPreset(activePresetId) }}

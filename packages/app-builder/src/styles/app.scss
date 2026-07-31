@@ -17384,6 +17384,21 @@ body.builder--phone-only {
   letter-spacing: -0.012em;
 }
 
+.push-preview-phone__notification--interactive {
+  cursor: pointer;
+}
+
+.push-preview-phone__notification--interactive:focus-visible {
+  outline: var(--border-width-default) solid var(--border-brand);
+  outline-offset: calc(var(--spacing-3xs) * -1);
+}
+
+.live-preview__push-notification-preview {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
 .push-preview-phone__notification--with-image {
   min-height: calc(var(--spacing-4xl) + var(--spacing-lg));
   flex-direction: row;

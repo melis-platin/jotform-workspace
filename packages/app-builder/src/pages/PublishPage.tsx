@@ -497,6 +497,7 @@ interface PublishPageProps {
   onPushNotificationHistoryItemCreate: (item: PushNotificationHistoryItem) => void
   onPushNotificationHistoryItemUpdate: (item: PushNotificationHistoryItem) => void
   onPushNotificationHistoryItemDelete: (itemId: string) => void
+  onPushNotificationPreviewRequest?: (notification: PushNotificationHistoryItem) => void
   arePushNotificationsDisabled: boolean
   onPushNotificationsDisabledChange: (isDisabled: boolean) => void
   pushComposerFieldValues?: PushComposerFieldValues
@@ -515,6 +516,7 @@ export function PublishPage({
   onPushNotificationHistoryItemCreate,
   onPushNotificationHistoryItemUpdate,
   onPushNotificationHistoryItemDelete,
+  onPushNotificationPreviewRequest,
   arePushNotificationsDisabled,
   onPushNotificationsDisabledChange,
   pushComposerFieldValues = {},
@@ -764,7 +766,13 @@ export function PublishPage({
                     setPermissionRequestPreviewContent(permissionRequestContent)
                     setIsPermissionRequestModalOpen(true)
                   }}
-                  onNotificationPreview={(notification) => setPreviewedPushNotificationId(notification.id)}
+                  onNotificationPreview={(notification) => {
+                    if (onPushNotificationPreviewRequest) {
+                      onPushNotificationPreviewRequest(notification)
+                      return
+                    }
+                    setPreviewedPushNotificationId(notification.id)
+                  }}
                   onViewChange={handlePushNotificationViewChange}
                   onCanReturnToHistoryChange={setCanReturnToPushHistory}
                   onInitialOverviewChange={setIsPushInitialOverview}

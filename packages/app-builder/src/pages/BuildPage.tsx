@@ -67,6 +67,7 @@ import { LivePreviewLoginPopover } from '../components/LivePreviewLoginPopover'
 import { QrPopover } from '../components/QrPopover'
 import { MobileBottomBar } from '../components/MobileBottomBar'
 import { AppPreviewScreen } from '../components/AppPreviewScreen'
+import { PushNotificationPreview } from './SettingsPage'
 import { HeaderLayoutPicker, type AppHeaderLayout } from '../components/HeaderLayoutPicker'
 import {
   draggable,
@@ -3157,6 +3158,7 @@ interface BuildPageProps {
   searchBarEnabled?: boolean
   pushNotificationsEnabled?: boolean
   pushNotifications?: LivePreviewPushNotification[]
+  initialPushNotificationPreviewId?: string | null
   onPushNotificationRead?: (notificationId: string, roleId: string) => void
   appUserRoles?: AppRoleOption[]
 }
@@ -3364,6 +3366,7 @@ export function BuildPage({
   searchBarEnabled = true,
   pushNotificationsEnabled = false,
   pushNotifications = [],
+  initialPushNotificationPreviewId = null,
   onPushNotificationRead,
   appUserRoles = DEFAULT_ROLE_OPTIONS,
 }: BuildPageProps) {
@@ -3691,6 +3694,9 @@ export function BuildPage({
     })
   }, [pages, preset])
   const [isMorePageOpen, setIsMorePageOpen] = useState(false)
+  const [previewedPushNotificationId, setPreviewedPushNotificationId] = useState<string | null>(
+    initialPushNotificationPreviewId,
+  )
   const [isNotificationsPageOpen, setIsNotificationsPageOpen] = useState(false)
   const [isLeftDesktopNotificationsPageOpen, setIsLeftDesktopNotificationsPageOpen] = useState(false)
   const [isDesktopNotificationsCardOpen, setIsDesktopNotificationsCardOpen] = useState(false)
@@ -3756,6 +3762,10 @@ export function BuildPage({
         unread: !notification.readByRoleIds.includes(viewingAsRole),
       }))
   ), [pushNotifications, viewingAsRole])
+  const previewedPushNotification = useMemo(
+    () => pushNotifications.find((notification) => notification.id === previewedPushNotificationId) ?? null,
+    [previewedPushNotificationId, pushNotifications],
+  )
   const roleScopedUnreadPushNotificationCount = useMemo(() => (
     roleScopedPushNotifications.filter((notification) => notification.unread).length
   ), [roleScopedPushNotifications])
@@ -4208,6 +4218,7 @@ export function BuildPage({
     setIsPreviewCartOpen(false)
     setIsPreviewCheckoutOpen(false)
     setIsPreviewProfileOpen(false)
+    setPreviewedPushNotificationId(null)
   }
 
   // Live-preview: clicking a list row whose action is "Open Dynamic Page" opens
@@ -5984,7 +5995,7 @@ export function BuildPage({
     )
   })()
 
-  const phoneScreenContent = (
+  const appPhoneScreenContent = (
     <CollectionsProvider navigateToPage={navigateToPage}>
     <CartProvider>
     <FavoritesProvider>
@@ -6501,6 +6512,24 @@ export function BuildPage({
     </CartProvider>
     </CollectionsProvider>
   )
+
+  const phoneScreenContent = previewedPushNotification ? (
+    <div className="live-preview__push-notification-preview">
+      <PushNotificationPreview
+        title={previewedPushNotification.title}
+        content={previewedPushNotification.content}
+        image={previewedPushNotification.image}
+        appIconVariant={appIcon.variant}
+        appIconImageUrl={appIcon.imageUrl}
+        appIconName={appIcon.icon}
+        appIconStyle="flat"
+        onNotificationClick={() => {
+          markRoleScopedPushNotificationRead(previewedPushNotification.id)
+          handleLivePreviewNotificationOpen(previewedPushNotification)
+        }}
+      />
+    </div>
+  ) : appPhoneScreenContent
 
   return (
     <>

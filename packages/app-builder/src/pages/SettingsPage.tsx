@@ -3839,6 +3839,7 @@ export interface PushNotificationPreviewProps {
   appIconColor?: string
   appIconBg?: string
   appIconStyle?: IconStyle
+  onNotificationClick?: () => void
 }
 
 function mergePushComposerText(prefix: string, suffix: string) {
@@ -4196,6 +4197,7 @@ export function PushNotificationPreview({
   appIconColor = 'var(--fg-inverse)',
   appIconBg = 'var(--fg-brand)',
   appIconStyle = 'flat',
+  onNotificationClick,
 }: PushNotificationPreviewProps) {
   const previewTitle = title.trim() || NOTIFICATION_TITLE_PLACEHOLDER
   const previewContent = content.trim() || NOTIFICATION_CONTENT_PLACEHOLDER
@@ -4213,7 +4215,18 @@ export function PushNotificationPreview({
         <p>Monday, June 6</p>
         <img className="push-preview-phone__clock-time" src={lockscreenTime} alt="" />
       </div>
-      <div className={`push-preview-phone__notification${image ? ' push-preview-phone__notification--with-image' : ''}`}>
+      <div
+        className={`push-preview-phone__notification${image ? ' push-preview-phone__notification--with-image' : ''}${onNotificationClick ? ' push-preview-phone__notification--interactive' : ''}`}
+        role={onNotificationClick ? 'button' : undefined}
+        tabIndex={onNotificationClick ? 0 : undefined}
+        aria-label={onNotificationClick ? `Open ${previewTitle}` : undefined}
+        onClick={onNotificationClick}
+        onKeyDown={onNotificationClick ? (event) => {
+          if (event.key !== 'Enter' && event.key !== ' ') return
+          event.preventDefault()
+          onNotificationClick()
+        } : undefined}
+      >
         <PushPreviewNotificationIcon
           appIconVariant={appIconVariant}
           appIconImageUrl={appIconImageUrl}
