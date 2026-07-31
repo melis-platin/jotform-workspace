@@ -10553,6 +10553,33 @@ body.builder--phone-only {
   flex-shrink: 0;
 }
 
+@media (max-width: 768px) {
+  .app-preview-screen__canvas--phone {
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .app-preview-screen__canvas--phone .app-preview-screen__phone {
+    width: 100%;
+    height: 100%;
+    aspect-ratio: auto;
+    align-self: stretch;
+    flex: 1 1 auto;
+  }
+
+  .app-preview-screen__canvas--phone :is(
+    .live-preview__phone-shell,
+    .live-preview__phone-bezel
+  ) {
+    display: none;
+  }
+
+  .app-preview-screen__canvas--phone .live-preview__phone-screen {
+    inset: 0;
+    border-radius: 0;
+  }
+}
+
 .app-preview-screen__desktop {
   // Left-sidebar (nav) width — drives the sidebar + the top-header/content shifts.
   --side-nav-width: 255px;
