@@ -918,18 +918,25 @@ const getSearchMatchRanges = (text: string, searchText: string) => {
   return mergeSearchMatchRanges(tokenRanges)
 }
 
-const truncateSearchDescription = (description: string, searchText: string) => {
+const truncateSearchDescription = (
+  description: string,
+  searchText: string,
+  maxLength = SEARCH_DESCRIPTION_MAX_LENGTH,
+) => {
   const cleanDescription = description.replace(/\s+/g, ' ').trim()
-  if (cleanDescription.length <= SEARCH_DESCRIPTION_MAX_LENGTH) return cleanDescription
+  if (cleanDescription.length <= maxLength) return cleanDescription
 
   const matchRange = getSearchMatchRanges(cleanDescription, searchText)[0]
 
   if (!matchRange) {
-    return `${cleanDescription.slice(0, SEARCH_DESCRIPTION_MAX_LENGTH).trim()}...`
+    return `${cleanDescription.slice(0, maxLength).trim()}...`
   }
 
-  const start = Math.max(0, matchRange.start - 36)
-  const end = Math.min(cleanDescription.length, matchRange.end + 56)
+  const availableContextLength = Math.max(0, maxLength - (matchRange.end - matchRange.start))
+  const leadingContextLength = Math.round(availableContextLength * 0.4)
+  const trailingContextLength = availableContextLength - leadingContextLength
+  const start = Math.max(0, matchRange.start - leadingContextLength)
+  const end = Math.min(cleanDescription.length, matchRange.end + trailingContextLength)
   const prefix = start > 0 ? '... ' : ''
   const suffix = end < cleanDescription.length ? '...' : ''
 
@@ -1340,7 +1347,7 @@ const getPageContentSearchResults = (
         id: `page-content-${page.id}`,
         title: page.name,
         description: matchingElementText
-          .map((text) => truncateSearchDescription(text, searchText))
+          .map((text) => truncateSearchDescription(text, searchText, 64))
           .join(' / '),
         category: 'content' as const,
         visual: getPageVisual(page),
