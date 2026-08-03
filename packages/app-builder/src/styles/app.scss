@@ -12585,6 +12585,29 @@ body.builder--phone-only {
   min-height: 340px;
 }
 
+// Search-result cards size to their content, with enough room for a short
+// result list and an internal scroll once a longer list reaches the cap. This
+// applies to tablet and top-navigation desktop layouts; the Left layout owns a
+// separate search modal.
+:is(.app-preview-screen__desktop, .app-preview-screen__tablet):not(:has(.live-preview__side-nav)) .live-preview__desktop-search-featured--surface:has(.live-preview__search-match-results) {
+  --live-preview-search-results-card-min-height: 320px;
+  --live-preview-search-results-card-max-height: min(520px, calc(100vh - 160px));
+
+  height: fit-content;
+  min-height: var(--live-preview-search-results-card-min-height);
+  max-height: var(--live-preview-search-results-card-max-height);
+}
+
+:is(.app-preview-screen__desktop, .app-preview-screen__tablet):not(:has(.live-preview__side-nav)) .live-preview__desktop-search-featured--surface:has(.live-preview__search-match-results) .live-preview__search-page--desktop-context {
+  height: fit-content;
+  min-height: var(--live-preview-search-results-card-min-height);
+  max-height: var(--live-preview-search-results-card-max-height);
+}
+
+:is(.app-preview-screen__desktop, .app-preview-screen__tablet):not(:has(.live-preview__side-nav)) .live-preview__desktop-search-featured--surface:has(.live-preview__search-match-results) .live-preview__search-match-results {
+  flex: 1 1 auto;
+}
+
 .app-preview-screen__desktop .live-preview__top-header-search-btn {
   width: 32px;
   height: 32px;
