@@ -16667,8 +16667,9 @@ body.builder--phone-only {
   }
 
   .push-notification-history-card__divider {
-    width: calc(100% + var(--spacing-4xl) + var(--spacing-xs));
-    margin-left: calc(var(--spacing-lg) * -1);
+    // Keep the canceled-state divider evenly inset from the card edges.
+    width: calc(100% + var(--spacing-4xl) + var(--spacing-2xs));
+    margin-left: calc((var(--spacing-xl) + var(--spacing-sm)) * -1);
   }
 }
 
