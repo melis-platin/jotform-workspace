@@ -81,21 +81,45 @@ const SEARCH_RESULT_ICON_KEYS = ['Icon', 'Left Icon', 'Right Icon', 'Action Icon
 const SEARCH_RESULT_ICON_COLOR_KEYS = ['Icon Color', 'Indicator Icon Color', 'Action Icon Color', 'iconColor']
 const SEARCH_RESULT_ICON_BACKGROUND_KEYS = ['Icon Background Color', 'Icon Background', 'Background Color', 'Indicator Background Color', 'Icon BG', 'iconBgColor']
 
-type SearchResultCategory = 'pages' | 'forms' | 'sign' | 'contents'
+type SearchResultCategory =
+  | 'pages'
+  | 'forms'
+  | 'tables'
+  | 'sign-documents'
+  | 'reports'
+  | 'sendbox'
+  | 'documents'
+  | 'content'
 type SearchResultFilter = 'all' | SearchResultCategory
 
-const SEARCH_RESULT_CATEGORY_ORDER: SearchResultCategory[] = ['pages', 'forms', 'sign', 'contents']
+const SEARCH_RESULT_CATEGORY_ORDER: SearchResultCategory[] = [
+  'pages',
+  'forms',
+  'tables',
+  'sign-documents',
+  'reports',
+  'sendbox',
+  'documents',
+]
 const SEARCH_RESULT_CATEGORY_LABELS: Record<SearchResultCategory, string> = {
   pages: 'PAGES',
   forms: 'FORMS',
-  sign: 'SIGN',
-  contents: 'CONTENTS',
+  tables: 'TABLES',
+  'sign-documents': 'SIGN DOCUMENTS',
+  reports: 'REPORTS',
+  sendbox: 'SENDBOX',
+  documents: 'DOCUMENTS',
+  content: 'SEARCH RESULTS',
 }
 const SEARCH_RESULT_FILTER_LABELS: Record<SearchResultCategory, string> = {
   pages: 'Pages',
   forms: 'Forms',
-  sign: 'Sign',
-  contents: 'Contents',
+  tables: 'Tables',
+  'sign-documents': 'Sign Documents',
+  reports: 'Reports',
+  sendbox: 'Sendbox',
+  documents: 'Document',
+  content: 'Content',
 }
 
 const GENERIC_SEARCH_PHRASES = new Set([
@@ -658,9 +682,13 @@ const getItemVisual = (
 }
 
 const getElementSearchCategory = (componentId: string | undefined, hasFormConfig: boolean): SearchResultCategory => {
-  if (componentId === 'sign-document') return 'sign'
+  if (componentId === 'sign-document') return 'sign-documents'
+  if (componentId === 'table') return 'tables'
+  if (componentId === 'chart') return 'reports'
+  if (componentId === 'document') return 'documents'
+  if (componentId === 'inbox' || componentId === 'sendbox') return 'sendbox'
   if (hasFormConfig) return 'forms'
-  return 'contents'
+  return 'content'
 }
 
 const hasOpenFormAction = (properties: Record<string, unknown>) => (
@@ -904,7 +932,12 @@ const getDisplayDescription = (
   searchText: string,
 ) => {
   if (category === 'pages') return 'Go to page'
-  if (category === 'forms') return 'Fill out form'
+  if (category === 'forms') return 'Fill out the form'
+  if (category === 'tables') return 'Open table'
+  if (category === 'sign-documents') return 'Open sign document'
+  if (category === 'reports') return 'Open report'
+  if (category === 'sendbox') return 'Open inbox'
+  if (category === 'documents') return 'Open document'
   if (!description) return ''
   return truncateSearchDescription(description, searchText)
 }
@@ -946,7 +979,7 @@ const pushSearchResult = (
 ) => {
   const normalizedSearchText = normalizeSearchPhrase(searchText)
   const resultTitle = getCleanSearchResultText(title)
-    || (category === 'forms' || category === 'sign' ? getStringValue(title) : '')
+    || (category === 'forms' || category === 'sign-documents' ? getStringValue(title) : '')
   const resultDescription = getCleanSearchResultText(description)
 
   if (!resultTitle) return
@@ -1055,7 +1088,7 @@ export const getPreviewSearchResults = (
       id: 'app-overview',
       title: appTitle,
       description: appSubtitle || 'Open app',
-      category: 'contents',
+      category: 'content',
       visual: getPageVisual(overviewPage),
       target: {
         type: 'page',
@@ -1071,7 +1104,7 @@ export const getPreviewSearchResults = (
       id: `action-${action.id}`,
       title: action.title,
       description: '',
-      category: 'contents',
+      category: 'content',
       visual: action.visual ?? { type: 'icon', name: 'MousePointerClick' },
       target: action.sourceTarget ?? action.target,
       matchText: actionSourceVisibleText,
@@ -1214,7 +1247,7 @@ export const getPreviewSearchResults = (
           id: `item-${pageIndex}-${elementIndex}-${itemIndex}`,
           title: itemTitle || elementTitle || componentLabel,
           description: itemDescription,
-          category: 'contents',
+          category: 'content',
           visual: element.componentId === 'list' && itemTarget.type === 'element'
             ? getIconVisualFromRecord(item, COMPONENT_RESULT_ICONS.list)
             : getItemVisual(
@@ -1272,6 +1305,40 @@ export const getPreviewSearchResults = (
   })
 
   return results
+}
+
+const getPageContentSearchResults = (
+  searchText: string,
+  pages: SearchSourcePage[] = [],
+): SearchMatchResult[] => {
+  const normalizedSearchText = normalizeSearchPhrase(searchText)
+  if (!normalizedSearchText) return []
+
+  return pages
+    .filter((page) => !page.hidden && !page.dynamic && page.id)
+    .flatMap((page) => {
+      const matchingElementText = (page.elements ?? [])
+        .map(getElementVisibleSearchCorpus)
+        .filter((text) => textMatchesSearch(text, normalizedSearchText))
+        .slice(0, 3)
+
+      if (matchingElementText.length === 0 || !page.id) return []
+
+      return [{
+        id: `page-content-${page.id}`,
+        title: page.name,
+        description: matchingElementText
+          .map((text) => truncateSearchDescription(text, searchText))
+          .join(' / '),
+        category: 'content' as const,
+        visual: getPageVisual(page),
+        target: {
+          type: 'page' as const,
+          pageId: page.id,
+          elementId: getBestPageTargetElementId(page, normalizedSearchText),
+        },
+      }]
+    })
 }
 
 const renderFeaturedSearchList = (
@@ -1397,10 +1464,12 @@ export function LivePreviewSearchEmptyState({ query }: { query: string }) {
 export function LivePreviewSearchResultList({
   resultQuery,
   results,
+  pages,
   onResultSelect,
 }: {
   resultQuery: string
   results: SearchMatchResult[]
+  pages?: SearchSourcePage[]
   onResultSelect?: (target: SearchResultTarget) => void
 }) {
   const [activeResultFilter, setActiveResultFilter] = useState<SearchResultFilter>('all')
@@ -1411,22 +1480,18 @@ export function LivePreviewSearchResultList({
       results: results.filter((result) => result.category === category),
     }))
   ), [results])
-  const nonEmptySearchResultGroups = useMemo(() => (
-    searchResultGroups.filter((group) => group.results.length > 0)
-  ), [searchResultGroups])
-  const showSearchResultFilters = nonEmptySearchResultGroups.length > 1
-  const searchResultFilters = useMemo<Array<{ id: SearchResultFilter, label: string }>>(() => {
-    if (!showSearchResultFilters) return []
-
-    return [
-      { id: 'all', label: 'All' },
-      ...nonEmptySearchResultGroups.map((group) => ({
-        id: group.category,
-        label: SEARCH_RESULT_FILTER_LABELS[group.category],
-      })),
-    ]
-  }, [nonEmptySearchResultGroups, showSearchResultFilters])
-  const activeVisibleResultFilter = showSearchResultFilters ? activeResultFilter : 'all'
+  const pageContentResults = useMemo(
+    () => getPageContentSearchResults(resultQuery, pages),
+    [pages, resultQuery],
+  )
+  const searchResultFilters = useMemo<Array<{ id: SearchResultFilter, label: string }>>(() => [
+    { id: 'all', label: 'All' },
+    ...SEARCH_RESULT_CATEGORY_ORDER.map((category) => ({
+      id: category,
+      label: SEARCH_RESULT_FILTER_LABELS[category],
+    })),
+  ], [])
+  const activeVisibleResultFilter = activeResultFilter
   const visibleSearchResultGroups = searchResultGroups.filter((group) => (
     group.results.length > 0
     && (activeVisibleResultFilter === 'all' || group.category === activeVisibleResultFilter)
@@ -1437,35 +1502,49 @@ export function LivePreviewSearchResultList({
   }, [resultQuery])
 
   useEffect(() => {
-    if (!showSearchResultFilters) {
-      if (activeResultFilter !== 'all') {
-        setActiveResultFilter('all')
-      }
-      return
-    }
-
     if (!searchResultFilters.some((filter) => filter.id === activeResultFilter)) {
       setActiveResultFilter('all')
     }
-  }, [activeResultFilter, searchResultFilters, showSearchResultFilters])
+  }, [activeResultFilter, searchResultFilters])
 
   return (
     <section className="live-preview__search-match-results" aria-label={`Search results for ${resultQuery}`}>
-      {showSearchResultFilters && (
-        <div className="live-preview__search-filter-row" role="tablist" aria-label="Search result categories">
-          {searchResultFilters.map((filter) => (
-            <button
-              key={filter.id}
-              type="button"
-              role="tab"
-              aria-selected={activeResultFilter === filter.id}
-              className={`live-preview__search-filter-chip${activeResultFilter === filter.id ? ' live-preview__search-filter-chip--active' : ''}`}
-              onClick={() => setActiveResultFilter(filter.id)}
-            >
-              {filter.label}
-            </button>
-          ))}
-        </div>
+      <div className="live-preview__search-filter-row" role="tablist" aria-label="Search result categories">
+        {searchResultFilters.map((filter) => (
+          <button
+            key={filter.id}
+            type="button"
+            role="tab"
+            aria-selected={activeResultFilter === filter.id}
+            className={`live-preview__search-filter-chip${activeResultFilter === filter.id ? ' live-preview__search-filter-chip--active' : ''}`}
+            onClick={() => setActiveResultFilter(filter.id)}
+          >
+            {filter.label}
+          </button>
+        ))}
+      </div>
+
+      {activeVisibleResultFilter === 'all' && pageContentResults.length > 0 && (
+        <section className="live-preview__search-content-results" aria-label={`Page content results for ${resultQuery}`}>
+          <h2 className="live-preview__search-match-section-title">Search results ({pageContentResults.length})</h2>
+          <div className="live-preview__search-match-section-list">
+            {pageContentResults.map((result) => (
+              <button
+                key={result.id}
+                type="button"
+                className="live-preview__search-content-result"
+                onClick={() => onResultSelect?.(result.target)}
+              >
+                <span className="live-preview__search-match-title">
+                  {renderHighlightedText(result.title, resultQuery)}
+                </span>
+                <span className="live-preview__search-match-description">
+                  {renderHighlightedText(result.description, resultQuery)}
+                </span>
+              </button>
+            ))}
+          </div>
+        </section>
       )}
 
       {visibleSearchResultGroups.map((group) => (
@@ -1778,6 +1857,7 @@ export function LivePreviewSearchPage({
         <LivePreviewSearchResultList
           resultQuery={resultQuery}
           results={matchingSearchResults}
+          pages={pages}
           onResultSelect={(target) => {
             recordRecentSearch(resultQuery)
             onResultSelect?.(target)
