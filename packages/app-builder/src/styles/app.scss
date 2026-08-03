@@ -16735,6 +16735,10 @@ body.builder--phone-only {
 
 .push-notification-history-card__reschedule {
   margin-left: auto;
+  // The history-card content reserves a right action gutter for its overflow
+  // menu. The footer action should align to the card edge, not that inner
+  // content gutter.
+  margin-right: calc((var(--spacing-3xl) + var(--spacing-sm)) * -1);
   flex-shrink: 0;
 }
 
@@ -17480,6 +17484,7 @@ body.builder--phone-only {
     width: 100%;
     height: var(--spacing-3xl);
     align-self: stretch;
+    margin-right: 0;
   }
 
   .push-notification-history-card__menu {
