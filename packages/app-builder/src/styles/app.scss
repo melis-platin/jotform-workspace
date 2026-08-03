@@ -3531,9 +3531,9 @@ body,
   --live-preview-search-featured-border: var(--border);
   --live-preview-search-featured-item-bg: var(--bg-fill);
   --live-preview-search-featured-item: var(--fg-secondary);
-  --live-preview-search-chip-border: #E3E5F5;
+  --live-preview-search-chip-border: var(--navy-50);
   --live-preview-search-chip-radius: var(--ds-radius-sm, 4px);
-  --live-preview-search-chip-text: #343C6A;
+  --live-preview-search-chip-text: var(--navy-500);
   --live-preview-search-empty-icon-bg: var(--bg-surface-brand);
   --live-preview-search-empty-icon: var(--fg-brand);
   --live-preview-search-empty-title: var(--fg-primary);
@@ -3543,11 +3543,11 @@ body,
   --live-preview-search-match-section-title: var(--fg-secondary);
   --live-preview-search-match-highlight: var(--bg-fill-brand, var(--fg-brand));
   --live-preview-search-filter-hover-bg: color-mix(in srgb, var(--fg-primary) 7%, transparent);
-  --live-preview-search-filter-text: var(--fg-secondary);
+  --live-preview-search-filter-text: var(--live-preview-search-chip-text);
   --live-preview-search-match-visual-bg: var(--bg-surface-brand);
   --live-preview-search-match-visual-color: var(--fg-brand);
-  --live-preview-search-filter-selected-bg: var(--live-preview-search-match-visual-color);
-  --live-preview-search-filter-selected-text: var(--live-preview-search-match-visual-bg);
+  --live-preview-search-filter-selected-bg: var(--navy-75);
+  --live-preview-search-filter-selected-text: var(--live-preview-search-chip-text);
 }
 
 [data-theme='dark'] {
@@ -4002,6 +4002,7 @@ body,
 }
 
 .live-preview__search-filter-chip {
+  flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -4009,13 +4010,13 @@ body,
   min-width: 0;
   height: auto;
   padding: var(--space-1) var(--space-2);
-  border: 0;
-  border-radius: var(--live-preview-search-radius);
+  border: 1px solid transparent;
+  border-radius: var(--live-preview-search-chip-radius);
   background: transparent;
   color: var(--live-preview-search-filter-text);
   font-family: var(--live-preview-search-font-family);
   font-size: var(--font-size-paragraph-sm);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-book);
   line-height: var(--line-height-paragraph-sm);
   letter-spacing: 0;
   white-space: nowrap;
@@ -4035,6 +4036,7 @@ body,
 }
 
 .live-preview__search-filter-chip--active {
+  border-color: var(--live-preview-search-chip-border);
   background: var(--live-preview-search-filter-selected-bg);
   color: var(--live-preview-search-filter-selected-text);
   box-shadow: none;
