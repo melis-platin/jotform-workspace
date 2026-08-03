@@ -943,7 +943,9 @@ const getDisplayDescription = (
 ) => {
   if (category === 'pages') return 'Go to page'
   if (category === 'forms') return 'Fill out the form'
-  if (category === 'tables') return 'Open table'
+  if (category === 'tables') return description
+    ? truncateSearchDescription(description, searchText)
+    : 'Open table'
   if (category === 'sign-documents') return 'Open sign document'
   if (category === 'reports') return 'Open report'
   if (category === 'sendbox') return 'Open inbox'
