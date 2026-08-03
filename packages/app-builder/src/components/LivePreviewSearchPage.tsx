@@ -1224,8 +1224,12 @@ export const getPreviewSearchResults = (
       }
       const elementVisibleSearchText = getElementVisibleSearchCorpus(element)
       const elementMatchesSearch = textMatchesSearch(elementVisibleSearchText, normalizedSearchText)
+      // Interactive Lists surface their own items as search results. The List
+      // title is only a container label, never a destination in its own right.
+      const isDynamicListNavigation = element.componentId === 'list'
+        && String(properties['Click Action'] ?? '') === 'Open Dynamic Page'
 
-      if (element.componentId !== 'form') {
+      if (element.componentId !== 'form' && !isDynamicListNavigation) {
         pushSearchResult(results, seen, searchText, {
           id: `element-${pageIndex}-${elementIndex}`,
           title: elementTitle || componentLabel,
@@ -1247,8 +1251,6 @@ export const getPreviewSearchResults = (
         })
       }
 
-      const isDynamicListNavigation = element.componentId === 'list'
-        && String(properties['Click Action'] ?? '') === 'Open Dynamic Page'
       const navigationPage = isDynamicListNavigation
         ? undefined
         : getElementNavigationPage(pages, element)
