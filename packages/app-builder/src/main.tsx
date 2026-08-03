@@ -21,13 +21,27 @@ const presetIds = APP_PRESETS.map((p) => p.id)
 const params = new URLSearchParams(window.location.search)
 const forceFresh = params.get('fresh') === '1'
 const bootPresetId = params.get('preset')
+const clearPresetTheme = (presetId: string) => {
+  try {
+    localStorage.removeItem(`jf-app-designer:${presetId}`)
+  } catch {
+    // Theme reset is best-effort, just like preset snapshot persistence.
+  }
+}
 
 async function boot() {
   await initStorage(presetIds)
 
   if (forceFresh) {
-    if (bootPresetId) clearSnapshot(bootPresetId)
-    else presetIds.forEach((id) => clearSnapshot(id))
+    if (bootPresetId) {
+      clearSnapshot(bootPresetId)
+      clearPresetTheme(bootPresetId)
+    } else {
+      presetIds.forEach((id) => {
+        clearSnapshot(id)
+        clearPresetTheme(id)
+      })
+    }
   }
 
   // Load the shared remote state for the initial preset (after any fresh-clear, so the
