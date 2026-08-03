@@ -11686,16 +11686,18 @@ const ALL_APP_PRESETS: AppPreset[] = [
     id: 'cedar-ops-center',
     name: 'Cedar Operations',
     appTitle: 'Cedar Operations',
-    appSubtitle: 'A complete workspace for field requests, service reports, approvals, and team communication.',
+    appSubtitle: 'A complete workspace for field requests, approvals, customer documents, and team communication.',
     appHeader: {
       show: true,
       title: 'Every field operation, connected',
-      subtitle: 'Coordinate work orders, safety documents, reports, team messages, and approvals from one shared workspace.',
+      subtitle: 'Coordinate work orders, safety documents, team messages, and approvals from one shared workspace.',
       icon: 'ClipboardCheck',
       ctaLabel: 'Open operations dashboard',
       ctaAction: 'Navigate to Page',
       ctaPageId: 'page-2',
-      backgroundMode: 'gradient',
+      bgSource: 'image',
+      backgroundImageUrl: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?w=1200&h=700&fit=crop',
+      backgroundImageName: 'operations control room',
     },
     theme: {
       color: '#146C94',
@@ -11714,6 +11716,7 @@ const ALL_APP_PRESETS: AppPreset[] = [
         id: 'page-1', name: 'Home', icon: 'House', elements: [
           { componentId: 'heading', variants: { Size: 'Large', Alignment: 'Left' }, properties: { Heading: 'Cedar Operations Center', Subheading: 'Today’s work, approvals, and customer updates are ready for your team.' } },
           { componentId: 'paragraph', properties: { Text: 'Morning brief: 14 scheduled site visits, 3 safety approvals waiting, and 2 customer messages need a response before noon.' } },
+          { componentId: 'list', variants: { Layout: 'Card', 'Card Image Style': 'Square', 'Card Layout': 'Vertical', 'Card Size': 'Medium', 'Card Action': 'Button' }, properties: { Title: 'Today’s priority sites', Subtitle: 'Open a site card to review its latest operational context.', 'Show Header': true, 'Button Label': 'Open site', 'Click Action': 'Open Dynamic Page', Items: JSON.stringify([{ title: 'Riverside Clinic', description: '10:30 AM HVAC repair. Safety approval and loading-bay access are confirmed.', image: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=700&h=500&fit=crop' }, { title: 'Northline Distribution', description: '1:00 PM preventive maintenance. Customer requested an arrival-time update.', image: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=700&h=500&fit=crop' }, { title: 'Cedar Point Apartments', description: '3:30 PM water-pressure assessment with on-site manager access.', image: 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=700&h=500&fit=crop' }]) } },
           { componentId: 'button', variants: { Type: 'Standard', Variant: 'Default', Corner: 'Rounded', Width: 'Full' }, properties: { Label: 'View work orders', Action: 'Navigate to Page', 'Action Page': 'page-2' } },
           { componentId: 'button', variants: { Type: 'Standard', Variant: 'Outlined', Corner: 'Rounded', Width: 'Full' }, properties: { Label: 'Review team inbox', Action: 'Navigate to Page', 'Action Page': 'page-5' } },
         ],
@@ -11722,15 +11725,7 @@ const ALL_APP_PRESETS: AppPreset[] = [
         id: 'page-2', name: 'Work Orders', icon: 'Table2', elements: [
           { componentId: 'heading', variants: { Size: 'Large', Alignment: 'Left' }, properties: { Heading: 'Active work orders', Subheading: 'Dispatch, location, priority, and customer status for today’s field visits.' } },
           { componentId: 'table', properties: { Label: 'Field service schedule', Description: '24 active work orders across North, Central, and Riverside routes. Filter by technician or completion status.' } },
-          { componentId: 'button', variants: { Type: 'Standard', Variant: 'Outlined', Corner: 'Rounded', Width: 'Full' }, properties: { Label: 'Open service reports', Action: 'Navigate to Page', 'Action Page': 'page-3' } },
-        ],
-      },
-      {
-        id: 'page-3', name: 'Service Reports', icon: 'BarChart3', elements: [
-          { componentId: 'heading', variants: { Size: 'Large', Alignment: 'Left' }, properties: { Heading: 'Service performance reports', Subheading: 'Completion rate, response time, repeat visits, and customer satisfaction across all routes.' } },
-          { componentId: 'chart', variants: { Type: 'Line' }, properties: { Icon: 'TrendingUp', 'Date Filter': true } },
-          { componentId: 'table', properties: { Label: 'Weekly response-time report', Description: 'Compare open, completed, overdue, and follow-up work by route and technician.' } },
-          { componentId: 'button', variants: { Type: 'Standard', Variant: 'Outlined', Corner: 'Rounded', Width: 'Full' }, properties: { Label: 'Submit a field request', Action: 'Navigate to Page', 'Action Page': 'page-4' } },
+          { componentId: 'button', variants: { Type: 'Standard', Variant: 'Outlined', Corner: 'Rounded', Width: 'Full' }, properties: { Label: 'Create a field request', Action: 'Navigate to Page', 'Action Page': 'page-4' } },
         ],
       },
       {
@@ -11743,7 +11738,7 @@ const ALL_APP_PRESETS: AppPreset[] = [
       {
         id: 'page-5', name: 'Team Inbox', icon: 'Inbox', elements: [
           { componentId: 'heading', variants: { Size: 'Large', Alignment: 'Left' }, properties: { Heading: 'Team inbox', Subheading: 'Customer updates, technician questions, and dispatch handoffs that need a clear owner.' } },
-          { componentId: 'list', variants: { Layout: 'Card', 'Card Image Style': 'Icon', 'Card Layout': 'Horizontal', 'Card Action': 'Button' }, properties: { Title: 'Unread dispatch messages', 'Show Header': false, 'Button Label': 'Open message', 'Click Action': 'Open Dynamic Page', 'Search Category': 'Sendbox', Items: JSON.stringify([{ title: 'Riverside Clinic access code', description: 'Customer success shared the updated loading-bay code for the 10:30 AM repair visit.', icon: 'KeyRound' }, { title: 'Northline follow-up requested', description: 'A customer asked for an ETA and a copy of the completed maintenance report.', icon: 'MessageSquare' }, { title: 'Safety team approval needed', description: 'Review the confined-space checklist before the Riverside inspection begins.', icon: 'ShieldCheck' }]) } },
+          { componentId: 'list', variants: { Layout: 'Card', 'Card Image Style': 'Icon', 'Card Layout': 'Horizontal', 'Card Action': 'Button' }, properties: { Title: 'Unread dispatch messages', 'Show Header': false, 'Button Label': 'Open message', 'Click Action': 'Open Dynamic Page', 'Search Category': 'Sendbox', Items: JSON.stringify([{ title: 'Riverside Clinic access code', description: 'Customer success shared the updated loading-bay code for the 10:30 AM repair visit.', icon: 'KeyRound' }, { title: 'Northline follow-up requested', description: 'A customer asked for an ETA and a copy of the completed maintenance update.', icon: 'MessageSquare' }, { title: 'Safety team approval needed', description: 'Review the confined-space checklist before the Riverside inspection begins.', icon: 'ShieldCheck' }]) } },
           { componentId: 'button', variants: { Type: 'Standard', Variant: 'Outlined', Corner: 'Rounded', Width: 'Full' }, properties: { Label: 'Open field requests', Action: 'Navigate to Page', 'Action Page': 'page-4' } },
         ],
       },
