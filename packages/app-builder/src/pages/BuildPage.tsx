@@ -3633,7 +3633,7 @@ export function BuildPage({
         const targetRect = target.getBoundingClientRect()
         const targetTop = scrollContainer.scrollTop + targetRect.top - containerRect.top
         const targetY = Math.max(0, targetTop)
-        scrollContainer.scrollTo({ top: targetY, behavior: 'smooth' })
+        scrollContainer.scrollTo({ top: targetY, behavior: 'auto' })
         initialElementFocusHandledRef.current = true
       })
     }
@@ -4345,7 +4345,7 @@ export function BuildPage({
           targetTop - (containerRect.height / 2) + (targetRect.height / 2),
         )
 
-        scrollContainer.scrollTo({ top: targetY, behavior: 'smooth' })
+        scrollContainer.scrollTo({ top: targetY, behavior: 'auto' })
       })
     }
 
@@ -4397,7 +4397,7 @@ export function BuildPage({
         const target = previewRoot.querySelector<HTMLElement>(getFormSheetFieldSelector(fieldName))
         if (!target) return
 
-        target.scrollIntoView({ behavior: 'smooth', block: 'center' })
+        target.scrollIntoView({ behavior: 'auto', block: 'center' })
         target.querySelector<HTMLElement>('input, textarea')?.focus()
       })
     }, 160)
