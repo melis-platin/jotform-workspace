@@ -1,4 +1,4 @@
-import { type CSSProperties, type FormEvent, type KeyboardEvent, type PointerEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { type FormEvent, type KeyboardEvent, type PointerEvent, useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { AppIcon } from '@jf/app-elements'
 import { Icon as DSIcon } from '@jf/design-system'
 
@@ -29,8 +29,8 @@ export type SearchResultTarget =
 type SearchMatchImageShape = 'square' | 'rounded' | 'circle'
 
 export type SearchMatchVisual =
-  | { type: 'icon', name: string, color?: string, backgroundColor?: string }
-  | { type: 'design-icon', name: string, category: string, color?: string, backgroundColor?: string }
+  | { type: 'icon', name: string }
+  | { type: 'design-icon', name: string, category: string }
   | { type: 'image', src: string, shape?: SearchMatchImageShape }
 
 export interface SearchSourceAction {
@@ -79,8 +79,6 @@ const RECENT_SEARCH_STORAGE_PREFIX = 'jf-live-preview-search-recent'
 const SEARCH_DESCRIPTION_MAX_LENGTH = 96
 const SEARCH_RESULT_IMAGE_KEYS = ['image', 'Image', 'Image URL', 'photo', 'Photo', 'avatar', 'Avatar', 'thumbnail', 'Thumbnail']
 const SEARCH_RESULT_ICON_KEYS = ['Icon', 'Left Icon', 'Right Icon', 'Action Icon', 'icon']
-const SEARCH_RESULT_ICON_COLOR_KEYS = ['Icon Color', 'Indicator Icon Color', 'Action Icon Color', 'iconColor']
-const SEARCH_RESULT_ICON_BACKGROUND_KEYS = ['Icon Background Color', 'Icon Background', 'Background Color', 'Indicator Background Color', 'Icon BG', 'iconBgColor']
 
 type SearchResultCategory =
   | 'pages'
@@ -634,8 +632,6 @@ const getIconVisualFromRecord = (
   return {
     type: 'icon',
     name: getSearchResultIconName(iconName),
-    color: getFirstRecordValue(record, SEARCH_RESULT_ICON_COLOR_KEYS) || undefined,
-    backgroundColor: getFirstRecordValue(record, SEARCH_RESULT_ICON_BACKGROUND_KEYS) || undefined,
   }
 }
 
@@ -685,7 +681,6 @@ const getElementVisual = (
       type: 'design-icon',
       name: 'product-tables-filled',
       category: 'products',
-      color: 'var(--navy-300)',
     }
   }
 
@@ -1472,15 +1467,6 @@ const renderHighlightedText = (text: string, searchText: string) => (
   ))
 )
 
-const getSearchResultVisualStyle = (visual: SearchMatchVisual): CSSProperties | undefined => {
-  if ((visual.type !== 'icon' && visual.type !== 'design-icon') || (!visual.color && !visual.backgroundColor)) return undefined
-
-  return {
-    color: visual.color,
-    background: visual.backgroundColor,
-  }
-}
-
 const renderSearchResultVisual = (visual: SearchMatchVisual) => (
   <span
     className={[
@@ -1489,7 +1475,6 @@ const renderSearchResultVisual = (visual: SearchMatchVisual) => (
       visual.type === 'image' && visual.shape && `live-preview__search-match-visual--${visual.shape}`,
     ].filter(Boolean).join(' ')}
     aria-hidden="true"
-    style={getSearchResultVisualStyle(visual)}
   >
     {visual.type === 'image'
       ? <img src={visual.src} alt="" loading="lazy" />

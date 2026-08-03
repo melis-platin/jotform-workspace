@@ -4106,6 +4106,8 @@ body,
 }
 
 .live-preview__search-match-visual {
+  // Search-result icons always inherit the active App Designer color scheme.
+  // Keep both values tied to the canvas theme tokens rather than result data.
   flex: 0 0 auto;
   display: inline-flex;
   align-items: center;
