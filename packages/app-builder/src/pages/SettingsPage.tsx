@@ -2568,7 +2568,7 @@ function PushNotificationHistoryCard({
                 size="sm"
                 onClick={() => onDuplicate(notification)}
               >
-                Duplicate &amp; Reschedule
+                Reschedule
               </Button>
             </div>
           </>
