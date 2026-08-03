@@ -12578,6 +12578,13 @@ body.builder--phone-only {
   width: 100%;
 }
 
+// Recent-search history needs a compact desktop surface. Apply it to every
+// top-navigation layout while leaving the Left sidebar search modal unchanged.
+.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__desktop-search-featured--surface:has(.live-preview__search-results) {
+  height: min(350px, calc(100vh - 160px));
+  min-height: 340px;
+}
+
 .app-preview-screen__desktop .live-preview__top-header-search-btn {
   width: 32px;
   height: 32px;
