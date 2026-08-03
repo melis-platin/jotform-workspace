@@ -1221,6 +1221,13 @@ function normalizeBohoNestPages(pages: AppPage[], preset: AppPreset | undefined)
   return ensureDynamicPagesForOpenDynamicLists(normalizeBohoNestSharedListSources(pages, preset), preset)
 }
 
+// Cedar Operations no longer includes reporting. Older saved snapshots may
+// still carry the retired page, so remove it as part of the preset migration.
+function normalizeCedarOperationsPages(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {
+  if (preset?.id !== 'cedar-ops-center') return pages
+  return pages.filter((page) => page.name !== 'Service Reports')
+}
+
 // A List Title owns the visible heading for a list. When presets contain an
 // adjacent Heading, preserve its title by moving it into the list instead.
 function normalizeListTitleHeaders(pages: AppPage[]): AppPage[] {
@@ -1270,9 +1277,12 @@ function normalizeListTitleHeaders(pages: AppPage[]): AppPage[] {
 function normalizePresetPages(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {
   return normalizePresetButtonIcons(normalizeListTitleHeaders(
     normalizeBohoNestPages(
-      normalizeCampPinecrestPages(
-        normalizeGoldenHivePages(
-          normalizeGymTrainerDynamicPages(pages, preset),
+      normalizeCedarOperationsPages(
+        normalizeCampPinecrestPages(
+          normalizeGoldenHivePages(
+            normalizeGymTrainerDynamicPages(pages, preset),
+            preset,
+          ),
           preset,
         ),
         preset,
