@@ -16667,9 +16667,10 @@ body.builder--phone-only {
   }
 
   .push-notification-history-card__divider {
-    // Keep the canceled-state divider evenly inset from the card edges.
-    width: calc(100% + var(--spacing-4xl) + var(--spacing-2xs));
-    margin-left: calc((var(--spacing-xl) + var(--spacing-sm)) * -1);
+    // Start after the gray status rail's 20px content gap, while retaining a
+    // 20px inset from the card's right edge.
+    width: calc(100% + var(--spacing-2xl));
+    margin-left: 0;
   }
 }
 
