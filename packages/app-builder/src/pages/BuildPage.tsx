@@ -4035,29 +4035,28 @@ export function BuildPage({
   // Fullwidth keeps five page names visible; contained and compact keep two
   // before remaining pages move under More.
   const desktopTopNavUsesConstrainedLayout = desktopNavVariant === 'contained' || desktopNavVariant === 'compact'
-  // Compact has a deliberately fixed navigation contract: when the visitor is
-  // logged out it shows Home and More next to the auth buttons; once logged in
-  // it shows the app's first two pages and More. Unlike the other layouts, it
-  // keeps the landing page in this compact navigation source.
-  const compactDesktopNavPages = pages.filter((page) => {
+  // Contained and Compact have a deliberately fixed navigation contract: when
+  // the visitor is logged out they show Home and More next to the auth buttons;
+  // once logged in they show the app's first two pages and More. Unlike the
+  // fullwidth layout, they keep the landing page in this navigation source.
+  const constrainedDesktopNavPages = pages.filter((page) => {
     if (page.dynamic || page.hidden) return false
     if (!isPreviewLoggedIn && page.requireLogin) return false
     return true
   })
-  const desktopTopNavSourcePages = desktopNavVariant === 'compact'
-    ? compactDesktopNavPages
+  const desktopTopNavUsesFixedVisibility = desktopNavVariant === 'contained' || desktopNavVariant === 'compact'
+  const desktopTopNavSourcePages = desktopTopNavUsesFixedVisibility
+    ? constrainedDesktopNavPages
     : navPages
-  const desktopTopNavVisibleCount = desktopNavVariant === 'contained'
-    ? DESKTOP_TOP_NAV_VISIBLE_COUNT.contained
-    : desktopNavVariant === 'compact'
-      ? (isPreviewLoggedIn ? DESKTOP_TOP_NAV_VISIBLE_COUNT.compact : 1)
+  const desktopTopNavVisibleCount = desktopNavVariant === 'contained' || desktopNavVariant === 'compact'
+    ? (isPreviewLoggedIn ? DESKTOP_TOP_NAV_VISIBLE_COUNT[desktopNavVariant] : 1)
       : DESKTOP_TOP_NAV_VISIBLE_COUNT.fullwidth
   const desktopTopNavUsesOverflow = desktopNavVariant !== 'left' && desktopTopNavSourcePages.length > desktopTopNavVisibleCount
   const desktopTopNavPages = desktopTopNavUsesOverflow ? desktopTopNavSourcePages.slice(0, desktopTopNavVisibleCount) : desktopTopNavSourcePages
   const desktopTopNavOverflowPages = desktopTopNavUsesOverflow ? desktopTopNavSourcePages.slice(desktopTopNavVisibleCount) : []
   const desktopTopNavActiveOverflowPage = desktopTopNavOverflowPages.find((p) => p.id === activePageId)
   const desktopTopNavMoreActive = Boolean(desktopTopNavActiveOverflowPage)
-  const desktopTopNavMoreLabel = desktopNavVariant === 'compact'
+  const desktopTopNavMoreLabel = desktopTopNavUsesFixedVisibility
     ? 'More'
     : desktopTopNavActiveOverflowPage?.name ?? 'More'
   const hasCartTriggerElement = pages.some((page) => (
