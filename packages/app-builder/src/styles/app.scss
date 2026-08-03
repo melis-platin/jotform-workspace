@@ -4188,6 +4188,13 @@ body,
   -webkit-line-clamp: 2;
 }
 
+// A desktop search surface has room to show the second and third matching
+// page-element excerpts; phone previews retain the compact two-line treatment.
+.live-preview__search-page--desktop-context .live-preview__search-content-result .live-preview__search-match-description,
+.live-preview__search-page--desktop-modal .live-preview__search-content-result .live-preview__search-match-description {
+  -webkit-line-clamp: 3;
+}
+
 .live-preview__search-match-context {
   display: -webkit-box;
   max-width: 100%;

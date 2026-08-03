@@ -936,6 +936,18 @@ const getSearchMatchRanges = (text: string, searchText: string) => {
   return mergeSearchMatchRanges(tokenRanges)
 }
 
+const getSearchSnippetStart = (text: string, index: number) => {
+  if (index <= 0) return 0
+  const boundary = text.lastIndexOf(' ', index - 1)
+  return boundary < 0 ? 0 : boundary + 1
+}
+
+const getSearchSnippetEnd = (text: string, index: number) => {
+  if (index >= text.length) return text.length
+  const boundary = text.indexOf(' ', index)
+  return boundary < 0 ? text.length : boundary
+}
+
 const truncateSearchDescription = (
   description: string,
   searchText: string,
@@ -953,8 +965,8 @@ const truncateSearchDescription = (
   const availableContextLength = Math.max(0, maxLength - (matchRange.end - matchRange.start))
   const leadingContextLength = Math.round(availableContextLength * 0.4)
   const trailingContextLength = availableContextLength - leadingContextLength
-  const start = Math.max(0, matchRange.start - leadingContextLength)
-  const end = Math.min(cleanDescription.length, matchRange.end + trailingContextLength)
+  const start = getSearchSnippetStart(cleanDescription, Math.max(0, matchRange.start - leadingContextLength))
+  const end = getSearchSnippetEnd(cleanDescription, Math.min(cleanDescription.length, matchRange.end + trailingContextLength))
   const prefix = start > 0 ? '... ' : ''
   const suffix = end < cleanDescription.length ? '...' : ''
 
