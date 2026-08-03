@@ -11682,6 +11682,83 @@ const ALL_APP_PRESETS: AppPreset[] = [
       }
     }
   },
+  {
+    id: 'cedar-ops-center',
+    name: 'Cedar Operations',
+    appTitle: 'Cedar Operations',
+    appSubtitle: 'A complete workspace for field requests, service reports, approvals, and team communication.',
+    appHeader: {
+      show: true,
+      title: 'Every field operation, connected',
+      subtitle: 'Coordinate work orders, safety documents, reports, team messages, and approvals from one shared workspace.',
+      icon: 'ClipboardCheck',
+      ctaLabel: 'Open operations dashboard',
+      ctaAction: 'Navigate to Page',
+      ctaPageId: 'page-2',
+      backgroundMode: 'gradient',
+    },
+    theme: {
+      color: '#146C94',
+      tint: 38,
+      font: 'DM Sans',
+      headingFont: 'DM Sans',
+      radius: 'Medium',
+      harmonyOffset: 205,
+      activePreset: 'Ocean',
+      colorMode: 'light',
+      tokenOverrides: {},
+    },
+    headerActions: [],
+    pages: [
+      {
+        id: 'page-1', name: 'Home', icon: 'House', elements: [
+          { componentId: 'heading', variants: { Size: 'Large', Alignment: 'Left' }, properties: { Heading: 'Cedar Operations Center', Subheading: 'Today’s work, approvals, and customer updates are ready for your team.' } },
+          { componentId: 'paragraph', properties: { Text: 'Morning brief: 14 scheduled site visits, 3 safety approvals waiting, and 2 customer messages need a response before noon.' } },
+          { componentId: 'button', variants: { Type: 'Standard', Variant: 'Default', Corner: 'Rounded', Width: 'Full' }, properties: { Label: 'View work orders', Action: 'Navigate to Page', 'Action Page': 'page-2' } },
+          { componentId: 'button', variants: { Type: 'Standard', Variant: 'Outlined', Corner: 'Rounded', Width: 'Full' }, properties: { Label: 'Review team inbox', Action: 'Navigate to Page', 'Action Page': 'page-5' } },
+        ],
+      },
+      {
+        id: 'page-2', name: 'Work Orders', icon: 'Table2', elements: [
+          { componentId: 'heading', variants: { Size: 'Large', Alignment: 'Left' }, properties: { Heading: 'Active work orders', Subheading: 'Dispatch, location, priority, and customer status for today’s field visits.' } },
+          { componentId: 'table', properties: { Label: 'Field service schedule', Description: '24 active work orders across North, Central, and Riverside routes. Filter by technician or completion status.' } },
+          { componentId: 'button', variants: { Type: 'Standard', Variant: 'Outlined', Corner: 'Rounded', Width: 'Full' }, properties: { Label: 'Open service reports', Action: 'Navigate to Page', 'Action Page': 'page-3' } },
+        ],
+      },
+      {
+        id: 'page-3', name: 'Service Reports', icon: 'BarChart3', elements: [
+          { componentId: 'heading', variants: { Size: 'Large', Alignment: 'Left' }, properties: { Heading: 'Service performance reports', Subheading: 'Completion rate, response time, repeat visits, and customer satisfaction across all routes.' } },
+          { componentId: 'chart', variants: { Type: 'Line' }, properties: { Icon: 'TrendingUp', 'Date Filter': true } },
+          { componentId: 'table', properties: { Label: 'Weekly response-time report', Description: 'Compare open, completed, overdue, and follow-up work by route and technician.' } },
+          { componentId: 'button', variants: { Type: 'Standard', Variant: 'Outlined', Corner: 'Rounded', Width: 'Full' }, properties: { Label: 'Submit a field request', Action: 'Navigate to Page', 'Action Page': 'page-4' } },
+        ],
+      },
+      {
+        id: 'page-4', name: 'Field Requests', icon: 'ClipboardList', elements: [
+          { componentId: 'heading', variants: { Size: 'Large', Alignment: 'Left' }, properties: { Heading: 'Create a field request', Subheading: 'Share the location, urgency, requested service, and customer context with dispatch.' } },
+          { componentId: 'form', variants: { 'Layout Type': 'Form' }, properties: { 'Form Title': 'New Field Service Request', 'Form Description': 'Dispatch reviews every request and assigns the next available qualified technician.', 'Submit Label': 'Send to dispatch', 'Form Fields': JSON.stringify([{ name: 'site', label: 'Site or customer', type: 'text', placeholder: 'e.g. Cedar Point Apartments' }, { name: 'service', label: 'Requested service', type: 'text', placeholder: 'e.g. urgent HVAC inspection' }, { name: 'priority', label: 'Priority', type: 'text', placeholder: 'Low, normal, high, or urgent' }, { name: 'details', label: 'Work details', type: 'textarea', placeholder: 'Include access notes, equipment, and the customer impact.' }, { name: 'email', label: 'Your email', type: 'email', placeholder: 'name@company.com' }],), 'Submits To': 'cedarFieldRequests', 'Show Border': true } },
+          { componentId: 'button', variants: { Type: 'Standard', Variant: 'Outlined', Corner: 'Rounded', Width: 'Full' }, properties: { Label: 'Review safety approvals', Action: 'Navigate to Page', 'Action Page': 'page-6' } },
+        ],
+      },
+      {
+        id: 'page-5', name: 'Team Inbox', icon: 'Inbox', elements: [
+          { componentId: 'heading', variants: { Size: 'Large', Alignment: 'Left' }, properties: { Heading: 'Team inbox', Subheading: 'Customer updates, technician questions, and dispatch handoffs that need a clear owner.' } },
+          { componentId: 'list', variants: { Layout: 'Card', 'Card Image Style': 'Icon', 'Card Layout': 'Horizontal', 'Card Action': 'Button' }, properties: { Title: 'Unread dispatch messages', 'Show Header': false, 'Button Label': 'Open message', 'Click Action': 'Open Dynamic Page', 'Search Category': 'Sendbox', Items: JSON.stringify([{ title: 'Riverside Clinic access code', description: 'Customer success shared the updated loading-bay code for the 10:30 AM repair visit.', icon: 'KeyRound' }, { title: 'Northline follow-up requested', description: 'A customer asked for an ETA and a copy of the completed maintenance report.', icon: 'MessageSquare' }, { title: 'Safety team approval needed', description: 'Review the confined-space checklist before the Riverside inspection begins.', icon: 'ShieldCheck' }]) } },
+          { componentId: 'button', variants: { Type: 'Standard', Variant: 'Outlined', Corner: 'Rounded', Width: 'Full' }, properties: { Label: 'Open field requests', Action: 'Navigate to Page', 'Action Page': 'page-4' } },
+        ],
+      },
+      {
+        id: 'page-6', name: 'Safety & Documents', icon: 'FileCheck2', elements: [
+          { componentId: 'heading', variants: { Size: 'Large', Alignment: 'Left' }, properties: { Heading: 'Safety approvals and documents', Subheading: 'Keep work authorization, customer records, and site safety acknowledgements complete before dispatch.' } },
+          { componentId: 'sign-document', variants: { Alignment: 'Left', Size: 'Normal' }, properties: { Label: 'Confined Space Entry Approval', Description: 'Review the site controls and sign the required safety acknowledgement before work begins.', Required: true } },
+          { componentId: 'sign-document', variants: { Alignment: 'Left', Size: 'Normal' }, properties: { Label: 'Customer Completion Certificate', Description: 'Confirm that the completed service meets the agreed scope and site requirements.', Required: true } },
+          { componentId: 'document', variants: { 'Has File': 'Yes', Alignment: 'Left', Size: 'Normal' }, properties: { 'File Name': 'Cedar Field Safety Handbook.pdf', Description: 'Emergency contacts, PPE standards, incident steps, and supervisor escalation paths.' } },
+          { componentId: 'document', variants: { 'Has File': 'Yes', Alignment: 'Left', Size: 'Normal' }, properties: { 'File Name': 'Customer Service Level Agreement.pdf', Description: 'Response windows, reporting commitments, and contact escalation details.' } },
+          { componentId: 'button', variants: { Type: 'Standard', Variant: 'Outlined', Corner: 'Rounded', Width: 'Full' }, properties: { Label: 'Return to operations dashboard', Action: 'Navigate to Page', 'Action Page': 'page-2' } },
+        ],
+      },
+    ],
+  },
 ]
 
 // These app concepts are no longer offered from the app picker. Keep the

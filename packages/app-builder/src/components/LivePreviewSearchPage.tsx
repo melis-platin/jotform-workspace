@@ -681,7 +681,17 @@ const getItemVisual = (
   return getIconVisualFromRecord(item, fallbackIcon)
 }
 
-const getElementSearchCategory = (componentId: string | undefined, hasFormConfig: boolean): SearchResultCategory => {
+const getElementSearchCategory = (
+  componentId: string | undefined,
+  hasFormConfig: boolean,
+  properties: Record<string, unknown> = {},
+): SearchResultCategory => {
+  const categoryOverride = getStringValue(properties['Search Category']).trim().toLocaleLowerCase()
+  if (categoryOverride === 'sendbox') return 'sendbox'
+  if (categoryOverride === 'reports') return 'reports'
+  if (categoryOverride === 'tables') return 'tables'
+  if (categoryOverride === 'sign documents') return 'sign-documents'
+  if (categoryOverride === 'documents') return 'documents'
   if (componentId === 'sign-document') return 'sign-documents'
   if (componentId === 'table') return 'tables'
   if (componentId === 'chart') return 'reports'
@@ -1182,7 +1192,7 @@ export const getPreviewSearchResults = (
           id: `element-${pageIndex}-${elementIndex}`,
           title: elementTitle || componentLabel,
           description: elementDescription,
-          category: getElementSearchCategory(element.componentId, false),
+          category: getElementSearchCategory(element.componentId, false, properties),
           visual: getElementVisual(element.componentId, properties, element.variants),
           target: elementTarget,
           matchText: elementVisibleSearchText,
