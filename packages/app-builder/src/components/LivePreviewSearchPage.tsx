@@ -1529,7 +1529,9 @@ export function LivePreviewSearchResultList({
   const showSearchResultFilters = nonEmptySearchResultGroups.length > 1
   const searchResultFilters = useMemo<Array<{ id: SearchResultFilter, label: string }>>(() => [
     { id: 'all', label: 'All' },
-    ...nonEmptySearchResultGroups.map((group) => ({
+    // Page results remain visible under All; pages are destinations, not a
+    // separately filterable result type.
+    ...nonEmptySearchResultGroups.filter((group) => group.category !== 'pages').map((group) => ({
       id: group.category,
       label: SEARCH_RESULT_FILTER_LABELS[group.category],
     })),
