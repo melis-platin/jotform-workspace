@@ -30,6 +30,7 @@ type SearchMatchImageShape = 'square' | 'rounded' | 'circle'
 
 export type SearchMatchVisual =
   | { type: 'icon', name: string, color?: string, backgroundColor?: string }
+  | { type: 'design-icon', name: string, category: string, color?: string, backgroundColor?: string }
   | { type: 'image', src: string, shape?: SearchMatchImageShape }
 
 export interface SearchSourceAction {
@@ -679,6 +680,15 @@ const getElementVisual = (
   properties: Record<string, unknown>,
   variants?: Record<string, unknown>,
 ): SearchMatchVisual => {
+  if (componentId === 'table') {
+    return {
+      type: 'design-icon',
+      name: 'product-tables-filled',
+      category: 'products',
+      color: 'var(--navy-300)',
+    }
+  }
+
   const imageValue = getImageFromRecord(properties)
     || (componentId === 'list' ? '' : getFirstItemImageFromRecord(properties))
   if (imageValue) {
@@ -1463,7 +1473,7 @@ const renderHighlightedText = (text: string, searchText: string) => (
 )
 
 const getSearchResultVisualStyle = (visual: SearchMatchVisual): CSSProperties | undefined => {
-  if (visual.type !== 'icon' || (!visual.color && !visual.backgroundColor)) return undefined
+  if ((visual.type !== 'icon' && visual.type !== 'design-icon') || (!visual.color && !visual.backgroundColor)) return undefined
 
   return {
     color: visual.color,
@@ -1483,6 +1493,8 @@ const renderSearchResultVisual = (visual: SearchMatchVisual) => (
   >
     {visual.type === 'image'
       ? <img src={visual.src} alt="" loading="lazy" />
+      : visual.type === 'design-icon'
+        ? <DSIcon name={visual.name} category={visual.category} size={20} />
       : <AppIcon name={visual.name} size={24} />}
   </span>
 )
