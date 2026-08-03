@@ -12569,6 +12569,15 @@ body.builder--phone-only {
   }
 }
 
+// In constrained desktop headers, the search surface belongs to the expanded
+// input rather than the default fixed-width search card. Keep both edges aligned.
+.app-preview-screen__desktop .live-preview__top-header-search.live-preview__top-header-search--open:is(
+  .live-preview__top-header-search--contained-overlay,
+  .live-preview__top-header-search--compact-overlay
+) .live-preview__desktop-search-featured {
+  width: 100%;
+}
+
 .app-preview-screen__desktop .live-preview__top-header-search-btn {
   width: 32px;
   height: 32px;
