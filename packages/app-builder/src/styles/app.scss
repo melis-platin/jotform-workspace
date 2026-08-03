@@ -2152,25 +2152,6 @@ body,
   }
 }
 
-.themes-view__section--search-highlight,
-.jf-form-sheet__field--search-highlight {
-  animation: live-preview-search-target-highlight 1.4s ease-out;
-  border-radius: var(--radius-md);
-}
-
-@keyframes live-preview-search-target-highlight {
-  0%,
-  35% {
-    background: color-mix(in srgb, var(--bg-fill-brand, var(--fg-brand)) 12%, transparent);
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--bg-fill-brand, var(--fg-brand)) 34%, transparent);
-  }
-
-  100% {
-    background: transparent;
-    box-shadow: 0 0 0 14px transparent;
-  }
-}
-
 .live-preview__top-header-page-name {
   font-family: var(--font-family-heading);
   font-size: var(--font-size-heading-sm);
