@@ -489,12 +489,10 @@ export const deriveFeaturedSearches = ({
   const keywords: string[] = []
   const seen = new Set<string>()
 
-  pushSearchCandidate(keywords, seen, appTitle)
-  pushTextSearchCandidates(keywords, seen, appSubtitle)
-
-  pages
-    .filter((page) => !page.hidden && !page.dynamic)
-    .forEach((page) => pushSearchCandidate(keywords, seen, page.name))
+  // Suggestions should help people discover real app content, rather than
+  // repeat the current app name or page-navigation labels such as “Field Requests”.
+  void appTitle
+  void appSubtitle
 
   pages.forEach((page) => {
     page.elements?.forEach((element) => {
@@ -517,7 +515,18 @@ export const deriveFeaturedSearches = ({
   })
 
   if (keywords.length === 0) {
-    pushSearchCandidate(keywords, seen, pages.find((page) => !page.dynamic)?.name)
+    pages
+      .filter((page) => !page.hidden && !page.dynamic)
+      .flatMap((page) => page.elements ?? [])
+      .some((element) => {
+        const properties = element.properties ?? {}
+        const candidate = SEARCH_PROPERTY_KEYS
+          .map((key) => getCleanSearchResultText(properties[key]))
+          .find(isUsefulSearchPhrase)
+        if (!candidate) return false
+        pushSearchCandidate(keywords, seen, candidate)
+        return true
+      })
   }
 
   return keywords.slice(0, FEATURED_SEARCH_LIMIT)
