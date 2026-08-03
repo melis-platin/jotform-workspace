@@ -1274,7 +1274,10 @@ export const getPreviewSearchResults = (
             ...parseSearchJsonItems(properties.Items),
             ...parseSearchJsonItems(properties.Products),
           ]
-      const dynamicDetailPage = isDynamicListNavigation
+      // A List with an existing generated detail page must always resolve its
+      // item-level search results to that detail page. The result connection is
+      // based on the page relationship, not on the List's current button label.
+      const dynamicDetailPage = element.componentId === 'list'
         ? getDynamicPageForElement(pages, elementId)
         : undefined
       const hasDynamicDetailTarget = Boolean(dynamicDetailPage)
