@@ -1225,7 +1225,14 @@ function normalizeBohoNestPages(pages: AppPage[], preset: AppPreset | undefined)
 // still carry the retired page, so remove it as part of the preset migration.
 function normalizeCedarOperationsPages(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {
   if (preset?.id !== 'cedar-ops-center') return pages
-  return pages.filter((page) => page.name !== 'Service Reports')
+  // Keep the retired report out of older snapshots, then restore a real detail
+  // page for every interactive Cedar List. Older Cedar snapshots predate the
+  // dynamic-page migration, which otherwise left its site and inbox CTAs with
+  // no destination.
+  return ensureDynamicPagesForOpenDynamicLists(
+    pages.filter((page) => page.name !== 'Service Reports'),
+    preset,
+  )
 }
 
 // A List Title owns the visible heading for a list. When presets contain an
