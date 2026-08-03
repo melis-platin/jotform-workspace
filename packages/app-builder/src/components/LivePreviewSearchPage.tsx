@@ -92,7 +92,8 @@ type SearchResultCategory =
 type SearchResultFilter = 'all' | SearchResultCategory
 
 const SEARCH_RESULT_CATEGORY_ORDER: SearchResultCategory[] = [
-  'pages',
+  // Page matches are represented by the consolidated Search results section,
+  // so they are intentionally excluded from the typed result sections below.
   'forms',
   'tables',
   'sign-documents',
