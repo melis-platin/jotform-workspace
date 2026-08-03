@@ -12608,6 +12608,26 @@ body.builder--phone-only {
   flex: 1 1 auto;
 }
 
+// Compact navigation is always a centred, floating page-width bar while search
+// is closed. Keep this normal-state rule separate from its expanded-search
+// layouts so future search changes cannot turn Compact into a full-width header.
+.app-preview-screen__desktop:not(:has(.live-preview__side-nav)) .live-preview__top-header--compact:not(
+  .live-preview__top-header--desktop-profile-search-open,
+  .live-preview__top-header--desktop-auth-search-open
+) {
+  top: var(--space-4);
+  left: 0;
+  right: 0;
+  width: auto;
+  max-width: 760px;
+  margin-left: auto;
+  margin-right: auto;
+  padding: var(--space-0) var(--space-3);
+  border: none;
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+}
+
 .app-preview-screen__desktop .live-preview__top-header-search-btn {
   width: 32px;
   height: 32px;
