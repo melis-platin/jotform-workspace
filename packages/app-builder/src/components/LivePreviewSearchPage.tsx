@@ -1527,6 +1527,13 @@ export function LivePreviewSearchResultList({
     () => getPageContentSearchResults(resultQuery, pages),
     [pages, resultQuery],
   )
+  // List and Product List item results are detail destinations. They share the
+  // consolidated Search results area with page-content matches (rather than a
+  // separate Content filter), so selecting an item can open its own detail view.
+  const consolidatedContentResults = useMemo(() => [
+    ...pageContentResults,
+    ...results.filter((result) => result.category === 'content'),
+  ], [pageContentResults, results])
   const nonEmptySearchResultGroups = useMemo(() => (
     searchResultGroups.filter((group) => group.results.length > 0)
   ), [searchResultGroups])
@@ -1580,11 +1587,11 @@ export function LivePreviewSearchResultList({
         </div>
       )}
 
-      {activeVisibleResultFilter === 'all' && pageContentResults.length > 0 && (
+      {activeVisibleResultFilter === 'all' && consolidatedContentResults.length > 0 && (
         <section className="live-preview__search-content-results" aria-label={`Page content results for ${resultQuery}`}>
-          <h2 className="live-preview__search-match-section-title">Search results ({pageContentResults.length})</h2>
+          <h2 className="live-preview__search-match-section-title">Search results ({consolidatedContentResults.length})</h2>
           <div className="live-preview__search-match-section-list">
-            {pageContentResults.map((result) => (
+            {consolidatedContentResults.map((result) => (
               <button
                 key={result.id}
                 type="button"
