@@ -12715,6 +12715,10 @@ body.builder--phone-only {
 .live-preview__top-header-notification-badge {
   top: calc(var(--spacing-2xs) * -1);
   left: var(--space-6);
+  // A light badge keeps a single unread count legible over the Default app's
+  // brand-coloured header while the number still follows the active app theme.
+  background: var(--bg-surface);
+  color: var(--fg-brand);
 }
 
 .live-preview__top-header-notification-badge--wide {
