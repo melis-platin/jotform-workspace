@@ -121,6 +121,15 @@ const SEARCH_RESULT_FILTER_LABELS: Record<SearchResultCategory, string> = {
   documents: 'Document',
   content: 'Content',
 }
+const SEARCH_RESULT_DESCRIPTION_FALLBACKS: Partial<Record<SearchResultCategory, string>> = {
+  pages: 'Go to page',
+  forms: 'Fill out the form',
+  tables: 'Open table',
+  'sign-documents': 'Open sign document',
+  reports: 'Open report',
+  sendbox: 'Open inbox',
+  documents: 'Open document',
+}
 
 const GENERIC_SEARCH_PHRASES = new Set([
   'new app',
@@ -948,17 +957,10 @@ const getDisplayDescription = (
   description: string,
   searchText: string,
 ) => {
-  if (category === 'pages') return 'Go to page'
-  if (category === 'forms') return 'Fill out the form'
-  if (category === 'tables') return description
-    ? truncateSearchDescription(description, searchText)
-    : 'Open table'
-  if (category === 'sign-documents') return 'Open sign document'
-  if (category === 'reports') return 'Open report'
-  if (category === 'sendbox') return 'Open inbox'
-  if (category === 'documents') return 'Open document'
-  if (!description) return ''
-  return truncateSearchDescription(description, searchText)
+  // Every result prefers its own description so the matching phrase can be
+  // highlighted; component-specific action labels are only empty-state fallbacks.
+  if (description) return truncateSearchDescription(description, searchText)
+  return SEARCH_RESULT_DESCRIPTION_FALLBACKS[category] ?? ''
 }
 
 const getSearchMatchContext = (
