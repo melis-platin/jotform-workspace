@@ -107,7 +107,7 @@ const PUSH_NOTIFICATION_HISTORY_FILTER_OPTIONS = [
   {
     value: 'all',
     label: 'See All',
-    leading: <Icon name="eye-filled" category="general" size={24} />,
+    leading: <Icon name="eye-filled" category="general" size={24} className="push-notification-history__see-all-icon" />,
   },
   {
     value: 'sent',

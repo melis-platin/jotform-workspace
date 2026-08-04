@@ -16305,6 +16305,12 @@ body.builder--phone-only {
   flex: 0 0 224px;
 }
 
+// Figma's Light / Dropdown / Single Select uses core/navy/500 for its
+// leading eye icon.
+.push-notification-history__see-all-icon {
+  color: var(--navy-500);
+}
+
 .push-notification-history__list {
   display: flex;
   flex-direction: column;
