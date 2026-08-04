@@ -852,6 +852,7 @@ const CAMP_PINECREST_FORMS_INTRO_HEADINGS = new Set(['forms & documents', 'open 
 const CAMP_PINECREST_PAYMENT_ELEMENT_IDS = new Set(['product-list', 'donation-box'])
 const GOLDEN_HIVE_REQUIRED_PAGES = ['Home', 'Hives', 'Inspections', 'Bloom Map', 'Bee Garden', 'Learning', 'Community', 'Forms']
 const GOLDEN_HIVE_DYNAMIC_LIST_PAGES = new Set(['Home', 'Hives', 'Inspections', 'Bloom Map', 'Bee Garden', 'Learning', 'Community'])
+const LITTLE_LOOM_REQUIRED_PAGES = ['Home', 'Muslin Guide', 'Journal', 'Shop', 'Gift Sets', 'Help & Care']
 const GOLDEN_HIVE_BUTTON_DESTINATIONS: Record<string, readonly string[]> = {
   Home: ['Hives', 'Bloom Map'],
   Hives: ['Inspections'],
@@ -937,6 +938,13 @@ function hasGoldenHiveStructure(pages: AppPage[]): boolean {
   const hasAllPages = GOLDEN_HIVE_REQUIRED_PAGES.every((name) => pageNames.has(name.toLowerCase()))
   const dynamicListCount = pages.filter((page) => !page.dynamic).flatMap((page) => page.elements).filter(isDynamicListElement).length
   return hasAllPages && dynamicListCount >= 5
+}
+
+function hasLittleLoomStructure(pages: AppPage[]): boolean {
+  const pageNames = new Set(pages.filter((page) => !page.dynamic).map((page) => page.name.trim().toLowerCase()))
+  const hasAllPages = LITTLE_LOOM_REQUIRED_PAGES.every((name) => pageNames.has(name.toLowerCase()))
+  const dynamicListCount = pages.filter((page) => !page.dynamic).flatMap((page) => page.elements).filter(isDynamicListElement).length
+  return hasAllPages && dynamicListCount >= 3
 }
 
 function getDynamicDetailPageName(hostPageName: string, preset?: AppPreset): string {
@@ -1221,6 +1229,19 @@ function normalizeBohoNestPages(pages: AppPage[], preset: AppPreset | undefined)
   return ensureDynamicPagesForOpenDynamicLists(normalizeBohoNestSharedListSources(pages, preset), preset)
 }
 
+function normalizeLittleLoomPages(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {
+  if (preset?.id !== 'little-loom') return pages
+  const basePages = hasLittleLoomStructure(pages)
+    ? pages.map((page) => {
+      if (page.dynamic) return page
+      const presetPage = preset.pages.find((candidate) => candidate.id === page.id)
+      return presetPage && page.icon !== presetPage.icon ? { ...page, icon: presetPage.icon } : page
+    })
+    : buildAppPagesFromPresetPages(preset.pages, 1).pages
+
+  return ensureDynamicPagesForOpenDynamicLists(basePages, preset)
+}
+
 // Cedar Operations no longer includes reporting. Older saved snapshots may
 // still carry the retired page, so remove it as part of the preset migration.
 function normalizeCedarOperationsPages(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {
@@ -1282,12 +1303,12 @@ function normalizeListTitleHeaders(pages: AppPage[]): AppPage[] {
 }
 
 function normalizePresetPages(pages: AppPage[], preset: AppPreset | undefined): AppPage[] {
-  return normalizePresetButtonIcons(normalizeListTitleHeaders(
+  return ensureDynamicPagesForOpenDynamicLists(normalizePresetButtonIcons(normalizeListTitleHeaders(
     normalizeBohoNestPages(
       normalizeCedarOperationsPages(
         normalizeCampPinecrestPages(
           normalizeGoldenHivePages(
-            normalizeGymTrainerDynamicPages(pages, preset),
+            normalizeLittleLoomPages(normalizeGymTrainerDynamicPages(pages, preset), preset),
             preset,
           ),
           preset,
@@ -1296,7 +1317,7 @@ function normalizePresetPages(pages: AppPage[], preset: AppPreset | undefined): 
       ),
       preset,
     ),
-  ), preset)
+  ), preset), preset)
 }
 
 function arePagesEqual(a: AppPage[], b: AppPage[]): boolean {

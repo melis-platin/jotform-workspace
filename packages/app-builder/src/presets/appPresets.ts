@@ -2397,7 +2397,7 @@ const ALL_APP_PRESETS: AppPreset[] = [
       show: true,
       title: 'Soft beginnings, made for everyday moments',
       subtitle: 'Breathable cotton muslin, thoughtful baby clothing, and calm care guidance for your little one’s first years.',
-      icon: 'Baby',
+      icon: 'Heart',
       backgroundImageUrl: LITTLE_LOOM_IMAGES.rainbow,
       backgroundImageName: 'soft rainbow muslin textile',
       ctaEnabled: true,
@@ -2471,7 +2471,7 @@ const ALL_APP_PRESETS: AppPreset[] = [
       {
         id: 'little-loom-journal',
         name: 'Journal',
-        icon: 'NotebookPen',
+        icon: 'Newspaper',
         elements: [
           { componentId: 'heading', variants: { Size: 'Large', Alignment: 'Left' }, properties: { Heading: 'Growing gently, together', Subheading: 'Practical notes for choosing, caring for, and enjoying the little things.' } },
           { componentId: 'list', variants: { Layout: 'Card', 'Card Image Style': 'Square', 'Card Layout': 'Vertical', 'Card Size': 'Medium', 'Card Action': 'Button' }, properties: { Title: 'From the journal', 'Show Header': false, 'Button Label': 'Open story', 'Click Action': 'Open Dynamic Page', Items: JSON.stringify([{ title: 'Building a newborn drawer with fewer, better layers', description: 'A simple starting list for comfortable days: flexible muslin wraps, easy outfits, and a few trusted wash-day extras.', image: LITTLE_LOOM_IMAGES.forest }, { title: 'How to use a muslin blanket through the seasons', description: 'Ways to choose a light, breathable layer for naps, stroller walks, and calm moments at home.', image: LITTLE_LOOM_IMAGES.rainbow }, { title: 'Gift ideas that new parents really use', description: 'Choose soft essentials that work across feeding, sleep, play, travel, and everyday changes.', image: LITTLE_LOOM_IMAGES.icons }]) } },
@@ -2491,9 +2491,22 @@ const ALL_APP_PRESETS: AppPreset[] = [
         ],
       },
       {
+        id: 'little-loom-gifts',
+        name: 'Gift Sets',
+        icon: 'Gift',
+        elements: [
+          { componentId: 'heading', variants: { Size: 'Large', Alignment: 'Left' }, properties: { Heading: 'Give a soft, useful beginning', Subheading: 'Thoughtful sets for baby showers, newborn visits, and the first days at home.' } },
+          { componentId: 'paragraph', variants: { Size: 'Medium', Alignment: 'Left' }, properties: { Text: 'Choose pieces that can be used again and again: a large muslin wrap, a small care essential, and an easy layer for bath or stroller time.' } },
+          { componentId: 'product-list', variants: { Layout: 'Grid 3' }, properties: { Title: 'Gift-ready favourites', Subtitle: 'Practical, beautiful essentials for new families.', Currency: 'USD', 'Search Placeholder': 'Search gift ideas', 'Button Label': 'Add to cart', 'Show Toolbar': true, 'Add New Card': false, Products: JSON.stringify([LITTLE_LOOM_PRODUCTS[0], LITTLE_LOOM_PRODUCTS[1], LITTLE_LOOM_PRODUCTS[5]]) } },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          { componentId: 'list', variants: { Layout: 'Basic', 'Image Style': 'Square', Size: 'Regular', Action: 'Button' }, properties: { Title: 'Gift planning notes', 'Show Header': false, 'Button Label': 'Open note', 'Click Action': 'Open Dynamic Page', Items: JSON.stringify([{ title: 'A practical newborn gift set', description: 'Start with a swaddle, a lightweight blanket, and a small everyday essential that will be useful from the first week.', image: LITTLE_LOOM_IMAGES.rainbow }, { title: 'How to choose a size-free gift', description: 'Muslin layers, blankets, and bath pieces make thoughtful choices when you do not know a baby’s exact size.', image: LITTLE_LOOM_IMAGES.bebe }, { title: 'Add a personal note', description: 'Use the checkout note to share a message for the family and make a useful gift feel even more special.', image: LITTLE_LOOM_IMAGES.icons }]) } },
+          { componentId: 'button', variants: { Type: 'Standard', Variant: 'Outlined', Corner: 'Rounded', Width: 'Full' }, properties: { Label: 'Need gifting help?', Action: 'Navigate to Page', 'Action Page': 'little-loom-help' } },
+        ],
+      },
+      {
         id: 'little-loom-help',
         name: 'Help & Care',
-        icon: 'CircleHelp',
+        icon: 'CircleQuestionMark',
         elements: [
           { componentId: 'heading', variants: { Size: 'Large', Alignment: 'Left' }, properties: { Heading: 'Here for your questions', Subheading: 'Tell us what you are shopping for and we will help you find a soft, useful fit.' } },
           { componentId: 'form', variants: { 'Layout Type': 'Form' }, properties: { 'Form Title': 'Ask Little Loom', 'Form Description': 'Share a few details and our care team will get back to you.', 'Submit Label': 'Send question', 'Form Fields': JSON.stringify(LITTLE_LOOM_PARENT_FIELDS), 'Submits To': 'littleLoomCareQuestions', 'Show Border': true } },
