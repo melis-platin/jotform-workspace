@@ -12,6 +12,7 @@ interface AppPreviewScreenProps {
   onDeviceChange: (device: PreviewDevice) => void
   onBack: () => void
   mobileBackLabel?: string
+  hideMobileRole?: boolean
   appScreen?: ReactNode
   role?: PreviewRole
   onRoleChange?: (role: PreviewRole) => void
@@ -29,6 +30,7 @@ export function AppPreviewScreen({
   onDeviceChange,
   onBack,
   mobileBackLabel = 'Back to builder',
+  hideMobileRole = false,
   appScreen,
   role = 'anyone',
   onRoleChange,
@@ -102,22 +104,24 @@ export function AppPreviewScreen({
             <span className="topbar__toggle-thumb" />
           </button>
         </div>
-        <div className="app-preview-screen__mobile-role" data-theme="dark">
-          <DropdownSingle
-            size="md"
-            aria-label="Preview role"
-            options={roleSegments.map((roleSegment) => ({
-              value: roleSegment.value,
-              label: roleSegment.label,
-              leading: <Icon name={roleSegment.icon} category="users" size={20} />,
-            }))}
-            value={role}
-            onChange={(nextRole) => onRoleChange?.(nextRole)}
-            trailingIcon={<Icon name="angle-down" category="arrows" size={16} />}
-            menuPlacement="bottom"
-            mobileBehavior="inline"
-          />
-        </div>
+        {!hideMobileRole && (
+          <div className="app-preview-screen__mobile-role" data-theme="dark">
+            <DropdownSingle
+              size="md"
+              aria-label="Preview role"
+              options={roleSegments.map((roleSegment) => ({
+                value: roleSegment.value,
+                label: roleSegment.label,
+                leading: <Icon name={roleSegment.icon} category="users" size={20} />,
+              }))}
+              value={role}
+              onChange={(nextRole) => onRoleChange?.(nextRole)}
+              trailingIcon={<Icon name="angle-down" category="arrows" size={16} />}
+              menuPlacement="bottom"
+              mobileBehavior="inline"
+            />
+          </div>
+        )}
       </header>
       <div className={`app-preview-screen__canvas app-preview-screen__canvas--${device}`}>
         <div className="app-preview-screen__qr-badge" aria-label="Scan QR to view on mobile">

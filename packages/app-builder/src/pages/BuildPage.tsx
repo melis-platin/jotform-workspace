@@ -6576,6 +6576,7 @@ export function BuildPage({
         onDeviceChange={setPreviewDevice}
         onBack={() => onPreviewClose?.()}
         mobileBackLabel={previewMobileBackLabel}
+        hideMobileRole={Boolean(previewedPushNotification)}
         appScreen={phoneScreenContent}
         role={viewingAsRole}
         onRoleChange={handleViewingRoleChange}
