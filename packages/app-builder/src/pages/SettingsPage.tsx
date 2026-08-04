@@ -3676,8 +3676,7 @@ function PushNotificationComposer({
     content.trim().length === 0 &&
     contentFields.length === 0 &&
     contentSuffix.trim().length === 0
-  const shouldShowEmptyStateNotice = showEmptyStateNotice && (isTitleEmpty || isContentEmpty)
-  const shouldShowSendStatusNotice = showEmptyStateNotice && !shouldShowEmptyStateNotice
+  const shouldShowSendStatusNotice = showEmptyStateNotice && !isTitleEmpty && !isContentEmpty
   const selectedAudience = getSendStatusAudience(audience, appUserRoles)
   const selectedAudienceUserCount = getAudienceUserCount(audience, appUserRoles)
 
@@ -3814,16 +3813,11 @@ function PushNotificationComposer({
           </div>
         </div>
       </div>
-      <div className={`push-composer-panel__selection${shouldShowEmptyStateNotice || shouldShowSendStatusNotice ? ' push-composer-panel__selection--with-empty-notice' : ''}`}>
+      <div className={`push-composer-panel__selection${shouldShowSendStatusNotice ? ' push-composer-panel__selection--with-empty-notice' : ''}`}>
         <div className="push-composer-panel__dropdown-row">
           <AudienceDropdown value={audience} onChange={setAudience} roles={appUserRoles} />
           <DeepLinkDropdown value={deepLink} onChange={setDeepLink} targets={deepLinkTargets} />
         </div>
-        {shouldShowEmptyStateNotice && (
-          <div className="push-composer-panel__empty-state-notice" role="status">
-            Add a title and content to send this notification.
-          </div>
-        )}
         {shouldShowSendStatusNotice && (
           <div className="push-composer-panel__send-status-notice" role="status">
             <Icon name="paper-plane-diagonal-filled" category="communication" size={16} />
