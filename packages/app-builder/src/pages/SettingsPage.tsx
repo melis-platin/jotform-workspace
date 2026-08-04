@@ -106,7 +106,7 @@ const SENT_NOTIFICATION_METRICS = [
 const PUSH_NOTIFICATION_HISTORY_FILTER_OPTIONS = [
   {
     value: 'all',
-    label: 'See all',
+    label: 'See All',
     leading: <Icon name="eye-filled" category="general" size={20} />,
   },
   {
