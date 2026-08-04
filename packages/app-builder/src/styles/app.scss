@@ -10389,11 +10389,11 @@ body.builder--phone-only {
   align-items: center;
   gap: var(--ds-space-xs);
   padding: var(--ds-space-sm);
-  background: var(--secondary-background-dark);
+  background: var(--bg-fill-brand);
   border-radius: var(--ds-radius-md);
   box-shadow:
-    0 2px 8px rgba(37, 45, 91, 0.04),
-    0 16px 24px rgba(84, 95, 111, 0.16);
+    0 2px 8px color-mix(in srgb, var(--bg-fill-brand) 12%, transparent),
+    0 16px 24px color-mix(in srgb, var(--bg-fill-brand) 28%, transparent);
   opacity: 0;
   transform: translateY(12px);
   animation: app-preview-screen__qr-badge-in 320ms cubic-bezier(0.16, 1, 0.3, 1) 600ms forwards;
@@ -10412,12 +10412,12 @@ body.builder--phone-only {
   font-weight: var(--ds-font-weight-medium);
   line-height: var(--ds-line-height-xs);
   letter-spacing: -0.6px;
-  color: var(--secondary-text-lightest);
+  color: var(--fg-inverse);
   text-align: center;
 }
 
 .app-preview-screen__qr-badge-qr {
-  color: var(--secondary-text-lightest);
+  color: var(--fg-inverse);
 }
 
 .app-preview-screen__role-segment {
