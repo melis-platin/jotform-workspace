@@ -107,6 +107,7 @@ const PUSH_NOTIFICATION_HISTORY_FILTER_OPTIONS = [
   {
     value: 'all',
     label: 'See all',
+    leading: <Icon name="eye-filled" category="general" size={20} />,
   },
   {
     value: 'sent',
@@ -695,7 +696,7 @@ function AppSettingsPanel({ searchBarEnabled, setSearchBarEnabled }: AppSettings
           showTitle
           showDescription
           showHelpText={false}
-          showLeadingIcon={false}
+          showLeadingIcon
           options={APP_STATUS_OPTIONS}
           value={appStatus}
           onChange={setAppStatus}
