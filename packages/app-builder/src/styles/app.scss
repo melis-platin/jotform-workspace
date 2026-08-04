@@ -13615,13 +13615,6 @@ body.builder--phone-only {
   white-space: nowrap;
 }
 
-.push-schedule-composer__scheduled-notice--empty {
-  border-style: dashed;
-  border-color: var(--border-medium);
-  background: var(--background-lightest);
-  color: var(--text-medium);
-}
-
 .push-schedule-composer__scheduled-notice strong {
   color: var(--text-darkest);
   font-weight: var(--font-weight-bold);

@@ -658,20 +658,13 @@ function PushScheduleComposerSection({
         value={timezone}
         onChange={onTimezoneChange}
       />
-      {hasScheduleDateTime ? (
+      {hasScheduleDateTime && (
         <div className="push-schedule-composer__scheduled-notice">
           <Icon name="clock" category="time-date" size={16} />
           <p>
             Sends <strong>{scheduleDayLabel}</strong> at <strong>{scheduleTimeLabel}.</strong>{' '}
             <em>{timezoneAbbreviation}</em> - to {scheduleAudience} · {scheduleAudienceUserCount} {scheduleAudienceUserCount === 1 ? 'user' : 'users'}.
           </p>
-        </div>
-      ) : (
-        <div
-          className="push-schedule-composer__scheduled-notice push-schedule-composer__scheduled-notice--empty"
-          role="status"
-        >
-          <p>Pick a date and time above to schedule this notification.</p>
         </div>
       )}
     </section>
