@@ -3016,8 +3016,15 @@ body,
 }
 
 .live-preview__tablet-screen:has(.live-preview__bottom-nav) .live-preview__floating-whatsapp {
-  bottom: calc(var(--spacing-4xl) + var(--spacing-sm));
+  right: var(--space-4);
+  bottom: calc(var(--spacing-4xl) + var(--spacing-xs) + var(--space-4));
+  max-width: calc(100% - var(--space-4) - var(--space-4));
   z-index: 3;
+}
+
+.live-preview__tablet-screen:has(.live-preview__bottom-nav) .live-preview__floating-whatsapp[data-alignment='left'] {
+  right: auto;
+  left: var(--space-4);
 }
 
 // Landing hamburger menu: a fixed, full-height panel (nav items + a bottom-pinned
