@@ -257,6 +257,48 @@ const CAMP_FAQ_ITEMS = [
   { question: 'Can families register for multiple sessions?', answer: 'Yes. Families can combine any available weekly sessions and update preferences from the Forms page.' },
 ]
 
+// Product imagery and material guidance adapted from the Deux Lapins muslin
+// collection. These URLs remain remote so the preset stays light to load.
+const LITTLE_LOOM_IMAGES = {
+  rainbow: 'https://cdn.shopify.com/s/files/1/0831/2448/6433/files/02-MUSLIN-LEL-07070.jpg?v=1713126865',
+  bebe: 'https://cdn.shopify.com/s/files/1/0831/2448/6433/files/02-MUSLIN-BEL-007070.jpg?v=1713126784',
+  birds: 'https://cdn.shopify.com/s/files/1/0831/2448/6433/files/02-MUSLIN-BLR-070070.jpg?v=1713126798',
+  icons: 'https://cdn.shopify.com/s/files/1/0831/2448/6433/files/02-MUSLIN-ICL-007070.jpg?v=1713126840',
+  petite: 'https://cdn.shopify.com/s/files/1/0831/2448/6433/files/02-MUSLIN-PEC-07070.jpg?v=1713126877',
+  forest: 'https://cdn.shopify.com/s/files/1/0831/2448/6433/files/02-MUSLIN-ENB-100100.jpg?v=1713126824',
+}
+
+const LITTLE_LOOM_PRODUCTS = [
+  { name: 'Rainbow Muslin Swaddle', price: '36', description: 'A breathable, 100% cotton muslin layer for naps, pram shade, tummy time, and everyday cuddles.', image: LITTLE_LOOM_IMAGES.rainbow },
+  { name: 'Bébé Lapin Hooded Poncho', price: '54', description: 'A soft post-bath poncho designed to make warm-up time feel gentle and easy.', image: LITTLE_LOOM_IMAGES.bebe },
+  { name: 'Little Birds Cot Sheet', price: '42', description: 'Lightweight cotton muslin with a snug fitted edge for a calm, breathable sleep space.', image: LITTLE_LOOM_IMAGES.birds },
+  { name: 'Iconique Pram Cover', price: '48', description: 'A versatile muslin cover for stroller shade, feeding privacy, or a soft layer on the go.', image: LITTLE_LOOM_IMAGES.icons },
+  { name: 'Petite Garden Bib Set', price: '24', description: 'An absorbent everyday set in gentle prints, made for small spills and big adventures.', image: LITTLE_LOOM_IMAGES.petite },
+  { name: 'Forest Friends Baby Blanket', price: '62', description: 'A double-layer cotton muslin blanket that gets softer with every wash.', image: LITTLE_LOOM_IMAGES.forest },
+]
+
+const LITTLE_LOOM_GUIDE_ITEMS = [
+  { title: 'Why muslin feels so good', description: 'Open-weave cotton lets air circulate and becomes softer through normal washing, making it a practical layer for changing weather.', image: LITTLE_LOOM_IMAGES.rainbow },
+  { title: 'One cloth, many moments', description: 'Use a muslin layer as a light blanket, swaddle, stroller shade, changing mat cover, burp cloth, or playtime surface.', image: LITTLE_LOOM_IMAGES.icons },
+  { title: 'Gentle everyday care', description: 'Wash at up to 40°C with similar colors. Skip bleach and high heat so the natural cotton texture stays soft and durable.', image: LITTLE_LOOM_IMAGES.bebe },
+  { title: 'Choosing the right size', description: 'A compact square works beautifully for newborn care; a larger layer gives more coverage for sleep, nursing, and stroller days.', image: LITTLE_LOOM_IMAGES.forest },
+]
+
+const LITTLE_LOOM_PARENT_FIELDS = [
+  { name: 'fullName', label: 'Your name', type: 'text', placeholder: 'e.g. Alex Morgan' },
+  { name: 'babyAge', label: 'Baby’s age', type: 'text', placeholder: 'e.g. newborn, 6 months' },
+  { name: 'interest', label: 'What are you looking for?', type: 'text', placeholder: 'e.g. sleep layers, first outfits, a gift' },
+  { name: 'message', label: 'Your question', type: 'textarea', placeholder: 'Tell us a little about the moment you are shopping for.' },
+  { name: 'email', label: 'Email', type: 'email', placeholder: 'you@example.com' },
+]
+
+const LITTLE_LOOM_FAQ_ITEMS = [
+  { question: 'Are the fabrics organic?', answer: 'The collection is designed around gentle, natural cotton muslin. Each product page describes the material and care details so families can choose confidently.' },
+  { question: 'What makes muslin useful for babies?', answer: 'Its breathable weave is lightweight, versatile, and naturally softens with washing, so one piece can move from naps to feeding to stroller time.' },
+  { question: 'Can I send a gift?', answer: 'Yes. Choose a gift-ready piece from the shop, add it to the cart, and use the checkout note to share your message.' },
+  { question: 'How do I wash muslin?', answer: 'Machine wash up to 40°C with similar colors. Avoid bleach, and air dry when possible to keep the cotton texture at its best.' },
+]
+
 const BOHO_STYLE_GUIDE_ITEMS = [
   { title: 'Layered textures', description: 'Build a warm foundation by combining a jute rug, cotton throw, linen curtains, and woven pillows in one calm palette.', image: 'https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=500&h=500&fit=crop' },
   { title: 'Earthy tones', description: 'Warm white, sand, terracotta, olive, and walnut create a grounded base that still feels full of character.', image: 'https://images.unsplash.com/photo-1524758631624-e2822e304c36?w=500&h=500&fit=crop' },
@@ -2341,6 +2383,125 @@ const ALL_APP_PRESETS: AppPreset[] = [
             componentId: 'social-follow',
             variants: { Layout: 'Wrap', Variant: 'Secondary', Filled: 'No' },
           },
+        ],
+      },
+    ],
+    headerActions: [],
+  },
+  {
+    id: 'little-loom',
+    name: 'Little Loom',
+    appTitle: 'Little Loom',
+    appSubtitle: 'Organic-minded muslin essentials and gentle baby clothing for everyday family life.',
+    appHeader: {
+      show: true,
+      title: 'Soft beginnings, made for everyday moments',
+      subtitle: 'Breathable cotton muslin, thoughtful baby clothing, and calm care guidance for your little one’s first years.',
+      icon: 'Baby',
+      backgroundImageUrl: LITTLE_LOOM_IMAGES.rainbow,
+      backgroundImageName: 'soft rainbow muslin textile',
+      ctaEnabled: true,
+      ctaLabel: 'Shop muslin essentials',
+      ctaAction: 'Navigate to Page',
+      ctaPageId: 'little-loom-shop',
+    },
+    theme: {
+      color: '#7F9D81',
+      tint: 36,
+      font: 'DM Sans',
+      headingFont: 'DM Sans',
+      radius: 'Large',
+      harmonyOffset: 126,
+      activePreset: '',
+      colorMode: 'light',
+      tokenOverrides: {
+        '--bg-page': '#F6F6EE',
+        '--bg-surface': '#FFFEF9',
+        '--bg-surface-hover': '#EEF2E9',
+        '--bg-surface-brand': '#E1EBDD',
+        '--bg-surface-brand-hover': '#D3E2CF',
+        '--bg-fill': '#FFFEF9',
+        '--bg-fill-hover': '#F0F4EC',
+        '--bg-fill-active': '#E3EBDE',
+        '--bg-fill-brand': '#66866A',
+        '--bg-fill-brand-hover': '#527257',
+        '--bg-fill-brand-active': '#405C45',
+        '--bg-fill-brand-disabled': '#BFD0BD',
+        '--fg-brand': '#527257',
+        '--fg-brand-hover': '#405C45',
+        '--fg-inverse': '#FFFEF9',
+        '--fg-primary': '#2D382E',
+        '--fg-secondary': '#5A6B5B',
+        '--fg-tertiary': '#7D8C7D',
+        '--fg-disabled': '#AAB8A9',
+        '--border': '#D5DFD2',
+        '--border-hover': '#B6C9B3',
+      },
+    },
+    pages: [
+      {
+        id: 'little-loom-home',
+        name: 'Home',
+        icon: 'House',
+        elements: [
+          { componentId: 'heading', variants: { Size: 'Large', Alignment: 'Left' }, properties: { Heading: 'Gentle layers for tiny everyday rituals', Subheading: 'Discover breathable cotton muslin essentials and easy organic-minded clothing for sleep, play, feeding, and every outing in between.' } },
+          { componentId: 'paragraph', variants: { Size: 'Medium', Alignment: 'Left' }, properties: { Text: 'Little Loom is a calm place to shop and learn. Our soft cotton collection is inspired by the versatility of muslin: light, durable, and made to feel even better with time.' } },
+          { componentId: 'button', variants: { Type: 'Standard', Variant: 'Default', Corner: 'Rounded', Width: 'Full' }, properties: { Label: 'Explore the collection', Action: 'Navigate to Page', 'Action Page': 'little-loom-shop' } },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          { componentId: 'heading', variants: { Size: 'Medium', Alignment: 'Left' }, properties: { Heading: 'Little Loom favourites', Subheading: 'Soft, useful pieces parents reach for from morning cuddles to bedtime.' } },
+          { componentId: 'product-list', variants: { Layout: 'Grid 3' }, properties: { Title: 'Everyday muslin', Subtitle: 'Breathable layers, thoughtful details, and calm prints.', Currency: 'USD', 'Search Placeholder': 'Search baby essentials', 'Button Label': 'Add to cart', 'Show Toolbar': true, 'Add New Card': false, Products: JSON.stringify(LITTLE_LOOM_PRODUCTS.slice(0, 3)) } },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          { componentId: 'heading', variants: { Size: 'Medium', Alignment: 'Center' }, properties: { Heading: 'Made for the moments that matter', Subheading: 'Simple materials and practical details for real family days.' } },
+          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Breathable cotton', Description: 'Lightweight cotton muslin helps create a comfortable layer across changing temperatures.', Icon: 'Wind', Shrinked: true } },
+          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'Gets softer with use', Description: 'The natural texture relaxes through normal washing, becoming a favourite from day one.', Icon: 'Sparkles', Shrinked: true } },
+          { componentId: 'card', variants: { 'Image Style': 'Icon', Layout: 'Vertical', Action: 'None' }, properties: { Title: 'One layer, many uses', Description: 'A flexible essential for naptime, nursing, stroller days, changing, and play.', Icon: 'HeartHandshake', Shrinked: true } },
+        ],
+      },
+      {
+        id: 'little-loom-guide',
+        name: 'Muslin Guide',
+        icon: 'BookOpen',
+        elements: [
+          { componentId: 'heading', variants: { Size: 'Large', Alignment: 'Left' }, properties: { Heading: 'A little guide to living with muslin', Subheading: 'Learn why this natural cotton layer has become a staple in so many family routines.' } },
+          { componentId: 'list', variants: { Layout: 'Card', 'Card Image Style': 'Square', 'Card Layout': 'Vertical', 'Card Size': 'Medium', 'Card Action': 'Button' }, properties: { Title: 'Care and comfort guide', 'Show Header': false, 'Button Label': 'Read more', 'Click Action': 'Open Dynamic Page', Items: JSON.stringify(LITTLE_LOOM_GUIDE_ITEMS) } },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          { componentId: 'button', variants: { Type: 'Standard', Variant: 'Outlined', Corner: 'Rounded', Width: 'Full' }, properties: { Label: 'Find the right essentials', Action: 'Navigate to Page', 'Action Page': 'little-loom-shop' } },
+        ],
+      },
+      {
+        id: 'little-loom-journal',
+        name: 'Journal',
+        icon: 'NotebookPen',
+        elements: [
+          { componentId: 'heading', variants: { Size: 'Large', Alignment: 'Left' }, properties: { Heading: 'Growing gently, together', Subheading: 'Practical notes for choosing, caring for, and enjoying the little things.' } },
+          { componentId: 'list', variants: { Layout: 'Card', 'Card Image Style': 'Square', 'Card Layout': 'Vertical', 'Card Size': 'Medium', 'Card Action': 'Button' }, properties: { Title: 'From the journal', 'Show Header': false, 'Button Label': 'Open story', 'Click Action': 'Open Dynamic Page', Items: JSON.stringify([{ title: 'Building a newborn drawer with fewer, better layers', description: 'A simple starting list for comfortable days: flexible muslin wraps, easy outfits, and a few trusted wash-day extras.', image: LITTLE_LOOM_IMAGES.forest }, { title: 'How to use a muslin blanket through the seasons', description: 'Ways to choose a light, breathable layer for naps, stroller walks, and calm moments at home.', image: LITTLE_LOOM_IMAGES.rainbow }, { title: 'Gift ideas that new parents really use', description: 'Choose soft essentials that work across feeding, sleep, play, travel, and everyday changes.', image: LITTLE_LOOM_IMAGES.icons }]) } },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          { componentId: 'image-gallery', variants: { Layout: '8' }, properties: { Images: JSON.stringify(Object.values(LITTLE_LOOM_IMAGES)) } },
+        ],
+      },
+      {
+        id: 'little-loom-shop',
+        name: 'Shop',
+        icon: 'ShoppingBag',
+        elements: [
+          { componentId: 'heading', variants: { Size: 'Large', Alignment: 'Left' }, properties: { Heading: 'Organic-minded baby essentials', Subheading: 'Muslin layers, nursery staples, and gentle clothing made for tiny hands and busy family days.' } },
+          { componentId: 'product-list', variants: { Layout: 'Grid 3' }, properties: { Title: 'The Little Loom collection', Subtitle: 'Natural cotton muslin for sleep, bath time, stroller days, and gifting.', Currency: 'USD', 'Search Placeholder': 'Search the collection', 'Button Label': 'Add to cart', 'Show Toolbar': true, 'Add New Card': false, Products: JSON.stringify(LITTLE_LOOM_PRODUCTS) } },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          { componentId: 'button', variants: { Type: 'Standard', Variant: 'Outlined', Corner: 'Rounded', Width: 'Full' }, properties: { Label: 'Ask a product question', Action: 'Navigate to Page', 'Action Page': 'little-loom-help' } },
+        ],
+      },
+      {
+        id: 'little-loom-help',
+        name: 'Help & Care',
+        icon: 'CircleHelp',
+        elements: [
+          { componentId: 'heading', variants: { Size: 'Large', Alignment: 'Left' }, properties: { Heading: 'Here for your questions', Subheading: 'Tell us what you are shopping for and we will help you find a soft, useful fit.' } },
+          { componentId: 'form', variants: { 'Layout Type': 'Form' }, properties: { 'Form Title': 'Ask Little Loom', 'Form Description': 'Share a few details and our care team will get back to you.', 'Submit Label': 'Send question', 'Form Fields': JSON.stringify(LITTLE_LOOM_PARENT_FIELDS), 'Submits To': 'littleLoomCareQuestions', 'Show Border': true } },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          { componentId: 'heading', variants: { Size: 'Medium', Alignment: 'Left' }, properties: { Heading: 'Frequently asked questions', Subheading: 'Quick answers about materials, care, gifting, and choosing a muslin layer.' } },
+          { componentId: 'faq', variants: { Style: 'Card', Icon: 'Plus/Minus', 'Icon Position': 'Right' }, properties: { Items: JSON.stringify(LITTLE_LOOM_FAQ_ITEMS) } },
+          { componentId: 'spacer', properties: { Height: 24 } },
+          { componentId: 'button', variants: { Type: 'Standard', Variant: 'Outlined', Corner: 'Rounded', Width: 'Full' }, properties: { Label: 'Back to the collection', Action: 'Navigate to Page', 'Action Page': 'little-loom-shop' } },
         ],
       },
     ],
