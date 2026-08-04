@@ -6021,6 +6021,7 @@ export function BuildPage({
       <div
         className="live-preview__floating-whatsapp"
         data-live-preview-element-id={floatingWhatsAppElement.id}
+        data-alignment={String(floatingWhatsAppElement.properties.Alignment ?? 'Right').toLowerCase()}
       >
         {component.render(
           floatingWhatsAppElement.variants,
