@@ -2448,13 +2448,15 @@ const SortableElement = memo(function SortableElement({
   const isShrinked = element.properties['Shrinked'] === true
   const isFlow = isAutoFlowElement(element)
   const isWhatsApp = element.componentId === 'whatsapp'
+  const isFloatingWhatsApp =
+    isWhatsApp && String(element.properties['Display Style'] ?? 'Button') === 'Floating'
   const isWhatsAppNumberMissing = isWhatsApp && !isWhatsAppElementReadyForPreview(element)
   const showWhatsAppNumberWarning = isSelected && isWhatsAppNumberMissing
   const showFloatingWhatsAppNotice =
     isSelected &&
     isWhatsApp &&
     !isWhatsAppNumberMissing &&
-    String(element.properties['Display Style'] ?? 'Button') === 'Floating'
+    isFloatingWhatsApp
   const sectionRef = useRef<HTMLElement>(null)
   const handleRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
@@ -2470,7 +2472,7 @@ const SortableElement = memo(function SortableElement({
   useEffect(() => {
     const section = sectionRef.current
     const handle = handleRef.current
-    if (!section) return
+    if (!section || isFloatingWhatsApp) return
     const reportEdge = (edge: Edge | null) => onDropEdgeChange?.(element.id, edge)
     return combine(
       draggable({
@@ -2537,7 +2539,7 @@ const SortableElement = memo(function SortableElement({
         onDrop: () => reportEdge(null),
       })
     )
-  }, [element.id, element.componentId, pageId, selfShrinkable, onDropEdgeChange])
+  }, [element.id, element.componentId, pageId, selfShrinkable, onDropEdgeChange, isFloatingWhatsApp])
 
   useEffect(() => {
     const container = contentRef.current
@@ -2646,9 +2648,11 @@ const SortableElement = memo(function SortableElement({
         onSelect(element.id)
       }}
     >
-      <div ref={handleRef} className="build-page__drag-handle">
-        <Icon name="grid-dots-vertical" category="general" size={24} />
-      </div>
+      {!isFloatingWhatsApp && (
+        <div ref={handleRef} className="build-page__drag-handle">
+          <Icon name="grid-dots-vertical" category="general" size={24} />
+        </div>
+      )}
       {isSelected && (
         <div className="build-page__canvas-element-actions">
           <button
