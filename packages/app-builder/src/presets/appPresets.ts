@@ -257,31 +257,40 @@ const CAMP_FAQ_ITEMS = [
   { question: 'Can families register for multiple sessions?', answer: 'Yes. Families can combine any available weekly sessions and update preferences from the Forms page.' },
 ]
 
-// Product imagery and material guidance adapted from the Deux Lapins muslin
-// collection. These URLs remain remote so the preset stays light to load.
+// Product imagery and collection direction adapted from the Deux Lapins store.
+// The selection deliberately spans sleep, clothing, bath, nursery, and gifting
+// rather than repeating one muslin print across the entire storefront.
 const LITTLE_LOOM_IMAGES = {
-  rainbow: 'https://cdn.shopify.com/s/files/1/0831/2448/6433/files/02-MUSLIN-LEL-07070.jpg?v=1713126865',
-  bebe: 'https://cdn.shopify.com/s/files/1/0831/2448/6433/files/02-MUSLIN-BEL-007070.jpg?v=1713126784',
-  birds: 'https://cdn.shopify.com/s/files/1/0831/2448/6433/files/02-MUSLIN-BLR-070070.jpg?v=1713126798',
-  icons: 'https://cdn.shopify.com/s/files/1/0831/2448/6433/files/02-MUSLIN-ICL-007070.jpg?v=1713126840',
-  petite: 'https://cdn.shopify.com/s/files/1/0831/2448/6433/files/02-MUSLIN-PEC-07070.jpg?v=1713126877',
-  forest: 'https://cdn.shopify.com/s/files/1/0831/2448/6433/files/02-MUSLIN-ENB-100100.jpg?v=1713126824',
+  hero: 'https://cdn.shopify.com/s/files/1/0831/2448/6433/files/Rainbow_Lapin_Desktop_Slider_1780x706_f9b261f5-0a4d-4c95-8a4e-71549c8654e7.jpg?v=1780407098',
+  swaddle: 'https://cdn.shopify.com/s/files/1/0831/2448/6433/files/02-MUSLIN-LEL-07070.jpg?v=1713126865',
+  cotSheet: 'https://cdn.shopify.com/s/files/1/0831/2448/6433/files/02-MUSLIN-BLR-070070.jpg?v=1713126798',
+  pramCover: 'https://cdn.shopify.com/s/files/1/0831/2448/6433/files/02-MUSLIN-ICL-007070.jpg?v=1713126840',
+  poncho: 'https://cdn.shopify.com/s/files/1/0831/2448/6433/files/01-BBKPNC-BEL-00002Y.jpg?v=1736488336',
+  romperPink: 'https://cdn.shopify.com/s/files/1/0831/2448/6433/files/firfirli_kiz_bebek_kisa_tulum_-_innocent_pink_yeni_dugme_1.jpg?v=1718208813',
+  romperBlue: 'https://cdn.shopify.com/s/files/1/0831/2448/6433/files/muslinerkekbebekkisakollutulum-endlessblue1.jpg?v=1718269232',
+  kimono: 'https://cdn.shopify.com/s/files/1/0831/2448/6433/files/MuslinCocukKimono-CocoBrush.jpg?v=1750326167',
+  newborn: 'https://cdn.shopify.com/s/files/1/0831/2448/6433/files/HastaneCikisi1.Kare-05.jpg?v=1746806669',
+  babyShower: 'https://cdn.shopify.com/s/files/1/0831/2448/6433/files/Baby_Shower-1.jpg?v=1747991921',
+  giftBox: 'https://cdn.shopify.com/s/files/1/0831/2448/6433/files/Medium_Box-2.jpg?v=1747991588',
+  smallGift: 'https://cdn.shopify.com/s/files/1/0831/2448/6433/files/Small_Box-3.jpg?v=1747991382',
 }
 
 const LITTLE_LOOM_PRODUCTS = [
-  { name: 'Rainbow Muslin Swaddle', price: '36', description: 'A breathable, 100% cotton muslin layer for naps, pram shade, tummy time, and everyday cuddles.', image: LITTLE_LOOM_IMAGES.rainbow },
-  { name: 'Bébé Lapin Hooded Poncho', price: '54', description: 'A soft post-bath poncho designed to make warm-up time feel gentle and easy.', image: LITTLE_LOOM_IMAGES.bebe },
-  { name: 'Little Birds Cot Sheet', price: '42', description: 'Lightweight cotton muslin with a snug fitted edge for a calm, breathable sleep space.', image: LITTLE_LOOM_IMAGES.birds },
-  { name: 'Iconique Pram Cover', price: '48', description: 'A versatile muslin cover for stroller shade, feeding privacy, or a soft layer on the go.', image: LITTLE_LOOM_IMAGES.icons },
-  { name: 'Petite Garden Bib Set', price: '24', description: 'An absorbent everyday set in gentle prints, made for small spills and big adventures.', image: LITTLE_LOOM_IMAGES.petite },
-  { name: 'Forest Friends Baby Blanket', price: '62', description: 'A double-layer cotton muslin blanket that gets softer with every wash.', image: LITTLE_LOOM_IMAGES.forest },
+  { name: 'Rainbow Lapin Muslin Swaddle', price: '36', description: 'A breathable cotton layer for naps, pram shade, tummy time, and everyday cuddles.', image: LITTLE_LOOM_IMAGES.swaddle },
+  { name: 'Little Birds Cot Sheet', price: '42', description: 'A lightweight fitted muslin sheet in a playful blue bird print for calm sleep spaces.', image: LITTLE_LOOM_IMAGES.cotSheet },
+  { name: 'Iconique Lapin Pram Cover', price: '48', description: 'A versatile printed muslin cover for stroller shade, feeding privacy, or a soft layer on the go.', image: LITTLE_LOOM_IMAGES.pramCover },
+  { name: 'Bébé Lapin Hooded Poncho', price: '54', description: 'A soft rabbit-print poncho designed to make post-bath warm-up time gentle and easy.', image: LITTLE_LOOM_IMAGES.poncho },
+  { name: 'Innocent Pink Ruffle Romper', price: '46', description: 'A light muslin romper with playful ruffles and an easy fit for warm-weather days.', image: LITTLE_LOOM_IMAGES.romperPink },
+  { name: 'Endless Blue Pocket Romper', price: '44', description: 'A relaxed blue cotton romper with a practical pocket and room to move.', image: LITTLE_LOOM_IMAGES.romperBlue },
+  { name: 'Coco Brush Kids Kimono', price: '58', description: 'A joyful printed kimono layer for slow mornings, beach days, and cozy evenings.', image: LITTLE_LOOM_IMAGES.kimono },
+  { name: 'Newborn Homecoming Set', price: '78', description: 'A soft first outfit set for a considered hospital bag and gentle first days at home.', image: LITTLE_LOOM_IMAGES.newborn },
 ]
 
 const LITTLE_LOOM_GUIDE_ITEMS = [
-  { title: 'Why muslin feels so good', description: 'Open-weave cotton lets air circulate and becomes softer through normal washing, making it a practical layer for changing weather.', image: LITTLE_LOOM_IMAGES.rainbow },
-  { title: 'One cloth, many moments', description: 'Use a muslin layer as a light blanket, swaddle, stroller shade, changing mat cover, burp cloth, or playtime surface.', image: LITTLE_LOOM_IMAGES.icons },
-  { title: 'Gentle everyday care', description: 'Wash at up to 40°C with similar colors. Skip bleach and high heat so the natural cotton texture stays soft and durable.', image: LITTLE_LOOM_IMAGES.bebe },
-  { title: 'Choosing the right size', description: 'A compact square works beautifully for newborn care; a larger layer gives more coverage for sleep, nursing, and stroller days.', image: LITTLE_LOOM_IMAGES.forest },
+  { title: 'Sleep: make the room feel calm', description: 'Choose breathable muslin sheets and a light layer that feels comfortable through changing temperatures.', image: LITTLE_LOOM_IMAGES.cotSheet },
+  { title: 'Play: dress for easy movement', description: 'Roomy cotton rompers are simple to put on, easy to layer, and ready for a day of crawling and exploring.', image: LITTLE_LOOM_IMAGES.romperBlue },
+  { title: 'Bath: warm up without the fuss', description: 'Keep a soft poncho or towel close by so the transition from bath to cuddle feels gentle and quick.', image: LITTLE_LOOM_IMAGES.poncho },
+  { title: 'Out and about: carry one useful layer', description: 'A large muslin wrap works as stroller shade, light blanket, changing surface, or feeding cover.', image: LITTLE_LOOM_IMAGES.pramCover },
 ]
 
 const LITTLE_LOOM_PARENT_FIELDS = [
@@ -2398,8 +2407,8 @@ const ALL_APP_PRESETS: AppPreset[] = [
       title: 'Soft beginnings, made for everyday moments',
       subtitle: 'Breathable cotton muslin, thoughtful baby clothing, and calm care guidance for your little one’s first years.',
       icon: 'Heart',
-      backgroundImageUrl: LITTLE_LOOM_IMAGES.rainbow,
-      backgroundImageName: 'soft rainbow muslin textile',
+      backgroundImageUrl: LITTLE_LOOM_IMAGES.hero,
+      backgroundImageName: 'Rainbow Lapin baby collection',
       ctaEnabled: true,
       ctaLabel: 'Shop muslin essentials',
       ctaAction: 'Navigate to Page',
@@ -2474,7 +2483,7 @@ const ALL_APP_PRESETS: AppPreset[] = [
         icon: 'Newspaper',
         elements: [
           { componentId: 'heading', variants: { Size: 'Large', Alignment: 'Left' }, properties: { Heading: 'Growing gently, together', Subheading: 'Practical notes for choosing, caring for, and enjoying the little things.' } },
-          { componentId: 'list', variants: { Layout: 'Card', 'Card Image Style': 'Square', 'Card Layout': 'Vertical', 'Card Size': 'Medium', 'Card Action': 'Button' }, properties: { Title: 'From the journal', 'Show Header': false, 'Button Label': 'Open story', 'Click Action': 'Open Dynamic Page', Items: JSON.stringify([{ title: 'Building a newborn drawer with fewer, better layers', description: 'A simple starting list for comfortable days: flexible muslin wraps, easy outfits, and a few trusted wash-day extras.', image: LITTLE_LOOM_IMAGES.forest }, { title: 'How to use a muslin blanket through the seasons', description: 'Ways to choose a light, breathable layer for naps, stroller walks, and calm moments at home.', image: LITTLE_LOOM_IMAGES.rainbow }, { title: 'Gift ideas that new parents really use', description: 'Choose soft essentials that work across feeding, sleep, play, travel, and everyday changes.', image: LITTLE_LOOM_IMAGES.icons }]) } },
+          { componentId: 'list', variants: { Layout: 'Card', 'Card Image Style': 'Square', 'Card Layout': 'Vertical', 'Card Size': 'Medium', 'Card Action': 'Button' }, properties: { Title: 'From the journal', 'Show Header': false, 'Button Label': 'Open story', 'Click Action': 'Open Dynamic Page', Items: JSON.stringify([{ title: 'Building a newborn drawer with fewer, better layers', description: 'A simple starting list for comfortable days: flexible muslin wraps, easy outfits, and a few trusted wash-day extras.', image: LITTLE_LOOM_IMAGES.newborn }, { title: 'How to choose a comfortable summer outfit', description: 'Lightweight muslin rompers and roomy shapes keep busy little bodies ready for warm-weather play.', image: LITTLE_LOOM_IMAGES.romperPink }, { title: 'Gift ideas that new parents really use', description: 'Choose soft essentials that work across feeding, sleep, play, travel, and everyday changes.', image: LITTLE_LOOM_IMAGES.giftBox }]) } },
           { componentId: 'spacer', properties: { Height: 24 } },
           { componentId: 'image-gallery', variants: { Layout: '8' }, properties: { Images: JSON.stringify(Object.values(LITTLE_LOOM_IMAGES)) } },
         ],
@@ -2485,7 +2494,7 @@ const ALL_APP_PRESETS: AppPreset[] = [
         icon: 'ShoppingBag',
         elements: [
           { componentId: 'heading', variants: { Size: 'Large', Alignment: 'Left' }, properties: { Heading: 'Organic-minded baby essentials', Subheading: 'Muslin layers, nursery staples, and gentle clothing made for tiny hands and busy family days.' } },
-          { componentId: 'product-list', variants: { Layout: 'Grid 3' }, properties: { Title: 'The Little Loom collection', Subtitle: 'Natural cotton muslin for sleep, bath time, stroller days, and gifting.', Currency: 'USD', 'Search Placeholder': 'Search the collection', 'Button Label': 'Add to cart', 'Show Toolbar': true, 'Add New Card': false, Products: JSON.stringify(LITTLE_LOOM_PRODUCTS) } },
+          { componentId: 'product-list', variants: { Layout: 'Grid 3' }, properties: { Title: 'The Little Loom collection', Subtitle: 'Natural cotton muslin for sleep, bath time, stroller days, and gifting.', Currency: 'USD', 'Search Placeholder': 'Search the collection', 'Button Label': 'Add to cart', 'Show Toolbar': true, 'Add New Card': false, __littleLoomProductCollectionV2: true, Products: JSON.stringify(LITTLE_LOOM_PRODUCTS) } },
           { componentId: 'spacer', properties: { Height: 24 } },
           { componentId: 'button', variants: { Type: 'Standard', Variant: 'Outlined', Corner: 'Rounded', Width: 'Full' }, properties: { Label: 'Ask a product question', Action: 'Navigate to Page', 'Action Page': 'little-loom-help' } },
         ],
@@ -2499,7 +2508,7 @@ const ALL_APP_PRESETS: AppPreset[] = [
           { componentId: 'paragraph', variants: { Size: 'Medium', Alignment: 'Left' }, properties: { Text: 'Choose pieces that can be used again and again: a large muslin wrap, a small care essential, and an easy layer for bath or stroller time.' } },
           { componentId: 'product-list', variants: { Layout: 'Grid 3' }, properties: { Title: 'Gift-ready favourites', Subtitle: 'Practical, beautiful essentials for new families.', Currency: 'USD', 'Search Placeholder': 'Search gift ideas', 'Button Label': 'Add to cart', 'Show Toolbar': true, 'Add New Card': false, Products: JSON.stringify([LITTLE_LOOM_PRODUCTS[0], LITTLE_LOOM_PRODUCTS[1], LITTLE_LOOM_PRODUCTS[5]]) } },
           { componentId: 'spacer', properties: { Height: 24 } },
-          { componentId: 'list', variants: { Layout: 'Basic', 'Image Style': 'Square', Size: 'Regular', Action: 'Button' }, properties: { Title: 'Gift planning notes', 'Show Header': false, 'Button Label': 'Open note', 'Click Action': 'Open Dynamic Page', Items: JSON.stringify([{ title: 'A practical newborn gift set', description: 'Start with a swaddle, a lightweight blanket, and a small everyday essential that will be useful from the first week.', image: LITTLE_LOOM_IMAGES.rainbow }, { title: 'How to choose a size-free gift', description: 'Muslin layers, blankets, and bath pieces make thoughtful choices when you do not know a baby’s exact size.', image: LITTLE_LOOM_IMAGES.bebe }, { title: 'Add a personal note', description: 'Use the checkout note to share a message for the family and make a useful gift feel even more special.', image: LITTLE_LOOM_IMAGES.icons }]) } },
+          { componentId: 'list', variants: { Layout: 'Basic', 'Image Style': 'Square', Size: 'Regular', Action: 'Button' }, properties: { Title: 'Gift planning notes', 'Show Header': false, 'Button Label': 'Open note', 'Click Action': 'Open Dynamic Page', Items: JSON.stringify([{ title: 'A practical newborn gift set', description: 'Start with a swaddle, a lightweight blanket, and a small everyday essential that will be useful from the first week.', image: LITTLE_LOOM_IMAGES.babyShower }, { title: 'How to choose a size-free gift', description: 'Muslin layers, blankets, and bath pieces make thoughtful choices when you do not know a baby’s exact size.', image: LITTLE_LOOM_IMAGES.smallGift }, { title: 'Add a personal note', description: 'Use the checkout note to share a message for the family and make a useful gift feel even more special.', image: LITTLE_LOOM_IMAGES.giftBox }]) } },
           { componentId: 'button', variants: { Type: 'Standard', Variant: 'Outlined', Corner: 'Rounded', Width: 'Full' }, properties: { Label: 'Need gifting help?', Action: 'Navigate to Page', 'Action Page': 'little-loom-help' } },
         ],
       },

@@ -944,7 +944,13 @@ function hasLittleLoomStructure(pages: AppPage[]): boolean {
   const pageNames = new Set(pages.filter((page) => !page.dynamic).map((page) => page.name.trim().toLowerCase()))
   const hasAllPages = LITTLE_LOOM_REQUIRED_PAGES.every((name) => pageNames.has(name.toLowerCase()))
   const dynamicListCount = pages.filter((page) => !page.dynamic).flatMap((page) => page.elements).filter(isDynamicListElement).length
-  return hasAllPages && dynamicListCount >= 3
+  const shopCollectionIsCurrent = pages
+    .find((page) => !page.dynamic && page.name === 'Shop')
+    ?.elements.some((element) => (
+      element.componentId === 'product-list'
+      && element.properties.__littleLoomProductCollectionV2 === true
+    )) ?? false
+  return hasAllPages && dynamicListCount >= 3 && shopCollectionIsCurrent
 }
 
 function getDynamicDetailPageName(hostPageName: string, preset?: AppPreset): string {
