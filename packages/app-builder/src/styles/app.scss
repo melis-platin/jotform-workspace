@@ -3003,7 +3003,12 @@ body,
 
 // In phone and tablet previews, keep the floating WhatsApp control above the
 // in-flow bottom navigation instead of letting the navigation cover it.
-.live-preview__phone-screen:has(.live-preview__bottom-nav) .live-preview__floating-whatsapp,
+.live-preview__phone-screen:has(.live-preview__bottom-nav) .live-preview__floating-whatsapp {
+  right: var(--space-4);
+  bottom: calc(var(--spacing-4xl) + var(--spacing-xs) + var(--space-4));
+  z-index: 3;
+}
+
 .live-preview__tablet-screen:has(.live-preview__bottom-nav) .live-preview__floating-whatsapp {
   bottom: calc(var(--spacing-4xl) + var(--spacing-sm));
   z-index: 3;
