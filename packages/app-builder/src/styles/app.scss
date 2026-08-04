@@ -3001,6 +3001,14 @@ body,
   pointer-events: auto;
 }
 
+// In phone and tablet previews, keep the floating WhatsApp control above the
+// in-flow bottom navigation instead of letting the navigation cover it.
+.live-preview__phone-screen:has(.live-preview__bottom-nav) .live-preview__floating-whatsapp,
+.live-preview__tablet-screen:has(.live-preview__bottom-nav) .live-preview__floating-whatsapp {
+  bottom: calc(var(--spacing-4xl) + var(--spacing-sm));
+  z-index: 3;
+}
+
 // Landing hamburger menu: a fixed, full-height panel (nav items + a bottom-pinned
 // Login/Sign up footer) sized to fit — it must never scroll. Lock the scaler so
 // the scale-compensation slack (.live-preview__content lays out at 1/0.9 height)
