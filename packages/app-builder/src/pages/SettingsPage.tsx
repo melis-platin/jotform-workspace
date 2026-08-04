@@ -2264,23 +2264,7 @@ function PushNotificationHistory({
     typeof window !== 'undefined' && window.matchMedia('(max-width: 760px)').matches
   ))
 
-  const hasScheduledNotifications = notifications.some((notification) => notification.status === 'scheduled')
-  const hasSentNotifications = notifications.some((notification) => notification.status === 'sent')
-  const hasCanceledNotifications = notifications.some((notification) => notification.status === 'canceled')
-  const filterOptions = PUSH_NOTIFICATION_HISTORY_FILTER_OPTIONS.map((option) => ({
-    ...option,
-    disabled: (option.value === 'scheduled' && !hasScheduledNotifications)
-      || (option.value === 'sent' && !hasSentNotifications)
-      || (option.value === 'canceled' && !hasCanceledNotifications),
-  }))
-
-  useEffect(() => {
-    if ((statusFilter === 'scheduled' && !hasScheduledNotifications)
-      || (statusFilter === 'sent' && !hasSentNotifications)
-      || (statusFilter === 'canceled' && !hasCanceledNotifications)) {
-      setStatusFilter('all')
-    }
-  }, [hasCanceledNotifications, hasScheduledNotifications, hasSentNotifications, statusFilter])
+  const filterOptions = PUSH_NOTIFICATION_HISTORY_FILTER_OPTIONS
 
   useEffect(() => {
     const mobileViewport = window.matchMedia('(max-width: 760px)')
