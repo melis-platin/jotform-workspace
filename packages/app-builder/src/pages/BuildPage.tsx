@@ -7196,12 +7196,19 @@ export function BuildPage({
                                     { value: 'action', label: 'Action' },
                                     { value: 'condition', label: 'Condition' },
                                   ]
-                              : selectedComponent.id === 'product-list'
-                                ? [
-                                    { value: 'general', label: 'Appearance' },
-                                    { value: 'products', label: 'Products' },
-                                    { value: 'condition', label: 'Condition' },
-                                  ]
+                                : selectedComponent.id === 'product-list'
+                                  ? [
+                                      { value: 'general', label: 'Appearance' },
+                                      { value: 'products', label: 'Products' },
+                                      { value: 'condition', label: 'Condition' },
+                                    ]
+                                : selectedComponent.id === 'chart'
+                                  ? [
+                                      { value: 'general', label: 'General' },
+                                      { value: 'data', label: 'Data' },
+                                      { value: 'style', label: 'Style' },
+                                      { value: 'condition', label: 'Condition' },
+                                    ]
                                 : selectedComponent.id === 'faq'
                                 ? [
                                     { value: 'general', label: 'General' },
@@ -7399,6 +7406,7 @@ export function BuildPage({
                   const isFaq = selectedComponent.id === 'faq'
                   const isTestimonial = selectedComponent.id === 'testimonial'
                   const isBanner = selectedComponent.id === 'banner'
+                  const isChart = selectedComponent.id === 'chart'
                   const isSocialFollow = selectedComponent.id === 'social-follow'
                   const isWhatsApp = selectedComponent.id === 'whatsapp'
                   if (isWhatsApp && propertyTab === 'style') {
@@ -7808,6 +7816,111 @@ export function BuildPage({
                         })()}
                       </div>
                     )
+                  }
+
+                  // Chart — a dedicated configuration flow keeps the chart's content,
+                  // data, and appearance decisions separate in the builder panel.
+                  if (isChart) {
+                    const p = selectedElement.properties
+                    const set = (name: string, value: string | boolean | number) => handlePropertyChange(selectedElement.id, name, value)
+                    const chartType = String(selectedElement.variants['Type'] ?? 'Bar')
+                    const dataSet = String(p['Data Set'] ?? 'Orders')
+                    const typeOptions = [
+                      { value: 'Bar', label: 'Bar', icon: 'chart-bar-filled' },
+                      { value: 'Line', label: 'Line', icon: 'chart-line-filled' },
+                      { value: 'Area', label: 'Area', icon: 'chart-area-filled' },
+                      { value: 'Donut', label: 'Donut', icon: 'chart-pie-filled' },
+                    ]
+                    const dataOptions = [
+                      { value: 'Orders', label: 'Orders', icon: 'shopping-bag-filled' },
+                      { value: 'Revenue', label: 'Revenue', icon: 'dollar-circle-filled' },
+                      { value: 'Visitors', label: 'Visitors', icon: 'users-filled' },
+                    ]
+
+                    if (propertyTab === 'general') {
+                      return (
+                        <div className="property-panel__body">
+                          <div className="property-panel__field">
+                            <DSFormField title="Title" size="md" showDescription={false} showHelpText={false}>
+                              <DSInput value={String(p.Title ?? '')} placeholder="Chart title" maxLength={80} onChange={(e) => set('Title', e.target.value)} />
+                            </DSFormField>
+                          </div>
+                          <div className="property-panel__field">
+                            <DSFormField title="Description" description="Explain what people can learn from this chart." size="md" showDescription showHelpText={false}>
+                              <DSTextArea size="md" rows={3} value={String(p.Description ?? '')} placeholder="Add a short description" maxLength={160} showCount onChange={(e) => set('Description', e.target.value)} />
+                            </DSFormField>
+                          </div>
+                          <div className="property-panel__field property-panel__field--inline">
+                            <DSFormField title="Show icon" description="Display an icon next to the chart title." size="md" showDescription showHelpText={false}>
+                              <DSToggle size="md" checked={Boolean(p['Show Icon'])} onChange={(e) => set('Show Icon', e.target.checked)} />
+                            </DSFormField>
+                          </div>
+                          {Boolean(p['Show Icon']) && (
+                            <div className="property-panel__field">
+                              <DSFormField title="Icon" size="md" showDescription={false} showHelpText={false}>
+                                <IconPropertyField value={String(p.Icon ?? 'TrendingUp')} onChange={(value) => set('Icon', value)} />
+                              </DSFormField>
+                            </div>
+                          )}
+                        </div>
+                      )
+                    }
+
+                    if (propertyTab === 'data') {
+                      return (
+                        <div className="property-panel__body">
+                          <div className="property-panel__field">
+                            <DSFormField title="Chart type" description="Choose how the selected data is displayed." size="md" showDescription showHelpText={false}>
+                              <Segmented
+                                accent="apps"
+                                variant="iconText"
+                                value={chartType}
+                                onChange={(value) => handleVariantChange(selectedElement.id, 'Type', value)}
+                                items={typeOptions.map((option) => ({ value: option.value, label: option.label, icon: option.icon, iconCategory: 'general' }))}
+                              />
+                            </DSFormField>
+                          </div>
+                          <div className="property-panel__field">
+                            <DSFormField title="Data set" description="Sample values update the canvas and live preview immediately." size="md" showDescription showHelpText={false}>
+                              <DSDropdownSingle
+                                value={dataSet}
+                                onChange={(value) => set('Data Set', value)}
+                                options={dataOptions.map((option) => ({ value: option.value, label: option.label, leading: <Icon name={option.icon} category="general" size={20} /> }))}
+                              />
+                            </DSFormField>
+                          </div>
+                          <div className="property-panel__field">
+                            <DSFormField title="Primary series" size="md" showDescription={false} showHelpText={false}>
+                              <DSInput value={String(p['Primary Label'] ?? 'This period')} maxLength={48} onChange={(e) => set('Primary Label', e.target.value)} />
+                            </DSFormField>
+                          </div>
+                          <div className="property-panel__field">
+                            <DSFormField title="Secondary series" size="md" showDescription={false} showHelpText={false}>
+                              <DSInput value={String(p['Secondary Label'] ?? 'Previous period')} maxLength={48} onChange={(e) => set('Secondary Label', e.target.value)} />
+                            </DSFormField>
+                          </div>
+                        </div>
+                      )
+                    }
+
+                    if (propertyTab === 'style') {
+                      return (
+                        <div className="property-panel__body">
+                          <div className="property-panel__field property-panel__field--inline">
+                            <DSFormField title="Date filter" description="Let viewers switch between yearly, monthly, and weekly values." size="md" showDescription showHelpText={false}>
+                              <DSToggle size="md" checked={Boolean(p['Date Filter'])} onChange={(e) => set('Date Filter', e.target.checked)} />
+                            </DSFormField>
+                          </div>
+                          {chartType !== 'Donut' && (
+                            <div className="property-panel__field property-panel__field--inline">
+                              <DSFormField title="Show legend" description="Display labels for both chart series." size="md" showDescription showHelpText={false}>
+                                <DSToggle size="md" checked={Boolean(p['Show Legend'])} onChange={(e) => set('Show Legend', e.target.checked)} />
+                              </DSFormField>
+                            </div>
+                          )}
+                        </div>
+                      )
+                    }
                   }
 
                   // Banner Content tab — toggleable text slots + button action.

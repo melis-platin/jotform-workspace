@@ -1,6 +1,6 @@
 import { ComponentRegistry } from '../../types/registry';
 import { Chart } from './Chart';
-import type { ChartType } from './Chart';
+import type { ChartDataSet, ChartType } from './Chart';
 import type { VariantValues, PropertyValues, StateValues } from '../../types/component';
 import scss from './Chart.scss?raw';
 
@@ -22,6 +22,7 @@ ComponentRegistry.register({
     { name: 'Description', type: 'text', default: 'Monthly order volume' },
     { name: 'Primary Label', type: 'text', default: 'This period' },
     { name: 'Secondary Label', type: 'text', default: 'Previous period' },
+    { name: 'Data Set', type: 'select', default: 'Orders', options: ['Orders', 'Revenue', 'Visitors'] },
     { name: 'Show Icon', type: 'boolean', default: true },
     { name: 'Icon', type: 'icon', default: 'TrendingUp' },
     { name: 'Date Filter', type: 'boolean', default: true },
@@ -106,6 +107,7 @@ ComponentRegistry.register({
         description={props['Description'] as string}
         primaryLabel={props['Primary Label'] as string}
         secondaryLabel={props['Secondary Label'] as string}
+        dataSet={props['Data Set'] as ChartDataSet}
         showIcon={props['Show Icon'] as boolean}
         iconName={props['Icon'] as string}
         showDateFilter={props['Date Filter'] as boolean}

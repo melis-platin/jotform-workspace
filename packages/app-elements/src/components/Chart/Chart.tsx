@@ -6,6 +6,7 @@ import './Chart.scss';
 // Types
 // ============================================
 export type ChartType = 'Bar' | 'Line' | 'Area' | 'Donut';
+export type ChartDataSet = 'Orders' | 'Revenue' | 'Visitors';
 
 export type ChartDateFilter = 'Yearly' | 'Monthly' | 'Weekly';
 
@@ -15,6 +16,7 @@ export interface ChartProps {
   description?: string;
   primaryLabel?: string;
   secondaryLabel?: string;
+  dataSet?: ChartDataSet;
   iconName?: string;
   showIcon?: boolean;
   showDateFilter?: boolean;
@@ -58,6 +60,29 @@ const DATA_BY_FILTER: Record<ChartDateFilter, ChartData> = {
     lineSeries2: [210, 280, 240, 360, 320, 180, 120],
   },
 };
+
+const scaleSeries = (series: number[], multiplier: number) => series.map((value) => Math.round(value * multiplier));
+
+function dataForSet(dataSet: ChartDataSet, filter: ChartDateFilter): ChartData {
+  const source = DATA_BY_FILTER[filter];
+  if (dataSet === 'Orders') return source;
+  if (dataSet === 'Revenue') {
+    return {
+      ...source,
+      barSeries1: scaleSeries(source.barSeries1, 24),
+      barSeries2: scaleSeries(source.barSeries2, 24),
+      lineSeries1: scaleSeries(source.lineSeries1, 1.5),
+      lineSeries2: scaleSeries(source.lineSeries2, 1.5),
+    };
+  }
+  return {
+    ...source,
+    barSeries1: scaleSeries(source.barSeries1, 8),
+    barSeries2: scaleSeries(source.barSeries2, 8),
+    lineSeries1: scaleSeries(source.lineSeries1, 2.4),
+    lineSeries2: scaleSeries(source.lineSeries2, 2.4),
+  };
+}
 
 // ============================================
 // Chart Constants
@@ -428,6 +453,7 @@ export const Chart: FC<ChartProps> = ({
   description,
   primaryLabel = 'This period',
   secondaryLabel = 'Previous period',
+  dataSet = 'Orders',
   iconName = 'TrendingUp',
   showIcon = true,
   showDateFilter = true,
@@ -436,8 +462,9 @@ export const Chart: FC<ChartProps> = ({
   skeleton = false,
   skeletonAnimation = 'pulse',
 }) => {
-  const resolvedTitle = title || (type === 'Bar' ? 'Orders' : type === 'Donut' ? 'Audience overview' : 'Revenue');
-  const resolvedDesc = description || (type === 'Bar' ? 'Monthly order volume' : type === 'Donut' ? 'How your audience is distributed' : 'Monthly revenue overview');
+  const defaultTitle = dataSet === 'Revenue' ? 'Revenue' : dataSet === 'Visitors' ? 'Visitors' : 'Orders';
+  const resolvedTitle = title || (type === 'Donut' ? 'Audience overview' : defaultTitle);
+  const resolvedDesc = description || (type === 'Donut' ? 'How your audience is distributed' : `Monthly ${defaultTitle.toLowerCase()} overview`);
   const seriesLabels: [string, string] = [primaryLabel || 'This period', secondaryLabel || 'Previous period'];
   const animClass = skeletonAnimation === 'shimmer' ? 'animate-shimmer' : 'animate-pulse';
 
@@ -464,7 +491,7 @@ export const Chart: FC<ChartProps> = ({
   const [tooltip, setTooltip] = useState<TooltipInfo | null>(null);
   const [dateFilter, setDateFilter] = useState<ChartDateFilter>('Yearly');
   const handleHover = useCallback((info: TooltipInfo | null) => setTooltip(info), []);
-  const chartData = DATA_BY_FILTER[dateFilter];
+  const chartData = dataForSet(dataSet, dateFilter);
   const isMobile = useIsMobile();
   const labelStep = isMobile && chartData.labels.length > 7 ? 2 : 1;
 
