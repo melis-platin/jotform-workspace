@@ -11439,8 +11439,9 @@ export function BuildPage({
           }}
           size="md"
           className="chart-table-picker-modal"
-          title="Choose a table"
-          description="Select the App Table you want to use for this chart."
+          icon={<Icon name="product-tables-filled" category="products" size={24} />}
+          title="Select Tables"
+          description="Select the table you want to use for your chart."
           confirmLabel="Done"
           cancelLabel="Cancel"
           onConfirm={() => {

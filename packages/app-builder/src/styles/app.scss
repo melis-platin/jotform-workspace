@@ -6464,32 +6464,30 @@ body,
   gap: var(--spacing-md);
 }
 
-// Chart / Choose a table — source: Figma New Workspace, node 1385:5084.
-// The modal is intentionally compact so selecting a data source remains a
-// focused first-step rather than a secondary configuration panel.
+// Chart / Select Tables — source: Figma New Workspace, node 1395:33887.
+// The product modal header is deliberately shared with the existing DS Modal,
+// then tuned only with the exact product/table tokens from the source design.
 .chart-table-picker-modal {
   max-width: calc(var(--spacing-4xl) * 8 + var(--spacing-xl) * 2 + var(--spacing-xs));
 
   .jf-modal__header {
-    gap: var(--spacing-md);
-    padding: var(--spacing-lg) calc(var(--spacing-lg) + var(--spacing-xs));
-  }
-
-  .jf-modal__title {
-    font-size: var(--font-size-md);
-    line-height: var(--line-height-md);
-    color: var(--text-darkest);
+    gap: var(--spacing-xl);
+    padding: var(--spacing-xl) var(--spacing-2xl) calc(var(--spacing-xl) + 1px);
   }
 
   .jf-modal__description {
-    color: var(--secondary-text-medium);
+    color: var(--text-medium);
+  }
+
+  .jf-modal__icon {
+    background: var(--product-tables-default);
   }
 
   .jf-modal__header > .jf-btn {
     width: calc(var(--spacing-2xl) + var(--spacing-xs));
     height: calc(var(--spacing-2xl) + var(--spacing-xs));
-    background: var(--purple-100);
-    color: var(--text-darkest);
+    background: var(--background-light);
+    color: var(--text-dark);
   }
 
   .jf-modal__body {
