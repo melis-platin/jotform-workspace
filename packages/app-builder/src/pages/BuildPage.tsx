@@ -659,7 +659,11 @@ const ELEMENT_ICON_MAP: Record<string, { icon: string; iconCategory: string; ass
   'video': { icon: 'video-filled', iconCategory: 'media' },
   'map': { icon: 'map-location-pin-filled', iconCategory: 'general' },
   'report': { icon: 'form-report-filled', iconCategory: 'forms-files' },
-  'sentbox': { icon: 'product-inbox-filled', iconCategory: 'forms-files' },
+  'sentbox': {
+    icon: 'product-inbox-filled',
+    iconCategory: 'forms-files',
+    assetUrl: 'http://localhost:3845/assets/b48356b737ce352274efdcb2c524f4b21b0e54ac.svg',
+  },
   'divider': { icon: 'divider', iconCategory: 'layout' },
   'daily-task-manager': { icon: 'table', iconCategory: 'general' },
   'progress-indicator': { icon: 'list-check-square-filled', iconCategory: 'general' },
