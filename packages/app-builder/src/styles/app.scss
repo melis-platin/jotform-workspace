@@ -6495,12 +6495,12 @@ body,
   }
 
   .jf-modal__footer {
-    min-height: var(--spacing-4xl);
-    padding: var(--spacing-md) calc(var(--spacing-lg) + var(--spacing-xs));
+    min-height: unset;
+    padding: calc(var(--spacing-md) + 1px) var(--spacing-2xl) var(--spacing-md);
   }
 
   .jf-modal__footer-actions {
-    gap: var(--spacing-sm);
+    gap: var(--spacing-md);
   }
 }
 

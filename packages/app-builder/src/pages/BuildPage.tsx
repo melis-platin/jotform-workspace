@@ -11442,8 +11442,9 @@ export function BuildPage({
           icon={<Icon name="product-tables-filled" category="products" size={24} />}
           title="Select Tables"
           description="Select the table you want to use for your chart."
-          confirmLabel="Done"
-          cancelLabel="Cancel"
+          intent="constructive"
+          confirmLabel="Select Table"
+          showCancel={false}
           onConfirm={() => {
             chartTablePickerDismissedRef.current = chartTablePickerElementId
             setChartTablePickerElementId(null)
