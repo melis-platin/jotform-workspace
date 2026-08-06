@@ -23,6 +23,7 @@ ComponentRegistry.register({
     { name: 'Primary Label', type: 'text', default: 'This period' },
     { name: 'Secondary Label', type: 'text', default: 'Previous period' },
     { name: 'Data Set', type: 'select', default: 'Orders', options: ['Orders', 'Revenue', 'Visitors'] },
+    { name: 'Data Source', type: 'text', default: '' },
     { name: 'Show Icon', type: 'boolean', default: true },
     { name: 'Icon', type: 'icon', default: 'TrendingUp' },
     { name: 'Date Filter', type: 'boolean', default: true },

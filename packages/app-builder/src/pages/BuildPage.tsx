@@ -3451,6 +3451,8 @@ export function BuildPage({
   const appHeaderImageInputRef = useRef<HTMLInputElement>(null)
   const appHeaderBgImageInputRef = useRef<HTMLInputElement>(null)
   const [editItemsOpen, setEditItemsOpen] = useState(false)
+  const [chartTablePickerElementId, setChartTablePickerElementId] = useState<string | null>(null)
+  const [chartTableSearch, setChartTableSearch] = useState('')
   // Dynamic detail pages parked while their List's "Open Dynamic Page" action is
   // off, keyed by the source List element id. Re-enabling restores the page with
   // its customizations intact.
@@ -5330,6 +5332,10 @@ export function BuildPage({
     })
     setForceTargetPageId(null)
     setSelectedElementId(element.id)
+    if (comp.id === 'chart') {
+      setChartTableSearch('')
+      setChartTablePickerElementId(element.id)
+    }
     if (!mobileElementsSheet) {
       setRightPanel('properties')
     }
@@ -5344,6 +5350,11 @@ export function BuildPage({
     setSelectedElementId(elementId)
     setRightPanel('properties')
     setMobileElementsSheet(false)
+    const selected = ownerPage?.elements.find((element) => element.id === elementId)
+    if (selected?.componentId === 'chart' && !String(selected.properties['Data Source'] ?? '').trim()) {
+      setChartTableSearch('')
+      setChartTablePickerElementId(elementId)
+    }
   }, [])
 
   const handleRemoveElement = useCallback((elementId: string) => {
@@ -7867,8 +7878,30 @@ export function BuildPage({
                     }
 
                     if (propertyTab === 'data') {
+                      const dataSource = String(p['Data Source'] ?? '')
                       return (
                         <div className="property-panel__body">
+                          <div className="property-panel__field">
+                            <DSFormField title="App Table" description="Choose the table that provides data for this chart." size="md" showDescription showHelpText={false}>
+                              <div className="chart-properties__table-source">
+                                <span className={dataSource ? 'chart-properties__table-name' : 'chart-properties__table-placeholder'}>
+                                  {dataSource || 'Choose a table'}
+                                </span>
+                                <DSButton
+                                  variant="filled"
+                                  colorScheme="secondary"
+                                  shape="rectangle"
+                                  size="sm"
+                                  onClick={() => {
+                                    setChartTableSearch('')
+                                    setChartTablePickerElementId(selectedElement.id)
+                                  }}
+                                >
+                                  {dataSource ? 'Change' : 'Choose'}
+                                </DSButton>
+                              </div>
+                            </DSFormField>
+                          </div>
                           <div className="property-panel__field">
                             <DSFormField title="Chart type" description="Choose how the selected data is displayed." size="md" showDescription showHelpText={false}>
                               <Segmented
@@ -11293,6 +11326,78 @@ export function BuildPage({
         </div>
       </div>
     </BottomSheet>
+
+    {chartTablePickerElementId && (() => {
+      const chartElement = pages.flatMap((page) => page.elements).find((element) => element.id === chartTablePickerElementId)
+      if (!chartElement || chartElement.componentId !== 'chart') return null
+      const currentSource = String(chartElement.properties['Data Source'] ?? '')
+      const sources = new Map<string, { name: string; description: string }>()
+      pages.flatMap((page) => page.elements).forEach((element) => {
+        if (element.componentId === 'list') {
+          const source = String(element.properties['Data Source'] ?? '').trim()
+          if (source && source !== 'New Table') {
+            sources.set(source, { name: source, description: 'Used by a list in this app' })
+          }
+        }
+        if (element.componentId === 'table') {
+          const name = String(element.properties['Label'] ?? '').trim()
+          if (name) sources.set(name, { name, description: 'App Table' })
+        }
+      })
+      if (sources.size === 0) {
+        sources.set('New app table', { name: 'New app table', description: 'Create a table for this chart' })
+      }
+      const search = chartTableSearch.trim().toLowerCase()
+      const tableOptions = [...sources.values()].filter((table) => (
+        !search || `${table.name} ${table.description}`.toLowerCase().includes(search)
+      ))
+
+      return (
+        <DSModal
+          open
+          onClose={() => setChartTablePickerElementId(null)}
+          size="md"
+          title="Choose a table"
+          description="Select the App Table you want to use for this chart."
+          confirmLabel="Done"
+          cancelLabel="Cancel"
+          onConfirm={() => setChartTablePickerElementId(null)}
+        >
+          <div className="chart-table-picker">
+            <DSSearchInput
+              value={chartTableSearch}
+              onChange={(event) => setChartTableSearch(event.target.value)}
+              placeholder="Search tables"
+            />
+            <div className="chart-table-picker__list" role="listbox" aria-label="App Tables">
+              {tableOptions.map((table) => {
+                const selected = currentSource === table.name
+                return (
+                  <button
+                    key={table.name}
+                    type="button"
+                    className={`chart-table-picker__option${selected ? ' chart-table-picker__option--selected' : ''}`}
+                    role="option"
+                    aria-selected={selected}
+                    onClick={() => handlePropertyChange(chartElement.id, 'Data Source', table.name)}
+                  >
+                    <span className="chart-table-picker__icon"><Icon name="table" category="general" size={20} /></span>
+                    <span className="chart-table-picker__copy">
+                      <strong>{table.name}</strong>
+                      <small>{table.description}</small>
+                    </span>
+                    {selected && <Icon name="check" category="general" size={20} />}
+                  </button>
+                )
+              })}
+              {tableOptions.length === 0 && (
+                <p className="chart-table-picker__empty">No tables match your search.</p>
+              )}
+            </div>
+          </div>
+        </DSModal>
+      )
+    })()}
 
     {/* List items editor modal */}
     {editItemsOpen && selectedComponent?.id === 'list' && selectedElement && (() => {

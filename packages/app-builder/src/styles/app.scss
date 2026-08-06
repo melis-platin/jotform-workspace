@@ -6427,6 +6427,107 @@ body,
   }
 }
 
+.chart-properties__table-source {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  min-height: var(--spacing-4xl);
+  padding: var(--spacing-xs) var(--spacing-xs) var(--spacing-xs) var(--spacing-sm);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-fill);
+}
+
+.chart-properties__table-name,
+.chart-properties__table-placeholder {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--font-size-paragraph-sm);
+}
+
+.chart-properties__table-name { color: var(--fg-primary); }
+.chart-properties__table-placeholder { color: var(--fg-tertiary); }
+
+.chart-table-picker {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.chart-table-picker__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.chart-table-picker__option {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg-fill);
+  color: var(--fg-primary);
+  cursor: pointer;
+  text-align: left;
+  transition: background var(--transition), border-color var(--transition);
+
+  &:hover { background: var(--bg-fill-hover); }
+
+  &--selected {
+    border-color: var(--border-brand);
+    background: var(--bg-surface-brand);
+  }
+}
+
+.chart-table-picker__icon {
+  width: var(--spacing-4xl);
+  height: var(--spacing-4xl);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  border-radius: var(--radius-md);
+  background: var(--bg-surface-brand);
+  color: var(--fg-brand);
+}
+
+.chart-table-picker__copy {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2xs);
+
+  strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--font-size-paragraph-sm);
+    font-weight: var(--font-weight-bold);
+  }
+
+  small {
+    color: var(--fg-secondary);
+    font-size: var(--font-size-paragraph-xs);
+  }
+}
+
+.chart-table-picker__empty {
+  margin: 0;
+  padding: var(--spacing-lg) var(--spacing-sm);
+  color: var(--fg-secondary);
+  font-size: var(--font-size-paragraph-sm);
+  text-align: center;
+}
+
 // Image Gallery: 3x3 layout thumbnail grid
 .gallery-layout-grid {
   display: grid;
