@@ -6464,6 +6464,20 @@ body,
   gap: var(--spacing-md);
 }
 
+// Chart table search — source: Figma New Workspace, node 1395:33889.
+// This is the light product-search treatment, not the bordered builder search.
+.chart-table-picker__search .jf-search__field {
+  background: var(--background-lightest);
+  border-color: transparent;
+
+  &:hover,
+  &:focus-within,
+  &:focus-within:hover {
+    border-color: transparent;
+    box-shadow: none;
+  }
+}
+
 // Chart / Select Tables — source: Figma New Workspace, node 1395:33887.
 // The product modal header is deliberately shared with the existing DS Modal,
 // then tuned only with the exact product/table tokens from the source design.

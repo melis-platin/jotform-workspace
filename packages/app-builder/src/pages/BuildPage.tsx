@@ -11453,9 +11453,11 @@ export function BuildPage({
         >
           <div className="chart-table-picker">
             <DSSearchInput
+              size="lg"
+              className="chart-table-picker__search"
               value={chartTableSearch}
               onChange={(event) => setChartTableSearch(event.target.value)}
-              placeholder="Search tables"
+              placeholder="Search in your tables"
             />
             <div className="chart-table-picker__list" role="listbox" aria-label="App Tables">
               {tableOptions.map((table) => {
