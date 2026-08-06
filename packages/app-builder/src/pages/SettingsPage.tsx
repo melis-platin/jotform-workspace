@@ -281,32 +281,6 @@ const getScheduleQuickPickDate = (quickPick: ScheduleQuickPickValue) => {
 
 const getCurrentScheduleTime = () => formatScheduleTime(roundUpToNextHalfHour(new Date()))
 
-const getScheduleSummaryDayLabel = (value: string) => {
-  const scheduleDate = parseScheduleDate(value)
-  if (!scheduleDate) return 'the selected date'
-
-  const today = new Date()
-  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate())
-  const scheduleStart = new Date(
-    scheduleDate.getFullYear(),
-    scheduleDate.getMonth(),
-    scheduleDate.getDate(),
-  )
-  const dayDifference = Math.round((scheduleStart.getTime() - todayStart.getTime()) / (24 * 60 * 60 * 1000))
-
-  if (dayDifference === 0) return 'Today'
-  if (dayDifference === 1) return 'Tomorrow'
-
-  return new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(scheduleDate)
-}
-
-const getScheduleTimezoneAbbreviation = (value: string) => {
-  const timezoneLabel = SCHEDULE_TIMEZONE_OPTIONS.find((option) => option.value === value)?.label
-  const match = timezoneLabel?.match(/\(([^)]+)\)$/)
-
-  return match?.[1] ?? timezoneLabel ?? ''
-}
-
 export interface PushComposerFieldOption {
   value: string
   label: string
@@ -551,8 +525,6 @@ interface PushScheduleComposerSectionProps {
   quickPick: ScheduleQuickPickValue
   onQuickPickChange: (quickPick: ScheduleQuickPickValue) => void
   onCustomScheduleChange: () => void
-  audience: string[]
-  appUserRoles: AppRoleOption[]
   date: string
   onDateChange: (date: string) => void
   time: string
@@ -565,8 +537,6 @@ function PushScheduleComposerSection({
   quickPick,
   onQuickPickChange,
   onCustomScheduleChange,
-  audience,
-  appUserRoles,
   date,
   onDateChange,
   time,
@@ -574,16 +544,6 @@ function PushScheduleComposerSection({
   timezone,
   onTimezoneChange,
 }: PushScheduleComposerSectionProps) {
-  const parsedScheduleTime = parseScheduleTime(time)
-  const hasScheduleDateTime = Boolean(parseScheduleDate(date) && parsedScheduleTime)
-  const scheduleTimeLabel = parsedScheduleTime
-    ? formatScheduleTimeParts(parsedScheduleTime.hours, parsedScheduleTime.minutes)
-    : time
-  const scheduleDayLabel = getScheduleSummaryDayLabel(date)
-  const timezoneAbbreviation = getScheduleTimezoneAbbreviation(timezone)
-  const scheduleAudience = getSendStatusAudience(audience, appUserRoles)
-  const scheduleAudienceUserCount = getAudienceUserCount(audience, appUserRoles)
-
   return (
     <section className="push-schedule-composer" aria-labelledby="push-schedule-composer-title">
       <div className="push-schedule-composer__quick-picks">
@@ -658,15 +618,6 @@ function PushScheduleComposerSection({
         value={timezone}
         onChange={onTimezoneChange}
       />
-      {hasScheduleDateTime && (
-        <div className="push-schedule-composer__scheduled-notice">
-          <Icon name="clock" category="time-date" size={16} />
-          <p>
-            Sends <strong>{scheduleDayLabel}</strong> at <strong>{scheduleTimeLabel}.</strong>{' '}
-            <em>{timezoneAbbreviation}</em> - to {scheduleAudience} · {scheduleAudienceUserCount} {scheduleAudienceUserCount === 1 ? 'user' : 'users'}.
-          </p>
-        </div>
-      )}
     </section>
   )
 }
@@ -1494,7 +1445,6 @@ export function PushNotificationsPanel({
             onPermissionMessageEdit={onPermissionMessageEdit}
             isInitialPushNotification={usesInitialComposerLayout}
             hideIntro={isPublishComposer}
-            showEmptyStateNotice={isPublishComposer && !isScheduleComposer}
             contentPlaceholder={
               isScheduleComposer
                 ? SCHEDULE_NOTIFICATION_CONTENT_PLACEHOLDER
@@ -1505,8 +1455,6 @@ export function PushNotificationsPanel({
                 quickPick={scheduleQuickPick}
                 onQuickPickChange={applyScheduleQuickPick}
                 onCustomScheduleChange={() => setScheduleQuickPick('custom')}
-                audience={audience}
-                appUserRoles={appUserRoles}
                 date={scheduleDate}
                 onDateChange={setScheduleDate}
                 time={scheduleTime}
@@ -3337,7 +3285,6 @@ interface PushNotificationComposerProps {
   onPermissionMessageEdit?: () => void
   isInitialPushNotification?: boolean
   hideIntro?: boolean
-  showEmptyStateNotice?: boolean
   contentPlaceholder?: string
   scheduleContent?: ReactNode
 }
@@ -3655,24 +3602,11 @@ function PushNotificationComposer({
   onPermissionMessageEdit,
   isInitialPushNotification = false,
   hideIntro = false,
-  showEmptyStateNotice = false,
   contentPlaceholder = NOTIFICATION_CONTENT_PLACEHOLDER,
   scheduleContent,
 }: PushNotificationComposerProps) {
   const contextMenuRef = useRef<HTMLDivElement>(null)
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
-  const isTitleEmpty =
-    title.trim().length === 0 &&
-    titleFields.length === 0 &&
-    titleSuffix.trim().length === 0
-  const isContentEmpty =
-    content.trim().length === 0 &&
-    contentFields.length === 0 &&
-    contentSuffix.trim().length === 0
-  const shouldShowSendStatusNotice = showEmptyStateNotice && !isTitleEmpty && !isContentEmpty
-  const selectedAudience = getSendStatusAudience(audience, appUserRoles)
-  const selectedAudienceUserCount = getAudienceUserCount(audience, appUserRoles)
-
   useEffect(() => {
     if (!isContextMenuOpen) return
 
@@ -3806,19 +3740,11 @@ function PushNotificationComposer({
           </div>
         </div>
       </div>
-      <div className={`push-composer-panel__selection${shouldShowSendStatusNotice ? ' push-composer-panel__selection--with-empty-notice' : ''}`}>
+      <div className="push-composer-panel__selection">
         <div className="push-composer-panel__dropdown-row">
           <AudienceDropdown value={audience} onChange={setAudience} roles={appUserRoles} />
           <DeepLinkDropdown value={deepLink} onChange={setDeepLink} targets={deepLinkTargets} />
         </div>
-        {shouldShowSendStatusNotice && (
-          <div className="push-composer-panel__send-status-notice" role="status">
-            <Icon name="paper-plane-diagonal-filled" category="communication" size={16} />
-            <p>
-              This will be sent to <strong>{selectedAudienceUserCount} {selectedAudienceUserCount === 1 ? 'user' : 'users'}</strong> in <strong>{selectedAudience}</strong>, delivered immediately.
-            </p>
-          </div>
-        )}
       </div>
       {scheduleContent && <>
         <span className="push-composer-panel__schedule-divider" aria-hidden="true" />
@@ -3927,26 +3853,6 @@ function getHistoryAudienceRoleTooltip(notification: PushNotificationHistoryItem
   const legacyRoleNames = notification.audienceLabel.match(/\(([^)]*)\)/)?.[1]?.trim()
 
   return legacyRoleNames || undefined
-}
-
-function getSendStatusAudience(audience: string[], roles: AppRoleOption[]) {
-  if (audience.includes(ALL_USERS_AUDIENCE_ID) || audience.length === 0) {
-    return 'All Users'
-  }
-
-  const selectedRoleCount = roles.filter((role) => audience.includes(role.id)).length
-
-  return `${selectedRoleCount} ${selectedRoleCount === 1 ? 'role' : 'roles'}`
-}
-
-function getAudienceUserCount(audience: string[], roles: AppRoleOption[]) {
-  if (audience.includes(ALL_USERS_AUDIENCE_ID) || audience.length === 0) {
-    return roles.reduce((total, role) => total + (role.userCount ?? 0), 0)
-  }
-
-  return roles.reduce((total, role) => (
-    audience.includes(role.id) ? total + (role.userCount ?? 0) : total
-  ), 0)
 }
 
 function getDeepLinkHistoryLabel(deepLink: string, targets: DeepLinkTarget[]) {
