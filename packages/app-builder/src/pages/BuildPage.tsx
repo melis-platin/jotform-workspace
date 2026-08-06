@@ -11357,6 +11357,7 @@ export function BuildPage({
           open
           onClose={() => setChartTablePickerElementId(null)}
           size="md"
+          className="chart-table-picker-modal"
           title="Choose a table"
           description="Select the App Table you want to use for this chart."
           confirmLabel="Done"
