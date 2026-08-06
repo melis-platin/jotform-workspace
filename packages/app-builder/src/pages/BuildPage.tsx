@@ -11441,7 +11441,7 @@ export function BuildPage({
           className="chart-table-picker-modal"
           icon={<Icon name="product-tables-filled" category="products" size={24} />}
           title="Select Tables"
-          description="Select the table you want to use for your chart."
+          description="Choose a table to use for your chart."
           intent="constructive"
           confirmLabel="Select Table"
           showCancel={false}
