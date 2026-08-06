@@ -11459,31 +11459,37 @@ export function BuildPage({
               onChange={(event) => setChartTableSearch(event.target.value)}
               placeholder="Search in your tables"
             />
-            <div className="chart-table-picker__list" role="listbox" aria-label="App Tables">
-              {tableOptions.map((table) => {
-                const selected = currentSource === table.name
-                return (
-                  <button
-                    key={table.name}
-                    type="button"
-                    className={`chart-table-picker__option${selected ? ' chart-table-picker__option--selected' : ''}`}
-                    role="option"
-                    aria-selected={selected}
-                    onClick={() => handlePropertyChange(chartElement.id, 'Data Source', table.name)}
-                  >
-                    <span className="chart-table-picker__icon"><Icon name="table" category="general" size={20} /></span>
-                    <span className="chart-table-picker__copy">
-                      <strong>{table.name}</strong>
-                      <small>{table.description}</small>
-                    </span>
-                    {selected && <Icon name="check" category="general" size={20} />}
-                  </button>
-                )
-              })}
-              {tableOptions.length === 0 && (
-                <p className="chart-table-picker__empty">No tables match your search.</p>
-              )}
-            </div>
+            <section className="chart-table-picker__group" aria-label="App data tables">
+              <div className="chart-table-picker__group-heading">
+                <strong>APP DATA</strong>
+                <span>Tables created in App Builder</span>
+              </div>
+              <div className="chart-table-picker__list" role="listbox" aria-label="App Tables">
+                {tableOptions.map((table) => {
+                  const selected = currentSource === table.name
+                  return (
+                    <button
+                      key={table.name}
+                      type="button"
+                      className={`chart-table-picker__option${selected ? ' chart-table-picker__option--selected' : ''}`}
+                      role="option"
+                      aria-selected={selected}
+                      onClick={() => handlePropertyChange(chartElement.id, 'Data Source', table.name)}
+                    >
+                      <Icon name="product-tables-mono" category="products" size={24} className="chart-table-picker__icon" />
+                      <span className="chart-table-picker__copy">
+                        <strong>{table.name}</strong>
+                        <small>{table.description}</small>
+                      </span>
+                      {selected && <Icon name="check" category="general" size={20} />}
+                    </button>
+                  )
+                })}
+                {tableOptions.length === 0 && (
+                  <p className="chart-table-picker__empty">No tables match your search.</p>
+                )}
+              </div>
+            </section>
           </div>
         </DSModal>
       )

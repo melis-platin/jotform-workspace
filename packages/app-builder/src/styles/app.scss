@@ -6461,7 +6461,7 @@ body,
 .chart-table-picker {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  gap: var(--spacing-xl);
 }
 
 // Chart table search — source: Figma New Workspace, node 1395:33889.
@@ -6505,7 +6505,7 @@ body,
   }
 
   .jf-modal__body {
-    padding: var(--spacing-lg) calc(var(--spacing-lg) + var(--spacing-xs)) var(--spacing-xl);
+    padding: var(--spacing-2xl);
   }
 
   .jf-modal__footer {
@@ -6522,20 +6522,46 @@ body,
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
-  max-height: calc(var(--spacing-4xl) * 5);
+  max-height: calc(var(--spacing-4xl) * 5 + var(--spacing-xl));
   overflow-y: auto;
+}
+
+.chart-table-picker__group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  width: 100%;
+}
+
+.chart-table-picker__group-heading {
+  display: flex;
+  flex-direction: column;
+  color: var(--text-medium);
+
+  strong {
+    color: var(--navy-400);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    line-height: var(--line-height-sm);
+    letter-spacing: var(--letter-spacing-lg);
+  }
+
+  span {
+    font-size: var(--font-size-xs);
+    font-weight: var(--font-weight-book);
+    line-height: var(--line-height-xs);
+  }
 }
 
 .chart-table-picker__option {
   width: 100%;
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
-  min-height: calc(var(--spacing-4xl) + var(--spacing-md));
   gap: var(--spacing-md);
-  padding: var(--spacing-xs) var(--spacing-sm);
-  border: 1px solid var(--border-light);
-  border-radius: var(--radius-md);
+  height: calc(var(--spacing-4xl) + var(--spacing-xs) + 2px);
+  padding: var(--spacing-md);
+  border: 1px solid var(--border-medium);
+  border-radius: var(--radius-sm);
   background: var(--background-white);
   color: var(--text-darkest);
   cursor: pointer;
@@ -6551,15 +6577,8 @@ body,
 }
 
 .chart-table-picker__icon {
-  width: calc(var(--spacing-3xl) + var(--spacing-md));
-  height: calc(var(--spacing-3xl) + var(--spacing-md));
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   flex: 0 0 auto;
-  border-radius: var(--radius-md);
-  background: var(--error-lightest);
-  color: var(--error-default);
+  color: var(--product-tables-default);
 }
 
 .chart-table-picker__copy {
@@ -6573,13 +6592,18 @@ body,
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    font-size: var(--font-size-sm);
-    font-weight: var(--font-weight-bold);
+    font-size: calc(var(--font-size-md) + 2px);
+    font-weight: var(--font-weight-book);
+    line-height: var(--line-height-md);
+    letter-spacing: var(--letter-spacing-md);
   }
 
   small {
-    color: var(--secondary-text-medium);
-    font-size: var(--font-size-xs);
+    color: var(--text-medium);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-book);
+    line-height: var(--line-height-sm);
+    letter-spacing: var(--letter-spacing-lg);
   }
 }
 
