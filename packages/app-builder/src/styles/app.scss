@@ -821,6 +821,13 @@ body,
   }
 }
 
+.build-page__element-figma-icon {
+  width: var(--ds-space-xl);
+  height: var(--ds-space-xl);
+  display: block;
+  flex: 0 0 auto;
+}
+
 .build-page__element-content {
   flex: 1;
   display: flex;

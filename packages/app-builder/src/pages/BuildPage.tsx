@@ -625,7 +625,7 @@ function nextNumericId(prefix: string, existingIds: string[]): string {
   return `${prefix}-${max + 1}`
 }
 
-const ELEMENT_ICON_MAP: Record<string, { icon: string; iconCategory: string }> = {
+const ELEMENT_ICON_MAP: Record<string, { icon: string; iconCategory: string; assetUrl?: string }> = {
   'form': { icon: 'form-filled', iconCategory: 'forms-files' },
   'heading': { icon: 'heading-square-filled', iconCategory: 'editor' },
   'list': { icon: 'list-bullet', iconCategory: 'editor' },
@@ -650,7 +650,11 @@ const ELEMENT_ICON_MAP: Record<string, { icon: string; iconCategory: string }> =
   'text': { icon: 'text', iconCategory: 'general' },
   'link': { icon: 'link-diagonal', iconCategory: 'general' },
   'accordion': { icon: 'message-question-filled', iconCategory: 'communication' },
-  'share-button': { icon: 'arrow-up-right-from-square-sm', iconCategory: 'general' },
+  'share-button': {
+    icon: 'arrow-up-right-from-square-sm',
+    iconCategory: 'general',
+    assetUrl: 'http://localhost:3845/assets/d4a47fe25bfb8c25947c327398ed778ac9449e67.svg',
+  },
   'image-slider': { icon: 'image-slider-filled', iconCategory: 'media' },
   'video': { icon: 'video-filled', iconCategory: 'media' },
   'map': { icon: 'map-location-pin-filled', iconCategory: 'general' },
@@ -6744,7 +6748,9 @@ export function BuildPage({
                           onClick={() => handleAddElement(comp)}
                         >
                           <div className="build-page__element-icon">
-                            {iconInfo ? (
+                            {iconInfo?.assetUrl ? (
+                              <img src={iconInfo.assetUrl} alt="" className="build-page__element-figma-icon" />
+                            ) : iconInfo ? (
                               <Icon name={iconInfo.icon} category={iconInfo.iconCategory} size={24} />
                             ) : (
                               <Icon name="grid-2-filled" category="layout" size={24} />
@@ -11358,7 +11364,9 @@ export function BuildPage({
                         onClick={() => { handleAddElement(comp); }}
                       >
                         <div className="mobile-elements-grid__icon">
-                          {iconInfo ? (
+                          {iconInfo?.assetUrl ? (
+                            <img src={iconInfo.assetUrl} alt="" className="build-page__element-figma-icon" />
+                          ) : iconInfo ? (
                             <Icon name={iconInfo.icon} category={iconInfo.iconCategory} size={24} />
                           ) : (
                             <Icon name="grid-2-filled" category="layout" size={24} />
