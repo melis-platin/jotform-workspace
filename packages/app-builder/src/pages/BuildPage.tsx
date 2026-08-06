@@ -854,6 +854,30 @@ function createCanvasElement(comp: RegisteredComponent, id: string): CanvasEleme
   }
 }
 
+const LEGACY_WHATSAPP_MESSAGE = 'Hi Bloom Café! I’d like to ask about my order.'
+
+function getAppSpecificWhatsAppMessage(appName: string, appContext: string): string {
+  const name = appName.trim() || 'there'
+  const context = appContext.toLocaleLowerCase('en-US')
+  let request = 'I’d like to learn more about what you offer.'
+
+  if (/\b(baby|muslin|organic|newborn|loom)\b/.test(context)) {
+    request = 'I’d like help choosing an organic baby essential.'
+  } else if (/\b(boho|decor|interior|styling)\b/.test(context)) {
+    request = 'I’d like help with home styling and decor ideas.'
+  } else if (/\b(field|service|work order|dispatch|safety|operation)\b/.test(context)) {
+    request = 'I have a question about a field service request.'
+  } else if (/\b(fitness|gym|workout|training|coach)\b/.test(context)) {
+    request = 'I’d like help choosing the right training option.'
+  } else if (/\b(café|cafe|coffee|menu|restaurant|order)\b/.test(context)) {
+    request = 'I’d like to ask about my order.'
+  } else if (/\b(shop|store|product|collection)\b/.test(context)) {
+    request = 'I have a question about a product.'
+  }
+
+  return `Hi ${name}! ${request}`
+}
+
 function buildCanvasElementsFromPreset(presetElements: PresetElement[], startId: number): { elements: CanvasElement[]; nextId: number } {
   const elements: CanvasElement[] = []
   let id = startId
@@ -3788,6 +3812,53 @@ export function BuildPage({
   // only seed the header's default title/subtitle when its own are unset.
   const appSubtitle = initial.appSubtitle
   const [appHeaderState, setAppHeaderState] = useState<AppHeaderState>(initial.appHeader)
+
+  // WhatsApp starts with a useful message that reflects the current app. Only
+  // replace the legacy generic default, so an owner's intentional copy always
+  // remains untouched.
+  const appWhatsAppMessage = useMemo(() => getAppSpecificWhatsAppMessage(
+    appTitle,
+    [
+      appTitle,
+      appSubtitle,
+      preset?.appSubtitle,
+      appHeaderState.subtitle,
+      ...pages.filter((page) => !page.dynamic).map((page) => page.name),
+    ].filter(Boolean).join(' '),
+  ), [appHeaderState.subtitle, appSubtitle, appTitle, pages, preset?.appSubtitle])
+
+  useEffect(() => {
+    const replaceLegacyMessage = (element: CanvasElement): CanvasElement => {
+      if (
+        element.componentId !== WHATSAPP_PANEL_ITEM_ID
+        || element.properties.Message !== LEGACY_WHATSAPP_MESSAGE
+      ) return element
+      return {
+        ...element,
+        properties: { ...element.properties, Message: appWhatsAppMessage },
+      }
+    }
+
+    setPages((current) => {
+      let changed = false
+      const next = current.map((page) => {
+        const elements = page.elements.map((element) => {
+          const updated = replaceLegacyMessage(element)
+          changed ||= updated !== element
+          return updated
+        })
+        return elements === page.elements || !elements.some((element, index) => element !== page.elements[index])
+          ? page
+          : { ...page, elements }
+      })
+      return changed ? next : current
+    })
+    setHeaderActions((current) => {
+      const next = current.map(replaceLegacyMessage)
+      return next.some((element, index) => element !== current[index]) ? next : current
+    })
+  }, [appWhatsAppMessage, headerActions, pages])
+
   useEffect(() => {
     if (!preset || preset.id === EMPTY_PRESET_ID) return
     setAppHeaderState((current) => {
