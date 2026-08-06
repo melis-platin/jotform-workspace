@@ -11445,6 +11445,7 @@ export function BuildPage({
           intent="constructive"
           confirmLabel="Select Table"
           showCancel={false}
+          confirmDisabled={!currentSource.trim()}
           onConfirm={() => {
             chartTablePickerDismissedRef.current = chartTablePickerElementId
             setChartTablePickerElementId(null)
