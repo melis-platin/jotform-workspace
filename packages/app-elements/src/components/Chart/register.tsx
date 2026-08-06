@@ -7,7 +7,7 @@ import scss from './Chart.scss?raw';
 ComponentRegistry.register({
   id: 'chart',
   name: 'Chart',
-  category: 'Widgets',
+  category: 'Basic',
   icon: 'TrendingUp',
 
   variants: {

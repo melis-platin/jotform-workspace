@@ -660,11 +660,11 @@ const BASIC_GROUPS: PanelGroup[] = [
   { elementIds: ['form', 'heading', 'banner', 'list', 'paragraph', 'card', 'sign-document', 'document', 'image', 'image-gallery', 'button', 'spacer'] },
   { label: 'PAYMENT ELEMENTS', elementIds: ['product-list', 'donation-box'] },
   { label: 'FEATURED WIDGETS', elementIds: ['whatsapp', 'social-follow', 'testimonial', 'faq'] },
-  { label: 'DATA ELEMENTS', elementIds: ['table'] },
+  { label: 'DATA ELEMENTS', elementIds: ['table', 'chart'] },
 ]
 
 const WIDGETS_GROUPS: PanelGroup[] = [
-  { elementIds: ['chart', 'daily-task-manager', 'login-signup', 'progress-indicator'] },
+  { elementIds: ['daily-task-manager', 'login-signup', 'progress-indicator'] },
 ]
 
 const HIDDEN_ELEMENTS = ['empty-state', 'app-header', 'bottom-navigation', 'color-picker']
