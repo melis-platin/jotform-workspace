@@ -11410,21 +11410,56 @@ export function BuildPage({
       if (!chartElement || chartElement.componentId !== 'chart') return null
       const currentSource = String(chartElement.properties['Data Source'] ?? '')
       const sources = new Map<string, { name: string; description: string }>()
-      pages.flatMap((page) => page.elements).forEach((element) => {
-        if (element.componentId === 'list') {
-          const source = String(element.properties['Data Source'] ?? '').trim()
-          if (source && source !== 'New Table') {
-            sources.set(source, { name: source, description: 'Used by a list in this app' })
-          }
+      const readArray = (value: unknown) => {
+        if (typeof value !== 'string') return []
+        try {
+          const parsed = JSON.parse(value)
+          return Array.isArray(parsed) ? parsed : []
+        } catch {
+          return []
         }
-        if (element.componentId === 'table') {
-          const name = String(element.properties['Label'] ?? '').trim()
-          if (name) sources.set(name, { name, description: 'App Table' })
-        }
-      })
-      if (sources.size === 0) {
-        sources.set('New app table', { name: 'New app table', description: 'Create a table for this chart' })
       }
+      const getElementTitle = (element: CanvasElement, fallback: string) => {
+        const title = element.properties.Title
+          ?? element.properties['Form Title']
+          ?? element.properties.Label
+          ?? element.properties['Submits To']
+        return typeof title === 'string' && title.trim() ? title.trim() : fallback
+      }
+      const addSource = (name: string, description: string) => {
+        if (!sources.has(name)) sources.set(name, { name, description })
+      }
+
+      // Keep this picker aligned with the app's Data tab: every element that
+      // produces an App Table there is available as a chart data source here.
+      pages.filter((page) => !page.dynamic).forEach((page) => {
+        page.elements.forEach((element) => {
+          const title = getElementTitle(element, page.name)
+          if (element.componentId === 'list') {
+            if (readArray(element.properties.Items).length > 0) addSource(`${title} Dynamic List Table`, `${page.name} / List`)
+            return
+          }
+          if (element.componentId === 'product-list') {
+            if (readArray(element.properties.Products).length > 0) addSource(`${title} Products Table`, `${page.name} / Products`)
+            return
+          }
+          if (element.componentId === 'donation-box') {
+            addSource(`${title} Donations`, `${page.name} / Donations`)
+            return
+          }
+          if (element.componentId === 'form') {
+            addSource(`${title} Submissions`, `${page.name} / Form`)
+            return
+          }
+          if (element.componentId === 'table') {
+            addSource(`${title} Table`, `${page.name} / Table`)
+            return
+          }
+          if (element.componentId === 'daily-task-manager') {
+            addSource(`${title} Table`, `${page.name} / Tasks`)
+          }
+        })
+      })
       const search = chartTableSearch.trim().toLowerCase()
       const tableOptions = [...sources.values()].filter((table) => (
         !search || `${table.name} ${table.description}`.toLowerCase().includes(search)
@@ -11445,7 +11480,7 @@ export function BuildPage({
           intent="constructive"
           confirmLabel="Select Table"
           showCancel={false}
-          confirmDisabled={!currentSource.trim()}
+          confirmDisabled={!sources.has(currentSource)}
           onConfirm={() => {
             chartTablePickerDismissedRef.current = chartTablePickerElementId
             setChartTablePickerElementId(null)
