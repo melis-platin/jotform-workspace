@@ -664,7 +664,11 @@ const ELEMENT_ICON_MAP: Record<string, { icon: string; iconCategory: string; ass
     iconCategory: 'forms-files',
     assetUrl: 'http://localhost:3845/assets/b48356b737ce352274efdcb2c524f4b21b0e54ac.svg',
   },
-  'divider': { icon: 'divider', iconCategory: 'layout' },
+  'divider': {
+    icon: 'divider',
+    iconCategory: 'layout',
+    assetUrl: 'http://localhost:3845/assets/7dd93e9bc6dfbd03c0c6a7a7cf4e85e2e21d86ed.svg',
+  },
   'daily-task-manager': { icon: 'table', iconCategory: 'general' },
   'progress-indicator': { icon: 'list-check-square-filled', iconCategory: 'general' },
   'spacer': { icon: 'spacer-vertical-filled', iconCategory: 'layout' },
