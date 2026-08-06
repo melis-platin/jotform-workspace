@@ -646,6 +646,17 @@ const ELEMENT_ICON_MAP: Record<string, { icon: string; iconCategory: string }> =
   'testimonial': { icon: 'message-star-filled', iconCategory: 'communication' },
   'login-signup': { icon: 'form-filled', iconCategory: 'forms-files' },
   'chart': { icon: 'form-report-filled', iconCategory: 'forms-files' },
+  'rich-text': { icon: 'text-image', iconCategory: 'general' },
+  'text': { icon: 'text', iconCategory: 'general' },
+  'link': { icon: 'link-diagonal', iconCategory: 'general' },
+  'accordion': { icon: 'message-question-filled', iconCategory: 'communication' },
+  'share-button': { icon: 'arrow-up-right-from-square-sm', iconCategory: 'general' },
+  'image-slider': { icon: 'image-slider-filled', iconCategory: 'media' },
+  'video': { icon: 'video-filled', iconCategory: 'media' },
+  'map': { icon: 'map-location-pin-filled', iconCategory: 'general' },
+  'report': { icon: 'form-report-filled', iconCategory: 'forms-files' },
+  'sentbox': { icon: 'product-inbox-filled', iconCategory: 'forms-files' },
+  'divider': { icon: 'divider', iconCategory: 'layout' },
   'daily-task-manager': { icon: 'table', iconCategory: 'general' },
   'progress-indicator': { icon: 'list-check-square-filled', iconCategory: 'general' },
   'spacer': { icon: 'spacer-vertical-filled', iconCategory: 'layout' },
@@ -657,20 +668,49 @@ interface PanelGroup {
 }
 
 const BASIC_GROUPS: PanelGroup[] = [
-  { elementIds: ['form', 'heading', 'paragraph', 'list', 'card', 'sign-document', 'document', 'image', 'button', 'chart', 'social-follow', 'testimonial', 'faq', 'banner'] },
+  { elementIds: ['form', 'heading', 'rich-text', 'text', 'list', 'card', 'sign-document', 'link', 'document', 'image', 'button', 'chart', 'social-follow', 'testimonial', 'accordion', 'banner', 'share-button'] },
   { label: 'PAYMENT ELEMENTS', elementIds: ['product-list', 'donation-box'] },
-  { label: 'FEATURED WIDGETS', elementIds: ['whatsapp', 'image-gallery'] },
-  { label: 'DATA ELEMENTS', elementIds: ['table'] },
-  { label: 'PAGE ELEMENTS', elementIds: ['spacer'] },
+  { label: 'FEATURED WIDGETS', elementIds: ['whatsapp', 'image-gallery', 'image-slider', 'video', 'map'] },
+  { label: 'DATA ELEMENTS', elementIds: ['table', 'report', 'sentbox'] },
+  { label: 'PAGE ELEMENTS', elementIds: ['divider', 'spacer'] },
 ]
 
 // The panel follows the canonical App Elements catalog terminology from Figma.
 // Component IDs stay stable so existing apps and their element properties remain
 // fully compatible with previously saved workspaces.
 const BASIC_PANEL_NAMES: Record<string, string> = {
-  paragraph: 'Rich Text',
-  faq: 'Accordion',
+  'rich-text': 'Rich Text',
+  text: 'Text',
+  link: 'Link',
+  accordion: 'Accordion',
+  'share-button': 'Share Button',
+  'image-slider': 'Image Slider',
+  video: 'Video',
+  map: 'Map',
+  report: 'Report',
+  sentbox: 'Sentbox',
+  divider: 'Divider',
 }
+
+// The target catalog contains a few family entries whose dedicated canvas
+// components are still represented by their closest existing element. Keeping
+// this mapping at the panel boundary preserves the catalog while retaining a
+// valid, interactive add flow for every row.
+const BASIC_PANEL_COMPONENT_ALIASES: Record<string, string> = {
+  'rich-text': 'paragraph',
+  text: 'paragraph',
+  link: 'button',
+  accordion: 'faq',
+  'share-button': 'social-follow',
+  'image-slider': 'image-gallery',
+  video: 'image',
+  map: 'card',
+  report: 'chart',
+  sentbox: 'document',
+  divider: 'spacer',
+}
+
+const resolvePanelComponentId = (itemId: string) => BASIC_PANEL_COMPONENT_ALIASES[itemId] ?? itemId
 
 const WIDGETS_GROUPS: PanelGroup[] = [
   { elementIds: ['daily-task-manager', 'login-signup', 'progress-indicator'] },
@@ -6667,7 +6707,7 @@ export function BuildPage({
             <div className="build-page__widget-search-empty">No widgets found</div>
           )}
           {activeGroups.map((group, groupIndex) => {
-            const validItemIds = group.elementIds.filter((id) => componentMap[id])
+            const validItemIds = group.elementIds.filter((id) => componentMap[resolvePanelComponentId(id)])
             if (validItemIds.length === 0) return null
 
             return (
@@ -6693,11 +6733,11 @@ export function BuildPage({
                     )
                   }
 
-                  const comp = componentMap[itemId]
+                  const comp = componentMap[resolvePanelComponentId(itemId)]
                   if (!comp) return null
-                  const iconInfo = ELEMENT_ICON_MAP[comp.id]
+                  const iconInfo = ELEMENT_ICON_MAP[itemId] ?? ELEMENT_ICON_MAP[comp.id]
                   return (
-                    <div key={comp.id}>
+                    <div key={itemId}>
                       <DraggablePanelItem comp={comp}>
                         <div
                           className="build-page__element-item"
@@ -6711,7 +6751,7 @@ export function BuildPage({
                             )}
                           </div>
                           <div className="build-page__element-content">
-                            <span className="build-page__element-name">{activeTab === 'basic' ? (BASIC_PANEL_NAMES[comp.id] ?? comp.name) : comp.name}</span>
+                            <span className="build-page__element-name">{activeTab === 'basic' ? (BASIC_PANEL_NAMES[itemId] ?? comp.name) : comp.name}</span>
                           </div>
                         </div>
                       </DraggablePanelItem>
@@ -11287,7 +11327,7 @@ export function BuildPage({
             <div className="build-page__widget-search-empty">No widgets found</div>
           )}
           {activeGroups.map((group, groupIndex) => {
-            const validItemIds = group.elementIds.filter((id) => componentMap[id])
+            const validItemIds = group.elementIds.filter((id) => componentMap[resolvePanelComponentId(id)])
             if (validItemIds.length === 0) return null
             return (
               <div key={group.label || groupIndex}>
@@ -11308,12 +11348,12 @@ export function BuildPage({
                       )
                     }
 
-                    const comp = componentMap[itemId]
+                    const comp = componentMap[resolvePanelComponentId(itemId)]
                     if (!comp) return null
-                    const iconInfo = ELEMENT_ICON_MAP[comp.id]
+                    const iconInfo = ELEMENT_ICON_MAP[itemId] ?? ELEMENT_ICON_MAP[comp.id]
                     return (
                       <button
-                        key={comp.id}
+                        key={itemId}
                         className="mobile-elements-grid__item"
                         onClick={() => { handleAddElement(comp); }}
                       >
@@ -11324,7 +11364,7 @@ export function BuildPage({
                             <Icon name="grid-2-filled" category="layout" size={24} />
                           )}
                         </div>
-                        <span className="mobile-elements-grid__label">{comp.name}</span>
+                        <span className="mobile-elements-grid__label">{activeTab === 'basic' ? (BASIC_PANEL_NAMES[itemId] ?? comp.name) : comp.name}</span>
                       </button>
                     )
                   })}
