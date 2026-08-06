@@ -12,15 +12,20 @@ ComponentRegistry.register({
 
   variants: {
     Type: {
-      options: ['Bar', 'Line'],
+      options: ['Bar', 'Line', 'Area', 'Donut'],
       default: 'Bar',
     },
   },
 
   properties: [
+    { name: 'Title', type: 'text', default: 'Orders' },
+    { name: 'Description', type: 'text', default: 'Monthly order volume' },
+    { name: 'Primary Label', type: 'text', default: 'This period' },
+    { name: 'Secondary Label', type: 'text', default: 'Previous period' },
     { name: 'Show Icon', type: 'boolean', default: true },
     { name: 'Icon', type: 'icon', default: 'TrendingUp' },
     { name: 'Date Filter', type: 'boolean', default: true },
+    { name: 'Show Legend', type: 'boolean', default: true },
     { name: 'Selected', type: 'boolean', default: false },
     { name: 'Skeleton', type: 'boolean', default: false },
   ],
@@ -45,8 +50,9 @@ ComponentRegistry.register({
 // Default bar chart
 <Chart type="Bar" />
 
-// Line chart with custom title
-<Chart type="Line" title="Monthly Revenue" />
+// Area and donut variants
+<Chart type="Area" title="Monthly Revenue" />
+<Chart type="Donut" title="Audience overview" />
 
 // Selected state
 <Chart type="Bar" selected />
@@ -57,15 +63,15 @@ ComponentRegistry.register({
   propDocs: [
     {
       name: 'type',
-      type: '"Bar" | "Line"',
+      type: '"Bar" | "Line" | "Area" | "Donut"',
       default: '"Bar"',
       description:
-        'Determines the chart variant. **Bar** renders a grouped bar chart with 12 months and 2 data series. **Line** renders a smooth line chart with filled areas below each series.',
+        'Determines the chart variant. Bar compares values, Line shows a trend, Area emphasizes the magnitude of a trend, and Donut shows a proportional two-part summary.',
     },
     {
       name: 'title',
       type: 'string',
-      default: '"Orders" (Bar) / "Revenue" (Line)',
+      default: '"Orders"',
       description:
         'The chart title displayed at the top left. If not provided, defaults based on the chart type.',
     },
@@ -96,9 +102,14 @@ ComponentRegistry.register({
     return (
       <Chart
         type={_variants['Type'] as ChartType}
+        title={props['Title'] as string}
+        description={props['Description'] as string}
+        primaryLabel={props['Primary Label'] as string}
+        secondaryLabel={props['Secondary Label'] as string}
         showIcon={props['Show Icon'] as boolean}
         iconName={props['Icon'] as string}
         showDateFilter={props['Date Filter'] as boolean}
+        showLegend={props['Show Legend'] as boolean}
         selected={props['Selected'] as boolean}
         skeleton={props['Skeleton'] as boolean}
       />

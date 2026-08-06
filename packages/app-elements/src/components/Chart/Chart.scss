@@ -142,6 +142,96 @@
   position: relative;
 }
 
+.jf-chart__legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+  color: var(--fg-secondary);
+  font-size: var(--font-size-label-sm);
+
+  span {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+}
+
+.jf-chart__legend-dot {
+  display: inline-block;
+  width: var(--space-2);
+  height: var(--space-2);
+  border-radius: var(--radius-rounded);
+  flex: 0 0 auto;
+
+  &--series1 { background: var(--chart-1); }
+  &--series2 { background: var(--chart-3); }
+}
+
+.jf-chart__donut-layout {
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-5);
+}
+
+.jf-chart__donut {
+  width: 180px;
+  height: 180px;
+  overflow: visible;
+}
+
+.jf-chart__donut-track,
+.jf-chart__donut-segment {
+  fill: none;
+  stroke-width: 22;
+  transform: rotate(-90deg);
+  transform-origin: 90px 90px;
+}
+
+.jf-chart__donut-track { stroke: var(--bg-surface); }
+.jf-chart__donut-segment--secondary { stroke: var(--chart-3); }
+.jf-chart__donut-segment--primary { stroke: var(--chart-1); }
+
+.jf-chart__donut-total,
+.jf-chart__donut-caption {
+  text-anchor: middle;
+  font-family: var(--font-family);
+}
+
+.jf-chart__donut-total {
+  fill: var(--fg-primary);
+  font-size: var(--font-size-heading-sm);
+  font-weight: var(--font-weight-bold);
+}
+
+.jf-chart__donut-caption {
+  fill: var(--fg-secondary);
+  font-size: var(--font-size-label-sm);
+}
+
+.jf-chart__donut-legend {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 160px;
+}
+
+.jf-chart__donut-legend-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--fg-secondary);
+  font-size: var(--font-size-label-sm);
+
+  strong {
+    color: var(--fg-primary);
+    font-weight: var(--font-weight-bold);
+  }
+}
+
 // SVG
 .jf-chart__svg {
   width: 100%;
@@ -285,4 +375,45 @@
   font-weight: var(--font-weight-bold);
   color: var(--fg-primary);
   font-family: monospace;
+}
+
+@media (max-width: 560px) {
+  .jf-chart {
+    padding: var(--space-3);
+  }
+
+  .jf-chart__header {
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .jf-chart__icon {
+    width: 40px;
+    height: 40px;
+  }
+
+  .jf-chart__filter-trigger {
+    padding: var(--space-2);
+  }
+
+  .jf-chart__filter-trigger span {
+    display: none;
+  }
+
+  .jf-chart__canvas {
+    height: 176px;
+  }
+
+  .jf-chart__donut-layout {
+    gap: var(--space-3);
+  }
+
+  .jf-chart__donut {
+    width: 148px;
+    height: 148px;
+  }
+
+  .jf-chart__donut-legend {
+    min-width: 0;
+  }
 }

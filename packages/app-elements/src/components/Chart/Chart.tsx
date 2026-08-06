@@ -5,7 +5,7 @@ import './Chart.scss';
 // ============================================
 // Types
 // ============================================
-export type ChartType = 'Bar' | 'Line';
+export type ChartType = 'Bar' | 'Line' | 'Area' | 'Donut';
 
 export type ChartDateFilter = 'Yearly' | 'Monthly' | 'Weekly';
 
@@ -13,9 +13,12 @@ export interface ChartProps {
   type?: ChartType;
   title?: string;
   description?: string;
+  primaryLabel?: string;
+  secondaryLabel?: string;
   iconName?: string;
   showIcon?: boolean;
   showDateFilter?: boolean;
+  showLegend?: boolean;
   selected?: boolean;
   skeleton?: boolean;
   skeletonAnimation?: 'pulse' | 'shimmer';
@@ -89,7 +92,7 @@ function DateFilterDropdown({ value, onChange }: { value: ChartDateFilter; onCha
 
   return (
     <div className="jf-chart__filter" ref={ref}>
-      <button className="jf-chart__filter-trigger" onClick={() => setOpen(!open)}>
+      <button type="button" className="jf-chart__filter-trigger" onClick={() => setOpen(!open)} aria-haspopup="listbox" aria-expanded={open}>
         <span>{value}</span>
         <Icon name="ChevronDown" size={16} />
       </button>
@@ -99,6 +102,7 @@ function DateFilterDropdown({ value, onChange }: { value: ChartDateFilter; onCha
             <button
               key={opt}
               className={`jf-chart__filter-item${opt === value ? ' jf-chart__filter-item--active' : ''}`}
+              type="button"
               onClick={() => { onChange(opt); setOpen(false); }}
             >
               <span>{opt}</span>
@@ -142,7 +146,7 @@ function ChartTooltip({ info }: { info: TooltipInfo }) {
 // ============================================
 // Bar Chart
 // ============================================
-const BarChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (info: TooltipInfo | null) => void; labelStep?: number }> = ({ data, onHover, labelStep = 1 }) => {
+const BarChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (info: TooltipInfo | null) => void; labelStep?: number; seriesLabels: [string, string] }> = ({ data, onHover, labelStep = 1, seriesLabels }) => {
   const maxVal = Math.max(...data.barSeries1, ...data.barSeries2);
   const count = data.labels.length;
   const gridLines = [0.25, 0.5, 0.75, 1.0];
@@ -187,8 +191,8 @@ const BarChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (inf
               y: Math.min(y1, y2) - 8,
               month,
               values: [
-                { label: 'Series A', value: data.barSeries1[i].toLocaleString(), series: 1 },
-                { label: 'Series B', value: data.barSeries2[i].toLocaleString(), series: 2 },
+                { label: seriesLabels[0], value: data.barSeries1[i].toLocaleString(), series: 1 },
+                { label: seriesLabels[1], value: data.barSeries2[i].toLocaleString(), series: 2 },
               ],
             })}
             onMouseLeave={() => onHover(null)}
@@ -261,7 +265,7 @@ const buildAreaPath = (points: Array<{ x: number; y: number }>, baseline: number
   return `${linePath} L ${lastPoint.x} ${baseline} L ${firstPoint.x} ${baseline} Z`;
 };
 
-const LineChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (info: TooltipInfo | null) => void; labelStep?: number }> = ({ data, tooltip, onHover, labelStep = 1 }) => {
+const LineChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (info: TooltipInfo | null) => void; labelStep?: number; seriesLabels: [string, string]; showArea?: boolean }> = ({ data, tooltip, onHover, labelStep = 1, seriesLabels, showArea = false }) => {
   const count = data.labels.length;
   const maxVal = Math.max(...data.lineSeries1, ...data.lineSeries2);
   const stepX = PLOT_WIDTH / (count - 1);
@@ -296,15 +300,10 @@ const LineChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (in
         />
       ))}
 
-      {/* Area fills */}
-      <path
-        d={buildAreaPath(points1, baseline)}
-        className="jf-chart__area jf-chart__area--series1"
-      />
-      <path
-        d={buildAreaPath(points2, baseline)}
-        className="jf-chart__area jf-chart__area--series2"
-      />
+      {showArea && <>
+        <path d={buildAreaPath(points1, baseline)} className="jf-chart__area jf-chart__area--series1" />
+        <path d={buildAreaPath(points2, baseline)} className="jf-chart__area jf-chart__area--series2" />
+      </>}
 
       {/* Lines */}
       <path
@@ -328,8 +327,8 @@ const LineChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (in
               y: Math.min(points1[i].y, points2[i].y) - 8,
               month: label,
               values: [
-                { label: 'Series A', value: `$${(data.lineSeries1[i]).toLocaleString()}`, series: 1 },
-                { label: 'Series B', value: `$${(data.lineSeries2[i]).toLocaleString()}`, series: 2 },
+                { label: seriesLabels[0], value: `$${(data.lineSeries1[i]).toLocaleString()}`, series: 1 },
+                { label: seriesLabels[1], value: `$${(data.lineSeries2[i]).toLocaleString()}`, series: 2 },
               ],
             })}
             onMouseLeave={() => onHover(null)}
@@ -370,6 +369,45 @@ const LineChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (in
   );
 };
 
+const DonutChart: FC<{ data: ChartData; seriesLabels: [string, string] }> = ({ data, seriesLabels }) => {
+  const primary = data.barSeries1.reduce((sum, value) => sum + value, 0);
+  const secondary = data.barSeries2.reduce((sum, value) => sum + value, 0);
+  const total = primary + secondary;
+  const radius = 58;
+  const circumference = 2 * Math.PI * radius;
+  const primaryLength = total ? (primary / total) * circumference : 0;
+
+  return (
+    <div className="jf-chart__donut-layout">
+      <svg className="jf-chart__donut" viewBox="0 0 180 180" role="img" aria-label={`${primary} ${seriesLabels[0]} and ${secondary} ${seriesLabels[1]}`}>
+        <circle className="jf-chart__donut-track" cx="90" cy="90" r={radius} />
+        <circle className="jf-chart__donut-segment jf-chart__donut-segment--secondary" cx="90" cy="90" r={radius} />
+        <circle
+          className="jf-chart__donut-segment jf-chart__donut-segment--primary"
+          cx="90"
+          cy="90"
+          r={radius}
+          strokeDasharray={`${primaryLength} ${circumference - primaryLength}`}
+        />
+        <text className="jf-chart__donut-total" x="90" y="85">{total.toLocaleString()}</text>
+        <text className="jf-chart__donut-caption" x="90" y="105">Total</text>
+      </svg>
+      <div className="jf-chart__donut-legend">
+        <div className="jf-chart__donut-legend-row">
+          <span className="jf-chart__legend-dot jf-chart__legend-dot--series1" />
+          <span>{seriesLabels[0]}</span>
+          <strong>{primary.toLocaleString()}</strong>
+        </div>
+        <div className="jf-chart__donut-legend-row">
+          <span className="jf-chart__legend-dot jf-chart__legend-dot--series2" />
+          <span>{seriesLabels[1]}</span>
+          <strong>{secondary.toLocaleString()}</strong>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // ============================================
 // Chart Component
 // ============================================
@@ -388,15 +426,19 @@ export const Chart: FC<ChartProps> = ({
   type = 'Bar',
   title,
   description,
+  primaryLabel = 'This period',
+  secondaryLabel = 'Previous period',
   iconName = 'TrendingUp',
   showIcon = true,
   showDateFilter = true,
+  showLegend = true,
   selected = false,
   skeleton = false,
   skeletonAnimation = 'pulse',
 }) => {
-  const resolvedTitle = title ?? (type === 'Bar' ? 'Orders' : 'Revenue');
-  const resolvedDesc = description ?? (type === 'Bar' ? 'Monthly order volume' : 'Monthly revenue overview');
+  const resolvedTitle = title || (type === 'Bar' ? 'Orders' : type === 'Donut' ? 'Audience overview' : 'Revenue');
+  const resolvedDesc = description || (type === 'Bar' ? 'Monthly order volume' : type === 'Donut' ? 'How your audience is distributed' : 'Monthly revenue overview');
+  const seriesLabels: [string, string] = [primaryLabel || 'This period', secondaryLabel || 'Previous period'];
   const animClass = skeletonAnimation === 'shimmer' ? 'animate-shimmer' : 'animate-pulse';
 
   const classes = [
@@ -441,9 +483,17 @@ export const Chart: FC<ChartProps> = ({
         {showDateFilter && <DateFilterDropdown value={dateFilter} onChange={setDateFilter} />}
       </div>
       <div className="jf-chart__canvas">
-        {type === 'Bar' ? <BarChart data={chartData} tooltip={tooltip} onHover={handleHover} labelStep={labelStep} /> : <LineChart data={chartData} tooltip={tooltip} onHover={handleHover} labelStep={labelStep} />}
+        {type === 'Bar' && <BarChart data={chartData} tooltip={tooltip} onHover={handleHover} labelStep={labelStep} seriesLabels={seriesLabels} />}
+        {(type === 'Line' || type === 'Area') && <LineChart data={chartData} tooltip={tooltip} onHover={handleHover} labelStep={labelStep} seriesLabels={seriesLabels} showArea={type === 'Area'} />}
+        {type === 'Donut' && <DonutChart data={chartData} seriesLabels={seriesLabels} />}
         {tooltip && <ChartTooltip info={tooltip} />}
       </div>
+      {showLegend && type !== 'Donut' && (
+        <div className="jf-chart__legend" aria-label="Chart legend">
+          <span><i className="jf-chart__legend-dot jf-chart__legend-dot--series1" />{seriesLabels[0]}</span>
+          <span><i className="jf-chart__legend-dot jf-chart__legend-dot--series2" />{seriesLabels[1]}</span>
+        </div>
+      )}
     </div>
   );
 };
