@@ -573,7 +573,7 @@ body,
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
+  box-shadow: none;
   z-index: 20;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
 
@@ -757,8 +757,8 @@ body,
   display: flex;
   align-items: center;
   justify-content: center;
-  height: var(--ds-space-2xl);
-  padding: var(--ds-space-xs) var(--ds-space-md);
+  height: calc(var(--ds-line-height-xs) + (var(--ds-space-xs) + var(--ds-space-3xs)) * 2);
+  padding: calc(var(--ds-space-xs) + var(--ds-space-3xs)) var(--ds-space-md);
   background: var(--ds-bg-primary);
   color: var(--ds-text-secondary);
   font-size: var(--ds-font-size-xs);
@@ -834,7 +834,7 @@ body,
   flex: 1;
   font-size: var(--ds-font-size-md);
   font-weight: var(--ds-font-weight-book);
-  line-height: var(--ds-line-height-md);
+  line-height: var(--ds-line-height-xs);
   letter-spacing: var(--letter-spacing-md);
 }
 

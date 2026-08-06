@@ -657,11 +657,20 @@ interface PanelGroup {
 }
 
 const BASIC_GROUPS: PanelGroup[] = [
-  { elementIds: ['form', 'heading', 'banner', 'list', 'paragraph', 'card', 'sign-document', 'document', 'image', 'image-gallery', 'button', 'spacer'] },
+  { elementIds: ['form', 'heading', 'paragraph', 'list', 'card', 'sign-document', 'document', 'image', 'button', 'chart', 'social-follow', 'testimonial', 'faq', 'banner'] },
   { label: 'PAYMENT ELEMENTS', elementIds: ['product-list', 'donation-box'] },
-  { label: 'FEATURED WIDGETS', elementIds: ['whatsapp', 'social-follow', 'testimonial', 'faq'] },
-  { label: 'DATA ELEMENTS', elementIds: ['table', 'chart'] },
+  { label: 'FEATURED WIDGETS', elementIds: ['whatsapp', 'image-gallery'] },
+  { label: 'DATA ELEMENTS', elementIds: ['table'] },
+  { label: 'PAGE ELEMENTS', elementIds: ['spacer'] },
 ]
+
+// The panel follows the canonical App Elements catalog terminology from Figma.
+// Component IDs stay stable so existing apps and their element properties remain
+// fully compatible with previously saved workspaces.
+const BASIC_PANEL_NAMES: Record<string, string> = {
+  paragraph: 'Rich Text',
+  faq: 'Accordion',
+}
 
 const WIDGETS_GROUPS: PanelGroup[] = [
   { elementIds: ['daily-task-manager', 'login-signup', 'progress-indicator'] },
@@ -3089,8 +3098,8 @@ function TabMenu({ activeTab, onTabChange }: { activeTab: 'basic' | 'widgets'; o
         value={activeTab}
         onChange={(v) => onTabChange(v as 'basic' | 'widgets')}
         items={[
-          { value: 'basic', label: 'Basic' },
-          { value: 'widgets', label: 'Widgets' },
+          { value: 'basic', label: 'BASIC' },
+          { value: 'widgets', label: 'WIDGETS' },
         ]}
       />
     </div>
@@ -6702,7 +6711,7 @@ export function BuildPage({
                             )}
                           </div>
                           <div className="build-page__element-content">
-                            <span className="build-page__element-name">{comp.name}</span>
+                            <span className="build-page__element-name">{activeTab === 'basic' ? (BASIC_PANEL_NAMES[comp.id] ?? comp.name) : comp.name}</span>
                           </div>
                         </div>
                       </DraggablePanelItem>
