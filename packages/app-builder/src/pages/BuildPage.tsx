@@ -7389,7 +7389,6 @@ export function BuildPage({
                                   ? [
                                       { value: 'general', label: 'GENERAL' },
                                       { value: 'style', label: 'STYLE' },
-                                      { value: 'condition', label: 'CONDITION' },
                                     ]
                                 : selectedComponent.id === 'social-follow'
                                   ? [
