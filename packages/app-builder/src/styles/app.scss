@@ -93,7 +93,7 @@
   // Figma New Workspace properties content is 410px wide. The panel reserves
   // space for its 6px vertical scrollbar, so its outer width is 416px.
   --ds-properties-panel-width: 416px;
-  --ds-chart-aggregation-width: 108px;
+  --ds-chart-aggregation-width: 120px;
 
   // Canvas element action controls (Figma: New Workspace / 1262:4249)
   --ds-canvas-element-action-width: var(--spacing-3xl);
@@ -6774,19 +6774,21 @@ body,
 
 .chart-properties__measure-line {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
+  grid-template-columns: var(--spacing-xl) minmax(0, 1fr) var(--spacing-2xl);
   align-items: center;
-  gap: var(--spacing-2xs);
+  min-height: var(--spacing-3xl);
+  gap: var(--spacing-xs);
 }
 
 .chart-properties__measure-line:first-child {
-  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-columns: minmax(0, 1fr) var(--spacing-2xl);
 }
 
 .chart-properties__measure-and {
-  color: var(--gray-100);
+  color: var(--core-white);
   font-family: var(--font-family-circular);
   font-size: var(--font-size-sm);
+  line-height: var(--line-height-sm);
 }
 
 .chart-properties__group-control {
@@ -6806,9 +6808,11 @@ body,
 .chart-properties__remove-measure {
   display: grid;
   place-items: center;
-  width: var(--spacing-lg);
-  height: var(--spacing-lg);
-  color: var(--gray-200);
+  width: var(--spacing-2xl);
+  height: var(--spacing-2xl);
+  padding: 0;
+  border-radius: var(--radius-sm);
+  color: var(--core-white);
 }
 
 .chart-properties__add-measure {

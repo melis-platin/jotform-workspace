@@ -8209,7 +8209,7 @@ export function BuildPage({
                             </DSFormField>
                           </section>
                           <section className="chart-properties__section chart-properties__section--show">
-                            <DSFormField title="Show" description={numericColumns.length ? 'What the chart measures.' : 'This table has no number columns, so the chart counts rows.'} size="md" showDescription showHelpText={false}>
+                            <DSFormField title="Show" description={numericColumns.length ? 'Choose what the chart measures' : 'This table has no number columns, so the chart counts rows.'} size="md" showDescription showHelpText={false}>
                               {measures.map((measure, index) => {
                                 const usedByOthers = new Set(measures.filter((_, measureIndex) => measureIndex !== index).map((item) => item.col).filter(Boolean))
                                 const fieldOptions = [
@@ -8224,7 +8224,7 @@ export function BuildPage({
                                     <DSDropdownSingle value={selectedField} onChange={(value) => writeMeasures(measures.map((item, measureIndex) => measureIndex === index ? (value === 'Number of rows' ? { agg: 'Count' } : { ...item, col: value, agg: item.agg === 'Count' ? 'Sum' : item.agg }) : item))} options={fieldOptions} showLeadingIcon={false} disabled={fieldOptions.length < 2} />
                                     {!isCount && <DSDropdownSingle value={measure.agg} onChange={(value) => writeMeasures(measures.map((item, measureIndex) => measureIndex === index ? { ...item, agg: value as BuilderChartMeasure['agg'] } : item))} options={['Sum', 'Average', 'Highest', 'Lowest'].map((value) => ({ value, label: value }))} showLeadingIcon={false} />}
                                   </div>
-                                  {measures.length > 1 && <button type="button" className="chart-properties__remove-measure" aria-label="Remove measure" onClick={() => writeMeasures(measures.filter((_, measureIndex) => measureIndex !== index))}>×</button>}
+                                  {measures.length > 1 && <button type="button" className="chart-properties__remove-measure" aria-label="Remove measure" onClick={() => writeMeasures(measures.filter((_, measureIndex) => measureIndex !== index))}><Icon name="xmark" category="general" size={16} /></button>}
                                 </div>
                               })}
                               {measures.length < 3 && !measures.some((measure) => measure.agg === 'Count') && <DSLink className="chart-properties__show-add-measure" size="sm" leftIcon={<Icon name="plus" size={12} />} onClick={() => { const nextColumn = numericColumns.find((column) => !measures.some((measure) => measure.col === column.key)); writeMeasures([...measures, nextColumn ? { agg: 'Sum', col: nextColumn.key } : { agg: 'Count' }]) }}>Add measure</DSLink>}
