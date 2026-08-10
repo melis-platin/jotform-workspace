@@ -37,6 +37,27 @@ interface ChartData {
   lineSeries2: number[];
 }
 
+// Keep chart previews legible without asking the app owner to tune a technical
+// limit. Categories after the first ten are represented by one aggregated bar,
+// line point, or slice.
+const MAX_CHART_CATEGORIES = 10;
+
+function limitCategories(data: ChartData): ChartData {
+  if (data.labels.length <= MAX_CHART_CATEGORIES) return data;
+
+  const retainedCount = MAX_CHART_CATEGORIES;
+  const overflowStart = retainedCount;
+  const sumOverflow = (series: number[]) => series.slice(overflowStart).reduce((sum, value) => sum + value, 0);
+
+  return {
+    labels: [...data.labels.slice(0, retainedCount), 'Other'],
+    barSeries1: [...data.barSeries1.slice(0, retainedCount), sumOverflow(data.barSeries1)],
+    barSeries2: [...data.barSeries2.slice(0, retainedCount), sumOverflow(data.barSeries2)],
+    lineSeries1: [...data.lineSeries1.slice(0, retainedCount), sumOverflow(data.lineSeries1)],
+    lineSeries2: [...data.lineSeries2.slice(0, retainedCount), sumOverflow(data.lineSeries2)],
+  };
+}
+
 const DATA_BY_FILTER: Record<ChartDateFilter, ChartData> = {
   'Yearly': {
     labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
@@ -491,7 +512,7 @@ export const Chart: FC<ChartProps> = ({
   const [tooltip, setTooltip] = useState<TooltipInfo | null>(null);
   const [dateFilter, setDateFilter] = useState<ChartDateFilter>('Yearly');
   const handleHover = useCallback((info: TooltipInfo | null) => setTooltip(info), []);
-  const chartData = dataForSet(dataSet, dateFilter);
+  const chartData = limitCategories(dataForSet(dataSet, dateFilter));
   const isMobile = useIsMobile();
   const labelStep = isMobile && chartData.labels.length > 7 ? 2 : 1;
 
