@@ -3349,7 +3349,8 @@ interface BuildPageProps {
   onDeepLinkTargetsChange?: (targets: DeepLinkTarget[]) => void
   onSearchableElementCountChange?: (count: number) => void
   onDataBackedElementCountChange?: (count: number) => void
-  onOpenDataTableForElement?: (elementId: string) => void
+  onDataPagesChange?: (pages: AppPage[]) => void
+  onOpenDataTableForElement?: (elementId: string, pages: AppPage[]) => void
   searchBarEnabled?: boolean
   pushNotificationsEnabled?: boolean
   pushNotifications?: LivePreviewPushNotification[]
@@ -3559,6 +3560,7 @@ export function BuildPage({
   onDeepLinkTargetsChange,
   onSearchableElementCountChange,
   onDataBackedElementCountChange,
+  onDataPagesChange,
   onOpenDataTableForElement,
   searchBarEnabled = true,
   pushNotificationsEnabled = false,
@@ -3711,6 +3713,9 @@ export function BuildPage({
       return arePagesEqual(current, next) ? current : next
     })
   }, [preset])
+  useEffect(() => {
+    onDataPagesChange?.(pages)
+  }, [onDataPagesChange, pages])
   const [headerActions, setHeaderActions] = useState<CanvasElement[]>(initial.headerActions)
   const headerActionsRef = useRef<CanvasElement[]>([])
   useEffect(() => { headerActionsRef.current = headerActions }, [headerActions])
@@ -8057,14 +8062,14 @@ export function BuildPage({
                       return (
                         <div className="property-panel__body chart-properties">
                           <section className="chart-properties__section chart-properties__section--source">
-                            <DSFormField title="Chart Source" description={<>This chart uses data from App Tables <DSLink href="#" size="sm" rightIcon={<Icon name="arrow-up-right-from-square" category="arrows" size={14} />} onClick={(event) => { event.preventDefault(); onOpenDataTableForElement?.(selectedElement.id) }}>Open Data</DSLink></>} size="md" showDescription showHelpText={false}>
+                            <DSFormField title="Chart Source" description={<>This chart uses data from App Tables <DSLink href="#" size="sm" rightIcon={<Icon name="arrow-up-right-from-square" category="arrows" size={14} />} onClick={(event) => { event.preventDefault(); onOpenDataTableForElement?.(selectedElement.id, pages) }}>Open Data</DSLink></>} size="md" showDescription showHelpText={false}>
                               <div className="chart-properties__connected-table">
                                 <div className="chart-properties__table-summary">
                                   <span className="chart-properties__table-icon"><Icon name="product-tables-filled" category="products" size={32} /></span>
                                   <strong>{dataSource}</strong>
                                 </div>
                                 <div className="chart-properties__table-actions">
-                                  <DSButton variant="filled" colorScheme="constructive" shape="rectangle" size="md" onClick={() => onOpenDataTableForElement?.(selectedElement.id)}>Edit Table</DSButton>
+                                  <DSButton variant="filled" colorScheme="constructive" shape="rectangle" size="md" onClick={() => onOpenDataTableForElement?.(selectedElement.id, pages)}>Edit Table</DSButton>
                                   <DSButton variant="filled" colorScheme="secondary" shape="rectangle" size="md" onClick={() => { setChartTableSearch(''); setChartTablePickerElementId(selectedElement.id) }}>Change Table</DSButton>
                                 </div>
                               </div>
@@ -9467,7 +9472,7 @@ export function BuildPage({
                                   rightIcon={<Icon name="arrow-up-right-from-square" category="arrows" size={14} />}
                                   onClick={(event) => {
                                     event.preventDefault()
-                                    onOpenDataTableForElement?.(selectedElement.id)
+                                    onOpenDataTableForElement?.(selectedElement.id, pages)
                                   }}
                                 >
                                   Open

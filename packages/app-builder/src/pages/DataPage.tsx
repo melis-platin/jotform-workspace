@@ -722,6 +722,7 @@ function columnHeaderIcon(column: DataColumn) {
 
 interface DataPageProps {
   preset: AppPreset
+  pages?: AppPage[] | null
   onElementNavigate?: (pageId: string, elementId: string) => void
   dataTableNavigationTarget?: {
     tableId: string
@@ -729,18 +730,31 @@ interface DataPageProps {
   } | null
 }
 
-export function findDataTableIdForElement(preset: AppPreset, elementId: string): string | null {
-  const initialState = buildInitialStateFromPreset(preset)
-  const tables = collectDataTables(initialState.pages)
+export function findDataTableIdForElement(preset: AppPreset, elementId: string, pages?: AppPage[] | null): string | null {
+  const currentPages = pages ?? buildInitialStateFromPreset(preset).pages
+  const tables = collectDataTables(currentPages)
+  const element = currentPages.flatMap((page) => page.elements).find((candidate) => candidate.id === elementId)
+  const sourceName = element?.componentId === 'chart'
+    ? String(element.properties['Data Source'] ?? '').trim()
+    : ''
+
+  // A chart can point to another App Table. In that case Open Data must open
+  // that source table, not the chart's own preview-data table.
+  if (sourceName && sourceName !== 'My Chart') {
+    const sourceTable = tables.find((table) => table.id !== elementId && table.name === sourceName)
+    if (sourceTable) return sourceTable.id
+  }
+
   return tables.find((table) => (
     table.id === elementId
     || table.connections.some((connection) => connection.elementId === elementId)
   ))?.id ?? null
 }
 
-export function DataPage({ preset, onElementNavigate, dataTableNavigationTarget }: DataPageProps) {
+export function DataPage({ preset, pages: builderPages, onElementNavigate, dataTableNavigationTarget }: DataPageProps) {
   const initialState = useMemo(() => buildInitialStateFromPreset(preset), [preset])
-  const tables = useMemo(() => collectDataTables(initialState.pages), [initialState.pages])
+  const pages = builderPages ?? initialState.pages
+  const tables = useMemo(() => collectDataTables(pages), [pages])
   const [activeTableId, setActiveTableId] = useState(() => tables[0]?.id ?? '')
   const [openTableMenuId, setOpenTableMenuId] = useState<string | null>(null)
   const [columnsAiMenuOpen, setColumnsAiMenuOpen] = useState(false)

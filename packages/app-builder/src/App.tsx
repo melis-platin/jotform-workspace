@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useSyncExternalStore, useCallback, useRef } from 'react'
 import { IconLibraryProvider } from '@jf/app-elements'
 import { TopBar } from './shell/TopBar.tsx'
-import { BuildPage } from './pages/BuildPage.tsx'
+import { BuildPage, type AppPage } from './pages/BuildPage.tsx'
 import { DataPage, findDataTableIdForElement, presetUsesDataElement } from './pages/DataPage.tsx'
 import { SettingsPage, type PushNotificationHistoryItem } from './pages/SettingsPage.tsx'
 import {
@@ -145,6 +145,7 @@ export function App() {
   const [readPushNotificationDeliveryIdsByPreset, setReadPushNotificationDeliveryIdsByPreset] = useState<ReadPushNotificationDeliveryIdsByPreset>({})
   const [buildNavigationTarget, setBuildNavigationTarget] = useState<BuildNavigationTarget | null>(null)
   const [dataNavigationTarget, setDataNavigationTarget] = useState<DataNavigationTarget | null>(null)
+  const [builderDataPages, setBuilderDataPages] = useState<AppPage[] | null>(null)
   const preset = useMemo(() => getPresetById(activePresetId), [activePresetId])
   const arePushNotificationsDisabled = pushNotificationsDisabledByPreset[activePresetId] ?? false
   const pushNotificationsEnabled = !arePushNotificationsDisabled
@@ -200,7 +201,10 @@ export function App() {
     previousUrlPresetRef.current = urlPreset
     if (presetChanged) presetChangeRequestRef.current += 1
     if (presetChanged) setBuildNavigationTarget(null)
-    if (presetChanged) setDataNavigationTarget(null)
+    if (presetChanged) {
+      setDataNavigationTarget(null)
+      setBuilderDataPages(null)
+    }
     setActivePresetId((prev) => (prev === urlPreset ? prev : urlPreset))
     setAppTitle(titleForPreset(urlPreset))
     setAppIcon(defaultAppIcon(urlPreset))
@@ -277,6 +281,7 @@ export function App() {
     setActivePresetId(id)
     setBuildNavigationTarget(null)
     setDataNavigationTarget(null)
+    setBuilderDataPages(null)
     setAppTitle(titleForPreset(id))
     setAppIcon(defaultAppIcon(id))
     setDeepLinkTargets(createDeepLinkTargetsFromPreset(getPresetById(id)))
@@ -302,9 +307,10 @@ export function App() {
     setActivePage('build')
   }, [])
 
-  const handleOpenDataTableForElement = useCallback((elementId: string) => {
-    const tableId = findDataTableIdForElement(preset, elementId)
+  const handleOpenDataTableForElement = useCallback((elementId: string, pages: AppPage[]) => {
+    const tableId = findDataTableIdForElement(preset, elementId, pages)
     if (!tableId) return
+    setBuilderDataPages(pages)
     dataNavigationRequestRef.current += 1
     setDataNavigationTarget({ tableId, requestId: dataNavigationRequestRef.current })
     setPreviewMode(false)
@@ -480,6 +486,7 @@ export function App() {
             onDeepLinkTargetsChange={setDeepLinkTargets}
             onSearchableElementCountChange={handleSearchableElementCountChange}
             onDataBackedElementCountChange={setDataBackedElementCount}
+            onDataPagesChange={setBuilderDataPages}
             onOpenDataTableForElement={handleOpenDataTableForElement}
             pushNotificationsEnabled={pushNotificationsEnabled}
             searchBarEnabled={searchBarEnabled}
@@ -493,6 +500,7 @@ export function App() {
         {activePage === 'data' && (
           <DataPage
             preset={preset}
+            pages={builderDataPages}
             onElementNavigate={handleDataElementNavigate}
             dataTableNavigationTarget={dataNavigationTarget}
           />
