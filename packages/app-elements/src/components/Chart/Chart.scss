@@ -244,17 +244,9 @@
   overflow: visible;
 }
 
-.jf-chart__donut-track,
-.jf-chart__donut-segment {
-  fill: none;
-  stroke-width: calc(var(--space-4) * 2);
-  transform: rotate(-90deg);
-  transform-origin: 100px 100px;
+.jf-chart__donut-hole {
+  fill: var(--bg-fill);
 }
-
-.jf-chart__donut-track { stroke: var(--bg-surface); }
-.jf-chart__donut-segment--secondary { stroke: var(--chart-3); }
-.jf-chart__donut-segment--primary { stroke: var(--chart-1); }
 
 .jf-chart__donut-total,
 .jf-chart__donut-caption {

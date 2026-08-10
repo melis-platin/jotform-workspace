@@ -760,19 +760,18 @@ const DonutChart: FC<{ data: ChartData; seriesLabels: [string, string] }> = ({ d
     ? dataSeries.map((series) => ({ label: series.label, value: series.values.reduce((sum, value) => sum + value, 0) }))
     : data.labels.map((label, index) => ({ label, value: dataSeries[0]?.values[index] ?? 0 })).sort((a, b) => b.value - a.value);
   const total = slices.reduce((sum, slice) => sum + slice.value, 0);
-  const radius = 84;
-  const circumference = 2 * Math.PI * radius;
-  const sliceLengths = slices.map((slice) => total ? (slice.value / total) * circumference : 0);
+  let currentAngle = -Math.PI / 2;
 
   return (
     <div className="jf-chart__donut-layout">
       <svg className="jf-chart__donut" viewBox="0 0 200 200" role="img" aria-label="Donut chart">
-        <circle className="jf-chart__donut-track" cx="100" cy="100" r={radius} />
         {slices.map((slice, index) => {
-          const length = sliceLengths[index];
-          const offset = sliceLengths.slice(0, index).reduce((sum, item) => sum + item, 0);
-          return <circle key={slice.label} className="jf-chart__donut-segment" cx="100" cy="100" r={radius} strokeDasharray={`${length} ${circumference - length}`} strokeDashoffset={-offset} style={{ stroke: pieSliceColor(index) } as CSSProperties} />;
+          const nextAngle = currentAngle + (total ? slice.value / total : 0) * Math.PI * 2;
+          const path = pieSlicePath(100, 100, currentAngle, nextAngle);
+          currentAngle = nextAngle;
+          return <path key={slice.label} d={path} fill={pieSliceColor(index)} />;
         })}
+        <circle className="jf-chart__donut-hole" cx="100" cy="100" r="68" />
       </svg>
       <div className="jf-chart__donut-legend">
         {slices.map((slice, index) => <div className="jf-chart__donut-legend-row" key={slice.label}>
