@@ -8181,11 +8181,11 @@ export function BuildPage({
                               <DSDropdownSingle value={String(p['Time Range'] ?? 'All time')} onChange={(value) => set('Time Range', value)} options={['All time', 'Last 7 days', 'Last 30 days', 'This quarter'].map((value) => ({ value, label: value }))} showLeadingIcon={false} />
                             </DSFormField>
                           </section>
-                          <section className="chart-properties__section chart-properties__section--inline">
-                            <DSFormField title="Show Time Range Selector" description="Let viewers change the time range." size="md" showDescription showHelpText={false}>
+                          <section className="chart-properties__section chart-properties__section--inline chart-properties__section--time-range-selector">
+                            <DSFormField title="Show Time Range Selector" description="Let viewers change the time range" size="md" showDescription showHelpText={false}>
                               <DSToggle size="md" checked={Boolean(p['Show Time Range Selector'])} onChange={(event) => set('Show Time Range Selector', event.target.checked)} />
                             </DSFormField>
-                            {Boolean(p['Show Time Range Selector']) && <DSDropdownSingle value={String(p['Time Range Options'] ?? '6 selected')} onChange={(value) => set('Time Range Options', value)} options={[{ value: '6 selected', label: '6 selected' }]} />}
+                            {Boolean(p['Show Time Range Selector']) && <DSDropdownSingle value={String(p['Time Range Options'] ?? '6 selected')} onChange={(value) => set('Time Range Options', value)} options={[{ value: '6 selected', label: '6 selected' }]} showLeadingIcon={false} />}
                           </section>
                           <section className="chart-properties__section chart-properties__section--inline">
                             <DSFormField title="Shrink" description="Make element smaller." size="md" showDescription showHelpText={false}>
