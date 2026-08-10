@@ -43,6 +43,7 @@ import {
 } from '@jf/app-elements'
 import { Icon, Button as DSButton, Tabs as DSTabs, Segmented, Input as DSInput, Toggle as DSToggle, Slider as DSSlider, NumberInput as DSNumberInput, FormField as DSFormField, TextArea as DSTextArea, DropdownSingle as DSDropdownSingle, FieldMapper as DSFieldMapper, FieldComposer as DSFieldComposer, type FieldToken, Link as DSLink, Modal as DSModal, SearchInput as DSSearchInput, ColorInput as DSColorInput } from '@jf/design-system'
 import phoneHomeIndicator from '@jf/design-system/src/assets/phone-home-indicator.svg'
+import chartAreaIcon from '@jf/design-system/src/assets/icons/general/chart-area.svg'
 import previewUserAvatar from '../assets/preview-user-avatar.jpg'
 import previewHeaderAvatar from '../assets/app-users/melis-platin.png'
 import { PhoneStatusBar } from '../components/PhoneStatusBar'
@@ -8116,7 +8117,7 @@ export function BuildPage({
                       { value: 'Bar', label: 'Column', icon: 'chart-bar-filled' },
                       { value: 'Horizontal Bar', label: 'Bar', icon: 'chart-bar-horizontal-filled' },
                       { value: 'Line', label: 'Line', icon: 'chart-line-filled' },
-                      { value: 'Area', label: 'Area', icon: 'chart-area-filled' },
+                      { value: 'Area', label: 'Area', icon: 'chart-area', iconAsset: chartAreaIcon },
                       { value: 'Pie', label: 'Pie', icon: 'chart-pie-filled' },
                       { value: 'Donut', label: 'Donut', icon: 'chart-donut-filled' },
                     ]
@@ -8151,7 +8152,7 @@ export function BuildPage({
                           <section className="chart-properties__section chart-properties__section--type">
                             <DSFormField title="Chart Type" size="md" showDescription={false} showHelpText={false}>
                               <div className="chart-properties__type-grid">
-                                {typeOptions.map((option) => <button key={option.value} type="button" className={`chart-properties__type${chartType === option.value ? ' chart-properties__type--selected' : ''}`} onClick={() => handleVariantChange(selectedElement.id, 'Type', option.value)}><span><Icon name={option.icon} category="general" size={32} /></span><small>{option.label}</small></button>)}
+                                {typeOptions.map((option) => <button key={option.value} type="button" className={`chart-properties__type${chartType === option.value ? ' chart-properties__type--selected' : ''}`} onClick={() => handleVariantChange(selectedElement.id, 'Type', option.value)}><span>{option.iconAsset ? <img className="chart-properties__type-icon-asset" src={option.iconAsset} alt="" /> : <Icon name={option.icon} category="general" size={32} />}</span><small>{option.label}</small></button>)}
                               </div>
                             </DSFormField>
                           </section>

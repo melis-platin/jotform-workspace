@@ -6646,6 +6646,11 @@ body,
     color: var(--core-white);
   }
 
+  .chart-properties__type-icon-asset {
+    width: var(--spacing-2xl);
+    height: var(--spacing-2xl);
+  }
+
   &--selected > span {
     border-color: var(--accent-default);
     background: var(--accent-default);
