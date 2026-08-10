@@ -6493,11 +6493,24 @@ body,
   }
 }
 
+// Chart Source — Figma New Workspace, node 1423:7831.
+// This keeps the source card's 16 / 12 / 56 / 40 rhythm independent from the
+// more compact property sections that follow it.
+.chart-properties__section--source {
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xl) var(--spacing-md);
+  border-bottom: 0;
+
+  .jf-form-field__label {
+    gap: var(--spacing-2xs);
+  }
+}
+
 .chart-properties__connected-table {
   display: flex;
   flex-direction: column;
   gap: var(--spacing-md);
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md);
   border-radius: var(--radius-sm);
   background: var(--gray-700);
 }
@@ -6505,7 +6518,7 @@ body,
 .chart-properties__table-summary {
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: var(--spacing-xs);
   min-width: 0;
   color: var(--core-white);
   font-size: var(--font-size-md);
@@ -6521,9 +6534,9 @@ body,
 .chart-properties__table-icon {
   display: grid;
   place-items: center;
-  flex: 0 0 var(--spacing-6xl);
-  width: var(--spacing-6xl);
-  height: var(--spacing-6xl);
+  flex: 0 0 calc(var(--spacing-3xl) + var(--spacing-md));
+  width: calc(var(--spacing-3xl) + var(--spacing-md));
+  height: calc(var(--spacing-3xl) + var(--spacing-md));
   border-radius: var(--radius-sm);
   background: var(--gray-500);
 }
@@ -6531,8 +6544,8 @@ body,
 .chart-properties__table-actions {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-md);
-  padding-top: var(--spacing-md);
+  gap: var(--spacing-sm);
+  padding-top: var(--spacing-sm);
   border-top: 1px solid color-mix(in srgb, var(--gray-200) 50%, transparent);
 
   .jf-button {

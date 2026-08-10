@@ -8056,7 +8056,7 @@ export function BuildPage({
                       }
                       return (
                         <div className="property-panel__body chart-properties">
-                          <section className="chart-properties__section">
+                          <section className="chart-properties__section chart-properties__section--source">
                             <DSFormField title="Chart Source" description={<>This chart uses data from App Tables <DSLink href="#" size="sm" rightIcon={<Icon name="arrow-up-right-from-square" category="arrows" size={14} />} onClick={(event) => { event.preventDefault(); onOpenDataTableForElement?.(selectedElement.id) }}>Open Data</DSLink></>} size="md" showDescription showHelpText={false}>
                               <div className="chart-properties__connected-table">
                                 <div className="chart-properties__table-summary">
