@@ -8120,6 +8120,7 @@ export function BuildPage({
                       ? String(p['Group By'])
                       : groupOptions[0]?.value ?? 'Row order'
                     const timeRangeSelectorOptions = ['All time', 'Last 3 months', 'Last 6 months', 'Last 1 year', 'Last 2 years', 'This year']
+                    const chartTimeRangeOptions = ['All Time', 'Last 7 days', 'Last 1 month', 'Last 3 months', 'Last 6 months', 'Last 1 year']
                     const selectedTimeRangeOptions = (() => {
                       const stored = p['Time Range Options']
                       if (typeof stored !== 'string' || !stored.startsWith('[')) return timeRangeSelectorOptions
@@ -8189,7 +8190,7 @@ export function BuildPage({
                           </section>
                           <section className="chart-properties__section chart-properties__section--time-range">
                             <DSFormField title="Time Range" description="Based on sign-up date" size="md" showDescription showHelpText={false}>
-                              <DSDropdownSingle value={String(p['Time Range'] ?? 'All time')} onChange={(value) => set('Time Range', value)} options={['All time', 'Last 7 days', 'Last 30 days', 'This quarter'].map((value) => ({ value, label: value }))} showLeadingIcon={false} />
+                              <DSDropdownSingle value={String(p['Time Range'] ?? 'All Time')} onChange={(value) => set('Time Range', value)} options={chartTimeRangeOptions.map((value) => ({ value, label: value }))} showLeadingIcon={false} />
                             </DSFormField>
                           </section>
                           <section className="chart-properties__section chart-properties__section--inline chart-properties__section--time-range-selector">

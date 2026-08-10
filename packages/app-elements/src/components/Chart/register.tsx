@@ -30,7 +30,7 @@ ComponentRegistry.register({
     { name: 'Measure Field', type: 'text', default: 'Value' },
     { name: 'Aggregation', type: 'text', default: 'Sum' },
     { name: 'Group By', type: 'text', default: 'Category' },
-    { name: 'Time Range', type: 'text', default: 'All time' },
+    { name: 'Time Range', type: 'text', default: 'All Time' },
     { name: 'Show Time Range Selector', type: 'boolean', default: true },
     { name: 'Time Range Options', type: 'text', default: '6 selected' },
     { name: 'Show Icon', type: 'boolean', default: false },
