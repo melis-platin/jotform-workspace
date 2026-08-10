@@ -857,6 +857,7 @@ function createCanvasElement(comp: RegisteredComponent, id: string): CanvasEleme
 }
 
 type ChartSourceColumn = { key: string; label: string; kind: 'number' | 'text' | 'date' }
+type BuilderChartMeasure = { agg: 'Count' | 'Sum' | 'Average' | 'Highest' | 'Lowest'; col?: string }
 
 const DEFAULT_CHART_TABLE_ROWS: Record<string, string | number>[] = [
   { category: 'Category 1', value: 12, note: 'Note 1' },
@@ -910,6 +911,34 @@ function analyzeChartSource(rows: Record<string, string | number>[]): ChartSourc
     })
     return { key, label: readableChartColumnName(key), kind: isNumber ? 'number' : isDate ? 'date' : 'text' }
   })
+}
+
+function readChartMeasures(value: unknown, fallbackField: unknown, fallbackAggregation: unknown, numericColumns: ChartSourceColumn[]): BuilderChartMeasure[] {
+  if (typeof value === 'string' && value.startsWith('[')) {
+    try {
+      const parsed = JSON.parse(value)
+      if (Array.isArray(parsed)) {
+        const measures = parsed.filter((measure): measure is BuilderChartMeasure => Boolean(measure) && typeof measure === 'object' && ['Count', 'Sum', 'Average', 'Highest', 'Lowest'].includes(measure.agg) && (measure.agg === 'Count' || numericColumns.some((column) => column.key === measure.col)))
+        if (measures.length) return measures.slice(0, 3)
+      }
+    } catch {
+      // Existing charts use the legacy field/aggregation pair below.
+    }
+  }
+  const legacyField = String(fallbackField ?? '')
+  if (legacyField === 'Number of rows' || !numericColumns.length) return [{ agg: 'Count' }]
+  const column = numericColumns.find((item) => item.key === legacyField) ?? numericColumns[0]
+  const agg = ['Sum', 'Average', 'Highest', 'Lowest'].includes(String(fallbackAggregation)) ? String(fallbackAggregation) as BuilderChartMeasure['agg'] : 'Sum'
+  return [{ agg, col: column.key }]
+}
+
+function getAutomaticChartGroup(rows: Record<string, string | number>[], columns: ChartSourceColumn[]): string {
+  const textColumns = columns.filter((column) => column.kind === 'text')
+  const candidates = textColumns
+    .map((column) => ({ column, unique: new Set(rows.map((row) => String(row[column.key] ?? ''))).size }))
+    .filter(({ unique }) => unique < rows.length)
+    .sort((a, b) => b.unique - a.unique)
+  return candidates[0]?.column.key ?? textColumns[0]?.key ?? columns.find((column) => column.kind === 'date')?.key ?? ''
 }
 
 function chartSourceRowsForElement(pages: AppPage[], chart: CanvasElement): Record<string, string | number>[] {
@@ -8108,17 +8137,21 @@ export function BuildPage({
                     const chartColumns = analyzeChartSource(chartSourceRowsForElement(pages, selectedElement))
                     const numericColumns = chartColumns.filter((column) => column.kind === 'number')
                     const groupingColumns = chartColumns.filter((column) => column.kind === 'text' || column.kind === 'date')
-                    const measureOptions = [
-                      ...numericColumns.map((column) => ({ value: column.key, label: column.label })),
-                      { value: 'Number of rows', label: 'Number of rows' },
-                    ]
-                    const selectedMeasure = measureOptions.some((option) => option.value === p['Measure Field'])
-                      ? String(p['Measure Field'])
-                      : measureOptions[0].value
-                    const groupOptions = groupingColumns.map((column) => ({ value: column.key, label: column.kind === 'date' ? `${column.label} (by month)` : column.label }))
-                    const selectedGroupBy = groupOptions.some((option) => option.value === p['Group By'])
-                      ? String(p['Group By'])
-                      : groupOptions[0]?.value ?? 'Row order'
+                    const measures = readChartMeasures(p.Measures, p['Measure Field'], p.Aggregation, numericColumns)
+                    const writeMeasures = (nextMeasures: BuilderChartMeasure[]) => {
+                      const first = nextMeasures[0]
+                      set('Measures', JSON.stringify(nextMeasures))
+                      set('Measure Field', first?.agg === 'Count' ? 'Number of rows' : first?.col ?? '')
+                      set('Aggregation', first?.agg ?? 'Sum')
+                    }
+                    const groupOptions = groupingColumns.map((column) => {
+                      const valueCount = new Set(chartSourceRowsForElement(pages, selectedElement).map((row) => String(row[column.key] ?? ''))).size
+                      return { value: column.key, label: column.kind === 'date' ? `${column.label} (by month)` : `${column.label} (${valueCount} values)` }
+                    })
+                    const automaticGroupBy = getAutomaticChartGroup(chartSourceRowsForElement(pages, selectedElement), chartColumns)
+                    const hasStoredGroupBy = groupOptions.some((option) => option.value === p['Group By']) || p['Group By'] === 'Row order'
+                    const selectedGroupBy = hasStoredGroupBy ? String(p['Group By']) : automaticGroupBy
+                    const groupIsAutomatic = !hasStoredGroupBy && Boolean(automaticGroupBy)
                     const timeRangeSelectorOptions = ['All time', 'Last 3 months', 'Last 6 months', 'Last 1 year', 'Last 2 years', 'This year']
                     const chartTimeRangeOptions = ['All Time', 'Last 7 days', 'Last 1 month', 'Last 3 months', 'Last 6 months', 'Last 1 year']
                     const selectedTimeRangeOptions = (() => {
@@ -8176,18 +8209,34 @@ export function BuildPage({
                           </section>
                           <section className="chart-properties__section chart-properties__section--show">
                             <DSFormField title="Show" description={numericColumns.length ? 'What the chart measures.' : 'This table has no number columns, so the chart counts rows.'} size="md" showDescription showHelpText={false}>
-                              <div className="chart-properties__measure-row">
-                                <DSDropdownSingle value={selectedMeasure} onChange={(value) => set('Measure Field', value)} options={measureOptions} showLeadingIcon={false} />
-                                <DSDropdownSingle value={selectedMeasure === 'Number of rows' ? 'Count' : String(p.Aggregation ?? 'Sum')} onChange={(value) => set('Aggregation', value)} options={(selectedMeasure === 'Number of rows' ? ['Count'] : ['Sum', 'Average', 'Highest', 'Lowest']).map((value) => ({ value, label: value }))} showLeadingIcon={false} />
+                              {measures.map((measure, index) => {
+                                const usedByOthers = new Set(measures.filter((_, measureIndex) => measureIndex !== index).map((item) => item.col).filter(Boolean))
+                                const fieldOptions = [
+                                  { value: 'Number of rows', label: 'Number of rows', disabled: measures.length > 1 && measure.agg !== 'Count' },
+                                  ...numericColumns.map((column) => ({ value: column.key, label: column.label, disabled: usedByOthers.has(column.key) })),
+                                ].filter((option) => option.value === (measure.agg === 'Count' ? 'Number of rows' : measure.col) || !option.disabled)
+                                const selectedField = measure.agg === 'Count' ? 'Number of rows' : measure.col ?? ''
+                                const isCount = measure.agg === 'Count'
+                                return <div className="chart-properties__measure-line" key={`${measure.agg}-${measure.col ?? 'count'}-${index}`}>
+                                  {index > 0 && <span className="chart-properties__measure-and">and</span>}
+                                  <div className="chart-properties__measure-row">
+                                    <DSDropdownSingle value={selectedField} onChange={(value) => writeMeasures(measures.map((item, measureIndex) => measureIndex === index ? (value === 'Number of rows' ? { agg: 'Count' } : { ...item, col: value, agg: item.agg === 'Count' ? 'Sum' : item.agg }) : item))} options={fieldOptions} showLeadingIcon={false} disabled={fieldOptions.length < 2} />
+                                    <DSDropdownSingle value={measure.agg} onChange={(value) => writeMeasures(measures.map((item, measureIndex) => measureIndex === index ? { ...item, agg: value as BuilderChartMeasure['agg'] } : item))} options={(isCount ? ['Count'] : ['Sum', 'Average', 'Highest', 'Lowest']).map((value) => ({ value, label: value }))} showLeadingIcon={false} disabled={isCount} />
+                                  </div>
+                                  {measures.length > 1 && <button type="button" className="chart-properties__remove-measure" aria-label="Remove measure" onClick={() => writeMeasures(measures.filter((_, measureIndex) => measureIndex !== index))}>×</button>}
+                                </div>
+                              })}
+                              {measures.length < 3 && !measures.some((measure) => measure.agg === 'Count') && numericColumns.some((column) => !measures.some((measure) => measure.col === column.key)) && <DSLink className="chart-properties__show-add-measure" size="sm" leftIcon={<Icon name="plus" size={12} />} onClick={() => { const nextColumn = numericColumns.find((column) => !measures.some((measure) => measure.col === column.key)); if (nextColumn) writeMeasures([...measures, { agg: 'Sum', col: nextColumn.key }]) }}>Add measure</DSLink>}
+                            </DSFormField>
+                          </section>
+                          {!((chartType === 'Pie' || chartType === 'Donut') && measures.length > 1) && <section className="chart-properties__section chart-properties__section--group-by">
+                            <DSFormField title={chartType === 'Line' || chartType === 'Area' ? 'Along' : chartType === 'Pie' || chartType === 'Donut' ? 'Slice By' : 'Group By'} description={chartType === 'Line' || chartType === 'Area' ? 'Points are plotted across these values.' : chartType === 'Pie' || chartType === 'Donut' ? 'Each value becomes its own slice.' : 'Each value becomes its own bar.'} size="md" showDescription showHelpText={false}>
+                              <div className="chart-properties__group-control">
+                                <DSDropdownSingle value={selectedGroupBy} onChange={(value) => set('Group By', value)} options={[...groupOptions, { value: 'Row order', label: `Row order (${chartSourceRowsForElement(pages, selectedElement).length} rows)` }]} showLeadingIcon={false} />
+                                {groupIsAutomatic && <span className="chart-properties__auto-badge">Auto</span>}
                               </div>
-                              <DSLink className="chart-properties__show-add-measure" size="sm" leftIcon={<Icon name="plus" size={12} />} onClick={() => undefined}>Add measure</DSLink>
                             </DSFormField>
-                          </section>
-                          <section className="chart-properties__section chart-properties__section--group-by">
-                            <DSFormField title="Group by" description="Each value becomes its own bar or slice." size="md" showDescription showHelpText={false}>
-                              <DSDropdownSingle value={selectedGroupBy} onChange={(value) => set('Group By', value)} options={groupOptions.length ? groupOptions : [{ value: 'Row order', label: 'Row order' }]} showLeadingIcon={false} />
-                            </DSFormField>
-                          </section>
+                          </section>}
                           <section className="chart-properties__section chart-properties__section--time-range">
                             <DSFormField title="Time Range" description="Based on sign-up date" size="md" showDescription showHelpText={false}>
                               <DSDropdownSingle value={String(p['Time Range'] ?? 'All Time')} onChange={(value) => set('Time Range', value)} options={chartTimeRangeOptions.map((value) => ({ value, label: value }))} showLeadingIcon={false} />
@@ -11805,14 +11854,38 @@ export function BuildPage({
                           properties: { ...chartElement.properties, 'Data Source': table.name },
                         }
                         const sourceRows = chartSourceRowsForElement(pages, nextChart)
+                        const sourceColumns = analyzeChartSource(sourceRows)
+                        const sourceNumericColumns = sourceColumns.filter((column) => column.kind === 'number')
+                        const savedSettings = (() => {
+                          try {
+                            const parsed = JSON.parse(String(chartElement.properties['Table Settings'] ?? '{}'))
+                            return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed as Record<string, Record<string, unknown>> : {}
+                          } catch {
+                            return {}
+                          }
+                        })()
+                        const currentSettings = {
+                          Measures: chartElement.properties.Measures,
+                          'Measure Field': chartElement.properties['Measure Field'],
+                          Aggregation: chartElement.properties.Aggregation,
+                          'Group By': chartElement.properties['Group By'],
+                          'Time Range': chartElement.properties['Time Range'],
+                        }
+                        const nextDefaultGroup = getAutomaticChartGroup(sourceRows, sourceColumns)
+                        const nextDefaultMeasure = sourceNumericColumns.length
+                          ? { Measures: JSON.stringify([{ agg: 'Sum', col: sourceNumericColumns[0].key }]), 'Measure Field': sourceNumericColumns[0].key, Aggregation: 'Sum' }
+                          : { Measures: JSON.stringify([{ agg: 'Count' }]), 'Measure Field': 'Number of rows', Aggregation: 'Count' }
+                        const nextSettings = savedSettings[table.name] ?? { ...nextDefaultMeasure, 'Group By': nextDefaultGroup, 'Time Range': 'All Time' }
                         setPages((currentPages) => currentPages.map((page) => ({
                           ...page,
                           elements: page.elements.map((element) => element.id === chartElement.id ? {
                             ...element,
                             properties: {
                               ...element.properties,
+                              ...nextSettings,
                               'Data Source': table.name,
                               'Chart Table Rows': JSON.stringify(sourceRows),
+                              'Table Settings': JSON.stringify({ ...savedSettings, [currentSource]: currentSettings }),
                             },
                           } : element),
                         })))

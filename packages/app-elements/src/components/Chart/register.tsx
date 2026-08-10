@@ -1,7 +1,7 @@
 import { ComponentRegistry } from '../../types/registry';
 import { Chart } from './Chart';
 import type { ChartDataSet, ChartType } from './Chart';
-import type { VariantValues, PropertyValues, StateValues } from '../../types/component';
+import type { VariantValues, PropertyValues } from '../../types/component';
 import scss from './Chart.scss?raw';
 
 const DEFAULT_CHART_TABLE_ROWS = '[{"category":"Category 1","value":12,"note":"Note 1"},{"category":"Category 2","value":19,"note":"Note 2"},{"category":"Category 3","value":15,"note":"Note 3"},{"category":"Category 4","value":24,"note":"Note 4"},{"category":"Category 5","value":21,"note":"Note 5"},{"category":"Category 6","value":9,"note":"Note 6"}]';
@@ -29,6 +29,8 @@ ComponentRegistry.register({
     { name: 'Chart Table Rows', type: 'text', default: DEFAULT_CHART_TABLE_ROWS },
     { name: 'Measure Field', type: 'text', default: 'Value' },
     { name: 'Aggregation', type: 'text', default: 'Sum' },
+    { name: 'Measures', type: 'text', default: '[{"agg":"Sum","col":"Value"}]' },
+    { name: 'Table Settings', type: 'text', default: '{}' },
     { name: 'Group By', type: 'text', default: 'Category' },
     { name: 'Time Range', type: 'text', default: 'All Time' },
     { name: 'Show Time Range Selector', type: 'boolean', default: true },
@@ -109,7 +111,7 @@ ComponentRegistry.register({
     },
   ],
 
-  render(_variants: VariantValues, props: PropertyValues, _states: StateValues) {
+  render(_variants: VariantValues, props: PropertyValues) {
     return (
       <Chart
         type={_variants['Type'] as ChartType}
@@ -126,6 +128,7 @@ ComponentRegistry.register({
         timeRangeOptions={props['Time Range Options'] as string}
         showLegend={props['Show Legend'] as boolean}
         tableRows={(props['Chart Table Rows'] as string) || DEFAULT_CHART_TABLE_ROWS}
+        measures={props['Measures'] as string}
         measureField={props['Measure Field'] as string}
         aggregation={props['Aggregation'] as string}
         groupBy={props['Group By'] as string}

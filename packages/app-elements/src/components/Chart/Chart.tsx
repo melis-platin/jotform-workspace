@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect, type FC } from 'react';
+import { useState, useCallback, useRef, useEffect, type CSSProperties, type FC } from 'react';
 import { Icon } from '../Icon/Icon';
 import './Chart.scss';
 
@@ -25,6 +25,7 @@ export interface ChartProps {
   timeRangeOptions?: string;
   showLegend?: boolean;
   tableRows?: string;
+  measures?: string;
   measureField?: string;
   aggregation?: string;
   groupBy?: string;
@@ -43,7 +44,10 @@ interface ChartData {
   lineSeries1: number[];
   lineSeries2: number[];
   hasSecondary?: boolean;
+  series?: Array<{ label: string; values: number[] }>;
 }
+
+type ChartMeasure = { agg: 'Count' | 'Sum' | 'Average' | 'Highest' | 'Lowest'; col?: string };
 
 // Keep chart previews legible without asking the app owner to tune a technical
 // limit. Categories after the first ten are represented by one aggregated bar,
@@ -64,6 +68,10 @@ function limitCategories(data: ChartData): ChartData {
     lineSeries1: [...data.lineSeries1.slice(0, retainedCount), sumOverflow(data.lineSeries1)],
     lineSeries2: [...data.lineSeries2.slice(0, retainedCount), sumOverflow(data.lineSeries2)],
     hasSecondary: data.hasSecondary,
+    series: data.series?.map((series) => ({
+      ...series,
+      values: [...series.values.slice(0, retainedCount), sumOverflow(series.values)],
+    })),
   };
 }
 
@@ -86,45 +94,120 @@ function getRowValue(row: ChartTableRow, field: string): ChartTableRow[string] |
   return matchingKey ? row[matchingKey] : undefined;
 }
 
+function isDateValue(value: unknown): boolean {
+  return typeof value === 'string' && /^(?:\d{4}-\d{2}-\d{2}(?:[T\s].*)?|\d{1,2}[/-]\d{1,2}[/-]\d{2,4})$/.test(value.trim()) && !Number.isNaN(Date.parse(value));
+}
+
+function inferGroupBy(rows: ChartTableRow[]): string {
+  const keys = [...new Set(rows.flatMap((row) => Object.keys(row)))];
+  const textCandidates = keys.filter((key) => {
+    const values = rows.map((row) => getRowValue(row, key)).filter((value) => value != null && value !== '');
+    return values.length > 0 && values.every((value) => typeof value === 'string' && !isDateValue(value) && !Number.isFinite(Number(value)));
+  });
+  const scored = textCandidates.map((key) => ({ key, unique: new Set(rows.map((row) => String(getRowValue(row, key) ?? ''))).size }))
+    .filter((item) => item.unique < rows.length)
+    .sort((a, b) => b.unique - a.unique);
+  return scored[0]?.key ?? textCandidates[0] ?? '';
+}
+
+function filterRowsByTimeRange(rows: ChartTableRow[], range: string): ChartTableRow[] {
+  if (!range || range.toLocaleLowerCase() === 'all time') return rows;
+  const dateKey = [...new Set(rows.flatMap((row) => Object.keys(row)))].find((key) => rows.some((row) => isDateValue(getRowValue(row, key))));
+  if (!dateKey) return rows;
+  const now = new Date();
+  const rangeStart = new Date(now);
+  if (range === 'Last 7 days') rangeStart.setDate(now.getDate() - 7);
+  else if (range === 'Last 30 days' || range === 'Last 1 month') rangeStart.setDate(now.getDate() - 30);
+  else if (range === 'Last 3 months') rangeStart.setMonth(now.getMonth() - 3);
+  else if (range === 'Last 6 months') rangeStart.setMonth(now.getMonth() - 6);
+  else if (range === 'Last 1 year') rangeStart.setFullYear(now.getFullYear() - 1);
+  else if (range === 'This quarter') rangeStart.setMonth(Math.floor(now.getMonth() / 3) * 3, 1);
+  else return rows;
+  return rows.filter((row) => {
+    const value = getRowValue(row, dateKey);
+    const date = value instanceof Date ? value : new Date(String(value));
+    return !Number.isNaN(date.getTime()) && date >= rangeStart && date <= now;
+  });
+}
+
 function readableField(field: string): string {
   return field.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[_-]+/g, ' ');
 }
 
 function aggregateValues(values: number[], aggregation: string): number {
   if (values.length === 0) return 0;
-  if (aggregation === 'Average') return values.reduce((sum, value) => sum + value, 0) / values.length;
+  if (aggregation === 'Average') return Math.round((values.reduce((sum, value) => sum + value, 0) / values.length) * 10) / 10;
   if (aggregation === 'Highest') return Math.max(...values);
   if (aggregation === 'Lowest') return Math.min(...values);
   return values.reduce((sum, value) => sum + value, 0);
 }
 
-function dataFromTableRows(rows: ChartTableRow[], measureField: string, aggregation: string, groupBy: string): ChartData | null {
+function readMeasures(value: string | undefined, measureField: string, aggregation: string): ChartMeasure[] {
+  if (value?.startsWith('[')) {
+    try {
+      const parsed = JSON.parse(value);
+      if (Array.isArray(parsed)) {
+        const measures = parsed.filter((measure): measure is ChartMeasure => Boolean(measure) && typeof measure === 'object' && ['Count', 'Sum', 'Average', 'Highest', 'Lowest'].includes(measure.agg));
+        if (measures.length) return measures.slice(0, 3);
+      }
+    } catch {
+      // Fall through to the legacy single-measure properties.
+    }
+  }
+  return [{ agg: measureField === 'Number of rows' ? 'Count' : (aggregation as ChartMeasure['agg']), ...(measureField === 'Number of rows' ? {} : { col: measureField }) }];
+}
+
+function measureLabel(measure: ChartMeasure): string {
+  return measure.agg === 'Count' ? 'Number of rows' : `${measure.agg} of ${readableField(measure.col ?? '')}`;
+}
+
+function dataFromTableRows(rows: ChartTableRow[], measures: ChartMeasure[], groupBy: string): ChartData | null {
   if (rows.length === 0) return null;
-  const groups = new Map<string, number[]>();
-  const countRows = measureField === 'Number of rows';
+  if (!measures.length || !groupBy) return null;
+  const groups = new Map<string, ChartTableRow[]>();
 
   rows.forEach((row, index) => {
     const rawGroup = groupBy === 'Row order' ? index + 1 : getRowValue(row, groupBy);
     const label = rawGroup == null || rawGroup === '' ? 'Untitled' : String(rawGroup);
-    const rawMeasure = countRows ? 1 : getRowValue(row, measureField);
-    const value = countRows ? 1 : typeof rawMeasure === 'number' ? rawMeasure : Number(rawMeasure);
-    if (!Number.isFinite(value)) return;
     const values = groups.get(label) ?? [];
-    values.push(value);
+    values.push(row);
     groups.set(label, values);
   });
 
   if (groups.size === 0) return null;
   const labels = [...groups.keys()];
-  const values = labels.map((label) => aggregateValues(groups.get(label) ?? [], countRows ? 'Count' : aggregation));
+  const series = measures.map((measure) => ({
+    label: measureLabel(measure),
+    values: labels.map((label) => {
+      const groupRows = groups.get(label) ?? [];
+      if (measure.agg === 'Count') return groupRows.length;
+      const values = groupRows.map((row) => {
+        const raw = getRowValue(row, measure.col ?? '');
+        const value = typeof raw === 'number' ? raw : Number(raw);
+        return Number.isFinite(value) ? value : 0;
+      });
+      return aggregateValues(values, measure.agg);
+    }),
+  }));
+  const values = series[0]?.values ?? [];
   return {
     labels,
     barSeries1: values,
     barSeries2: values.map(() => 0),
     lineSeries1: values,
     lineSeries2: values.map(() => 0),
-    hasSecondary: false,
+    hasSecondary: series.length > 1,
+    series,
   };
+}
+
+function chartSeries(data: ChartData, mode: 'bar' | 'line', labels: string[]): Array<{ label: string; values: number[] }> {
+  if (data.series?.length) return data.series;
+  const primary = mode === 'bar' ? data.barSeries1 : data.lineSeries1;
+  const secondary = mode === 'bar' ? data.barSeries2 : data.lineSeries2;
+  return data.hasSecondary === false
+    ? [{ label: labels[0], values: primary }]
+    : [{ label: labels[0], values: primary }, { label: labels[1], values: secondary }];
 }
 
 const DATA_BY_FILTER: Record<ChartDateFilter, ChartData> = {
@@ -193,10 +276,6 @@ function getAxisStep(maxValue: number): number {
   const normalized = targetStep / magnitude;
   const rounded = normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 5 ? 5 : 10;
   return rounded * magnitude;
-}
-
-function isDateValue(value: unknown): boolean {
-  return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}(?:[T\s].*)?$/.test(value.trim());
 }
 
 // ============================================
@@ -319,14 +398,14 @@ function ChartTooltip({ info }: { info: TooltipInfo }) {
 // Bar Chart
 // ============================================
 const BarChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (info: TooltipInfo | null) => void; labelStep?: number; seriesLabels: [string, string] }> = ({ data, onHover, labelStep = 1, seriesLabels }) => {
-  const hasSecondary = data.hasSecondary !== false;
-  const highestValue = Math.max(...data.barSeries1, ...(hasSecondary ? data.barSeries2 : []), 1);
+  const series = chartSeries(data, 'bar', seriesLabels);
+  const highestValue = Math.max(...series.flatMap((item) => item.values), 1);
   const axisStep = getAxisStep(highestValue);
   const maxVal = axisStep * 4;
   const count = data.labels.length;
   const gridLines = [0, 1, 2, 3, 4];
   const barGroupWidth = PLOT_WIDTH / count;
-  const barWidth = barGroupWidth * (hasSecondary ? 0.3 : 0.82);
+  const barWidth = barGroupWidth * (series.length === 1 ? 0.82 : Math.min(0.7 / series.length, 0.3));
   const barGap = 2;
 
   return (
@@ -355,24 +434,18 @@ const BarChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (inf
       {/* Bars + hit areas */}
       {data.labels.map((month, i) => {
         const groupX = PADDING_LEFT + i * barGroupWidth + barGroupWidth / 2;
-        const h1 = (data.barSeries1[i] / maxVal) * PLOT_HEIGHT;
-        const h2 = hasSecondary ? (data.barSeries2[i] / maxVal) * PLOT_HEIGHT : 0;
-        const y1 = PADDING_TOP + PLOT_HEIGHT - h1;
-        const y2 = PADDING_TOP + PLOT_HEIGHT - h2;
+        const values = series.map((item) => item.values[i] ?? 0);
+        const heights = values.map((value) => (value / maxVal) * PLOT_HEIGHT);
+        const ys = heights.map((height) => PADDING_TOP + PLOT_HEIGHT - height);
 
         return (
           <g
             key={i}
             onMouseEnter={() => onHover({
               x: groupX,
-              y: Math.min(y1, y2) - 8,
+              y: Math.min(...ys) - 8,
               month,
-              values: hasSecondary
-                ? [
-                    { label: seriesLabels[0], value: data.barSeries1[i].toLocaleString(), series: 1 },
-                    { label: seriesLabels[1], value: data.barSeries2[i].toLocaleString(), series: 2 },
-                  ]
-                : [{ label: seriesLabels[0], value: data.barSeries1[i].toLocaleString(), series: 1 }],
+              values: series.map((item, index) => ({ label: item.label, value: (item.values[i] ?? 0).toLocaleString(), series: index + 1 })),
             })}
             onMouseLeave={() => onHover(null)}
           >
@@ -384,25 +457,22 @@ const BarChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (inf
               height={PLOT_HEIGHT}
               fill="transparent"
             />
-            <rect
-              x={hasSecondary ? groupX - barWidth - barGap / 2 : groupX - barWidth / 2}
-              y={y1}
-              width={barWidth}
-              height={h1}
-              className="jf-chart__bar jf-chart__bar--series1"
-            />
-            {!hasSecondary && (
-              <text x={groupX} y={y1 - 8} className="jf-chart__bar-value">
-                {data.barSeries1[i].toLocaleString()}
+            {series.map((item, seriesIndex) => (
+              <rect
+                key={item.label}
+                x={groupX - ((series.length * barWidth + (series.length - 1) * barGap) / 2) + seriesIndex * (barWidth + barGap)}
+                y={ys[seriesIndex]}
+                width={barWidth}
+                height={heights[seriesIndex]}
+                className="jf-chart__bar"
+                style={{ fill: `var(--chart-${seriesIndex + 1})` } as CSSProperties}
+              />
+            ))}
+            {series.length === 1 && (
+              <text x={groupX} y={ys[0] - 8} className="jf-chart__bar-value">
+                {values[0].toLocaleString()}
               </text>
             )}
-            {hasSecondary && <rect
-              x={groupX + barGap / 2}
-              y={y2}
-              width={barWidth}
-              height={h2}
-              className="jf-chart__bar jf-chart__bar--series2"
-            />}
           </g>
         );
       })}
@@ -450,8 +520,9 @@ const buildAreaPath = (points: Array<{ x: number; y: number }>, baseline: number
 };
 
 const LineChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (info: TooltipInfo | null) => void; labelStep?: number; seriesLabels: [string, string]; showArea?: boolean }> = ({ data, tooltip, onHover, labelStep = 1, seriesLabels, showArea = false }) => {
+  const series = chartSeries(data, 'line', seriesLabels);
   const count = data.labels.length;
-  const maxVal = Math.max(...data.lineSeries1, ...data.lineSeries2);
+  const maxVal = Math.max(...series.flatMap((item) => item.values), 1);
   const stepX = PLOT_WIDTH / (count - 1);
   const baseline = PADDING_TOP + PLOT_HEIGHT;
 
@@ -461,8 +532,7 @@ const LineChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (in
       y: PADDING_TOP + PLOT_HEIGHT - (val / maxVal) * PLOT_HEIGHT,
     }));
 
-  const points1 = toPoints(data.lineSeries1);
-  const points2 = toPoints(data.lineSeries2);
+  const pointsBySeries = series.map((item) => toPoints(item.values));
 
   const gridLines = data.labels.map((_, i) => PADDING_LEFT + i * stepX);
 
@@ -484,20 +554,10 @@ const LineChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (in
         />
       ))}
 
-      {showArea && <>
-        <path d={buildAreaPath(points1, baseline)} className="jf-chart__area jf-chart__area--series1" />
-        <path d={buildAreaPath(points2, baseline)} className="jf-chart__area jf-chart__area--series2" />
-      </>}
+      {showArea && pointsBySeries.map((points, index) => <path key={`area-${index}`} d={buildAreaPath(points, baseline)} className="jf-chart__area" style={{ fill: `var(--chart-${index + 1})` } as CSSProperties} />)}
 
       {/* Lines */}
-      <path
-        d={buildSmoothPath(points1)}
-        className="jf-chart__line jf-chart__line--series1"
-      />
-      <path
-        d={buildSmoothPath(points2)}
-        className="jf-chart__line jf-chart__line--series2"
-      />
+      {pointsBySeries.map((points, index) => <path key={`line-${index}`} d={buildSmoothPath(points)} className="jf-chart__line" style={{ stroke: `var(--chart-${index + 1})` } as CSSProperties} />)}
 
       {/* Hit areas + hover indicator */}
       {data.labels.map((label, i) => {
@@ -508,12 +568,9 @@ const LineChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (in
             key={label}
             onMouseEnter={() => onHover({
               x,
-              y: Math.min(points1[i].y, points2[i].y) - 8,
+              y: Math.min(...pointsBySeries.map((points) => points[i].y)) - 8,
               month: label,
-              values: [
-                { label: seriesLabels[0], value: `$${(data.lineSeries1[i]).toLocaleString()}`, series: 1 },
-                { label: seriesLabels[1], value: `$${(data.lineSeries2[i]).toLocaleString()}`, series: 2 },
-              ],
+              values: series.map((item, index) => ({ label: item.label, value: (item.values[i] ?? 0).toLocaleString(), series: index + 1 })),
             })}
             onMouseLeave={() => onHover(null)}
           >
@@ -527,8 +584,7 @@ const LineChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (in
             {isActive && (
               <>
                 <line x1={x} y1={PADDING_TOP} x2={x} y2={baseline} className="jf-chart__hover-line" />
-                <circle cx={x} cy={points1[i].y} r={4} className="jf-chart__dot jf-chart__dot--s1" />
-                <circle cx={x} cy={points2[i].y} r={4} className="jf-chart__dot jf-chart__dot--s2" />
+                {pointsBySeries.map((points, index) => <circle key={index} cx={x} cy={points[i].y} r={4} className="jf-chart__dot" style={{ fill: `var(--chart-${index + 1})` } as CSSProperties} />)}
               </>
             )}
           </g>
@@ -554,39 +610,34 @@ const LineChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (in
 };
 
 const DonutChart: FC<{ data: ChartData; seriesLabels: [string, string] }> = ({ data, seriesLabels }) => {
-  const primary = data.barSeries1.reduce((sum, value) => sum + value, 0);
-  const secondary = data.barSeries2.reduce((sum, value) => sum + value, 0);
-  const total = primary + secondary;
+  const dataSeries = chartSeries(data, 'bar', seriesLabels);
+  const isMultiMeasure = dataSeries.length > 1;
+  const slices = isMultiMeasure
+    ? dataSeries.map((series) => ({ label: series.label, value: series.values.reduce((sum, value) => sum + value, 0) }))
+    : data.labels.map((label, index) => ({ label, value: dataSeries[0]?.values[index] ?? 0 })).sort((a, b) => b.value - a.value);
+  const total = slices.reduce((sum, slice) => sum + slice.value, 0);
   const radius = 58;
   const circumference = 2 * Math.PI * radius;
-  const primaryLength = total ? (primary / total) * circumference : 0;
+  const sliceLengths = slices.map((slice) => total ? (slice.value / total) * circumference : 0);
 
   return (
     <div className="jf-chart__donut-layout">
-      <svg className="jf-chart__donut" viewBox="0 0 180 180" role="img" aria-label={`${primary} ${seriesLabels[0]} and ${secondary} ${seriesLabels[1]}`}>
+      <svg className="jf-chart__donut" viewBox="0 0 180 180" role="img" aria-label={`Total ${total}`}>
         <circle className="jf-chart__donut-track" cx="90" cy="90" r={radius} />
-        <circle className="jf-chart__donut-segment jf-chart__donut-segment--secondary" cx="90" cy="90" r={radius} />
-        <circle
-          className="jf-chart__donut-segment jf-chart__donut-segment--primary"
-          cx="90"
-          cy="90"
-          r={radius}
-          strokeDasharray={`${primaryLength} ${circumference - primaryLength}`}
-        />
+        {slices.map((slice, index) => {
+          const length = sliceLengths[index];
+          const offset = sliceLengths.slice(0, index).reduce((sum, item) => sum + item, 0);
+          return <circle key={slice.label} className="jf-chart__donut-segment" cx="90" cy="90" r={radius} strokeDasharray={`${length} ${circumference - length}`} strokeDashoffset={-offset} style={{ stroke: `var(--chart-${index + 1})` } as CSSProperties} />;
+        })}
         <text className="jf-chart__donut-total" x="90" y="85">{total.toLocaleString()}</text>
         <text className="jf-chart__donut-caption" x="90" y="105">Total</text>
       </svg>
       <div className="jf-chart__donut-legend">
-        <div className="jf-chart__donut-legend-row">
-          <span className="jf-chart__legend-dot jf-chart__legend-dot--series1" />
-          <span>{seriesLabels[0]}</span>
-          <strong>{primary.toLocaleString()}</strong>
-        </div>
-        <div className="jf-chart__donut-legend-row">
-          <span className="jf-chart__legend-dot jf-chart__legend-dot--series2" />
-          <span>{seriesLabels[1]}</span>
-          <strong>{secondary.toLocaleString()}</strong>
-        </div>
+        {slices.map((slice, index) => <div className="jf-chart__donut-legend-row" key={slice.label}>
+          <span className="jf-chart__legend-dot" style={{ background: `var(--chart-${index + 1})` } as CSSProperties} />
+          <span>{slice.label}</span>
+          <strong>{total ? `${Math.round((slice.value / total) * 100)}%` : '0%'}</strong>
+        </div>)}
       </div>
     </div>
   );
@@ -621,6 +672,7 @@ export const Chart: FC<ChartProps> = ({
   timeRangeOptions,
   showLegend = true,
   tableRows,
+  measures,
   measureField = 'Value',
   aggregation = 'Sum',
   groupBy = 'Category',
@@ -629,7 +681,11 @@ export const Chart: FC<ChartProps> = ({
   skeletonAnimation = 'pulse',
 }) => {
   const parsedRows = readTableRows(tableRows);
-  const tableData = dataFromTableRows(parsedRows, measureField, aggregation, groupBy);
+  const [selectedTimeRange, setSelectedTimeRange] = useState(timeRange);
+  const activeMeasures = readMeasures(measures, measureField, aggregation);
+  const filteredRows = filterRowsByTimeRange(parsedRows, showTimeRangeSelector ? selectedTimeRange : timeRange);
+  const resolvedGroupBy = groupBy && parsedRows.some((row) => getRowValue(row, groupBy) !== undefined) ? groupBy : inferGroupBy(parsedRows);
+  const tableData = dataFromTableRows(filteredRows, activeMeasures, resolvedGroupBy);
   const defaultTitle = dataSet === 'Revenue' ? 'Revenue' : dataSet === 'Visitors' ? 'Visitors' : 'Orders';
   const isLegacyDefaultTitle = title === 'Orders';
   const isLegacyDefaultDescription = description === 'Monthly order volume';
@@ -637,9 +693,9 @@ export const Chart: FC<ChartProps> = ({
     ? 'My Chart'
     : title || (type === 'Donut' ? 'Audience overview' : defaultTitle);
   const resolvedDesc = (tableData && (isLegacyDefaultDescription || !description))
-    ? `${aggregation} of ${readableField(measureField)} by ${readableField(groupBy)}`
+    ? `${measureLabel(activeMeasures[0])}${resolvedGroupBy ? ` by ${readableField(resolvedGroupBy)}` : ''}`
     : description || (tableData
-    ? `${aggregation} of ${readableField(measureField)} by ${readableField(groupBy)}`
+    ? `${measureLabel(activeMeasures[0])}${resolvedGroupBy ? ` by ${readableField(resolvedGroupBy)}` : ''}`
     : type === 'Donut' ? 'How your audience is distributed' : `Monthly ${defaultTitle.toLowerCase()} overview`);
   const seriesLabels: [string, string] = [primaryLabel || 'This period', secondaryLabel || 'Previous period'];
   const animClass = skeletonAnimation === 'shimmer' ? 'animate-shimmer' : 'animate-pulse';
@@ -648,6 +704,15 @@ export const Chart: FC<ChartProps> = ({
     'jf-chart',
     selected && 'jf-chart--selected',
   ].filter(Boolean).join(' ');
+
+  const [tooltip, setTooltip] = useState<TooltipInfo | null>(null);
+  const [dateFilter, setDateFilter] = useState<ChartDateFilter>('Yearly');
+  const handleHover = useCallback((info: TooltipInfo | null) => setTooltip(info), []);
+  const chartData = limitCategories(tableData ?? dataForSet(dataSet, dateFilter));
+  const tableHasDateColumn = parsedRows.some((row) => Object.values(row).some(isDateValue));
+  const isTableColumnChart = type === 'Bar' && tableData !== null;
+  const isMobile = useIsMobile();
+  const labelStep = isMobile && chartData.labels.length > 7 ? 2 : 1;
 
   if (skeleton) {
     return (
@@ -663,16 +728,6 @@ export const Chart: FC<ChartProps> = ({
       </div>
     );
   }
-
-  const [tooltip, setTooltip] = useState<TooltipInfo | null>(null);
-  const [dateFilter, setDateFilter] = useState<ChartDateFilter>('Yearly');
-  const [selectedTimeRange, setSelectedTimeRange] = useState(timeRange);
-  const handleHover = useCallback((info: TooltipInfo | null) => setTooltip(info), []);
-  const chartData = limitCategories(tableData ?? dataForSet(dataSet, dateFilter));
-  const tableHasDateColumn = parsedRows.some((row) => Object.values(row).some(isDateValue));
-  const isTableColumnChart = type === 'Bar' && tableData !== null;
-  const isMobile = useIsMobile();
-  const labelStep = isMobile && chartData.labels.length > 7 ? 2 : 1;
 
   return (
     <div className={classes}>
@@ -696,10 +751,9 @@ export const Chart: FC<ChartProps> = ({
         {(type === 'Pie' || type === 'Donut') && <DonutChart data={chartData} seriesLabels={seriesLabels} />}
         {tooltip && <ChartTooltip info={tooltip} />}
       </div>
-      {showLegend && chartData.hasSecondary !== false && type !== 'Donut' && type !== 'Pie' && (
+      {showLegend && (chartData.series?.length ?? (chartData.hasSecondary === false ? 1 : 2)) > 1 && type !== 'Donut' && type !== 'Pie' && (
         <div className="jf-chart__legend" aria-label="Chart legend">
-          <span><i className="jf-chart__legend-dot jf-chart__legend-dot--series1" />{seriesLabels[0]}</span>
-          <span><i className="jf-chart__legend-dot jf-chart__legend-dot--series2" />{seriesLabels[1]}</span>
+          {chartSeries(chartData, 'bar', seriesLabels).map((series, index) => <span key={series.label}><i className="jf-chart__legend-dot" style={{ background: `var(--chart-${index + 1})` } as CSSProperties} />{series.label}</span>)}
         </div>
       )}
     </div>
