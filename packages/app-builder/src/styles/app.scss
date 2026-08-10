@@ -86,7 +86,9 @@
   --ds-line-height-md: var(--line-height-md);
   --ds-font-weight-book: var(--font-weight-book);
   --ds-font-weight-medium: var(--font-weight-medium);
-  --ds-font-weight-bold: var(--font-weight-bold);
+  // Builder UI uses the design-system's Bold face. This must not inherit the
+  // app canvas' semibold token, which is customizable by the App Designer.
+  --ds-font-weight-bold: 700;
 
   // Canvas element action controls (Figma: New Workspace / 1262:4249)
   --ds-canvas-element-action-width: var(--spacing-3xl);
@@ -6524,6 +6526,12 @@ body,
 
   .jf-form-field__label {
     gap: var(--spacing-2xs);
+  }
+
+  // Figma New Workspace, node 1423:7832 — title 14/20 Bold.
+  // Form fields use a medium default weight, but this source label is bold.
+  .jf-form-field__title-text {
+    font-weight: var(--ds-font-weight-bold);
   }
 }
 
