@@ -161,8 +161,9 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: var(--space-4);
-  color: var(--fg-secondary);
+  color: var(--fg-primary);
   font-size: var(--font-size-label-sm);
 
   span {
@@ -176,7 +177,7 @@
   display: inline-block;
   width: var(--space-2);
   height: var(--space-2);
-  border-radius: var(--radius-rounded);
+  border-radius: var(--radius-xs);
   flex: 0 0 auto;
 
   &--series1 { background: var(--chart-1); }

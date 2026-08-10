@@ -131,7 +131,13 @@ function filterRowsByTimeRange(rows: ChartTableRow[], range: string): ChartTable
 }
 
 function readableField(field: string): string {
-  return field.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[_-]+/g, ' ');
+  return field.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[_-]+/g, ' ').replace(/^./, (char) => char.toUpperCase());
+}
+
+function chartSeriesColor(index: number): string {
+  if (index === 0) return 'var(--accent-default)';
+  if (index === 1) return 'var(--blue-400)';
+  return `var(--chart-${index + 1})`;
 }
 
 function aggregateValues(values: number[], aggregation: string): number {
@@ -473,14 +479,10 @@ const BarChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (inf
                 width={barWidth}
                 height={heights[seriesIndex]}
                 className="jf-chart__bar"
-                style={{ fill: `var(--chart-${seriesIndex + 1})` } as CSSProperties}
+                style={{ fill: chartSeriesColor(seriesIndex) } as CSSProperties}
               />
             ))}
-            {series.length === 1 && (
-              <text x={groupX} y={ys[0] - 8} className="jf-chart__bar-value">
-                {values[0].toLocaleString()}
-              </text>
-            )}
+            {series.map((item, seriesIndex) => <text key={`${item.label}-value`} x={groupX - ((series.length * barWidth + (series.length - 1) * barGap) / 2) + seriesIndex * (barWidth + barGap) + barWidth / 2} y={ys[seriesIndex] - 8} className="jf-chart__bar-value">{values[seriesIndex].toLocaleString()}</text>)}
           </g>
         );
       })}
@@ -700,10 +702,11 @@ export const Chart: FC<ChartProps> = ({
   const resolvedTitle = (tableData && (isLegacyDefaultTitle || !title))
     ? 'My Chart'
     : title || (type === 'Donut' ? 'Audience overview' : defaultTitle);
+  const automaticDescription = `${activeMeasures.map(measureLabel).join(' and ')}${resolvedGroupBy ? ` by ${readableField(resolvedGroupBy)}` : ''}`;
   const resolvedDesc = (tableData && (isLegacyDefaultDescription || !description))
-    ? `${measureLabel(activeMeasures[0])}${resolvedGroupBy ? ` by ${readableField(resolvedGroupBy)}` : ''}`
+    ? automaticDescription
     : description || (tableData
-    ? `${measureLabel(activeMeasures[0])}${resolvedGroupBy ? ` by ${readableField(resolvedGroupBy)}` : ''}`
+    ? automaticDescription
     : type === 'Donut' ? 'How your audience is distributed' : `Monthly ${defaultTitle.toLowerCase()} overview`);
   const seriesLabels: [string, string] = [primaryLabel || 'This period', secondaryLabel || 'Previous period'];
   const animClass = skeletonAnimation === 'shimmer' ? 'animate-shimmer' : 'animate-pulse';
@@ -761,7 +764,7 @@ export const Chart: FC<ChartProps> = ({
       </div>
       {showLegend && (chartData.series?.length ?? (chartData.hasSecondary === false ? 1 : 2)) > 1 && type !== 'Donut' && type !== 'Pie' && (
         <div className="jf-chart__legend" aria-label="Chart legend">
-          {chartSeries(chartData, 'bar', seriesLabels).map((series, index) => <span key={series.label}><i className="jf-chart__legend-dot" style={{ background: `var(--chart-${index + 1})` } as CSSProperties} />{series.label}</span>)}
+          {chartSeries(chartData, 'bar', seriesLabels).map((series, index) => <span key={series.label}><i className="jf-chart__legend-dot" style={{ background: chartSeriesColor(index) } as CSSProperties} />{series.label}</span>)}
         </div>
       )}
     </div>
