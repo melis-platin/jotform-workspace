@@ -6715,16 +6715,16 @@ body,
 }
 
 .chart-properties__show-add-measure.jf-link--sm {
-  height: var(--font-size-xs);
+  height: var(--line-height-xs);
   font-weight: var(--font-weight-book);
 
   .jf-link__icon {
-    width: var(--font-size-xs);
-    height: var(--font-size-xs);
+    width: var(--line-height-xs);
+    height: var(--line-height-xs);
   }
 
   .jf-link__label {
-    line-height: var(--font-size-xs);
+    line-height: var(--line-height-xs);
   }
 }
 

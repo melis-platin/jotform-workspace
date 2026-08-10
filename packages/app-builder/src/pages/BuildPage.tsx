@@ -8160,8 +8160,8 @@ export function BuildPage({
                           <section className="chart-properties__section chart-properties__section--show">
                             <DSFormField title="Show" description={numericColumns.length ? 'What the chart measures.' : 'This table has no number columns, so the chart counts rows.'} size="md" showDescription showHelpText={false}>
                               <div className="chart-properties__measure-row">
-                                <DSDropdownSingle value={selectedMeasure} onChange={(value) => set('Measure Field', value)} options={measureOptions} />
-                                <DSDropdownSingle value={selectedMeasure === 'Number of rows' ? 'Count' : String(p.Aggregation ?? 'Sum')} onChange={(value) => set('Aggregation', value)} options={(selectedMeasure === 'Number of rows' ? ['Count'] : ['Sum', 'Average', 'Highest', 'Lowest']).map((value) => ({ value, label: value }))} />
+                                <DSDropdownSingle value={selectedMeasure} onChange={(value) => set('Measure Field', value)} options={measureOptions} showLeadingIcon={false} />
+                                <DSDropdownSingle value={selectedMeasure === 'Number of rows' ? 'Count' : String(p.Aggregation ?? 'Sum')} onChange={(value) => set('Aggregation', value)} options={(selectedMeasure === 'Number of rows' ? ['Count'] : ['Sum', 'Average', 'Highest', 'Lowest']).map((value) => ({ value, label: value }))} showLeadingIcon={false} />
                               </div>
                               <DSLink className="chart-properties__show-add-measure" size="sm" leftIcon={<Icon name="plus" size={12} />} onClick={() => undefined}>Add measure</DSLink>
                             </DSFormField>
