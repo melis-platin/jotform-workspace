@@ -893,6 +893,7 @@ export const Chart: FC<ChartProps> = ({
     'jf-chart',
     selected && 'jf-chart--selected',
     type === 'Horizontal Bar' && 'jf-chart--horizontal',
+    type === 'Pie' && 'jf-chart--pie',
     type === 'Donut' && 'jf-chart--donut',
   ].filter(Boolean).join(' ');
 

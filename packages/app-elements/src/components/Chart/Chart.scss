@@ -510,3 +510,119 @@
     min-width: 0;
   }
 }
+
+// The phone live preview is rendered inside a desktop builder, so viewport media
+// queries do not describe its actual available width. Scope the compact chart
+// treatment to the device screen itself to keep every chart type legible there.
+.live-preview__phone-screen {
+  .jf-chart {
+    padding: var(--space-3);
+    gap: var(--space-3);
+    border-radius: var(--radius-sm);
+  }
+
+  .jf-chart__header {
+    align-items: flex-start;
+    gap: var(--space-2);
+  }
+
+  .jf-chart__icon {
+    width: var(--space-8);
+    height: var(--space-8);
+    border-radius: var(--radius-sm);
+  }
+
+  .jf-chart__title {
+    font-size: var(--font-size-label-lg);
+    line-height: var(--line-height-label-lg);
+  }
+
+  .jf-chart__description {
+    font-size: var(--font-size-label-sm);
+    line-height: var(--line-height-label-sm);
+  }
+
+  .jf-chart__filter--time-range {
+    width: calc(var(--space-5) * 5 + var(--space-2));
+
+    .jf-chart__filter-trigger {
+      height: var(--space-8);
+      padding: 0 var(--space-2);
+      gap: var(--space-2);
+      font-size: var(--font-size-label-sm);
+    }
+  }
+
+  // Keep the active period readable in the mobile preview; the generic narrow
+  // breakpoint hides it because it is intended for an actual small browser page.
+  .jf-chart__filter-trigger span {
+    display: inline;
+  }
+
+  .jf-chart__canvas {
+    height: calc(var(--space-5) * 6);
+  }
+
+  .jf-chart--horizontal .jf-chart__canvas {
+    height: calc(var(--space-5) * 8);
+  }
+
+  // SVGs retain their desktop coordinate system. Increase their source text
+  // sizes proportionally so the phone frame's rendered text remains readable.
+  .jf-chart__x-label,
+  .jf-chart__y-label,
+  .jf-chart__horizontal-label {
+    font-size: calc(var(--font-size-label-xs) * 2);
+  }
+
+  .jf-chart__bar-value,
+  .jf-chart__horizontal-value {
+    font-size: calc(var(--font-size-label-sm) * 2);
+  }
+
+  .jf-chart__legend {
+    justify-content: flex-start;
+    gap: var(--space-3);
+    font-size: var(--font-size-label-xs);
+  }
+
+  .jf-chart--pie,
+  .jf-chart--donut {
+    gap: var(--space-3);
+
+    .jf-chart__canvas {
+      height: calc(var(--space-5) * 14);
+    }
+  }
+
+  .jf-chart__pie-layout,
+  .jf-chart__donut-layout {
+    align-items: center;
+    justify-content: flex-start;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .jf-chart__pie,
+  .jf-chart__donut {
+    width: calc(var(--space-5) * 7);
+    height: calc(var(--space-5) * 7);
+  }
+
+  .jf-chart__pie-legend,
+  .jf-chart__donut-legend {
+    width: 100%;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: var(--space-3);
+    row-gap: var(--space-1);
+  }
+
+  .jf-chart__pie-legend-row,
+  .jf-chart__donut-legend-row {
+    min-width: 0;
+    gap: var(--space-1);
+    font-size: var(--font-size-label-xs);
+    line-height: var(--line-height-label-xs);
+  }
+}
