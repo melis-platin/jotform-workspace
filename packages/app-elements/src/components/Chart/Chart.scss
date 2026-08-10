@@ -26,7 +26,7 @@
 .jf-chart__header {
   display: flex;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--space-5);
 }
 
 .jf-chart__icon {
@@ -46,7 +46,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0;
 }
 
 .jf-chart__title {
@@ -80,8 +80,12 @@
   width: calc(var(--space-5) * 7 + var(--space-1));
 
   .jf-chart__filter-trigger {
+    height: calc(var(--space-5) * 2);
     width: 100%;
+    gap: var(--space-3);
+    padding: 0 var(--space-3);
     justify-content: space-between;
+    border-radius: var(--radius-sm);
     color: var(--fg-primary);
     font-family: var(--font-family-shell);
   }
