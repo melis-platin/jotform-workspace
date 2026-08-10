@@ -572,7 +572,11 @@ function buildChartTable(element: CanvasElement, page: AppPage): DataTable {
     name: sourceName,
     description: `${page.name} / Chart`,
     sourceType: 'Chart',
-    columns: columnsFromRows(rows, ['category', 'value', 'note']),
+    columns: columnsFromRows(rows, ['category', 'value', 'note']).map((column) => (
+      // The default Chart source is a plain data table. Its Category values
+      // are text labels, not selectable options, so they must not render as tags.
+      column.key === 'category' ? { ...column, type: 'shortText' } : column
+    )),
     rows,
     connections: [buildTableConnection(element, page)],
   }
