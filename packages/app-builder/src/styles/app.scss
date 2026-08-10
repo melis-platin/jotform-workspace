@@ -5946,6 +5946,17 @@ body,
   white-space: nowrap;
   transition: width 150ms ease, background-color 150ms ease;
 
+  &--table {
+    background: var(--product-tables-default);
+
+    &:hover {
+      justify-content: flex-start;
+      width: var(--ds-canvas-element-action-hover-width);
+      padding: 0 var(--ds-space-sm);
+      background: var(--product-tables-dark);
+    }
+  }
+
   &--properties {
     background: var(--blue-400);
 
@@ -5978,6 +5989,7 @@ body,
   letter-spacing: var(--letter-spacing-lg);
 }
 
+.build-page__canvas-element-action--table:hover .build-page__canvas-element-action-label,
 .build-page__canvas-element-action--properties:hover .build-page__canvas-element-action-label,
 .build-page__canvas-element-action--delete:hover .build-page__canvas-element-action-label {
   display: inline;

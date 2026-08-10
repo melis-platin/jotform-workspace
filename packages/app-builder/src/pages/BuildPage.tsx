@@ -2616,6 +2616,7 @@ const SortableElement = memo(function SortableElement({
   onSelect,
   onRemove,
   onPropertyChange,
+  onOpenTable,
   onSeePreview,
 }: {
   element: CanvasElement
@@ -2628,6 +2629,7 @@ const SortableElement = memo(function SortableElement({
   onSelect: (id: string) => void
   onRemove: (id: string) => void
   onPropertyChange: (elementId: string, property: string, value: string | boolean | number) => void
+  onOpenTable?: (elementId: string) => void
   onSeePreview: () => void
 }) {
   const comp = ComponentRegistry.get(element.componentId)
@@ -2643,6 +2645,7 @@ const SortableElement = memo(function SortableElement({
     isWhatsApp &&
     !isWhatsAppNumberMissing &&
     isFloatingWhatsApp
+  const hasLinkedTable = element.componentId === 'chart' && Boolean(onOpenTable)
   const sectionRef = useRef<HTMLElement>(null)
   const handleRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
@@ -2841,6 +2844,20 @@ const SortableElement = memo(function SortableElement({
       )}
       {isSelected && (
         <div className="build-page__canvas-element-actions">
+          {hasLinkedTable && (
+            <button
+              type="button"
+              className="build-page__canvas-element-action build-page__canvas-element-action--table"
+              aria-label="Edit linked table"
+              onClick={(e) => {
+                e.stopPropagation()
+                onOpenTable?.(element.id)
+              }}
+            >
+              <Icon name="product-tables-filled" category="products" size={20} />
+              <span className="build-page__canvas-element-action-label">Table</span>
+            </button>
+          )}
           <button
             type="button"
             className="build-page__canvas-element-action build-page__canvas-element-action--properties"
@@ -7182,6 +7199,7 @@ export function BuildPage({
                                 onSelect={handleSelectElement}
                                 onRemove={handleRemoveElement}
                                 onPropertyChange={handlePropertyChange}
+                                onOpenTable={(elementId) => onOpenDataTableForElement?.(elementId, pages)}
                                 onSeePreview={handleFloatingWhatsAppPreview}
                               />
                             )
