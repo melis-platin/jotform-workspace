@@ -902,7 +902,12 @@ function analyzeChartSource(rows: Record<string, string | number>[]): ChartSourc
   return keys.map((key) => {
     const values = rows.map((row) => row[key]).filter((value) => value !== '' && value != null)
     const isNumber = values.length > 0 && values.every((value) => typeof value === 'number' || (typeof value === 'string' && value.trim() !== '' && Number.isFinite(Number(value))))
-    const isDate = !isNumber && values.length > 0 && values.every((value) => typeof value === 'string' && !Number.isNaN(Date.parse(value)))
+    const isDate = !isNumber && values.length > 0 && values.every((value) => {
+      if (typeof value !== 'string') return false
+      const dateValue = value.trim()
+      const hasDateFormat = /^(?:\d{4}-\d{2}-\d{2}(?:[T\s].*)?|\d{1,2}[/-]\d{1,2}[/-]\d{2,4})$/.test(dateValue)
+      return hasDateFormat && !Number.isNaN(Date.parse(dateValue))
+    })
     return { key, label: readableChartColumnName(key), kind: isNumber ? 'number' : isDate ? 'date' : 'text' }
   })
 }
@@ -8166,9 +8171,9 @@ export function BuildPage({
                               <DSLink className="chart-properties__show-add-measure" size="sm" leftIcon={<Icon name="plus" size={12} />} onClick={() => undefined}>Add measure</DSLink>
                             </DSFormField>
                           </section>
-                          <section className="chart-properties__section">
-                            <DSFormField title="Group by" description="Each value becomes a bar or slice." size="md" showDescription showHelpText={false}>
-                              <DSDropdownSingle value={selectedGroupBy} onChange={(value) => set('Group By', value)} options={groupOptions.length ? groupOptions : [{ value: 'Row order', label: 'Row order' }]} />
+                          <section className="chart-properties__section chart-properties__section--group-by">
+                            <DSFormField title="Group by" description="Each value becomes its own bar or slice." size="md" showDescription showHelpText={false}>
+                              <DSDropdownSingle value={selectedGroupBy} onChange={(value) => set('Group By', value)} options={groupOptions.length ? groupOptions : [{ value: 'Row order', label: 'Row order' }]} showLeadingIcon={false} />
                             </DSFormField>
                           </section>
                           <section className="chart-properties__section">
