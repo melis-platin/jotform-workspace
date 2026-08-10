@@ -140,6 +140,18 @@ function chartSeriesColor(index: number): string {
   return `var(--chart-${index + 1})`;
 }
 
+function pieSliceColor(index: number): string {
+  const colors = [
+    'var(--blue-600)',
+    'var(--accent-default)',
+    'var(--blue-400)',
+    'var(--blue-300)',
+    'var(--blue-200)',
+    'var(--blue-100)',
+  ];
+  return colors[index % colors.length];
+}
+
 function aggregateValues(values: number[], aggregation: string): number {
   if (values.length === 0) return 0;
   if (aggregation === 'Average') return Math.round((values.reduce((sum, value) => sum + value, 0) / values.length) * 10) / 10;
@@ -775,6 +787,53 @@ const DonutChart: FC<{ data: ChartData; seriesLabels: [string, string] }> = ({ d
   );
 };
 
+const piePoint = (center: number, radius: number, angle: number) => ({
+  x: center + radius * Math.cos(angle),
+  y: center + radius * Math.sin(angle),
+});
+
+function pieSlicePath(center: number, radius: number, startAngle: number, endAngle: number): string {
+  const start = piePoint(center, radius, startAngle);
+  const end = piePoint(center, radius, endAngle);
+  const largeArc = endAngle - startAngle > Math.PI ? 1 : 0;
+  return `M ${center} ${center} L ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArc} 1 ${end.x} ${end.y} Z`;
+}
+
+const PieChart: FC<{ data: ChartData; seriesLabels: [string, string] }> = ({ data, seriesLabels }) => {
+  const dataSeries = chartSeries(data, 'bar', seriesLabels);
+  const isMultiMeasure = dataSeries.length > 1;
+  const slices = (isMultiMeasure
+    ? dataSeries.map((series) => ({ label: series.label, value: series.values.reduce((sum, value) => sum + value, 0) }))
+    : data.labels.map((label, index) => ({ label, value: dataSeries[0]?.values[index] ?? 0 })))
+    .sort((a, b) => b.value - a.value);
+  const total = slices.reduce((sum, slice) => sum + slice.value, 0);
+  const radius = 100;
+  let currentAngle = -Math.PI / 2;
+
+  return (
+    <div className="jf-chart__pie-layout">
+      <svg className="jf-chart__pie" viewBox="0 0 200 200" role="img" aria-label={`Total ${total}`}>
+        {slices.map((slice, index) => {
+          const portion = total ? slice.value / total : 0;
+          const nextAngle = currentAngle + portion * Math.PI * 2;
+          const path = pieSlicePath(100, radius, currentAngle, nextAngle);
+          currentAngle = nextAngle;
+          return <path key={slice.label} d={path} fill={pieSliceColor(index)} />;
+        })}
+      </svg>
+      <div className="jf-chart__pie-legend">
+        {slices.map((slice, index) => (
+          <div className="jf-chart__pie-legend-row" key={slice.label}>
+            <span className="jf-chart__legend-dot" style={{ background: pieSliceColor(index) } as CSSProperties} />
+            <span>{slice.label}</span>
+            <strong>{total ? `${Math.round((slice.value / total) * 100)}%` : '0%'}</strong>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+};
+
 // ============================================
 // Chart Component
 // ============================================
@@ -875,7 +934,7 @@ export const Chart: FC<ChartProps> = ({
           <div className="jf-chart__title">{resolvedTitle}</div>
           <div className="jf-chart__description">{resolvedDesc}</div>
         </div>
-        {showTimeRangeSelector && type !== 'Horizontal Bar' && type !== 'Line' && type !== 'Area'
+        {showTimeRangeSelector && type !== 'Horizontal Bar' && type !== 'Line' && type !== 'Area' && type !== 'Pie'
           ? <TimeRangeDropdown value={selectedTimeRange} onChange={setSelectedTimeRange} options={readTimeRangeOptions(timeRangeOptions)} />
           : showDateFilter && !isTableColumnChart && (!tableRows || tableHasDateColumn) && <DateFilterDropdown value={dateFilter} onChange={setDateFilter} />}
       </div>
@@ -883,7 +942,8 @@ export const Chart: FC<ChartProps> = ({
         {type === 'Bar' && <BarChart data={chartData} tooltip={tooltip} onHover={handleHover} labelStep={labelStep} seriesLabels={seriesLabels} />}
         {type === 'Horizontal Bar' && <HorizontalBarChart data={chartData} tooltip={tooltip} onHover={handleHover} seriesLabels={seriesLabels} />}
         {(type === 'Line' || type === 'Area') && <LineChart data={chartData} tooltip={tooltip} onHover={handleHover} labelStep={labelStep} seriesLabels={seriesLabels} showArea={type === 'Area'} />}
-        {(type === 'Pie' || type === 'Donut') && <DonutChart data={chartData} seriesLabels={seriesLabels} />}
+        {type === 'Pie' && <PieChart data={chartData} seriesLabels={seriesLabels} />}
+        {type === 'Donut' && <DonutChart data={chartData} seriesLabels={seriesLabels} />}
         {tooltip && <ChartTooltip info={tooltip} />}
       </div>
       {showLegend && (chartData.series?.length ?? (chartData.hasSecondary === false ? 1 : 2)) > 1 && type !== 'Donut' && type !== 'Pie' && (

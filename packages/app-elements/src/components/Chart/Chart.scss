@@ -198,6 +198,42 @@
   gap: var(--space-5);
 }
 
+.jf-chart__pie-layout {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--space-5) * 5);
+}
+
+.jf-chart__pie {
+  width: calc(var(--space-5) * 10);
+  height: calc(var(--space-5) * 10);
+  flex: 0 0 auto;
+}
+
+.jf-chart__pie-legend {
+  width: calc(var(--space-5) * 8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  color: var(--fg-primary);
+}
+
+.jf-chart__pie-legend-row {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: var(--space-2);
+  font-family: var(--font-family-shell);
+  font-size: var(--font-size-label-sm);
+  line-height: var(--line-height-label-sm);
+
+  strong {
+    font-weight: var(--font-weight-bold);
+  }
+}
+
 .jf-chart__donut {
   width: 180px;
   height: 180px;
