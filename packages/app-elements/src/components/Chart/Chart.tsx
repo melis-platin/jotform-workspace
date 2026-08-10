@@ -125,7 +125,7 @@ function filterRowsByTimeRange(rows: ChartTableRow[], range: string): ChartTable
   else return rows;
   return rows.filter((row) => {
     const value = getRowValue(row, dateKey);
-    const date = value instanceof Date ? value : new Date(String(value));
+    const date = new Date(String(value));
     return !Number.isNaN(date.getTime()) && date >= rangeStart && date <= now;
   });
 }
@@ -283,6 +283,16 @@ const PADDING_BOTTOM = 28;
 
 const PLOT_WIDTH = CHART_WIDTH - PADDING_LEFT - PADDING_RIGHT;
 const PLOT_HEIGHT = CHART_HEIGHT - PADDING_TOP - PADDING_BOTTOM;
+
+// The horizontal-bar treatment has a longer plotting area so labels can sit
+// outside the graph without competing with the values at the end of each bar.
+const HORIZONTAL_CHART_HEIGHT = 320;
+const HORIZONTAL_LABEL_WIDTH = 90;
+const HORIZONTAL_PADDING_RIGHT = 20;
+const HORIZONTAL_PADDING_TOP = 4;
+const HORIZONTAL_PADDING_BOTTOM = 28;
+const HORIZONTAL_PLOT_WIDTH = CHART_WIDTH - HORIZONTAL_LABEL_WIDTH - HORIZONTAL_PADDING_RIGHT;
+const HORIZONTAL_PLOT_HEIGHT = HORIZONTAL_CHART_HEIGHT - HORIZONTAL_PADDING_TOP - HORIZONTAL_PADDING_BOTTOM;
 
 function getAxisStep(maxValue: number): number {
   const targetStep = Math.max(maxValue, 1) / 3;
@@ -507,6 +517,99 @@ const BarChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (inf
 };
 
 // ============================================
+// Horizontal Bar Chart
+// ============================================
+const HorizontalBarChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (info: TooltipInfo | null) => void; seriesLabels: [string, string] }> = ({ data, onHover, seriesLabels }) => {
+  const series = chartSeries(data, 'bar', seriesLabels);
+  const highestValue = Math.max(...series.flatMap((item) => item.values), 1);
+  const axisStep = getAxisStep(highestValue);
+  const maxVal = axisStep * 4;
+  const rowHeight = HORIZONTAL_PLOT_HEIGHT / data.labels.length;
+  const gridLines = [0, 1, 2, 3, 4];
+  const singleBarHeight = 24;
+  const barGap = 2;
+  const barHeight = series.length === 1
+    ? singleBarHeight
+    : Math.min(16, (rowHeight - barGap * (series.length - 1)) / series.length);
+  const groupHeight = series.length * barHeight + (series.length - 1) * barGap;
+
+  return (
+    <svg
+      className="jf-chart__svg jf-chart__svg--horizontal"
+      viewBox={`0 0 ${CHART_WIDTH} ${HORIZONTAL_CHART_HEIGHT}`}
+      preserveAspectRatio="xMidYMid meet"
+    >
+      {gridLines.map((step) => {
+        const x = HORIZONTAL_LABEL_WIDTH + HORIZONTAL_PLOT_WIDTH * (step / 4);
+        return (
+          <g key={step}>
+            <line
+              x1={x}
+              y1={HORIZONTAL_PADDING_TOP}
+              x2={x}
+              y2={HORIZONTAL_PADDING_TOP + HORIZONTAL_PLOT_HEIGHT}
+              className="jf-chart__grid-line jf-chart__grid-line--vertical"
+            />
+            <text x={x} y={HORIZONTAL_CHART_HEIGHT - 6} className="jf-chart__x-label">
+              {(axisStep * step).toLocaleString()}
+            </text>
+          </g>
+        );
+      })}
+
+      {data.labels.map((label, rowIndex) => {
+        const rowCenter = HORIZONTAL_PADDING_TOP + rowIndex * rowHeight + rowHeight / 2;
+        const values = series.map((item) => item.values[rowIndex] ?? 0);
+        const barTop = rowCenter - groupHeight / 2;
+        const tooltipY = barTop - 8;
+
+        return (
+          <g
+            key={label}
+            onMouseEnter={() => onHover({
+              x: HORIZONTAL_LABEL_WIDTH + Math.max(...values.map((value) => (value / maxVal) * HORIZONTAL_PLOT_WIDTH)),
+              y: tooltipY,
+              month: label,
+              values: series.map((item, index) => ({ label: item.label, value: (item.values[rowIndex] ?? 0).toLocaleString(), series: index + 1 })),
+            })}
+            onMouseLeave={() => onHover(null)}
+          >
+            <rect
+              x={HORIZONTAL_LABEL_WIDTH}
+              y={HORIZONTAL_PADDING_TOP + rowIndex * rowHeight}
+              width={HORIZONTAL_PLOT_WIDTH}
+              height={rowHeight}
+              fill="transparent"
+            />
+            <text x={HORIZONTAL_LABEL_WIDTH - 20} y={rowCenter + 3} className="jf-chart__horizontal-label">{label}</text>
+            {series.map((item, seriesIndex) => {
+              const value = values[seriesIndex];
+              const width = (value / maxVal) * HORIZONTAL_PLOT_WIDTH;
+              const y = barTop + seriesIndex * (barHeight + barGap);
+              return (
+                <g key={item.label}>
+                  <rect
+                    x={HORIZONTAL_LABEL_WIDTH}
+                    y={y}
+                    width={width}
+                    height={barHeight}
+                    className="jf-chart__bar"
+                    style={{ fill: chartSeriesColor(seriesIndex) } as CSSProperties}
+                  />
+                  <text x={HORIZONTAL_LABEL_WIDTH + width + 8} y={y + barHeight / 2 + 4} className="jf-chart__horizontal-value">
+                    {value.toLocaleString()}
+                  </text>
+                </g>
+              );
+            })}
+          </g>
+        );
+      })}
+    </svg>
+  );
+};
+
+// ============================================
 // Line Chart
 // ============================================
 const buildSmoothPath = (points: Array<{ x: number; y: number }>): string => {
@@ -714,6 +817,7 @@ export const Chart: FC<ChartProps> = ({
   const classes = [
     'jf-chart',
     selected && 'jf-chart--selected',
+    type === 'Horizontal Bar' && 'jf-chart--horizontal',
   ].filter(Boolean).join(' ');
 
   const [tooltip, setTooltip] = useState<TooltipInfo | null>(null);
@@ -752,12 +856,13 @@ export const Chart: FC<ChartProps> = ({
           <div className="jf-chart__title">{resolvedTitle}</div>
           <div className="jf-chart__description">{resolvedDesc}</div>
         </div>
-        {showTimeRangeSelector
+        {showTimeRangeSelector && type !== 'Horizontal Bar'
           ? <TimeRangeDropdown value={selectedTimeRange} onChange={setSelectedTimeRange} options={readTimeRangeOptions(timeRangeOptions)} />
           : showDateFilter && !isTableColumnChart && (!tableRows || tableHasDateColumn) && <DateFilterDropdown value={dateFilter} onChange={setDateFilter} />}
       </div>
       <div className="jf-chart__canvas">
-        {(type === 'Bar' || type === 'Horizontal Bar') && <BarChart data={chartData} tooltip={tooltip} onHover={handleHover} labelStep={labelStep} seriesLabels={seriesLabels} />}
+        {type === 'Bar' && <BarChart data={chartData} tooltip={tooltip} onHover={handleHover} labelStep={labelStep} seriesLabels={seriesLabels} />}
+        {type === 'Horizontal Bar' && <HorizontalBarChart data={chartData} tooltip={tooltip} onHover={handleHover} seriesLabels={seriesLabels} />}
         {(type === 'Line' || type === 'Area') && <LineChart data={chartData} tooltip={tooltip} onHover={handleHover} labelStep={labelStep} seriesLabels={seriesLabels} showArea={type === 'Area'} />}
         {(type === 'Pie' || type === 'Donut') && <DonutChart data={chartData} seriesLabels={seriesLabels} />}
         {tooltip && <ChartTooltip info={tooltip} />}

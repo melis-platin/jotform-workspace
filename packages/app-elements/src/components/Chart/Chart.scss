@@ -157,6 +157,12 @@
   position: relative;
 }
 
+.jf-chart--horizontal {
+  .jf-chart__canvas {
+    height: calc(var(--space-5) * 16);
+  }
+}
+
 .jf-chart__legend {
   display: flex;
   flex-wrap: wrap;
@@ -300,6 +306,21 @@
   font-family: var(--font-family-shell);
   font-weight: var(--font-weight-bold);
   text-anchor: middle;
+}
+
+.jf-chart__horizontal-label {
+  fill: var(--fg-secondary);
+  font-size: var(--font-size-label-xs);
+  font-family: var(--font-family-shell);
+  text-anchor: end;
+}
+
+.jf-chart__horizontal-value {
+  fill: var(--fg-primary);
+  font-size: var(--font-size-label-sm);
+  font-family: var(--font-family-shell);
+  font-weight: var(--font-weight-bold);
+  text-anchor: start;
 }
 
 // Line chart - lines
