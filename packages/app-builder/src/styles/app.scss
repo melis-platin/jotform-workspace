@@ -6647,6 +6647,20 @@ body,
   }
 }
 
+// Chart Time Range — Figma New Workspace, node 1439:22637.
+.chart-properties__section--time-range {
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xl) var(--spacing-md);
+
+  .jf-form-field__label {
+    gap: var(--spacing-2xs);
+  }
+
+  .jf-form-field__title-text {
+    font-weight: var(--ds-font-weight-bold);
+  }
+}
+
 .chart-properties__type-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

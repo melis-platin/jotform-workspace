@@ -8176,9 +8176,9 @@ export function BuildPage({
                               <DSDropdownSingle value={selectedGroupBy} onChange={(value) => set('Group By', value)} options={groupOptions.length ? groupOptions : [{ value: 'Row order', label: 'Row order' }]} showLeadingIcon={false} />
                             </DSFormField>
                           </section>
-                          <section className="chart-properties__section">
-                            <DSFormField title="Time Range" description="Based on sign-up date." size="md" showDescription showHelpText={false}>
-                              <DSDropdownSingle value={String(p['Time Range'] ?? 'All time')} onChange={(value) => set('Time Range', value)} options={['All time', 'Last 7 days', 'Last 30 days', 'This quarter'].map((value) => ({ value, label: value }))} />
+                          <section className="chart-properties__section chart-properties__section--time-range">
+                            <DSFormField title="Time Range" description="Based on sign-up date" size="md" showDescription showHelpText={false}>
+                              <DSDropdownSingle value={String(p['Time Range'] ?? 'All time')} onChange={(value) => set('Time Range', value)} options={['All time', 'Last 7 days', 'Last 30 days', 'This quarter'].map((value) => ({ value, label: value }))} showLeadingIcon={false} />
                             </DSFormField>
                           </section>
                           <section className="chart-properties__section chart-properties__section--inline">
