@@ -193,9 +193,9 @@
 .jf-chart__donut-layout {
   height: 100%;
   display: flex;
-  justify-content: center;
   align-items: center;
-  gap: var(--space-5);
+  justify-content: center;
+  gap: calc(var(--space-5) * 5);
 }
 
 .jf-chart__pie-layout {
@@ -235,17 +235,17 @@
 }
 
 .jf-chart__donut {
-  width: 180px;
-  height: 180px;
+  width: calc(var(--space-5) * 10);
+  height: calc(var(--space-5) * 10);
   overflow: visible;
 }
 
 .jf-chart__donut-track,
 .jf-chart__donut-segment {
   fill: none;
-  stroke-width: 22;
+  stroke-width: calc(var(--space-4) * 2);
   transform: rotate(-90deg);
-  transform-origin: 90px 90px;
+  transform-origin: 100px 100px;
 }
 
 .jf-chart__donut-track { stroke: var(--bg-surface); }
@@ -272,8 +272,10 @@
 .jf-chart__donut-legend {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
-  min-width: 160px;
+  gap: var(--space-2);
+  width: calc(var(--space-5) * 8);
+  flex: 0 0 auto;
+  color: var(--fg-primary);
 }
 
 .jf-chart__donut-legend-row {
@@ -281,8 +283,9 @@
   grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: var(--space-2);
-  color: var(--fg-secondary);
+  font-family: var(--font-family-shell);
   font-size: var(--font-size-label-sm);
+  line-height: var(--line-height-label-sm);
 
   strong {
     color: var(--fg-primary);

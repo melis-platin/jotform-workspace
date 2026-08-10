@@ -760,25 +760,23 @@ const DonutChart: FC<{ data: ChartData; seriesLabels: [string, string] }> = ({ d
     ? dataSeries.map((series) => ({ label: series.label, value: series.values.reduce((sum, value) => sum + value, 0) }))
     : data.labels.map((label, index) => ({ label, value: dataSeries[0]?.values[index] ?? 0 })).sort((a, b) => b.value - a.value);
   const total = slices.reduce((sum, slice) => sum + slice.value, 0);
-  const radius = 58;
+  const radius = 84;
   const circumference = 2 * Math.PI * radius;
   const sliceLengths = slices.map((slice) => total ? (slice.value / total) * circumference : 0);
 
   return (
     <div className="jf-chart__donut-layout">
       <svg className="jf-chart__donut" viewBox="0 0 180 180" role="img" aria-label={`Total ${total}`}>
-        <circle className="jf-chart__donut-track" cx="90" cy="90" r={radius} />
+        <circle className="jf-chart__donut-track" cx="100" cy="100" r={radius} />
         {slices.map((slice, index) => {
           const length = sliceLengths[index];
           const offset = sliceLengths.slice(0, index).reduce((sum, item) => sum + item, 0);
-          return <circle key={slice.label} className="jf-chart__donut-segment" cx="90" cy="90" r={radius} strokeDasharray={`${length} ${circumference - length}`} strokeDashoffset={-offset} style={{ stroke: `var(--chart-${index + 1})` } as CSSProperties} />;
+          return <circle key={slice.label} className="jf-chart__donut-segment" cx="100" cy="100" r={radius} strokeDasharray={`${length} ${circumference - length}`} strokeDashoffset={-offset} style={{ stroke: pieSliceColor(index) } as CSSProperties} />;
         })}
-        <text className="jf-chart__donut-total" x="90" y="85">{total.toLocaleString()}</text>
-        <text className="jf-chart__donut-caption" x="90" y="105">Total</text>
       </svg>
       <div className="jf-chart__donut-legend">
         {slices.map((slice, index) => <div className="jf-chart__donut-legend-row" key={slice.label}>
-          <span className="jf-chart__legend-dot" style={{ background: `var(--chart-${index + 1})` } as CSSProperties} />
+          <span className="jf-chart__legend-dot" style={{ background: pieSliceColor(index) } as CSSProperties} />
           <span>{slice.label}</span>
           <strong>{total ? `${Math.round((slice.value / total) * 100)}%` : '0%'}</strong>
         </div>)}
@@ -934,7 +932,7 @@ export const Chart: FC<ChartProps> = ({
           <div className="jf-chart__title">{resolvedTitle}</div>
           <div className="jf-chart__description">{resolvedDesc}</div>
         </div>
-        {showTimeRangeSelector && type !== 'Horizontal Bar' && type !== 'Line' && type !== 'Area' && type !== 'Pie'
+        {showTimeRangeSelector && type !== 'Horizontal Bar' && type !== 'Line' && type !== 'Area' && type !== 'Pie' && type !== 'Donut'
           ? <TimeRangeDropdown value={selectedTimeRange} onChange={setSelectedTimeRange} options={readTimeRangeOptions(timeRangeOptions)} />
           : showDateFilter && !isTableColumnChart && (!tableRows || tableHasDateColumn) && <DateFilterDropdown value={dateFilter} onChange={setDateFilter} />}
       </div>
