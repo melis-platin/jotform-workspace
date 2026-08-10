@@ -8220,9 +8220,9 @@ export function BuildPage({
                                 const isCount = measure.agg === 'Count'
                                 return <div className="chart-properties__measure-line" key={`${measure.agg}-${measure.col ?? 'count'}-${index}`}>
                                   {index > 0 && <span className="chart-properties__measure-and">and</span>}
-                                  <div className="chart-properties__measure-row">
+                                  <div className={`chart-properties__measure-row${isCount ? ' chart-properties__measure-row--count' : ''}`}>
                                     <DSDropdownSingle value={selectedField} onChange={(value) => writeMeasures(measures.map((item, measureIndex) => measureIndex === index ? (value === 'Number of rows' ? { agg: 'Count' } : { ...item, col: value, agg: item.agg === 'Count' ? 'Sum' : item.agg }) : item))} options={fieldOptions} showLeadingIcon={false} disabled={fieldOptions.length < 2} />
-                                    <DSDropdownSingle value={measure.agg} onChange={(value) => writeMeasures(measures.map((item, measureIndex) => measureIndex === index ? { ...item, agg: value as BuilderChartMeasure['agg'] } : item))} options={(isCount ? ['Count'] : ['Sum', 'Average', 'Highest', 'Lowest']).map((value) => ({ value, label: value }))} showLeadingIcon={false} disabled={isCount} />
+                                    {!isCount && <DSDropdownSingle value={measure.agg} onChange={(value) => writeMeasures(measures.map((item, measureIndex) => measureIndex === index ? { ...item, agg: value as BuilderChartMeasure['agg'] } : item))} options={['Sum', 'Average', 'Highest', 'Lowest'].map((value) => ({ value, label: value }))} showLeadingIcon={false} />}
                                   </div>
                                   {measures.length > 1 && <button type="button" className="chart-properties__remove-measure" aria-label="Remove measure" onClick={() => writeMeasures(measures.filter((_, measureIndex) => measureIndex !== index))}>×</button>}
                                 </div>

@@ -6768,6 +6768,10 @@ body,
   gap: var(--spacing-xs);
 }
 
+.chart-properties__measure-row--count {
+  grid-template-columns: minmax(0, 1fr);
+}
+
 .chart-properties__measure-line {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
