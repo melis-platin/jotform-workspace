@@ -41,7 +41,7 @@ import {
   HsvColorPicker,
   isValidWhatsAppPhoneNumber,
 } from '@jf/app-elements'
-import { Icon, Button as DSButton, Tabs as DSTabs, Segmented, Input as DSInput, Toggle as DSToggle, Slider as DSSlider, NumberInput as DSNumberInput, FormField as DSFormField, TextArea as DSTextArea, DropdownSingle as DSDropdownSingle, FieldMapper as DSFieldMapper, FieldComposer as DSFieldComposer, type FieldToken, Link as DSLink, Modal as DSModal, SearchInput as DSSearchInput, ColorInput as DSColorInput } from '@jf/design-system'
+import { Icon, Button as DSButton, Tabs as DSTabs, Segmented, Input as DSInput, Toggle as DSToggle, Slider as DSSlider, NumberInput as DSNumberInput, FormField as DSFormField, TextArea as DSTextArea, DropdownSingle as DSDropdownSingle, DropdownMulti as DSDropdownMulti, FieldMapper as DSFieldMapper, FieldComposer as DSFieldComposer, type FieldToken, Link as DSLink, Modal as DSModal, SearchInput as DSSearchInput, ColorInput as DSColorInput } from '@jf/design-system'
 import phoneHomeIndicator from '@jf/design-system/src/assets/phone-home-indicator.svg'
 import chartAreaIcon from '@jf/design-system/src/assets/icons/general/chart-area.svg'
 import chartLineIcon from '@jf/design-system/src/assets/icons/general/chart-line.svg'
@@ -8119,6 +8119,17 @@ export function BuildPage({
                     const selectedGroupBy = groupOptions.some((option) => option.value === p['Group By'])
                       ? String(p['Group By'])
                       : groupOptions[0]?.value ?? 'Row order'
+                    const timeRangeSelectorOptions = ['All time', 'Last 3 months', 'Last 6 months', 'Last 1 year', 'Last 2 years', 'This year']
+                    const selectedTimeRangeOptions = (() => {
+                      const stored = p['Time Range Options']
+                      if (typeof stored !== 'string' || !stored.startsWith('[')) return timeRangeSelectorOptions
+                      try {
+                        const parsed = JSON.parse(stored)
+                        return Array.isArray(parsed) ? parsed.filter((value): value is string => timeRangeSelectorOptions.includes(value)) : timeRangeSelectorOptions
+                      } catch {
+                        return timeRangeSelectorOptions
+                      }
+                    })()
                     const typeOptions = [
                       { value: 'Bar', label: 'Column', icon: 'chart-bar-filled' },
                       { value: 'Horizontal Bar', label: 'Bar', icon: 'chart-bar-horizontal-filled' },
@@ -8185,7 +8196,7 @@ export function BuildPage({
                             <DSFormField title="Show Time Range Selector" description="Let viewers change the time range" size="md" showDescription showHelpText={false}>
                               <DSToggle size="md" checked={Boolean(p['Show Time Range Selector'])} onChange={(event) => set('Show Time Range Selector', event.target.checked)} />
                             </DSFormField>
-                            {Boolean(p['Show Time Range Selector']) && <DSDropdownSingle value={String(p['Time Range Options'] ?? '6 selected')} onChange={(value) => set('Time Range Options', value)} options={[{ value: '6 selected', label: '6 selected' }]} showLeadingIcon={false} />}
+                            {Boolean(p['Show Time Range Selector']) && <DSDropdownMulti className="chart-properties__time-range-options" value={selectedTimeRangeOptions} onChange={(values) => set('Time Range Options', JSON.stringify(values))} options={timeRangeSelectorOptions.map((value) => ({ value, label: value }))} summary={`${selectedTimeRangeOptions.length} selected`} menuPlacement="bottom" usePortal menuClassName="chart-properties__time-range-menu" />}
                           </section>
                           <section className="chart-properties__section chart-properties__section--inline">
                             <DSFormField title="Shrink" description="Make element smaller." size="md" showDescription showHelpText={false}>

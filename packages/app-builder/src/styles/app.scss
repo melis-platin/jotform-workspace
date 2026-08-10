@@ -6675,6 +6675,31 @@ body,
   }
 }
 
+// Time range context menu — Figma New Workspace, node 1423:14516.
+.chart-properties__time-range-menu.jf-dropdown__menu {
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--gray-500);
+  box-shadow: 0 16px 24px color-mix(in srgb, var(--core-black) 32%, transparent), 0 2px 8px color-mix(in srgb, var(--core-black) 4%, transparent);
+
+  .jf-dropdown__item,
+  .jf-dropdown__item--selected,
+  .jf-dropdown__item--selected.jf-dropdown__item--active {
+    min-height: var(--spacing-3xl);
+    padding: 0 var(--spacing-sm);
+    background: var(--gray-700);
+  }
+
+  .jf-dropdown__item-check {
+    width: var(--spacing-lg);
+    height: var(--spacing-lg);
+    border: 0;
+    border-radius: var(--radius-sm);
+  }
+}
+
 .chart-properties__type-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));

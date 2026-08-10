@@ -1,4 +1,4 @@
-import { forwardRef, useImperativeHandle } from 'react';
+import { forwardRef, useImperativeHandle, type ReactNode } from 'react';
 import { Icon } from '../Icon/Icon';
 import { DropdownWrapper } from './DropdownWrapper';
 import { DropdownMenuShell } from './DropdownMenuShell';
@@ -10,8 +10,13 @@ export interface DropdownMultiProps extends DropdownBaseProps {
   options: DropdownOption[];
   value?: string[];
   onChange?: (value: string[]) => void;
+  /** Replaces selected chips in the trigger with a compact selection summary. */
+  summary?: ReactNode;
   menuPlacement?: 'auto' | 'top' | 'bottom';
   mobileBehavior?: 'auto' | 'inline' | 'sheet';
+  usePortal?: boolean;
+  portalAlign?: 'start' | 'center' | 'end';
+  menuClassName?: string;
 }
 
 export interface DropdownMultiHandle {
@@ -28,8 +33,12 @@ export const DropdownMulti = forwardRef<DropdownMultiHandle, DropdownMultiProps>
       status = 'default',
       disabled = false,
       placeholder = 'Placeholder',
+      summary,
       menuPlacement = 'auto',
       mobileBehavior = 'auto',
+      usePortal,
+      portalAlign,
+      menuClassName,
       title,
       className,
       ...wrapperProps
@@ -77,7 +86,7 @@ export const DropdownMulti = forwardRef<DropdownMultiHandle, DropdownMultiProps>
       `jf-dropdown--${status}`,
       disabled && 'jf-dropdown--disabled',
       open && 'jf-dropdown--open',
-      'jf-dropdown--multi',
+      summary === undefined && 'jf-dropdown--multi',
     ]
       .filter(Boolean)
       .join(' ');
@@ -107,7 +116,7 @@ export const DropdownMulti = forwardRef<DropdownMultiHandle, DropdownMultiProps>
             <span
               className={`jf-dropdown__value${selectedOptions.length === 0 ? ' jf-dropdown__value--placeholder' : ''}`}
             >
-              {selectedOptions.length === 0 ? (
+              {summary !== undefined ? summary : selectedOptions.length === 0 ? (
                 placeholder
               ) : (
                 <span className="jf-dropdown__chips">
@@ -141,6 +150,9 @@ export const DropdownMulti = forwardRef<DropdownMultiHandle, DropdownMultiProps>
             <DropdownMenuShell
               placement={placement}
               isSheet={isMobileSheet}
+              usePortal={usePortal}
+              portalAlign={portalAlign}
+              className={menuClassName}
               title={title}
               menuRef={menuRef}
               triggerRef={triggerRef}
