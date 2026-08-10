@@ -6113,6 +6113,15 @@ body,
   outline-offset: var(--ds-canvas-element-outline-offset);
 }
 
+// The Chart reference uses its own 2px selected border. Let the component own
+// that outline so the builder does not add a second, offset blue frame.
+.build-page__canvas-element[data-component-id='chart'].build-page__canvas-element--selected
+  > .build-page__canvas-element-content
+  > .jf-chart {
+  outline: none;
+  border: 2px solid var(--blue-500);
+}
+
 // In the builder, the full WhatsApp slot is an element-selection surface. This
 // must remain true before a phone number is configured, when the native CTA is
 // disabled: route pointer input to the section so any click opens Properties.

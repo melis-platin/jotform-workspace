@@ -9,17 +9,16 @@
   width: 100%;
   max-width: 100%;
   background: var(--bg-fill);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   border: 1px solid var(--border);
   padding: var(--space-5);
   display: flex;
   flex-direction: column;
   gap: var(--space-5);
-  font-family: var(--font-family);
+  font-family: var(--font-family-shell);
 
   &--selected {
-    outline: 2px solid var(--border-info);
-    outline-offset: 4px;
+    border: 2px solid var(--blue-500);
   }
 }
 
@@ -54,6 +53,7 @@
   font-size: var(--font-size-heading-xs);
   font-weight: var(--font-weight-medium);
   line-height: var(--line-height-heading-xs);
+  letter-spacing: var(--letter-spacing-heading);
   color: var(--fg-primary);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -270,7 +270,7 @@
   rx: var(--radius-md);
 
   &--series1 {
-    fill: var(--bg-fill-brand);
+    fill: var(--blue-500);
   }
 
   &--series2 {
@@ -279,7 +279,7 @@
 }
 
 .jf-chart__bar-value {
-  fill: var(--fg-primary);
+  fill: var(--fg-secondary);
   font-size: var(--font-size-label-sm);
   font-family: var(--font-family-shell);
   font-weight: var(--font-weight-bold);
