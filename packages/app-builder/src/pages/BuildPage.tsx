@@ -1015,7 +1015,7 @@ function isDynamicListElement(element: CanvasElement): boolean {
 }
 
 function isDataBackedElement(element: CanvasElement): boolean {
-  if (['list', 'product-list', 'form', 'table', 'daily-task-manager'].includes(element.componentId)) return true
+  if (['list', 'product-list', 'form', 'table', 'daily-task-manager', 'chart'].includes(element.componentId)) return true
   return element.componentId === 'button' && String(element.properties.Action ?? '') === 'Open Form'
 }
 
