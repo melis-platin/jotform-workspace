@@ -8213,7 +8213,7 @@ export function BuildPage({
                               {measures.map((measure, index) => {
                                 const usedByOthers = new Set(measures.filter((_, measureIndex) => measureIndex !== index).map((item) => item.col).filter(Boolean))
                                 const fieldOptions = [
-                                  { value: 'Number of rows', label: 'Number of rows', disabled: measures.length > 1 && measure.agg !== 'Count' },
+                                  { value: 'Number of rows', label: 'Number of rows', disabled: measures.some((item, measureIndex) => measureIndex !== index && item.agg === 'Count') },
                                   ...numericColumns.map((column) => ({ value: column.key, label: column.label, disabled: usedByOthers.has(column.key) })),
                                 ].filter((option) => option.value === (measure.agg === 'Count' ? 'Number of rows' : measure.col) || !option.disabled)
                                 const selectedField = measure.agg === 'Count' ? 'Number of rows' : measure.col ?? ''
@@ -8227,7 +8227,7 @@ export function BuildPage({
                                   {measures.length > 1 && <button type="button" className="chart-properties__remove-measure" aria-label="Remove measure" onClick={() => writeMeasures(measures.filter((_, measureIndex) => measureIndex !== index))}>×</button>}
                                 </div>
                               })}
-                              {measures.length < 3 && !measures.some((measure) => measure.agg === 'Count') && numericColumns.some((column) => !measures.some((measure) => measure.col === column.key)) && <DSLink className="chart-properties__show-add-measure" size="sm" leftIcon={<Icon name="plus" size={12} />} onClick={() => { const nextColumn = numericColumns.find((column) => !measures.some((measure) => measure.col === column.key)); if (nextColumn) writeMeasures([...measures, { agg: 'Sum', col: nextColumn.key }]) }}>Add measure</DSLink>}
+                              {measures.length < 3 && !measures.some((measure) => measure.agg === 'Count') && <DSLink className="chart-properties__show-add-measure" size="sm" leftIcon={<Icon name="plus" size={12} />} onClick={() => { const nextColumn = numericColumns.find((column) => !measures.some((measure) => measure.col === column.key)); writeMeasures([...measures, nextColumn ? { agg: 'Sum', col: nextColumn.key } : { agg: 'Count' }]) }}>Add measure</DSLink>}
                             </DSFormField>
                           </section>
                           {!((chartType === 'Pie' || chartType === 'Donut') && measures.length > 1) && <section className="chart-properties__section chart-properties__section--group-by">
