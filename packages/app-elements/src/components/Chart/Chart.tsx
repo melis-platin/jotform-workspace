@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect, type CSSProperties, type FC } from 'react';
+import { useState, useCallback, useRef, useEffect, useId, type CSSProperties, type FC } from 'react';
 import { Icon } from '../Icon/Icon';
 import './Chart.scss';
 
@@ -612,20 +612,13 @@ const HorizontalBarChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onH
 // ============================================
 // Line Chart
 // ============================================
-const buildSmoothPath = (points: Array<{ x: number; y: number }>): string => {
+const buildLinePath = (points: Array<{ x: number; y: number }>): string => {
   if (points.length < 2) return '';
-  let d = `M ${points[0].x} ${points[0].y}`;
-  for (let i = 0; i < points.length - 1; i++) {
-    const curr = points[i];
-    const next = points[i + 1];
-    const cpx = (curr.x + next.x) / 2;
-    d += ` C ${cpx} ${curr.y}, ${cpx} ${next.y}, ${next.x} ${next.y}`;
-  }
-  return d;
+  return points.map((point, index) => `${index === 0 ? 'M' : 'L'} ${point.x} ${point.y}`).join(' ');
 };
 
 const buildAreaPath = (points: Array<{ x: number; y: number }>, baseline: number): string => {
-  const linePath = buildSmoothPath(points);
+  const linePath = buildLinePath(points);
   if (!linePath) return '';
   const lastPoint = points[points.length - 1];
   const firstPoint = points[0];
@@ -648,6 +641,7 @@ const LineChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (in
     }));
 
   const pointsBySeries = series.map((item) => toPoints(item.values));
+  const areaGradientPrefix = useId().replace(/:/g, '');
 
   const gridLines = [0, 1, 2, 3, 4];
 
@@ -657,6 +651,16 @@ const LineChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (in
       viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`}
       preserveAspectRatio="xMidYMid meet"
     >
+      {showArea && (
+        <defs>
+          {series.map((_, index) => (
+            <linearGradient key={index} id={`${areaGradientPrefix}-area-${index}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor={chartSeriesColor(index)} stopOpacity="0.34" />
+              <stop offset="100%" stopColor={chartSeriesColor(index)} stopOpacity="0.04" />
+            </linearGradient>
+          ))}
+        </defs>
+      )}
       {/* Horizontal value guides */}
       {gridLines.map((step) => {
         const y = PADDING_TOP + PLOT_HEIGHT * (1 - step / 4);
@@ -668,12 +672,12 @@ const LineChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (in
         );
       })}
 
-      {showArea && pointsBySeries.map((points, index) => <path key={`area-${index}`} d={buildAreaPath(points, baseline)} className="jf-chart__area" style={{ fill: `var(--chart-${index + 1})` } as CSSProperties} />)}
+      {showArea && pointsBySeries.map((points, index) => <path key={`area-${index}`} d={buildAreaPath(points, baseline)} className="jf-chart__area" style={{ fill: `url(#${areaGradientPrefix}-area-${index})` } as CSSProperties} />)}
 
       {/* Lines and their always-visible data points */}
       {pointsBySeries.map((points, index) => (
         <g key={`line-${index}`}>
-          <path d={buildSmoothPath(points)} className="jf-chart__line" style={{ stroke: chartSeriesColor(index) } as CSSProperties} />
+          <path d={buildLinePath(points)} className="jf-chart__line" style={{ stroke: chartSeriesColor(index) } as CSSProperties} />
           {points.map((point, pointIndex) => (
             <circle
               key={pointIndex}
@@ -871,7 +875,7 @@ export const Chart: FC<ChartProps> = ({
           <div className="jf-chart__title">{resolvedTitle}</div>
           <div className="jf-chart__description">{resolvedDesc}</div>
         </div>
-        {showTimeRangeSelector && type !== 'Horizontal Bar' && type !== 'Line'
+        {showTimeRangeSelector && type !== 'Horizontal Bar' && type !== 'Line' && type !== 'Area'
           ? <TimeRangeDropdown value={selectedTimeRange} onChange={setSelectedTimeRange} options={readTimeRangeOptions(timeRangeOptions)} />
           : showDateFilter && !isTableColumnChart && (!tableRows || tableHasDateColumn) && <DateFilterDropdown value={dateFilter} onChange={setDateFilter} />}
       </div>
