@@ -8136,7 +8136,12 @@ export function BuildPage({
                     const chartType = String(selectedElement.variants['Type'] ?? 'Bar')
                     const chartColumns = analyzeChartSource(chartSourceRowsForElement(pages, selectedElement))
                     const numericColumns = chartColumns.filter((column) => column.kind === 'number')
-                    const groupingColumns = chartColumns.filter((column) => column.kind === 'text' || column.kind === 'date')
+                    const groupingColumns = chartColumns
+                      .filter((column) => column.kind === 'text' || column.kind === 'date')
+                      .sort((left, right) => {
+                        if (left.kind !== right.kind) return left.kind === 'text' ? -1 : 1
+                        return left.label.localeCompare(right.label)
+                      })
                     const measures = readChartMeasures(p.Measures, p['Measure Field'], p.Aggregation, numericColumns)
                     const writeMeasures = (nextMeasures: BuilderChartMeasure[]) => {
                       const first = nextMeasures[0]
