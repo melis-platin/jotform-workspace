@@ -24,6 +24,7 @@ ComponentRegistry.register({
     { name: 'Secondary Label', type: 'text', default: 'Previous period' },
     { name: 'Data Set', type: 'select', default: 'Orders', options: ['Orders', 'Revenue', 'Visitors'] },
     { name: 'Data Source', type: 'text', default: 'My Chart' },
+    { name: 'Chart Table Rows', type: 'text', default: '[{"category":"Category 1","value":5,"note":"Note 1"},{"category":"Category 2","value":10,"note":"Note 2"},{"category":"Category 3","value":15,"note":"Note 3"},{"category":"Category 4","value":20,"note":"Note 4"},{"category":"Category 5","value":25,"note":"Note 5"},{"category":"Category 6","value":30,"note":"Note 6"}]' },
     { name: 'Measure Field', type: 'text', default: 'Value' },
     { name: 'Aggregation', type: 'text', default: 'Sum' },
     { name: 'Group By', type: 'text', default: 'Category' },

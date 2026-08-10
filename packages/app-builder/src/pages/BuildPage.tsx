@@ -854,6 +854,67 @@ function createCanvasElement(comp: RegisteredComponent, id: string): CanvasEleme
   }
 }
 
+type ChartSourceColumn = { key: string; label: string; kind: 'number' | 'text' | 'date' }
+
+const DEFAULT_CHART_TABLE_ROWS: Record<string, string | number>[] = [
+  { category: 'Category 1', value: 5, note: 'Note 1' },
+  { category: 'Category 2', value: 10, note: 'Note 2' },
+  { category: 'Category 3', value: 15, note: 'Note 3' },
+  { category: 'Category 4', value: 20, note: 'Note 4' },
+  { category: 'Category 5', value: 25, note: 'Note 5' },
+  { category: 'Category 6', value: 30, note: 'Note 6' },
+]
+
+function readChartSourceRows(value: unknown): Record<string, string | number>[] {
+  if (typeof value !== 'string') return DEFAULT_CHART_TABLE_ROWS
+  try {
+    const parsed = JSON.parse(value)
+    if (Array.isArray(parsed) && parsed.every((row) => row && typeof row === 'object' && !Array.isArray(row))) {
+      return parsed as Record<string, string | number>[]
+    }
+  } catch {
+    // Use the chart's usable starter data when a stored table snapshot is malformed.
+  }
+  return DEFAULT_CHART_TABLE_ROWS
+}
+
+function readableChartColumnName(key: string) {
+  return key.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[-_]/g, ' ').replace(/^./, (char) => char.toUpperCase())
+}
+
+function analyzeChartSource(rows: Record<string, string | number>[]): ChartSourceColumn[] {
+  const keys = [...new Set(rows.flatMap((row) => Object.keys(row)))]
+  return keys.map((key) => {
+    const values = rows.map((row) => row[key]).filter((value) => value !== '' && value != null)
+    const isNumber = values.length > 0 && values.every((value) => typeof value === 'number' || (typeof value === 'string' && value.trim() !== '' && Number.isFinite(Number(value))))
+    const isDate = !isNumber && values.length > 0 && values.every((value) => typeof value === 'string' && !Number.isNaN(Date.parse(value)))
+    return { key, label: readableChartColumnName(key), kind: isNumber ? 'number' : isDate ? 'date' : 'text' }
+  })
+}
+
+function chartSourceRowsForElement(pages: AppPage[], chart: CanvasElement): Record<string, string | number>[] {
+  const source = String(chart.properties['Data Source'] ?? 'My Chart').trim()
+  const allElements = pages.flatMap((page) => page.elements)
+  const sourceList = allElements.find((element) => {
+    if (element.componentId !== 'list') return false
+    const title = String(element.properties.Title ?? element.properties.Label ?? 'List').trim()
+    return `${title} Dynamic List Table` === source
+  })
+  if (sourceList) return readChartSourceRows(sourceList.properties.Items)
+
+  const sourceProducts = allElements.find((element) => {
+    if (element.componentId !== 'product-list') return false
+    const title = String(element.properties.Title ?? element.properties.Label ?? 'Products').trim()
+    return `${title} Products Table` === source
+  })
+  if (sourceProducts) return readChartSourceRows(sourceProducts.properties.Products)
+
+  const sourceChart = allElements.find((element) => element.componentId === 'chart' && String(element.properties['Data Source'] ?? '').trim() === source)
+  if (sourceChart) return readChartSourceRows(sourceChart.properties['Chart Table Rows'])
+
+  return readChartSourceRows(chart.properties['Chart Table Rows'])
+}
+
 const LEGACY_WHATSAPP_MESSAGE = 'Hi Bloom Café! I’d like to ask about my order.'
 
 function getAppSpecificWhatsAppMessage(appName: string, appContext: string): string {
@@ -7959,6 +8020,20 @@ export function BuildPage({
                     const p = selectedElement.properties
                     const set = (name: string, value: string | boolean | number) => handlePropertyChange(selectedElement.id, name, value)
                     const chartType = String(selectedElement.variants['Type'] ?? 'Bar')
+                    const chartColumns = analyzeChartSource(chartSourceRowsForElement(pages, selectedElement))
+                    const numericColumns = chartColumns.filter((column) => column.kind === 'number')
+                    const groupingColumns = chartColumns.filter((column) => column.kind === 'text' || column.kind === 'date')
+                    const measureOptions = [
+                      ...numericColumns.map((column) => ({ value: column.key, label: column.label })),
+                      { value: 'Number of rows', label: 'Number of rows' },
+                    ]
+                    const selectedMeasure = measureOptions.some((option) => option.value === p['Measure Field'])
+                      ? String(p['Measure Field'])
+                      : measureOptions[0].value
+                    const groupOptions = groupingColumns.map((column) => ({ value: column.key, label: column.kind === 'date' ? `${column.label} (by month)` : column.label }))
+                    const selectedGroupBy = groupOptions.some((option) => option.value === p['Group By'])
+                      ? String(p['Group By'])
+                      : groupOptions[0]?.value ?? 'Row order'
                     const typeOptions = [
                       { value: 'Bar', label: 'Column', icon: 'chart-bar-filled' },
                       { value: 'Horizontal Bar', label: 'Bar', icon: 'chart-bar-horizontal-filled' },
@@ -8003,10 +8078,10 @@ export function BuildPage({
                             </DSFormField>
                           </section>
                           <section className="chart-properties__section">
-                            <DSFormField title="Show" description="Choose what the chart measures." size="md" showDescription showHelpText={false}>
+                            <DSFormField title="Show" description={numericColumns.length ? 'Choose what the chart measures.' : 'This table has no number columns, so the chart counts rows.'} size="md" showDescription showHelpText={false}>
                               <div className="chart-properties__measure-row">
-                                <DSDropdownSingle value={String(p['Measure Field'] ?? 'Value')} onChange={(value) => set('Measure Field', value)} options={[{ value: 'Value', label: 'Value' }, { value: 'Number of rows', label: 'Number of rows' }]} />
-                                <DSDropdownSingle value={String(p.Aggregation ?? 'Sum')} onChange={(value) => set('Aggregation', value)} options={['Sum', 'Average', 'Highest', 'Lowest'].map((value) => ({ value, label: value }))} />
+                                <DSDropdownSingle value={selectedMeasure} onChange={(value) => set('Measure Field', value)} options={measureOptions} />
+                                <DSDropdownSingle value={selectedMeasure === 'Number of rows' ? 'Count' : String(p.Aggregation ?? 'Sum')} onChange={(value) => set('Aggregation', value)} options={(selectedMeasure === 'Number of rows' ? ['Count'] : ['Sum', 'Average', 'Highest', 'Lowest']).map((value) => ({ value, label: value }))} />
                                 <button type="button" className="chart-properties__remove-measure" aria-label="Remove measure"><Icon name="xmark" size={16} /></button>
                               </div>
                               <button type="button" className="chart-properties__add-measure">+ Add measure</button>
@@ -8014,7 +8089,7 @@ export function BuildPage({
                           </section>
                           <section className="chart-properties__section">
                             <DSFormField title="Group by" description="Each value becomes a bar or slice." size="md" showDescription showHelpText={false}>
-                              <DSDropdownSingle value={String(p['Group By'] ?? 'Category')} onChange={(value) => set('Group By', value)} options={[{ value: 'Category', label: 'Category' }, { value: 'Note', label: 'Note' }]} />
+                              <DSDropdownSingle value={selectedGroupBy} onChange={(value) => set('Group By', value)} options={groupOptions.length ? groupOptions : [{ value: 'Row order', label: 'Row order' }]} />
                             </DSFormField>
                           </section>
                           <section className="chart-properties__section">

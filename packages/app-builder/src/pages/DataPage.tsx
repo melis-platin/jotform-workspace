@@ -557,7 +557,7 @@ function buildWidgetTable(element: CanvasElement, page: AppPage): DataTable {
 
 function buildChartTable(element: CanvasElement, page: AppPage): DataTable {
   const sourceName = String(element.properties['Data Source'] ?? '').trim() || 'My Chart'
-  const rows = [
+  const defaultRows = [
     { category: 'Category 1', value: 5, note: 'Note 1' },
     { category: 'Category 2', value: 10, note: 'Note 2' },
     { category: 'Category 3', value: 15, note: 'Note 3' },
@@ -565,6 +565,8 @@ function buildChartTable(element: CanvasElement, page: AppPage): DataTable {
     { category: 'Category 5', value: 25, note: 'Note 5' },
     { category: 'Category 6', value: 30, note: 'Note 6' },
   ]
+  const savedRows = parseJsonArray(element.properties['Chart Table Rows'])
+  const rows = savedRows.length > 0 ? savedRows : defaultRows
   return {
     id: element.id,
     name: sourceName,
