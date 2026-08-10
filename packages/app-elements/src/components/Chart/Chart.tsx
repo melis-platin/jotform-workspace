@@ -20,6 +20,9 @@ export interface ChartProps {
   iconName?: string;
   showIcon?: boolean;
   showDateFilter?: boolean;
+  showTimeRangeSelector?: boolean;
+  timeRange?: string;
+  timeRangeOptions?: string;
   showLegend?: boolean;
   tableRows?: string;
   measureField?: string;
@@ -200,6 +203,51 @@ function isDateValue(value: unknown): boolean {
 // Date Filter Dropdown
 // ============================================
 const DATE_OPTIONS: ChartDateFilter[] = ['Yearly', 'Monthly', 'Weekly'];
+const DEFAULT_TIME_RANGE_OPTIONS = ['All time', 'Last 3 months', 'Last 6 months', 'Last 1 year', 'Last 2 years', 'This year'];
+
+function readTimeRangeOptions(value: string | undefined): string[] {
+  if (!value?.startsWith('[')) return DEFAULT_TIME_RANGE_OPTIONS;
+  try {
+    const parsed = JSON.parse(value);
+    const options = Array.isArray(parsed) ? parsed.filter((item): item is string => typeof item === 'string' && DEFAULT_TIME_RANGE_OPTIONS.includes(item)) : [];
+    return options.length ? options : DEFAULT_TIME_RANGE_OPTIONS;
+  } catch {
+    return DEFAULT_TIME_RANGE_OPTIONS;
+  }
+}
+
+function TimeRangeDropdown({ value, onChange, options }: { value: string; onChange: (value: string) => void; options: string[] }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return;
+    const handleClick = (event: MouseEvent) => {
+      if (ref.current && !ref.current.contains(event.target as Node)) setOpen(false);
+    };
+    document.addEventListener('mousedown', handleClick);
+    return () => document.removeEventListener('mousedown', handleClick);
+  }, [open]);
+
+  return (
+    <div className="jf-chart__filter jf-chart__filter--time-range" ref={ref}>
+      <button type="button" className="jf-chart__filter-trigger" onClick={() => setOpen(!open)} aria-haspopup="listbox" aria-expanded={open}>
+        <span>{value}</span>
+        <Icon name="ChevronDown" size={16} />
+      </button>
+      {open && (
+        <div className="jf-chart__filter-menu">
+          {options.map((option) => (
+            <button key={option} className={`jf-chart__filter-item${option === value ? ' jf-chart__filter-item--active' : ''}`} type="button" onClick={() => { onChange(option); setOpen(false); }}>
+              <span>{option}</span>
+              {option === value && <Icon name="Check" size={16} />}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
 
 function DateFilterDropdown({ value, onChange }: { value: ChartDateFilter; onChange: (v: ChartDateFilter) => void }) {
   const [open, setOpen] = useState(false);
@@ -568,6 +616,9 @@ export const Chart: FC<ChartProps> = ({
   iconName = 'TrendingUp',
   showIcon = true,
   showDateFilter = true,
+  showTimeRangeSelector = false,
+  timeRange = 'All time',
+  timeRangeOptions,
   showLegend = true,
   tableRows,
   measureField = 'Value',
@@ -615,6 +666,7 @@ export const Chart: FC<ChartProps> = ({
 
   const [tooltip, setTooltip] = useState<TooltipInfo | null>(null);
   const [dateFilter, setDateFilter] = useState<ChartDateFilter>('Yearly');
+  const [selectedTimeRange, setSelectedTimeRange] = useState(timeRange);
   const handleHover = useCallback((info: TooltipInfo | null) => setTooltip(info), []);
   const chartData = limitCategories(tableData ?? dataForSet(dataSet, dateFilter));
   const tableHasDateColumn = parsedRows.some((row) => Object.values(row).some(isDateValue));
@@ -634,7 +686,9 @@ export const Chart: FC<ChartProps> = ({
           <div className="jf-chart__title">{resolvedTitle}</div>
           <div className="jf-chart__description">{resolvedDesc}</div>
         </div>
-        {showDateFilter && !isTableColumnChart && (!tableRows || tableHasDateColumn) && <DateFilterDropdown value={dateFilter} onChange={setDateFilter} />}
+        {showTimeRangeSelector
+          ? <TimeRangeDropdown value={selectedTimeRange} onChange={setSelectedTimeRange} options={readTimeRangeOptions(timeRangeOptions)} />
+          : showDateFilter && !isTableColumnChart && (!tableRows || tableHasDateColumn) && <DateFilterDropdown value={dateFilter} onChange={setDateFilter} />}
       </div>
       <div className="jf-chart__canvas">
         {(type === 'Bar' || type === 'Horizontal Bar') && <BarChart data={chartData} tooltip={tooltip} onHover={handleHover} labelStep={labelStep} seriesLabels={seriesLabels} />}

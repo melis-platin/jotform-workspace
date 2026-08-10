@@ -121,6 +121,9 @@ ComponentRegistry.register({
         showIcon={props['Show Icon'] as boolean}
         iconName={props['Icon'] as string}
         showDateFilter={props['Date Filter'] as boolean}
+        showTimeRangeSelector={props['Show Time Range Selector'] as boolean}
+        timeRange={props['Time Range'] as string}
+        timeRangeOptions={props['Time Range Options'] as string}
         showLegend={props['Show Legend'] as boolean}
         tableRows={(props['Chart Table Rows'] as string) || DEFAULT_CHART_TABLE_ROWS}
         measureField={props['Measure Field'] as string}
