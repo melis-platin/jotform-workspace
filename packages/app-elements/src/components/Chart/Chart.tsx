@@ -174,15 +174,27 @@ function dataForSet(dataSet: ChartDataSet, filter: ChartDateFilter): ChartData {
 // ============================================
 // Chart Constants
 // ============================================
-const CHART_WIDTH = 560;
-const CHART_HEIGHT = 200;
-const PADDING_LEFT = 8;
-const PADDING_RIGHT = 8;
+const CHART_WIDTH = 692;
+const CHART_HEIGHT = 222;
+const PADDING_LEFT = 40;
+const PADDING_RIGHT = 10;
 const PADDING_TOP = 8;
-const PADDING_BOTTOM = 36;
+const PADDING_BOTTOM = 28;
 
 const PLOT_WIDTH = CHART_WIDTH - PADDING_LEFT - PADDING_RIGHT;
 const PLOT_HEIGHT = CHART_HEIGHT - PADDING_TOP - PADDING_BOTTOM;
+
+function getAxisStep(maxValue: number): number {
+  const targetStep = Math.max(maxValue, 1) / 3;
+  const magnitude = 10 ** Math.floor(Math.log10(targetStep));
+  const normalized = targetStep / magnitude;
+  const rounded = normalized <= 1 ? 1 : normalized <= 2 ? 2 : normalized <= 5 ? 5 : 10;
+  return rounded * magnitude;
+}
+
+function isDateValue(value: unknown): boolean {
+  return typeof value === 'string' && /^\d{4}-\d{2}-\d{2}(?:[T\s].*)?$/.test(value.trim());
+}
 
 // ============================================
 // Date Filter Dropdown
@@ -260,11 +272,13 @@ function ChartTooltip({ info }: { info: TooltipInfo }) {
 // ============================================
 const BarChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (info: TooltipInfo | null) => void; labelStep?: number; seriesLabels: [string, string] }> = ({ data, onHover, labelStep = 1, seriesLabels }) => {
   const hasSecondary = data.hasSecondary !== false;
-  const maxVal = Math.max(...data.barSeries1, ...(hasSecondary ? data.barSeries2 : []), 1);
+  const highestValue = Math.max(...data.barSeries1, ...(hasSecondary ? data.barSeries2 : []), 1);
+  const axisStep = getAxisStep(highestValue);
+  const maxVal = axisStep * 4;
   const count = data.labels.length;
-  const gridLines = [0.25, 0.5, 0.75, 1.0];
+  const gridLines = [0, 1, 2, 3, 4];
   const barGroupWidth = PLOT_WIDTH / count;
-  const barWidth = barGroupWidth * (hasSecondary ? 0.3 : 0.52);
+  const barWidth = barGroupWidth * (hasSecondary ? 0.3 : 0.82);
   const barGap = 2;
 
   return (
@@ -274,17 +288,19 @@ const BarChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (inf
       preserveAspectRatio="xMidYMid meet"
     >
       {/* Grid lines */}
-      {gridLines.map((ratio) => {
-        const y = PADDING_TOP + PLOT_HEIGHT * (1 - ratio);
+      {gridLines.map((step) => {
+        const y = PADDING_TOP + PLOT_HEIGHT * (1 - step / 4);
         return (
-          <line
-            key={ratio}
-            x1={PADDING_LEFT}
-            y1={y}
-            x2={CHART_WIDTH - PADDING_RIGHT}
-            y2={y}
-            className="jf-chart__grid-line"
-          />
+          <g key={step}>
+            <text x={PADDING_LEFT - 20} y={y + 3} className="jf-chart__y-label">{(axisStep * step).toLocaleString()}</text>
+            <line
+              x1={PADDING_LEFT}
+              y1={y}
+              x2={CHART_WIDTH - PADDING_RIGHT}
+              y2={y}
+              className="jf-chart__grid-line"
+            />
+          </g>
         );
       })}
 
@@ -327,6 +343,11 @@ const BarChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (inf
               height={h1}
               className="jf-chart__bar jf-chart__bar--series1"
             />
+            {!hasSecondary && (
+              <text x={groupX} y={y1 - 8} className="jf-chart__bar-value">
+                {data.barSeries1[i].toLocaleString()}
+              </text>
+            )}
             {hasSecondary && <rect
               x={groupX + barGap / 2}
               y={y2}
@@ -596,16 +617,15 @@ export const Chart: FC<ChartProps> = ({
   const [dateFilter, setDateFilter] = useState<ChartDateFilter>('Yearly');
   const handleHover = useCallback((info: TooltipInfo | null) => setTooltip(info), []);
   const chartData = limitCategories(tableData ?? dataForSet(dataSet, dateFilter));
-  const tableHasDateColumn = parsedRows.some((row) => Object.values(row).some((value) => (
-    typeof value === 'string' && !Number.isNaN(Date.parse(value))
-  )));
+  const tableHasDateColumn = parsedRows.some((row) => Object.values(row).some(isDateValue));
+  const isTableColumnChart = type === 'Bar' && tableData !== null;
   const isMobile = useIsMobile();
   const labelStep = isMobile && chartData.labels.length > 7 ? 2 : 1;
 
   return (
     <div className={classes}>
       <div className="jf-chart__header">
-        {showIcon && (
+        {showIcon && !isTableColumnChart && (
           <div className="jf-chart__icon">
             <Icon name={iconName} size={24} />
           </div>
@@ -614,7 +634,7 @@ export const Chart: FC<ChartProps> = ({
           <div className="jf-chart__title">{resolvedTitle}</div>
           <div className="jf-chart__description">{resolvedDesc}</div>
         </div>
-        {showDateFilter && (!tableRows || tableHasDateColumn) && <DateFilterDropdown value={dateFilter} onChange={setDateFilter} />}
+        {showDateFilter && !isTableColumnChart && (!tableRows || tableHasDateColumn) && <DateFilterDropdown value={dateFilter} onChange={setDateFilter} />}
       </div>
       <div className="jf-chart__canvas">
         {(type === 'Bar' || type === 'Horizontal Bar') && <BarChart data={chartData} tooltip={tooltip} onHover={handleHover} labelStep={labelStep} seriesLabels={seriesLabels} />}
