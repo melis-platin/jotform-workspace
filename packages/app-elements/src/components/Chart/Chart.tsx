@@ -635,7 +635,9 @@ const buildAreaPath = (points: Array<{ x: number; y: number }>, baseline: number
 const LineChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (info: TooltipInfo | null) => void; labelStep?: number; seriesLabels: [string, string]; showArea?: boolean }> = ({ data, tooltip, onHover, labelStep = 1, seriesLabels, showArea = false }) => {
   const series = chartSeries(data, 'line', seriesLabels);
   const count = data.labels.length;
-  const maxVal = Math.max(...series.flatMap((item) => item.values), 1);
+  const highestValue = Math.max(...series.flatMap((item) => item.values), 1);
+  const axisStep = getAxisStep(highestValue);
+  const maxVal = axisStep * 4;
   const stepX = PLOT_WIDTH / (count - 1);
   const baseline = PADDING_TOP + PLOT_HEIGHT;
 
@@ -647,7 +649,7 @@ const LineChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (in
 
   const pointsBySeries = series.map((item) => toPoints(item.values));
 
-  const gridLines = data.labels.map((_, i) => PADDING_LEFT + i * stepX);
+  const gridLines = [0, 1, 2, 3, 4];
 
   return (
     <svg
@@ -655,22 +657,35 @@ const LineChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (in
       viewBox={`0 0 ${CHART_WIDTH} ${CHART_HEIGHT}`}
       preserveAspectRatio="xMidYMid meet"
     >
-      {/* Vertical grid lines */}
-      {gridLines.map((x, i) => (
-        <line
-          key={i}
-          x1={x}
-          y1={PADDING_TOP}
-          x2={x}
-          y2={baseline}
-          className="jf-chart__grid-line jf-chart__grid-line--vertical"
-        />
-      ))}
+      {/* Horizontal value guides */}
+      {gridLines.map((step) => {
+        const y = PADDING_TOP + PLOT_HEIGHT * (1 - step / 4);
+        return (
+          <g key={step}>
+            <text x={PADDING_LEFT - 20} y={y + 3} className="jf-chart__y-label">{(axisStep * step).toLocaleString()}</text>
+            <line x1={PADDING_LEFT} y1={y} x2={CHART_WIDTH - PADDING_RIGHT} y2={y} className="jf-chart__grid-line" />
+          </g>
+        );
+      })}
 
       {showArea && pointsBySeries.map((points, index) => <path key={`area-${index}`} d={buildAreaPath(points, baseline)} className="jf-chart__area" style={{ fill: `var(--chart-${index + 1})` } as CSSProperties} />)}
 
-      {/* Lines */}
-      {pointsBySeries.map((points, index) => <path key={`line-${index}`} d={buildSmoothPath(points)} className="jf-chart__line" style={{ stroke: `var(--chart-${index + 1})` } as CSSProperties} />)}
+      {/* Lines and their always-visible data points */}
+      {pointsBySeries.map((points, index) => (
+        <g key={`line-${index}`}>
+          <path d={buildSmoothPath(points)} className="jf-chart__line" style={{ stroke: chartSeriesColor(index) } as CSSProperties} />
+          {points.map((point, pointIndex) => (
+            <circle
+              key={pointIndex}
+              cx={point.x}
+              cy={point.y}
+              r={3}
+              className="jf-chart__line-point"
+              style={{ stroke: chartSeriesColor(index) } as CSSProperties}
+            />
+          ))}
+        </g>
+      ))}
 
       {/* Hit areas + hover indicator */}
       {data.labels.map((label, i) => {
@@ -697,7 +712,7 @@ const LineChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (in
             {isActive && (
               <>
                 <line x1={x} y1={PADDING_TOP} x2={x} y2={baseline} className="jf-chart__hover-line" />
-                {pointsBySeries.map((points, index) => <circle key={index} cx={x} cy={points[i].y} r={4} className="jf-chart__dot" style={{ fill: `var(--chart-${index + 1})` } as CSSProperties} />)}
+                {pointsBySeries.map((points, index) => <circle key={index} cx={x} cy={points[i].y} r={4} className="jf-chart__dot" style={{ fill: chartSeriesColor(index) } as CSSProperties} />)}
               </>
             )}
           </g>
@@ -856,7 +871,7 @@ export const Chart: FC<ChartProps> = ({
           <div className="jf-chart__title">{resolvedTitle}</div>
           <div className="jf-chart__description">{resolvedDesc}</div>
         </div>
-        {showTimeRangeSelector && type !== 'Horizontal Bar'
+        {showTimeRangeSelector && type !== 'Horizontal Bar' && type !== 'Line'
           ? <TimeRangeDropdown value={selectedTimeRange} onChange={setSelectedTimeRange} options={readTimeRangeOptions(timeRangeOptions)} />
           : showDateFilter && !isTableColumnChart && (!tableRows || tableHasDateColumn) && <DateFilterDropdown value={dateFilter} onChange={setDateFilter} />}
       </div>

@@ -284,6 +284,7 @@
   fill: var(--fg-secondary);
   font-size: var(--font-size-label-xs);
   font-family: var(--font-family-shell);
+  font-weight: var(--font-weight-bold);
   text-anchor: end;
 }
 
@@ -326,7 +327,7 @@
 // Line chart - lines
 .jf-chart__line {
   fill: none;
-  stroke-width: 2;
+  stroke-width: 3;
   stroke-linecap: round;
   stroke-linejoin: round;
 
@@ -337,6 +338,11 @@
   &--series2 {
     stroke: var(--chart-3);
   }
+}
+
+.jf-chart__line-point {
+  fill: var(--bg-fill);
+  stroke-width: 2;
 }
 
 // Line chart - area fills
