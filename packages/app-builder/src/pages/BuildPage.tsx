@@ -7402,9 +7402,9 @@ export function BuildPage({
                                     ]
                                 : selectedComponent.id === 'chart'
                                   ? [
-                                      { value: 'general', label: 'General' },
-                                      { value: 'style', label: 'Style' },
-                                      { value: 'condition', label: 'Condition' },
+                                      { value: 'general', label: 'GENERAL' },
+                                      { value: 'style', label: 'STYLE' },
+                                      { value: 'condition', label: 'CONDITION' },
                                     ]
                                 : selectedComponent.id === 'faq'
                                 ? [
