@@ -11582,11 +11582,10 @@ export function BuildPage({
         }))
       }
       const addRow = () => {
-        const nextRowNumber = rows.length + 1
         updateRows([...rows, {
-          category: `Category ${nextRowNumber}`,
-          value: 0,
-          note: `Note ${nextRowNumber}`,
+          category: '',
+          value: '',
+          note: '',
         }])
       }
 
