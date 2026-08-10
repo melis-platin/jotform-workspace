@@ -766,7 +766,7 @@ const DonutChart: FC<{ data: ChartData; seriesLabels: [string, string] }> = ({ d
 
   return (
     <div className="jf-chart__donut-layout">
-      <svg className="jf-chart__donut" viewBox="0 0 180 180" role="img" aria-label={`Total ${total}`}>
+      <svg className="jf-chart__donut" viewBox="0 0 200 200" role="img" aria-label={`Total ${total}`}>
         <circle className="jf-chart__donut-track" cx="100" cy="100" r={radius} />
         {slices.map((slice, index) => {
           const length = sliceLengths[index];
