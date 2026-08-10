@@ -93,6 +93,7 @@
   // Figma New Workspace properties content is 410px wide. The panel reserves
   // space for its 6px vertical scrollbar, so its outer width is 416px.
   --ds-properties-panel-width: 416px;
+  --ds-chart-aggregation-width: 120px;
 
   // Canvas element action controls (Figma: New Workspace / 1262:4249)
   --ds-canvas-element-action-width: var(--spacing-3xl);
@@ -6612,6 +6613,26 @@ body,
   }
 }
 
+.chart-properties__section--show {
+  gap: var(--spacing-xs);
+  padding: var(--spacing-xl) var(--spacing-md);
+  border-bottom: 0;
+
+  .jf-form-field__label {
+    gap: var(--spacing-2xs);
+  }
+
+  .jf-form-field__title-text {
+    font-weight: var(--ds-font-weight-bold);
+  }
+
+  .jf-form-field__input {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+  }
+}
+
 .chart-properties__type-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -6665,9 +6686,9 @@ body,
 
 .chart-properties__measure-row {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.55fr) var(--spacing-xl);
+  grid-template-columns: minmax(0, 1fr) var(--ds-chart-aggregation-width);
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: var(--spacing-xs);
 }
 
 .chart-properties__remove-measure,
@@ -6691,6 +6712,20 @@ body,
 .chart-properties__add-measure {
   align-self: flex-start;
   padding: 0;
+}
+
+.chart-properties__show-add-measure.jf-link--sm {
+  height: var(--font-size-xs);
+  font-weight: var(--font-weight-book);
+
+  .jf-link__icon {
+    width: var(--font-size-xs);
+    height: var(--font-size-xs);
+  }
+
+  .jf-link__label {
+    line-height: var(--font-size-xs);
+  }
 }
 
 .chart-table-picker {
