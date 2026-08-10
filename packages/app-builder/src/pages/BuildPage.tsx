@@ -857,13 +857,26 @@ function createCanvasElement(comp: RegisteredComponent, id: string): CanvasEleme
 type ChartSourceColumn = { key: string; label: string; kind: 'number' | 'text' | 'date' }
 
 const DEFAULT_CHART_TABLE_ROWS: Record<string, string | number>[] = [
-  { category: 'Category 1', value: 5, note: 'Note 1' },
-  { category: 'Category 2', value: 10, note: 'Note 2' },
+  { category: 'Category 1', value: 12, note: 'Note 1' },
+  { category: 'Category 2', value: 19, note: 'Note 2' },
   { category: 'Category 3', value: 15, note: 'Note 3' },
-  { category: 'Category 4', value: 20, note: 'Note 4' },
-  { category: 'Category 5', value: 25, note: 'Note 5' },
-  { category: 'Category 6', value: 30, note: 'Note 6' },
+  { category: 'Category 4', value: 24, note: 'Note 4' },
+  { category: 'Category 5', value: 21, note: 'Note 5' },
+  { category: 'Category 6', value: 9, note: 'Note 6' },
 ]
+
+function isLegacyDefaultChartTable(value: unknown): boolean {
+  if (typeof value !== 'string') return false
+  try {
+    const rows = JSON.parse(value)
+    const legacyValues = [5, 10, 15, 20, 25, 30]
+    return Array.isArray(rows) && rows.length === legacyValues.length && rows.every((row, index) => (
+      row?.category === `Category ${index + 1}` && row?.value === legacyValues[index] && row?.note === `Note ${index + 1}`
+    ))
+  } catch {
+    return false
+  }
+}
 
 function readChartSourceRows(value: unknown): Record<string, string | number>[] {
   if (typeof value !== 'string') return DEFAULT_CHART_TABLE_ROWS
@@ -3706,6 +3719,26 @@ export function BuildPage({
   const [components, setComponents] = useState<RegisteredComponent[]>(ComponentRegistry.getAll())
   const initial = useRef(buildInitialStateFromPreset(preset)).current
   const [pages, setPages] = useState<AppPage[]>(initial.pages)
+  useEffect(() => {
+    setPages((current) => {
+      let changed = false
+      const next = current.map((page) => ({
+        ...page,
+        elements: page.elements.map((element) => {
+          if (element.componentId !== 'chart' || !isLegacyDefaultChartTable(element.properties['Chart Table Rows'])) return element
+          changed = true
+          return {
+            ...element,
+            properties: {
+              ...element.properties,
+              'Chart Table Rows': JSON.stringify(DEFAULT_CHART_TABLE_ROWS),
+            },
+          }
+        }),
+      }))
+      return changed ? next : current
+    })
+  }, [])
   useEffect(() => {
     if (!preset) return
     setPages((current) => {

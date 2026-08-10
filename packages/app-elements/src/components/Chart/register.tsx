@@ -4,7 +4,7 @@ import type { ChartDataSet, ChartType } from './Chart';
 import type { VariantValues, PropertyValues, StateValues } from '../../types/component';
 import scss from './Chart.scss?raw';
 
-const DEFAULT_CHART_TABLE_ROWS = '[{"category":"Category 1","value":5,"note":"Note 1"},{"category":"Category 2","value":10,"note":"Note 2"},{"category":"Category 3","value":15,"note":"Note 3"},{"category":"Category 4","value":20,"note":"Note 4"},{"category":"Category 5","value":25,"note":"Note 5"},{"category":"Category 6","value":30,"note":"Note 6"}]';
+const DEFAULT_CHART_TABLE_ROWS = '[{"category":"Category 1","value":12,"note":"Note 1"},{"category":"Category 2","value":19,"note":"Note 2"},{"category":"Category 3","value":15,"note":"Note 3"},{"category":"Category 4","value":24,"note":"Note 4"},{"category":"Category 5","value":21,"note":"Note 5"},{"category":"Category 6","value":9,"note":"Note 6"}]';
 
 ComponentRegistry.register({
   id: 'chart',
