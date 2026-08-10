@@ -21,6 +21,10 @@ export interface ChartProps {
   showIcon?: boolean;
   showDateFilter?: boolean;
   showLegend?: boolean;
+  tableRows?: string;
+  measureField?: string;
+  aggregation?: string;
+  groupBy?: string;
   selected?: boolean;
   skeleton?: boolean;
   skeletonAnimation?: 'pulse' | 'shimmer';
@@ -35,6 +39,7 @@ interface ChartData {
   barSeries2: number[];
   lineSeries1: number[];
   lineSeries2: number[];
+  hasSecondary?: boolean;
 }
 
 // Keep chart previews legible without asking the app owner to tune a technical
@@ -55,6 +60,67 @@ function limitCategories(data: ChartData): ChartData {
     barSeries2: [...data.barSeries2.slice(0, retainedCount), sumOverflow(data.barSeries2)],
     lineSeries1: [...data.lineSeries1.slice(0, retainedCount), sumOverflow(data.lineSeries1)],
     lineSeries2: [...data.lineSeries2.slice(0, retainedCount), sumOverflow(data.lineSeries2)],
+    hasSecondary: data.hasSecondary,
+  };
+}
+
+type ChartTableRow = Record<string, string | number | boolean | null>;
+
+function readTableRows(value: string | undefined): ChartTableRow[] {
+  if (!value) return [];
+  try {
+    const parsed = JSON.parse(value);
+    return Array.isArray(parsed)
+      ? parsed.filter((row): row is ChartTableRow => Boolean(row) && typeof row === 'object' && !Array.isArray(row))
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+function getRowValue(row: ChartTableRow, field: string): ChartTableRow[string] | undefined {
+  const matchingKey = Object.keys(row).find((key) => key.toLocaleLowerCase() === field.toLocaleLowerCase());
+  return matchingKey ? row[matchingKey] : undefined;
+}
+
+function readableField(field: string): string {
+  return field.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[_-]+/g, ' ');
+}
+
+function aggregateValues(values: number[], aggregation: string): number {
+  if (values.length === 0) return 0;
+  if (aggregation === 'Average') return values.reduce((sum, value) => sum + value, 0) / values.length;
+  if (aggregation === 'Highest') return Math.max(...values);
+  if (aggregation === 'Lowest') return Math.min(...values);
+  return values.reduce((sum, value) => sum + value, 0);
+}
+
+function dataFromTableRows(rows: ChartTableRow[], measureField: string, aggregation: string, groupBy: string): ChartData | null {
+  if (rows.length === 0) return null;
+  const groups = new Map<string, number[]>();
+  const countRows = measureField === 'Number of rows';
+
+  rows.forEach((row, index) => {
+    const rawGroup = groupBy === 'Row order' ? index + 1 : getRowValue(row, groupBy);
+    const label = rawGroup == null || rawGroup === '' ? 'Untitled' : String(rawGroup);
+    const rawMeasure = countRows ? 1 : getRowValue(row, measureField);
+    const value = countRows ? 1 : typeof rawMeasure === 'number' ? rawMeasure : Number(rawMeasure);
+    if (!Number.isFinite(value)) return;
+    const values = groups.get(label) ?? [];
+    values.push(value);
+    groups.set(label, values);
+  });
+
+  if (groups.size === 0) return null;
+  const labels = [...groups.keys()];
+  const values = labels.map((label) => aggregateValues(groups.get(label) ?? [], countRows ? 'Count' : aggregation));
+  return {
+    labels,
+    barSeries1: values,
+    barSeries2: values.map(() => 0),
+    lineSeries1: values,
+    lineSeries2: values.map(() => 0),
+    hasSecondary: false,
   };
 }
 
@@ -193,11 +259,12 @@ function ChartTooltip({ info }: { info: TooltipInfo }) {
 // Bar Chart
 // ============================================
 const BarChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (info: TooltipInfo | null) => void; labelStep?: number; seriesLabels: [string, string] }> = ({ data, onHover, labelStep = 1, seriesLabels }) => {
-  const maxVal = Math.max(...data.barSeries1, ...data.barSeries2);
+  const hasSecondary = data.hasSecondary !== false;
+  const maxVal = Math.max(...data.barSeries1, ...(hasSecondary ? data.barSeries2 : []), 1);
   const count = data.labels.length;
   const gridLines = [0.25, 0.5, 0.75, 1.0];
   const barGroupWidth = PLOT_WIDTH / count;
-  const barWidth = barGroupWidth * 0.3;
+  const barWidth = barGroupWidth * (hasSecondary ? 0.3 : 0.52);
   const barGap = 2;
 
   return (
@@ -225,7 +292,7 @@ const BarChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (inf
       {data.labels.map((month, i) => {
         const groupX = PADDING_LEFT + i * barGroupWidth + barGroupWidth / 2;
         const h1 = (data.barSeries1[i] / maxVal) * PLOT_HEIGHT;
-        const h2 = (data.barSeries2[i] / maxVal) * PLOT_HEIGHT;
+        const h2 = hasSecondary ? (data.barSeries2[i] / maxVal) * PLOT_HEIGHT : 0;
         const y1 = PADDING_TOP + PLOT_HEIGHT - h1;
         const y2 = PADDING_TOP + PLOT_HEIGHT - h2;
 
@@ -236,10 +303,12 @@ const BarChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (inf
               x: groupX,
               y: Math.min(y1, y2) - 8,
               month,
-              values: [
-                { label: seriesLabels[0], value: data.barSeries1[i].toLocaleString(), series: 1 },
-                { label: seriesLabels[1], value: data.barSeries2[i].toLocaleString(), series: 2 },
-              ],
+              values: hasSecondary
+                ? [
+                    { label: seriesLabels[0], value: data.barSeries1[i].toLocaleString(), series: 1 },
+                    { label: seriesLabels[1], value: data.barSeries2[i].toLocaleString(), series: 2 },
+                  ]
+                : [{ label: seriesLabels[0], value: data.barSeries1[i].toLocaleString(), series: 1 }],
             })}
             onMouseLeave={() => onHover(null)}
           >
@@ -252,19 +321,19 @@ const BarChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (inf
               fill="transparent"
             />
             <rect
-              x={groupX - barWidth - barGap / 2}
+              x={hasSecondary ? groupX - barWidth - barGap / 2 : groupX - barWidth / 2}
               y={y1}
               width={barWidth}
               height={h1}
               className="jf-chart__bar jf-chart__bar--series1"
             />
-            <rect
+            {hasSecondary && <rect
               x={groupX + barGap / 2}
               y={y2}
               width={barWidth}
               height={h2}
               className="jf-chart__bar jf-chart__bar--series2"
-            />
+            />}
           </g>
         );
       })}
@@ -479,13 +548,27 @@ export const Chart: FC<ChartProps> = ({
   showIcon = true,
   showDateFilter = true,
   showLegend = true,
+  tableRows,
+  measureField = 'Value',
+  aggregation = 'Sum',
+  groupBy = 'Category',
   selected = false,
   skeleton = false,
   skeletonAnimation = 'pulse',
 }) => {
+  const parsedRows = readTableRows(tableRows);
+  const tableData = dataFromTableRows(parsedRows, measureField, aggregation, groupBy);
   const defaultTitle = dataSet === 'Revenue' ? 'Revenue' : dataSet === 'Visitors' ? 'Visitors' : 'Orders';
-  const resolvedTitle = title || (type === 'Donut' ? 'Audience overview' : defaultTitle);
-  const resolvedDesc = description || (type === 'Donut' ? 'How your audience is distributed' : `Monthly ${defaultTitle.toLowerCase()} overview`);
+  const isLegacyDefaultTitle = title === 'Orders';
+  const isLegacyDefaultDescription = description === 'Monthly order volume';
+  const resolvedTitle = (tableData && (isLegacyDefaultTitle || !title))
+    ? 'My Chart'
+    : title || (type === 'Donut' ? 'Audience overview' : defaultTitle);
+  const resolvedDesc = (tableData && (isLegacyDefaultDescription || !description))
+    ? `${aggregation} of ${readableField(measureField)} by ${readableField(groupBy)}`
+    : description || (tableData
+    ? `${aggregation} of ${readableField(measureField)} by ${readableField(groupBy)}`
+    : type === 'Donut' ? 'How your audience is distributed' : `Monthly ${defaultTitle.toLowerCase()} overview`);
   const seriesLabels: [string, string] = [primaryLabel || 'This period', secondaryLabel || 'Previous period'];
   const animClass = skeletonAnimation === 'shimmer' ? 'animate-shimmer' : 'animate-pulse';
 
@@ -512,7 +595,10 @@ export const Chart: FC<ChartProps> = ({
   const [tooltip, setTooltip] = useState<TooltipInfo | null>(null);
   const [dateFilter, setDateFilter] = useState<ChartDateFilter>('Yearly');
   const handleHover = useCallback((info: TooltipInfo | null) => setTooltip(info), []);
-  const chartData = limitCategories(dataForSet(dataSet, dateFilter));
+  const chartData = limitCategories(tableData ?? dataForSet(dataSet, dateFilter));
+  const tableHasDateColumn = parsedRows.some((row) => Object.values(row).some((value) => (
+    typeof value === 'string' && !Number.isNaN(Date.parse(value))
+  )));
   const isMobile = useIsMobile();
   const labelStep = isMobile && chartData.labels.length > 7 ? 2 : 1;
 
@@ -528,7 +614,7 @@ export const Chart: FC<ChartProps> = ({
           <div className="jf-chart__title">{resolvedTitle}</div>
           <div className="jf-chart__description">{resolvedDesc}</div>
         </div>
-        {showDateFilter && <DateFilterDropdown value={dateFilter} onChange={setDateFilter} />}
+        {showDateFilter && (!tableRows || tableHasDateColumn) && <DateFilterDropdown value={dateFilter} onChange={setDateFilter} />}
       </div>
       <div className="jf-chart__canvas">
         {(type === 'Bar' || type === 'Horizontal Bar') && <BarChart data={chartData} tooltip={tooltip} onHover={handleHover} labelStep={labelStep} seriesLabels={seriesLabels} />}
@@ -536,7 +622,7 @@ export const Chart: FC<ChartProps> = ({
         {(type === 'Pie' || type === 'Donut') && <DonutChart data={chartData} seriesLabels={seriesLabels} />}
         {tooltip && <ChartTooltip info={tooltip} />}
       </div>
-      {showLegend && type !== 'Donut' && type !== 'Pie' && (
+      {showLegend && chartData.hasSecondary !== false && type !== 'Donut' && type !== 'Pie' && (
         <div className="jf-chart__legend" aria-label="Chart legend">
           <span><i className="jf-chart__legend-dot jf-chart__legend-dot--series1" />{seriesLabels[0]}</span>
           <span><i className="jf-chart__legend-dot jf-chart__legend-dot--series2" />{seriesLabels[1]}</span>

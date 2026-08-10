@@ -4,6 +4,8 @@ import type { ChartDataSet, ChartType } from './Chart';
 import type { VariantValues, PropertyValues, StateValues } from '../../types/component';
 import scss from './Chart.scss?raw';
 
+const DEFAULT_CHART_TABLE_ROWS = '[{"category":"Category 1","value":5,"note":"Note 1"},{"category":"Category 2","value":10,"note":"Note 2"},{"category":"Category 3","value":15,"note":"Note 3"},{"category":"Category 4","value":20,"note":"Note 4"},{"category":"Category 5","value":25,"note":"Note 5"},{"category":"Category 6","value":30,"note":"Note 6"}]';
+
 ComponentRegistry.register({
   id: 'chart',
   name: 'Chart',
@@ -18,13 +20,13 @@ ComponentRegistry.register({
   },
 
   properties: [
-    { name: 'Title', type: 'text', default: 'Orders' },
-    { name: 'Description', type: 'text', default: 'Monthly order volume' },
+    { name: 'Title', type: 'text', default: 'My Chart' },
+    { name: 'Description', type: 'text', default: '' },
     { name: 'Primary Label', type: 'text', default: 'This period' },
     { name: 'Secondary Label', type: 'text', default: 'Previous period' },
     { name: 'Data Set', type: 'select', default: 'Orders', options: ['Orders', 'Revenue', 'Visitors'] },
     { name: 'Data Source', type: 'text', default: 'My Chart' },
-    { name: 'Chart Table Rows', type: 'text', default: '[{"category":"Category 1","value":5,"note":"Note 1"},{"category":"Category 2","value":10,"note":"Note 2"},{"category":"Category 3","value":15,"note":"Note 3"},{"category":"Category 4","value":20,"note":"Note 4"},{"category":"Category 5","value":25,"note":"Note 5"},{"category":"Category 6","value":30,"note":"Note 6"}]' },
+    { name: 'Chart Table Rows', type: 'text', default: DEFAULT_CHART_TABLE_ROWS },
     { name: 'Measure Field', type: 'text', default: 'Value' },
     { name: 'Aggregation', type: 'text', default: 'Sum' },
     { name: 'Group By', type: 'text', default: 'Category' },
@@ -120,6 +122,10 @@ ComponentRegistry.register({
         iconName={props['Icon'] as string}
         showDateFilter={props['Date Filter'] as boolean}
         showLegend={props['Show Legend'] as boolean}
+        tableRows={(props['Chart Table Rows'] as string) || DEFAULT_CHART_TABLE_ROWS}
+        measureField={props['Measure Field'] as string}
+        aggregation={props['Aggregation'] as string}
+        groupBy={props['Group By'] as string}
         selected={props['Selected'] as boolean}
         skeleton={props['Skeleton'] as boolean}
       />

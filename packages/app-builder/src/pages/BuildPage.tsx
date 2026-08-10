@@ -11622,7 +11622,24 @@ export function BuildPage({
                       className={`chart-table-picker__option${selected ? ' chart-table-picker__option--selected' : ''}`}
                       role="option"
                       aria-selected={selected}
-                      onClick={() => handlePropertyChange(chartElement.id, 'Data Source', table.name)}
+                      onClick={() => {
+                        const nextChart = {
+                          ...chartElement,
+                          properties: { ...chartElement.properties, 'Data Source': table.name },
+                        }
+                        const sourceRows = chartSourceRowsForElement(pages, nextChart)
+                        setPages((currentPages) => currentPages.map((page) => ({
+                          ...page,
+                          elements: page.elements.map((element) => element.id === chartElement.id ? {
+                            ...element,
+                            properties: {
+                              ...element.properties,
+                              'Data Source': table.name,
+                              'Chart Table Rows': JSON.stringify(sourceRows),
+                            },
+                          } : element),
+                        })))
+                      }}
                     >
                       <Icon name="product-tables-mono" category="products" size={24} className="chart-table-picker__icon" />
                       <span className="chart-table-picker__copy">
