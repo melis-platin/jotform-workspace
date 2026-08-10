@@ -6662,7 +6662,7 @@ body,
   display: grid;
   place-items: center;
   padding: var(--spacing-xl);
-  background: color-mix(in srgb, var(--text-darkest) 48%, transparent);
+  background: color-mix(in srgb, var(--navy-700) 48%, transparent);
 }
 
 .chart-table-editor {
@@ -6696,7 +6696,7 @@ body,
   }
 
   h2 {
-    color: var(--text-darkest);
+    color: var(--navy-700);
     font-size: var(--font-size-xl);
     font-weight: var(--font-weight-bold);
     line-height: var(--line-height-xl);
@@ -6722,8 +6722,8 @@ body,
   border: 0;
   border-radius: var(--radius-rounded);
   transform: translateY(-50%);
-  background: var(--purple-100);
-  color: var(--text-darkest);
+  background: var(--navy-75);
+  color: var(--navy-700);
   cursor: pointer;
 }
 
@@ -6750,9 +6750,9 @@ body,
   display: flex;
   align-items: center;
   padding: 0 var(--spacing-sm);
-  border-right: 1px solid var(--purple-200);
-  border-bottom: 1px solid var(--purple-200);
-  color: var(--text-darkest);
+  border-right: 1px solid var(--navy-100);
+  border-bottom: 1px solid var(--navy-100);
+  color: var(--navy-700);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   line-height: var(--line-height-sm);
@@ -6770,13 +6770,13 @@ body,
 .chart-table-editor__cell--corner,
 .chart-table-editor__cell--header,
 .chart-table-editor__cell--add-column {
-  border-top: 1px solid var(--purple-200);
+  border-top: 1px solid var(--navy-100);
 }
 
 .chart-table-editor__cell--corner,
 .chart-table-editor__cell--index,
 .chart-table-editor__cell--add-row {
-  border-left: 1px solid var(--purple-200);
+  border-left: 1px solid var(--navy-100);
 }
 
 .chart-table-editor__cell--corner {
@@ -6786,7 +6786,7 @@ body,
 .chart-table-editor__checkbox {
   width: var(--spacing-md);
   height: var(--spacing-md);
-  border: 1px solid var(--purple-200);
+  border: 1px solid var(--navy-100);
   border-radius: var(--radius-sm);
   background: var(--core-white);
 }
@@ -6794,7 +6794,7 @@ body,
 .chart-table-editor__cell--header {
   justify-content: space-between;
   gap: var(--spacing-xs);
-  color: var(--text-darkest);
+  color: var(--navy-700);
 
   > span {
     display: inline-flex;
@@ -6803,14 +6803,14 @@ body,
   }
 
   > .jf-icon {
-    color: var(--purple-400);
+    color: var(--navy-300);
   }
 }
 
 .chart-table-editor__cell--add-column,
 .chart-table-editor__cell--add-row {
   gap: var(--spacing-xs);
-  color: var(--purple-400);
+  color: var(--navy-300);
   font-weight: var(--font-weight-book);
   font-size: var(--font-size-sm);
 }
@@ -6838,7 +6838,7 @@ body,
 
 .chart-table-editor__cell--index {
   justify-content: flex-start;
-  color: var(--purple-400);
+  color: var(--navy-300);
   font-weight: var(--font-weight-book);
 }
 
@@ -6860,9 +6860,9 @@ body,
   display: flex;
   align-items: center;
   padding: 0 var(--spacing-md);
-  border-top: 1px solid var(--purple-200);
+  border-top: 1px solid var(--navy-100);
   background: var(--background-lightest);
-  color: var(--text-darkest);
+  color: var(--navy-700);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
 }
