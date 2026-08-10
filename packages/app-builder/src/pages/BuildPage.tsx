@@ -3849,6 +3849,19 @@ export function BuildPage({
 
   const pagesRef = useRef<AppPage[]>([])
   useEffect(() => { pagesRef.current = pages }, [pages])
+  // Panel clicks can arrive before React has committed the previous addition.
+  // Reserve an id synchronously so a second element never reuses the Chart's
+  // id and replaces it in the canvas render.
+  const reservedElementIdsRef = useRef(new Set<string>())
+  const reserveElementId = useCallback(() => {
+    const elementId = nextNumericId('element', [
+      ...pagesRef.current.flatMap((page) => page.elements.map((element) => element.id)),
+      ...headerActionsRef.current.map((element) => element.id),
+      ...reservedElementIdsRef.current,
+    ])
+    reservedElementIdsRef.current.add(elementId)
+    return elementId
+  }, [])
 
   const initialElementFocusHandledRef = useRef(false)
   useEffect(() => {
@@ -5558,7 +5571,7 @@ export function BuildPage({
     )
     if (whatsappAlreadyAdded) return
 
-    const element = createCanvasElement(comp, nextElementId(pagesRef.current, headerActionsRef.current))
+    const element = createCanvasElement(comp, reserveElementId())
     setPages((prev) => {
       let targetPageId = activePageId
       if (forceTargetPageId) {
@@ -5586,7 +5599,7 @@ export function BuildPage({
       setRightPanel('properties')
     }
     scrollToCanvasElement(element.id)
-  }, [activePageId, mobileElementsSheet, selectedElementId, forceTargetPageId, scrollToCanvasElement])
+  }, [activePageId, mobileElementsSheet, selectedElementId, forceTargetPageId, reserveElementId, scrollToCanvasElement])
 
   const handleSelectElement = useCallback((elementId: string) => {
     const ownerPage = pagesRef.current.find((page) => page.elements.some((element) => element.id === elementId))
