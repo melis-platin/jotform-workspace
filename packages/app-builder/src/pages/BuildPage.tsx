@@ -8149,10 +8149,7 @@ export function BuildPage({
                       set('Measure Field', first?.agg === 'Count' ? 'Number of rows' : first?.col ?? '')
                       set('Aggregation', first?.agg ?? 'Sum')
                     }
-                    const groupOptions = groupingColumns.map((column) => {
-                      const valueCount = new Set(chartSourceRowsForElement(pages, selectedElement).map((row) => String(row[column.key] ?? ''))).size
-                      return { value: column.key, label: column.kind === 'date' ? `${column.label} (by month)` : `${column.label} (${valueCount} values)` }
-                    })
+                    const groupOptions = groupingColumns.map((column) => ({ value: column.key, label: column.kind === 'date' ? `${column.label} (by month)` : column.label }))
                     const automaticGroupBy = getAutomaticChartGroup(chartSourceRowsForElement(pages, selectedElement), chartColumns)
                     const hasStoredGroupBy = groupOptions.some((option) => option.value === p['Group By']) || p['Group By'] === 'Row order'
                     const selectedGroupBy = hasStoredGroupBy ? String(p['Group By']) : automaticGroupBy
@@ -8236,7 +8233,7 @@ export function BuildPage({
                           {!((chartType === 'Pie' || chartType === 'Donut') && measures.length > 1) && <section className="chart-properties__section chart-properties__section--group-by">
                             <DSFormField title={chartType === 'Line' || chartType === 'Area' ? 'Along' : chartType === 'Pie' || chartType === 'Donut' ? 'Slice By' : 'Group By'} description={chartType === 'Line' || chartType === 'Area' ? 'Points are plotted across these values.' : chartType === 'Pie' || chartType === 'Donut' ? 'Each value becomes its own slice.' : 'Each value becomes its own bar.'} size="md" showDescription showHelpText={false}>
                               <div className="chart-properties__group-control">
-                                <DSDropdownSingle value={selectedGroupBy} onChange={(value) => set('Group By', value)} options={[...groupOptions, { value: 'Row order', label: `Row order (${chartSourceRowsForElement(pages, selectedElement).length} rows)` }]} showLeadingIcon={false} />
+                                <DSDropdownSingle value={selectedGroupBy} onChange={(value) => set('Group By', value)} options={[...groupOptions, { value: 'Row order', label: 'Row order' }]} showLeadingIcon={false} />
                               </div>
                             </DSFormField>
                           </section>}
