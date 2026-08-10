@@ -90,6 +90,10 @@
   // app canvas' semibold token, which is customizable by the App Designer.
   --ds-font-weight-bold: 700;
 
+  // Figma New Workspace properties content is 410px wide. The panel reserves
+  // space for its 6px vertical scrollbar, so its outer width is 416px.
+  --ds-properties-panel-width: 416px;
+
   // Canvas element action controls (Figma: New Workspace / 1262:4249)
   --ds-canvas-element-action-width: var(--spacing-3xl);
   --ds-canvas-element-action-hover-width: 113px;
@@ -546,12 +550,8 @@ body,
 // Build Page
 // ============================================
 .build-page {
-  // The right-side panel is five 80px token units plus one 40px unit wide.
-  // Keeping this as a shared token expression lets the floating WhatsApp
-  // placement stay exactly one 20px space away when the panel is visible.
-  --build-page-right-panel-width: calc(
-    var(--space-20) + var(--space-20) + var(--space-20) + var(--space-20) + var(--space-20) + var(--space-10)
-  );
+  // Shared width for properties, designer, and preview states.
+  --build-page-right-panel-width: var(--ds-properties-panel-width);
   --build-page-canvas-bottom-inset: calc(var(--space-10) + var(--space-4) + var(--space-5));
 
   display: flex;
@@ -6526,6 +6526,14 @@ body,
 
   .jf-form-field__label {
     gap: var(--spacing-2xs);
+  }
+
+  .chart-properties__source-description {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-2xs);
+    height: var(--line-height-xs);
+    white-space: nowrap;
   }
 
   // Figma New Workspace, node 1423:7832 — title 14/20 Bold.
