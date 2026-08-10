@@ -8142,8 +8142,8 @@ export function BuildPage({
                                   <strong>{dataSource}</strong>
                                 </div>
                                 <div className="chart-properties__table-actions">
-                                  <DSButton variant="filled" colorScheme="constructive" shape="rectangle" size="md" onClick={() => setChartTableEditorElementId(selectedElement.id)}>Edit Table</DSButton>
-                                  <DSButton variant="filled" colorScheme="secondary" shape="rectangle" size="md" onClick={() => { setChartTableSearch(''); setChartTablePickerElementId(selectedElement.id) }}>Change Table</DSButton>
+                                  <DSButton className="chart-properties__table-action chart-properties__table-action--edit" variant="filled" colorScheme="constructive" shape="rectangle" size="md" onClick={() => setChartTableEditorElementId(selectedElement.id)}>Edit Table</DSButton>
+                                  <DSButton className="chart-properties__table-action" variant="filled" colorScheme="secondary" shape="rectangle" size="md" onClick={() => { setChartTableSearch(''); setChartTablePickerElementId(selectedElement.id) }}>Change Table</DSButton>
                                 </div>
                               </div>
                             </DSFormField>
