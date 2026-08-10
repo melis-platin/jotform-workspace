@@ -6776,7 +6776,7 @@ body,
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  gap: var(--spacing-xs);
+  gap: var(--spacing-2xs);
 }
 
 .chart-properties__measure-line:first-child {
@@ -6806,8 +6806,8 @@ body,
 .chart-properties__remove-measure {
   display: grid;
   place-items: center;
-  width: var(--spacing-xl);
-  height: var(--spacing-xl);
+  width: var(--spacing-lg);
+  height: var(--spacing-lg);
   color: var(--gray-200);
 }
 
