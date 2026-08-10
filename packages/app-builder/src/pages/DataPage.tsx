@@ -31,7 +31,7 @@ interface DataTable {
   id: string
   name: string
   description: string
-  sourceType: 'List' | 'Form' | 'Products' | 'Donation' | 'Table' | 'Tasks'
+  sourceType: 'List' | 'Form' | 'Products' | 'Donation' | 'Table' | 'Tasks' | 'Chart'
   sharedSourceKey?: string
   formSourceKey?: string
   columns: DataColumn[]
@@ -56,7 +56,7 @@ interface FormFieldLike {
   options?: string[]
 }
 
-const DATA_ELEMENT_IDS = new Set(['list', 'product-list', 'donation-box', 'form', 'table', 'daily-task-manager'])
+const DATA_ELEMENT_IDS = new Set(['list', 'product-list', 'donation-box', 'form', 'table', 'daily-task-manager', 'chart'])
 const SHARED_TABLE_CONSUMER_IDS = new Set(['list', 'ai-widget'])
 const LIST_COLUMN_PRIORITY = ['title', 'name', 'description', 'image', 'avatar', 'photo', 'price', 'date', 'time', 'duration', 'coach', 'category', 'location', 'details', 'detail']
 const PRODUCT_COLUMN_PRIORITY = ['name', 'title', 'description', 'price', 'image', 'category', 'sku', 'inventory']
@@ -555,6 +555,27 @@ function buildWidgetTable(element: CanvasElement, page: AppPage): DataTable {
   }
 }
 
+function buildChartTable(element: CanvasElement, page: AppPage): DataTable {
+  const sourceName = String(element.properties['Data Source'] ?? '').trim() || 'My Chart'
+  const rows = [
+    { category: 'Category 1', value: 5, note: 'Note 1' },
+    { category: 'Category 2', value: 10, note: 'Note 2' },
+    { category: 'Category 3', value: 15, note: 'Note 3' },
+    { category: 'Category 4', value: 20, note: 'Note 4' },
+    { category: 'Category 5', value: 25, note: 'Note 5' },
+    { category: 'Category 6', value: 30, note: 'Note 6' },
+  ]
+  return {
+    id: element.id,
+    name: sourceName,
+    description: `${page.name} / Chart`,
+    sourceType: 'Chart',
+    columns: columnsFromRows(rows, ['category', 'value', 'note']),
+    rows,
+    connections: [buildTableConnection(element, page)],
+  }
+}
+
 function buildTaskTable(element: CanvasElement, page: AppPage): DataTable {
   const rows = [
     { task: 'Complete onboarding workout', completed: 'No', owner: 'Member', dueDate: 'Jul 3, 2026' },
@@ -581,6 +602,7 @@ function buildTableForElement(element: CanvasElement, page: AppPage): DataTable 
   if (element.componentId === 'form' || (element.componentId === 'button' && String(element.properties.Action ?? '') === 'Open Form')) return buildFormTable(element, page)
   if (element.componentId === 'table') return buildWidgetTable(element, page)
   if (element.componentId === 'daily-task-manager') return buildTaskTable(element, page)
+  if (element.componentId === 'chart') return buildChartTable(element, page)
   return null
 }
 

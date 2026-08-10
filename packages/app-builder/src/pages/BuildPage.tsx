@@ -11506,6 +11506,11 @@ export function BuildPage({
           }
           if (element.componentId === 'daily-task-manager') {
             addSource(`${title} Table`, `${page.name} / Tasks`)
+            return
+          }
+          if (element.componentId === 'chart') {
+            const chartSource = String(element.properties['Data Source'] ?? '').trim() || 'My Chart'
+            addSource(chartSource, `${page.name} / Chart`)
           }
         })
       })
