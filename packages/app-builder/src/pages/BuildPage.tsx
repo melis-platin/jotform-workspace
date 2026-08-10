@@ -8156,7 +8156,6 @@ export function BuildPage({
                     const automaticGroupBy = getAutomaticChartGroup(chartSourceRowsForElement(pages, selectedElement), chartColumns)
                     const hasStoredGroupBy = groupOptions.some((option) => option.value === p['Group By']) || p['Group By'] === 'Row order'
                     const selectedGroupBy = hasStoredGroupBy ? String(p['Group By']) : automaticGroupBy
-                    const groupIsAutomatic = !hasStoredGroupBy && Boolean(automaticGroupBy)
                     const timeRangeSelectorOptions = ['All time', 'Last 3 months', 'Last 6 months', 'Last 1 year', 'Last 2 years', 'This year']
                     const chartTimeRangeOptions = ['All Time', 'Last 7 days', 'Last 1 month', 'Last 3 months', 'Last 6 months', 'Last 1 year']
                     const selectedTimeRangeOptions = (() => {
@@ -8238,7 +8237,6 @@ export function BuildPage({
                             <DSFormField title={chartType === 'Line' || chartType === 'Area' ? 'Along' : chartType === 'Pie' || chartType === 'Donut' ? 'Slice By' : 'Group By'} description={chartType === 'Line' || chartType === 'Area' ? 'Points are plotted across these values.' : chartType === 'Pie' || chartType === 'Donut' ? 'Each value becomes its own slice.' : 'Each value becomes its own bar.'} size="md" showDescription showHelpText={false}>
                               <div className="chart-properties__group-control">
                                 <DSDropdownSingle value={selectedGroupBy} onChange={(value) => set('Group By', value)} options={[...groupOptions, { value: 'Row order', label: `Row order (${chartSourceRowsForElement(pages, selectedElement).length} rows)` }]} showLeadingIcon={false} />
-                                {groupIsAutomatic && <span className="chart-properties__auto-badge">Auto</span>}
                               </div>
                             </DSFormField>
                           </section>}
