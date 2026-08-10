@@ -6690,6 +6690,15 @@ body,
     min-height: var(--spacing-3xl);
     padding: 0 var(--spacing-sm);
     background: var(--gray-700);
+    color: var(--core-white);
+    font-family: var(--font-family-circular);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-book);
+    line-height: var(--line-height-sm);
+  }
+
+  .jf-dropdown__item-label {
+    color: inherit;
   }
 
   .jf-dropdown__item-check {
@@ -6697,6 +6706,7 @@ body,
     height: var(--spacing-lg);
     border: 0;
     border-radius: var(--radius-sm);
+    color: var(--core-white);
   }
 }
 
