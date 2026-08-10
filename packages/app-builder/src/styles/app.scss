@@ -6458,6 +6458,160 @@ body,
 .chart-properties__table-name { color: var(--fg-primary); }
 .chart-properties__table-placeholder { color: var(--fg-tertiary); }
 
+// Chart Properties — source: Figma New Workspace, node 1439:22543.
+// The chart uses its own General panel rather than the generic field stack so
+// that data source, type, measures, and viewer controls remain visually grouped.
+.chart-properties {
+  background: var(--gray-600);
+}
+
+.chart-properties__section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-xl) var(--spacing-lg);
+  border-bottom: 1px solid var(--gray-700);
+
+  .jf-form-field {
+    gap: var(--spacing-xs);
+  }
+
+  &--inline .jf-form-field {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-md);
+  }
+
+  &--inline .jf-form-field__label {
+    flex: 1;
+  }
+
+  &--inline .jf-form-field__input {
+    width: auto;
+    flex: 0 0 auto;
+  }
+}
+
+.chart-properties__connected-table {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  padding: var(--spacing-lg);
+  border-radius: var(--radius-sm);
+  background: var(--gray-700);
+}
+
+.chart-properties__table-summary {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-md);
+  min-width: 0;
+  color: var(--core-white);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+
+  strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.chart-properties__table-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 var(--spacing-6xl);
+  width: var(--spacing-6xl);
+  height: var(--spacing-6xl);
+  border-radius: var(--radius-sm);
+  background: var(--gray-500);
+}
+
+.chart-properties__table-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid color-mix(in srgb, var(--gray-200) 50%, transparent);
+
+  .jf-button {
+    width: 100%;
+  }
+}
+
+.chart-properties__type-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--spacing-md);
+}
+
+.chart-properties__type {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-xs);
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--gray-100);
+  font-family: var(--font-family-circular);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+
+  > span {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: var(--spacing-7xl);
+    border: 1px solid var(--gray-700);
+    border-radius: var(--radius-md);
+    background: var(--gray-500);
+    color: var(--core-white);
+  }
+
+  &--selected > span {
+    border-color: var(--ds-color-action-primary-default);
+    background: var(--ds-color-action-primary-default);
+  }
+
+  small {
+    font: inherit;
+    line-height: var(--line-height-sm);
+  }
+}
+
+.chart-properties__measure-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.55fr) var(--spacing-xl);
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.chart-properties__remove-measure,
+.chart-properties__add-measure {
+  border: 0;
+  background: transparent;
+  color: var(--ds-color-action-primary-default);
+  font-family: var(--font-family-circular);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+}
+
+.chart-properties__remove-measure {
+  display: grid;
+  place-items: center;
+  width: var(--spacing-xl);
+  height: var(--spacing-xl);
+  color: var(--gray-200);
+}
+
+.chart-properties__add-measure {
+  align-self: flex-start;
+  padding: 0;
+}
+
 .chart-table-picker {
   display: flex;
   flex-direction: column;

@@ -5,7 +5,7 @@ import './Chart.scss';
 // ============================================
 // Types
 // ============================================
-export type ChartType = 'Bar' | 'Line' | 'Area' | 'Donut';
+export type ChartType = 'Bar' | 'Horizontal Bar' | 'Line' | 'Area' | 'Pie' | 'Donut';
 export type ChartDataSet = 'Orders' | 'Revenue' | 'Visitors';
 
 export type ChartDateFilter = 'Yearly' | 'Monthly' | 'Weekly';
@@ -510,12 +510,12 @@ export const Chart: FC<ChartProps> = ({
         {showDateFilter && <DateFilterDropdown value={dateFilter} onChange={setDateFilter} />}
       </div>
       <div className="jf-chart__canvas">
-        {type === 'Bar' && <BarChart data={chartData} tooltip={tooltip} onHover={handleHover} labelStep={labelStep} seriesLabels={seriesLabels} />}
+        {(type === 'Bar' || type === 'Horizontal Bar') && <BarChart data={chartData} tooltip={tooltip} onHover={handleHover} labelStep={labelStep} seriesLabels={seriesLabels} />}
         {(type === 'Line' || type === 'Area') && <LineChart data={chartData} tooltip={tooltip} onHover={handleHover} labelStep={labelStep} seriesLabels={seriesLabels} showArea={type === 'Area'} />}
-        {type === 'Donut' && <DonutChart data={chartData} seriesLabels={seriesLabels} />}
+        {(type === 'Pie' || type === 'Donut') && <DonutChart data={chartData} seriesLabels={seriesLabels} />}
         {tooltip && <ChartTooltip info={tooltip} />}
       </div>
-      {showLegend && type !== 'Donut' && (
+      {showLegend && type !== 'Donut' && type !== 'Pie' && (
         <div className="jf-chart__legend" aria-label="Chart legend">
           <span><i className="jf-chart__legend-dot jf-chart__legend-dot--series1" />{seriesLabels[0]}</span>
           <span><i className="jf-chart__legend-dot jf-chart__legend-dot--series2" />{seriesLabels[1]}</span>

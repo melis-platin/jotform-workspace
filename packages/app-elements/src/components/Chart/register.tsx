@@ -12,7 +12,7 @@ ComponentRegistry.register({
 
   variants: {
     Type: {
-      options: ['Bar', 'Line', 'Area', 'Donut'],
+      options: ['Bar', 'Horizontal Bar', 'Line', 'Area', 'Pie', 'Donut'],
       default: 'Bar',
     },
   },
@@ -24,6 +24,12 @@ ComponentRegistry.register({
     { name: 'Secondary Label', type: 'text', default: 'Previous period' },
     { name: 'Data Set', type: 'select', default: 'Orders', options: ['Orders', 'Revenue', 'Visitors'] },
     { name: 'Data Source', type: 'text', default: 'My Chart' },
+    { name: 'Measure Field', type: 'text', default: 'Value' },
+    { name: 'Aggregation', type: 'text', default: 'Sum' },
+    { name: 'Group By', type: 'text', default: 'Category' },
+    { name: 'Time Range', type: 'text', default: 'All time' },
+    { name: 'Show Time Range Selector', type: 'boolean', default: true },
+    { name: 'Time Range Options', type: 'text', default: '6 selected' },
     { name: 'Show Icon', type: 'boolean', default: true },
     { name: 'Icon', type: 'icon', default: 'TrendingUp' },
     { name: 'Date Filter', type: 'boolean', default: true },

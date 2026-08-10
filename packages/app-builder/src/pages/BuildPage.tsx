@@ -7268,10 +7268,10 @@ export function BuildPage({
                       <span className="property-panel__title">Testimonial</span>
                     </div>
                   ) : (
-                    <span className="property-panel__title">{selectedComponent.id === 'whatsapp' ? 'WhatsApp Properties' : selectedComponent.name}</span>
+                    <span className="property-panel__title">{selectedComponent.id === 'whatsapp' ? 'WhatsApp Properties' : selectedComponent.id === 'chart' ? 'Chart Properties' : selectedComponent.name}</span>
                   )}
                   <div className="property-panel__header-actions">
-                    {!(selectedComponent.id === 'product-list' && propertyTab === 'products' && editingProductIndex !== null) && !(selectedComponent.id === 'faq' && propertyTab === 'general' && editingFaqIndex !== null) && !(selectedComponent.id === 'testimonial' && propertyTab === 'general' && editingTestimonialIndex !== null) && selectedElement.id !== APP_HEADER_ID && (
+                    {!(selectedComponent.id === 'product-list' && propertyTab === 'products' && editingProductIndex !== null) && !(selectedComponent.id === 'faq' && propertyTab === 'general' && editingFaqIndex !== null) && !(selectedComponent.id === 'testimonial' && propertyTab === 'general' && editingTestimonialIndex !== null) && selectedComponent.id !== 'chart' && selectedElement.id !== APP_HEADER_ID && (
                       <button
                         className="property-panel__close"
                         onClick={() => handleRemoveElement(selectedElement.id)}
@@ -7342,7 +7342,6 @@ export function BuildPage({
                                 : selectedComponent.id === 'chart'
                                   ? [
                                       { value: 'general', label: 'General' },
-                                      { value: 'data', label: 'Data' },
                                       { value: 'style', label: 'Style' },
                                       { value: 'condition', label: 'Condition' },
                                     ]
@@ -7960,103 +7959,85 @@ export function BuildPage({
                     const p = selectedElement.properties
                     const set = (name: string, value: string | boolean | number) => handlePropertyChange(selectedElement.id, name, value)
                     const chartType = String(selectedElement.variants['Type'] ?? 'Bar')
-                    const dataSet = String(p['Data Set'] ?? 'Orders')
                     const typeOptions = [
-                      { value: 'Bar', label: 'Bar', icon: 'chart-bar-filled' },
+                      { value: 'Bar', label: 'Column', icon: 'chart-bar-filled' },
+                      { value: 'Horizontal Bar', label: 'Bar', icon: 'chart-bar-horizontal-filled' },
                       { value: 'Line', label: 'Line', icon: 'chart-line-filled' },
                       { value: 'Area', label: 'Area', icon: 'chart-area-filled' },
-                      { value: 'Donut', label: 'Donut', icon: 'chart-pie-filled' },
-                    ]
-                    const dataOptions = [
-                      { value: 'Orders', label: 'Orders', icon: 'shopping-bag-filled' },
-                      { value: 'Revenue', label: 'Revenue', icon: 'dollar-circle-filled' },
-                      { value: 'Visitors', label: 'Visitors', icon: 'users-filled' },
+                      { value: 'Pie', label: 'Pie', icon: 'chart-pie-filled' },
+                      { value: 'Donut', label: 'Donut', icon: 'chart-donut-filled' },
                     ]
 
                     if (propertyTab === 'general') {
+                      const dataSource = String(p['Data Source'] ?? 'My Chart')
+                      const duplicateChart = () => {
+                        const duplicateId = nextElementId(pagesRef.current, headerActionsRef.current)
+                        const duplicate = { ...selectedElement, id: duplicateId, variants: { ...selectedElement.variants }, properties: { ...selectedElement.properties }, states: { ...selectedElement.states } }
+                        setPages((prev) => prev.map((page) => ({
+                          ...page,
+                          elements: page.elements.flatMap((element) => element.id === selectedElement.id ? [element, duplicate] : [element]),
+                        })))
+                        setSelectedElementId(duplicateId)
+                      }
                       return (
-                        <div className="property-panel__body">
-                          <div className="property-panel__field">
-                            <DSFormField title="Title" size="md" showDescription={false} showHelpText={false}>
-                              <DSInput value={String(p.Title ?? '')} placeholder="Chart title" maxLength={80} onChange={(e) => set('Title', e.target.value)} />
-                            </DSFormField>
-                          </div>
-                          <div className="property-panel__field">
-                            <DSFormField title="Description" description="Explain what people can learn from this chart." size="md" showDescription showHelpText={false}>
-                              <DSTextArea size="md" rows={3} value={String(p.Description ?? '')} placeholder="Add a short description" maxLength={160} showCount onChange={(e) => set('Description', e.target.value)} />
-                            </DSFormField>
-                          </div>
-                          <div className="property-panel__field property-panel__field--inline">
-                            <DSFormField title="Show icon" description="Display an icon next to the chart title." size="md" showDescription showHelpText={false}>
-                              <DSToggle size="md" checked={Boolean(p['Show Icon'])} onChange={(e) => set('Show Icon', e.target.checked)} />
-                            </DSFormField>
-                          </div>
-                          {Boolean(p['Show Icon']) && (
-                            <div className="property-panel__field">
-                              <DSFormField title="Icon" size="md" showDescription={false} showHelpText={false}>
-                                <IconPropertyField value={String(p.Icon ?? 'TrendingUp')} onChange={(value) => set('Icon', value)} />
-                              </DSFormField>
-                            </div>
-                          )}
-                        </div>
-                      )
-                    }
-
-                    if (propertyTab === 'data') {
-                      const dataSource = String(p['Data Source'] ?? '')
-                      return (
-                        <div className="property-panel__body">
-                          <div className="property-panel__field">
-                            <DSFormField title="App Table" description="Choose the table that provides data for this chart." size="md" showDescription showHelpText={false}>
-                              <div className="chart-properties__table-source">
-                                <span className={dataSource ? 'chart-properties__table-name' : 'chart-properties__table-placeholder'}>
-                                  {dataSource || 'Choose a table'}
-                                </span>
-                                <DSButton
-                                  variant="filled"
-                                  colorScheme="secondary"
-                                  shape="rectangle"
-                                  size="sm"
-                                  onClick={() => {
-                                    setChartTableSearch('')
-                                    setChartTablePickerElementId(selectedElement.id)
-                                  }}
-                                >
-                                  {dataSource ? 'Change' : 'Choose'}
-                                </DSButton>
+                        <div className="property-panel__body chart-properties">
+                          <section className="chart-properties__section">
+                            <DSFormField title="Chart Source" description={<>This chart uses data from App Tables <DSLink href="#" size="sm" rightIcon={<Icon name="arrow-up-right-from-square" category="arrows" size={14} />} onClick={(event) => { event.preventDefault(); onOpenDataTableForElement?.(selectedElement.id) }}>Open Data</DSLink></>} size="md" showDescription showHelpText={false}>
+                              <div className="chart-properties__connected-table">
+                                <div className="chart-properties__table-summary">
+                                  <span className="chart-properties__table-icon"><Icon name="product-tables-filled" category="products" size={32} /></span>
+                                  <strong>{dataSource}</strong>
+                                </div>
+                                <div className="chart-properties__table-actions">
+                                  <DSButton variant="filled" colorScheme="constructive" shape="rectangle" size="md" onClick={() => onOpenDataTableForElement?.(selectedElement.id)}>Edit Table</DSButton>
+                                  <DSButton variant="filled" colorScheme="secondary" shape="rectangle" size="md" onClick={() => { setChartTableSearch(''); setChartTablePickerElementId(selectedElement.id) }}>Change Table</DSButton>
+                                </div>
                               </div>
                             </DSFormField>
-                          </div>
-                          <div className="property-panel__field">
-                            <DSFormField title="Chart type" description="Choose how the selected data is displayed." size="md" showDescription showHelpText={false}>
-                              <Segmented
-                                accent="apps"
-                                variant="iconText"
-                                value={chartType}
-                                onChange={(value) => handleVariantChange(selectedElement.id, 'Type', value)}
-                                items={typeOptions.map((option) => ({ value: option.value, label: option.label, icon: option.icon, iconCategory: 'general' }))}
-                              />
+                          </section>
+                          <section className="chart-properties__section">
+                            <DSFormField title="Chart Type" size="md" showDescription={false} showHelpText={false}>
+                              <div className="chart-properties__type-grid">
+                                {typeOptions.map((option) => <button key={option.value} type="button" className={`chart-properties__type${chartType === option.value ? ' chart-properties__type--selected' : ''}`} onClick={() => handleVariantChange(selectedElement.id, 'Type', option.value)}><span><Icon name={option.icon} category="general" size={32} /></span><small>{option.label}</small></button>)}
+                              </div>
                             </DSFormField>
-                          </div>
-                          <div className="property-panel__field">
-                            <DSFormField title="Data set" description="Sample values update the canvas and live preview immediately." size="md" showDescription showHelpText={false}>
-                              <DSDropdownSingle
-                                value={dataSet}
-                                onChange={(value) => set('Data Set', value)}
-                                options={dataOptions.map((option) => ({ value: option.value, label: option.label, leading: <Icon name={option.icon} category="general" size={20} /> }))}
-                              />
+                          </section>
+                          <section className="chart-properties__section">
+                            <DSFormField title="Show" description="Choose what the chart measures." size="md" showDescription showHelpText={false}>
+                              <div className="chart-properties__measure-row">
+                                <DSDropdownSingle value={String(p['Measure Field'] ?? 'Value')} onChange={(value) => set('Measure Field', value)} options={[{ value: 'Value', label: 'Value' }, { value: 'Number of rows', label: 'Number of rows' }]} />
+                                <DSDropdownSingle value={String(p.Aggregation ?? 'Sum')} onChange={(value) => set('Aggregation', value)} options={['Sum', 'Average', 'Highest', 'Lowest'].map((value) => ({ value, label: value }))} />
+                                <button type="button" className="chart-properties__remove-measure" aria-label="Remove measure"><Icon name="xmark" size={16} /></button>
+                              </div>
+                              <button type="button" className="chart-properties__add-measure">+ Add measure</button>
                             </DSFormField>
-                          </div>
-                          <div className="property-panel__field">
-                            <DSFormField title="Primary series" size="md" showDescription={false} showHelpText={false}>
-                              <DSInput value={String(p['Primary Label'] ?? 'This period')} maxLength={48} onChange={(e) => set('Primary Label', e.target.value)} />
+                          </section>
+                          <section className="chart-properties__section">
+                            <DSFormField title="Group by" description="Each value becomes a bar or slice." size="md" showDescription showHelpText={false}>
+                              <DSDropdownSingle value={String(p['Group By'] ?? 'Category')} onChange={(value) => set('Group By', value)} options={[{ value: 'Category', label: 'Category' }, { value: 'Note', label: 'Note' }]} />
                             </DSFormField>
-                          </div>
-                          <div className="property-panel__field">
-                            <DSFormField title="Secondary series" size="md" showDescription={false} showHelpText={false}>
-                              <DSInput value={String(p['Secondary Label'] ?? 'Previous period')} maxLength={48} onChange={(e) => set('Secondary Label', e.target.value)} />
+                          </section>
+                          <section className="chart-properties__section">
+                            <DSFormField title="Time Range" description="Based on sign-up date." size="md" showDescription showHelpText={false}>
+                              <DSDropdownSingle value={String(p['Time Range'] ?? 'All time')} onChange={(value) => set('Time Range', value)} options={['All time', 'Last 7 days', 'Last 30 days', 'This quarter'].map((value) => ({ value, label: value }))} />
                             </DSFormField>
-                          </div>
+                          </section>
+                          <section className="chart-properties__section chart-properties__section--inline">
+                            <DSFormField title="Show Time Range Selector" description="Let viewers change the time range." size="md" showDescription showHelpText={false}>
+                              <DSToggle size="md" checked={Boolean(p['Show Time Range Selector'])} onChange={(event) => set('Show Time Range Selector', event.target.checked)} />
+                            </DSFormField>
+                            {Boolean(p['Show Time Range Selector']) && <DSDropdownSingle value={String(p['Time Range Options'] ?? '6 selected')} onChange={(value) => set('Time Range Options', value)} options={[{ value: '6 selected', label: '6 selected' }]} />}
+                          </section>
+                          <section className="chart-properties__section chart-properties__section--inline">
+                            <DSFormField title="Shrink" description="Make element smaller." size="md" showDescription showHelpText={false}>
+                              <DSToggle size="md" checked={Boolean(p.Shrinked)} onChange={(event) => set('Shrinked', event.target.checked)} />
+                            </DSFormField>
+                          </section>
+                          <section className="chart-properties__section">
+                            <DSFormField title="Duplicate Element" description="Clone selected elements with all saved properties." size="md" showDescription showHelpText={false}>
+                              <DSButton variant="filled" colorScheme="secondary" shape="rectangle" size="md" leftIcon={<Icon name="copy-filled" category="general" size={16} />} onClick={duplicateChart}>Duplicate</DSButton>
+                            </DSFormField>
+                          </section>
                         </div>
                       )
                     }
