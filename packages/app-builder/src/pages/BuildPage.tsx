@@ -8148,7 +8148,7 @@ export function BuildPage({
                               </div>
                             </DSFormField>
                           </section>
-                          <section className="chart-properties__section">
+                          <section className="chart-properties__section chart-properties__section--type">
                             <DSFormField title="Chart Type" size="md" showDescription={false} showHelpText={false}>
                               <div className="chart-properties__type-grid">
                                 {typeOptions.map((option) => <button key={option.value} type="button" className={`chart-properties__type${chartType === option.value ? ' chart-properties__type--selected' : ''}`} onClick={() => handleVariantChange(selectedElement.id, 'Type', option.value)}><span><Icon name={option.icon} category="general" size={32} /></span><small>{option.label}</small></button>)}
