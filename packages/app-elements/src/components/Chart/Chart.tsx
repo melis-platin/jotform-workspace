@@ -894,6 +894,7 @@ export const Chart: FC<ChartProps> = ({
     'jf-chart',
     selected && 'jf-chart--selected',
     type === 'Horizontal Bar' && 'jf-chart--horizontal',
+    type === 'Donut' && 'jf-chart--donut',
   ].filter(Boolean).join(' ');
 
   const [tooltip, setTooltip] = useState<TooltipInfo | null>(null);
