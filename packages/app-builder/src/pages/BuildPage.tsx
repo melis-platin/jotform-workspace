@@ -8218,7 +8218,7 @@ export function BuildPage({
                                 ].filter((option) => option.value === (measure.agg === 'Count' ? 'Number of rows' : measure.col) || !option.disabled)
                                 const selectedField = measure.agg === 'Count' ? 'Number of rows' : measure.col ?? ''
                                 const isCount = measure.agg === 'Count'
-                                return <div className="chart-properties__measure-line" key={`${measure.agg}-${measure.col ?? 'count'}-${index}`}>
+                                return <div className={`chart-properties__measure-line${measures.length > 1 ? ' chart-properties__measure-line--removable' : ''}`} key={`${measure.agg}-${measure.col ?? 'count'}-${index}`}>
                                   {index > 0 && <span className="chart-properties__measure-and">and</span>}
                                   <div className={`chart-properties__measure-row${isCount ? ' chart-properties__measure-row--count' : ''}`}>
                                     <DSDropdownSingle value={selectedField} onChange={(value) => writeMeasures(measures.map((item, measureIndex) => measureIndex === index ? (value === 'Number of rows' ? { agg: 'Count' } : { ...item, col: value, agg: item.agg === 'Count' ? 'Sum' : item.agg }) : item))} options={fieldOptions} showLeadingIcon={false} />

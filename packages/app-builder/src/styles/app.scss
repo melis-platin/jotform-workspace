@@ -6774,13 +6774,17 @@ body,
 
 .chart-properties__measure-line {
   display: grid;
-  grid-template-columns: var(--spacing-xl) minmax(0, 1fr) var(--spacing-2xl);
+  grid-template-columns: minmax(0, 1fr);
   align-items: center;
   min-height: var(--spacing-3xl);
   gap: var(--spacing-xs);
 }
 
-.chart-properties__measure-line:first-child {
+.chart-properties__measure-line--removable {
+  grid-template-columns: var(--spacing-xl) minmax(0, 1fr) var(--spacing-2xl);
+}
+
+.chart-properties__measure-line--removable:first-child {
   grid-template-columns: minmax(0, 1fr) var(--spacing-2xl);
 }
 
