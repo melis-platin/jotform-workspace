@@ -44,6 +44,7 @@ import {
 import { Icon, Button as DSButton, Tabs as DSTabs, Segmented, Input as DSInput, Toggle as DSToggle, Slider as DSSlider, NumberInput as DSNumberInput, FormField as DSFormField, TextArea as DSTextArea, DropdownSingle as DSDropdownSingle, FieldMapper as DSFieldMapper, FieldComposer as DSFieldComposer, type FieldToken, Link as DSLink, Modal as DSModal, SearchInput as DSSearchInput, ColorInput as DSColorInput } from '@jf/design-system'
 import phoneHomeIndicator from '@jf/design-system/src/assets/phone-home-indicator.svg'
 import chartAreaIcon from '@jf/design-system/src/assets/icons/general/chart-area.svg'
+import chartLineIcon from '@jf/design-system/src/assets/icons/general/chart-line.svg'
 import previewUserAvatar from '../assets/preview-user-avatar.jpg'
 import previewHeaderAvatar from '../assets/app-users/melis-platin.png'
 import { PhoneStatusBar } from '../components/PhoneStatusBar'
@@ -8116,7 +8117,7 @@ export function BuildPage({
                     const typeOptions = [
                       { value: 'Bar', label: 'Column', icon: 'chart-bar-filled' },
                       { value: 'Horizontal Bar', label: 'Bar', icon: 'chart-bar-horizontal-filled' },
-                      { value: 'Line', label: 'Line', icon: 'chart-line-filled' },
+                      { value: 'Line', label: 'Line', icon: 'chart-line', iconAsset: chartLineIcon },
                       { value: 'Area', label: 'Area', icon: 'chart-area', iconAsset: chartAreaIcon },
                       { value: 'Pie', label: 'Pie', icon: 'chart-pie-filled' },
                       { value: 'Donut', label: 'Donut', icon: 'chart-donut-filled' },
