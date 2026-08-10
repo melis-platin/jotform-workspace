@@ -3538,7 +3538,6 @@ export function BuildPage({
   const [editItemsOpen, setEditItemsOpen] = useState(false)
   const [chartTablePickerElementId, setChartTablePickerElementId] = useState<string | null>(null)
   const [chartTableSearch, setChartTableSearch] = useState('')
-  const chartTablePickerDismissedRef = useRef<string | null>(null)
   // Dynamic detail pages parked while their List's "Open Dynamic Page" action is
   // off, keyed by the source List element id. Re-enabling restores the page with
   // its customizations intact.
@@ -3734,15 +3733,6 @@ export function BuildPage({
   const pagesRef = useRef<AppPage[]>([])
   useEffect(() => { pagesRef.current = pages }, [pages])
 
-  // Chart can be added by click or drag-and-drop. In both cases, selecting an
-  // unconfigured Chart must start with its data-table selection step.
-  useEffect(() => {
-    if (!selectedElementId || chartTablePickerElementId || chartTablePickerDismissedRef.current === selectedElementId) return
-    const selectedChart = pages.flatMap((page) => page.elements).find((element) => element.id === selectedElementId)
-    if (selectedChart?.componentId !== 'chart' || String(selectedChart.properties['Data Source'] ?? '').trim()) return
-    setChartTableSearch('')
-    setChartTablePickerElementId(selectedChart.id)
-  }, [chartTablePickerElementId, pages, selectedElementId])
   const initialElementFocusHandledRef = useRef(false)
   useEffect(() => {
     if (!initialElementId || initialElementFocusHandledRef.current) return
@@ -5475,11 +5465,6 @@ export function BuildPage({
     })
     setForceTargetPageId(null)
     setSelectedElementId(element.id)
-    if (comp.id === 'chart') {
-      chartTablePickerDismissedRef.current = null
-      setChartTableSearch('')
-      setChartTablePickerElementId(element.id)
-    }
     if (!mobileElementsSheet) {
       setRightPanel('properties')
     }
@@ -5494,12 +5479,6 @@ export function BuildPage({
     setSelectedElementId(elementId)
     setRightPanel('properties')
     setMobileElementsSheet(false)
-    const selected = ownerPage?.elements.find((element) => element.id === elementId)
-    if (selected?.componentId === 'chart' && !String(selected.properties['Data Source'] ?? '').trim()) {
-      chartTablePickerDismissedRef.current = null
-      setChartTableSearch('')
-      setChartTablePickerElementId(elementId)
-    }
   }, [])
 
   const handleRemoveElement = useCallback((elementId: string) => {
@@ -11539,7 +11518,6 @@ export function BuildPage({
         <DSModal
           open
           onClose={() => {
-            chartTablePickerDismissedRef.current = chartTablePickerElementId
             setChartTablePickerElementId(null)
           }}
           size="md"
@@ -11552,7 +11530,6 @@ export function BuildPage({
           showCancel={false}
           confirmDisabled={!sources.has(currentSource)}
           onConfirm={() => {
-            chartTablePickerDismissedRef.current = chartTablePickerElementId
             setChartTablePickerElementId(null)
           }}
         >
