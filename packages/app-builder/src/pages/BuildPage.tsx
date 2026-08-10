@@ -2855,7 +2855,7 @@ const SortableElement = memo(function SortableElement({
               }}
             >
               <Icon name="product-tables-filled" category="products" size={20} />
-              <span className="build-page__canvas-element-action-label">Table</span>
+              <span className="build-page__canvas-element-action-label">Edit Table</span>
             </button>
           )}
           <button
