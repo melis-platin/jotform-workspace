@@ -926,7 +926,7 @@ function readChartMeasures(value: unknown, fallbackField: unknown, fallbackAggre
     }
   }
   const legacyField = String(fallbackField ?? '')
-  if (legacyField === 'Number of rows' || !numericColumns.length) return [{ agg: 'Count' }]
+  if (!numericColumns.length) return [{ agg: 'Count' }]
   const column = numericColumns.find((item) => item.key === legacyField) ?? numericColumns[0]
   const agg = ['Sum', 'Average', 'Highest', 'Lowest'].includes(String(fallbackAggregation)) ? String(fallbackAggregation) as BuilderChartMeasure['agg'] : 'Sum'
   return [{ agg, col: column.key }]

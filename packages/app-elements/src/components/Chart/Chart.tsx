@@ -142,7 +142,7 @@ function aggregateValues(values: number[], aggregation: string): number {
   return values.reduce((sum, value) => sum + value, 0);
 }
 
-function readMeasures(value: string | undefined, measureField: string, aggregation: string): ChartMeasure[] {
+function readMeasures(value: string | undefined, measureField: string, aggregation: string, rows: ChartTableRow[]): ChartMeasure[] {
   if (value?.startsWith('[')) {
     try {
       const parsed = JSON.parse(value);
@@ -154,7 +154,15 @@ function readMeasures(value: string | undefined, measureField: string, aggregati
       // Fall through to the legacy single-measure properties.
     }
   }
-  return [{ agg: measureField === 'Number of rows' ? 'Count' : (aggregation as ChartMeasure['agg']), ...(measureField === 'Number of rows' ? {} : { col: measureField }) }];
+  if (measureField === 'Number of rows') {
+    const numericColumn = [...new Set(rows.flatMap((row) => Object.keys(row)))].find((key) => {
+      const values = rows.map((row) => getRowValue(row, key)).filter((item) => item !== '' && item != null);
+      return values.length > 0 && values.every((item) => typeof item === 'number' || (typeof item === 'string' && item.trim() !== '' && Number.isFinite(Number(item))));
+    });
+    if (numericColumn) return [{ agg: 'Sum', col: numericColumn }];
+    return [{ agg: 'Count' }];
+  }
+  return [{ agg: aggregation as ChartMeasure['agg'], col: measureField }];
 }
 
 function measureLabel(measure: ChartMeasure): string {
@@ -682,7 +690,7 @@ export const Chart: FC<ChartProps> = ({
 }) => {
   const parsedRows = readTableRows(tableRows);
   const [selectedTimeRange, setSelectedTimeRange] = useState(timeRange);
-  const activeMeasures = readMeasures(measures, measureField, aggregation);
+  const activeMeasures = readMeasures(measures, measureField, aggregation, parsedRows);
   const filteredRows = filterRowsByTimeRange(parsedRows, showTimeRangeSelector ? selectedTimeRange : timeRange);
   const resolvedGroupBy = groupBy && parsedRows.some((row) => getRowValue(row, groupBy) !== undefined) ? groupBy : inferGroupBy(parsedRows);
   const tableData = dataFromTableRows(filteredRows, activeMeasures, resolvedGroupBy);
