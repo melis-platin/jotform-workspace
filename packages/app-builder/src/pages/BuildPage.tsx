@@ -1,4 +1,4 @@
-import { useState, useEffect, useLayoutEffect, useCallback, useMemo, useRef, useContext, createContext, memo, type CSSProperties, type RefObject } from 'react'
+import { Fragment, useState, useEffect, useLayoutEffect, useCallback, useMemo, useRef, useContext, createContext, memo, type CSSProperties, type RefObject } from 'react'
 import { createPortal } from 'react-dom'
 import { createRoot } from 'react-dom/client'
 import {
@@ -3630,6 +3630,7 @@ export function BuildPage({
   const appHeaderBgImageInputRef = useRef<HTMLInputElement>(null)
   const [editItemsOpen, setEditItemsOpen] = useState(false)
   const [chartTablePickerElementId, setChartTablePickerElementId] = useState<string | null>(null)
+  const [chartTableEditorElementId, setChartTableEditorElementId] = useState<string | null>(null)
   const [chartTableSearch, setChartTableSearch] = useState('')
   // Dynamic detail pages parked while their List's "Open Dynamic Page" action is
   // off, keyed by the source List element id. Re-enabling restores the page with
@@ -7199,7 +7200,7 @@ export function BuildPage({
                                 onSelect={handleSelectElement}
                                 onRemove={handleRemoveElement}
                                 onPropertyChange={handlePropertyChange}
-                                onOpenTable={(elementId) => onOpenDataTableForElement?.(elementId, pages)}
+                                onOpenTable={setChartTableEditorElementId}
                                 onSeePreview={handleFloatingWhatsAppPreview}
                               />
                             )
@@ -8120,7 +8121,7 @@ export function BuildPage({
                                   <strong>{dataSource}</strong>
                                 </div>
                                 <div className="chart-properties__table-actions">
-                                  <DSButton variant="filled" colorScheme="constructive" shape="rectangle" size="md" onClick={() => onOpenDataTableForElement?.(selectedElement.id, pages)}>Edit Table</DSButton>
+                                  <DSButton variant="filled" colorScheme="constructive" shape="rectangle" size="md" onClick={() => setChartTableEditorElementId(selectedElement.id)}>Edit Table</DSButton>
                                   <DSButton variant="filled" colorScheme="secondary" shape="rectangle" size="md" onClick={() => { setChartTableSearch(''); setChartTablePickerElementId(selectedElement.id) }}>Change Table</DSButton>
                                 </div>
                               </div>
@@ -11565,6 +11566,93 @@ export function BuildPage({
         </div>
       </div>
     </BottomSheet>
+
+    {chartTableEditorElementId && (() => {
+      const chartElement = pages.flatMap((page) => page.elements).find((element) => element.id === chartTableEditorElementId)
+      if (!chartElement || chartElement.componentId !== 'chart') return null
+
+      const rows = readChartSourceRows(chartElement.properties['Chart Table Rows'])
+      const updateRows = (nextRows: Record<string, string | number>[]) => {
+        handlePropertyChange(chartElement.id, 'Chart Table Rows', JSON.stringify(nextRows))
+      }
+      const updateCell = (rowIndex: number, key: 'category' | 'value' | 'note', value: string) => {
+        updateRows(rows.map((row, index) => {
+          if (index !== rowIndex) return row
+          return { ...row, [key]: key === 'value' && value !== '' && Number.isFinite(Number(value)) ? Number(value) : value }
+        }))
+      }
+      const addRow = () => {
+        const nextRowNumber = rows.length + 1
+        updateRows([...rows, {
+          category: `Category ${nextRowNumber}`,
+          value: 0,
+          note: `Note ${nextRowNumber}`,
+        }])
+      }
+
+      return createPortal(
+        <div className="chart-table-editor__backdrop" role="presentation" onMouseDown={() => setChartTableEditorElementId(null)}>
+          <section
+            className="chart-table-editor"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="chart-table-editor-title"
+            onMouseDown={(event) => event.stopPropagation()}
+          >
+            <header className="chart-table-editor__header">
+              <div className="chart-table-editor__heading">
+                <h2 id="chart-table-editor-title">{String(chartElement.properties['Data Source'] ?? 'My Chart')}</h2>
+                <p>Last updated yesterday</p>
+              </div>
+              <button type="button" className="chart-table-editor__close" aria-label="Close table editor" onClick={() => setChartTableEditorElementId(null)}>
+                <Icon name="xmark" category="general" size={20} />
+              </button>
+            </header>
+            <div className="chart-table-editor__accent" />
+            <div className="chart-table-editor__scroll">
+              <div className="chart-table-editor__grid" role="table" aria-label="Chart data table">
+                <div className="chart-table-editor__cell chart-table-editor__cell--corner"><span className="chart-table-editor__checkbox" /></div>
+                {([
+                  { key: 'category', label: 'Category', icon: 'type-square-filled', category: 'editor' },
+                  { key: 'value', label: 'Value', icon: 'number-square-filled', category: 'general' },
+                  { key: 'note', label: 'Note', icon: 'type-square-filled', category: 'editor' },
+                ] as const).map((column) => (
+                  <div key={column.key} className="chart-table-editor__cell chart-table-editor__cell--header" role="columnheader">
+                    <span><Icon name={column.icon} category={column.category} size={16} />{column.label}</span>
+                    <Icon name="ellipsis-vertical" category="general" size={16} />
+                  </div>
+                ))}
+                <div className="chart-table-editor__cell chart-table-editor__cell--add-column"><Icon name="plus-square-filled" category="general" size={16} />ADD</div>
+                {rows.map((row, rowIndex) => (
+                  <Fragment key={`chart-table-row-${rowIndex}`}>
+                    <div className="chart-table-editor__cell chart-table-editor__cell--index" role="rowheader">{rowIndex + 1}</div>
+                    {(['category', 'value', 'note'] as const).map((key) => (
+                      <div key={key} className="chart-table-editor__cell chart-table-editor__cell--value" role="cell">
+                        <input
+                          aria-label={`${key} row ${rowIndex + 1}`}
+                          inputMode={key === 'value' ? 'decimal' : undefined}
+                          value={String(row[key] ?? '')}
+                          onChange={(event) => updateCell(rowIndex, key, event.target.value)}
+                        />
+                      </div>
+                    ))}
+                    <div className="chart-table-editor__cell chart-table-editor__cell--tail" />
+                  </Fragment>
+                ))}
+                <button type="button" className="chart-table-editor__cell chart-table-editor__cell--add-row" onClick={addRow}>
+                  <Icon name="plus-square-filled" category="general" size={16} />ADD
+                </button>
+                <div className="chart-table-editor__cell chart-table-editor__cell--add-fill" />
+                <div className="chart-table-editor__cell chart-table-editor__cell--add-fill" />
+                <div className="chart-table-editor__cell chart-table-editor__cell--add-fill" />
+              </div>
+            </div>
+            <footer className="chart-table-editor__footer">Total {rows.length}</footer>
+          </section>
+        </div>,
+        document.body,
+      )
+    })()}
 
     {chartTablePickerElementId && (() => {
       const chartElement = pages.flatMap((page) => page.elements).find((element) => element.id === chartTablePickerElementId)
