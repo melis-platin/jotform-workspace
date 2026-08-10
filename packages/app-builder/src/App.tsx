@@ -457,6 +457,7 @@ export function App() {
             appTitle={appTitle}
             onAppTitleChange={setAppTitle}
             appIcon={appIcon}
+            initialPages={builderDataPages}
             initialPageId={buildInitialPageId}
             initialElementId={buildNavigationTarget?.elementId}
             chromeless={urlFullscreen || isFigmaCapture}

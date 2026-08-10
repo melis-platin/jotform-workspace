@@ -3368,6 +3368,8 @@ interface BuildPageProps {
   // App icon (nav logo) — managed in Settings, independent of the App Header hero.
   appIcon?: { variant: 'Icon' | 'Image'; icon: string; imageUrl: string | null }
   preset?: AppPreset
+  /** Canvas pages preserved while the builder is temporarily replaced by another tab. */
+  initialPages?: AppPage[] | null
   initialPageId?: string
   initialElementId?: string
   chromeless?: boolean
@@ -3579,6 +3581,7 @@ export function BuildPage({
   onAppTitleChange,
   appIcon = { variant: 'Icon', icon: 'Leaf', imageUrl: null },
   preset,
+  initialPages,
   initialPageId,
   initialElementId,
   chromeless = false,
@@ -3735,7 +3738,12 @@ export function BuildPage({
     return () => { ro.disconnect(); window.removeEventListener('resize', measure) }
   }, [selectedElementId])
   const [components, setComponents] = useState<RegisteredComponent[]>(ComponentRegistry.getAll())
-  const initial = useRef(buildInitialStateFromPreset(preset)).current
+  const initial = useRef((() => {
+    const presetInitialState = buildInitialStateFromPreset(preset)
+    return initialPages?.length
+      ? { ...presetInitialState, pages: initialPages }
+      : presetInitialState
+  })()).current
   const [pages, setPages] = useState<AppPage[]>(initial.pages)
   useEffect(() => {
     setPages((current) => {
