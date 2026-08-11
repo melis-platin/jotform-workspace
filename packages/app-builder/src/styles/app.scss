@@ -7618,6 +7618,138 @@ body,
   }
 }
 
+// Chart / Create a Table — source: Figma New Workspace, node 1326:24287.
+// This composition intentionally reuses the product Modal shell so its header,
+// footer and focus behavior stay consistent with the Select Tables step.
+.chart-table-create-modal {
+  max-width: calc(var(--spacing-4xl) * 8 + var(--spacing-md));
+
+  .jf-modal__header {
+    gap: var(--spacing-xl);
+    padding: var(--spacing-xl) var(--spacing-2xl) calc(var(--spacing-xl) + 1px);
+  }
+
+  .jf-modal__description {
+    color: var(--text-medium);
+  }
+
+  .jf-modal__icon {
+    background: var(--product-tables-default);
+  }
+
+  .jf-modal__header > .jf-btn {
+    width: calc(var(--spacing-2xl) + var(--spacing-xs));
+    height: calc(var(--spacing-2xl) + var(--spacing-xs));
+    background: var(--background-light);
+    color: var(--text-dark);
+  }
+
+  .jf-modal__body {
+    padding: var(--spacing-2xl);
+    overflow: visible;
+  }
+
+  .jf-modal__footer {
+    min-height: unset;
+    padding: calc(var(--spacing-md) + 1px) var(--spacing-2xl) var(--spacing-md);
+  }
+}
+
+.chart-table-create {
+  display: grid;
+  grid-template-columns: repeat(2, calc(var(--spacing-4xl) * 3 + var(--spacing-2xl)));
+  align-items: start;
+  gap: var(--spacing-md);
+}
+
+.chart-table-create__option {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-sm);
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: var(--text-dark);
+  font-family: var(--font-family-circular);
+  cursor: pointer;
+
+  > * {
+    pointer-events: none;
+  }
+
+  &:focus-visible .chart-table-create__preview {
+    box-shadow: 0 0 0 var(--spacing-2xs) color-mix(in srgb, var(--accent-default) 22%, transparent);
+  }
+
+  &--selected .chart-table-create__preview {
+    box-shadow: inset 0 0 0 2px var(--accent-default);
+  }
+}
+
+.chart-table-create__preview {
+  width: 100%;
+  height: calc(var(--spacing-4xl) * 2 + var(--spacing-2xl));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  background: var(--border-light);
+  color: var(--navy-300);
+  transition: box-shadow var(--transition);
+
+  img {
+    width: calc(var(--spacing-4xl) + var(--spacing-2xl) + var(--spacing-2xs));
+    height: calc(var(--spacing-4xl) + var(--spacing-xs));
+  }
+}
+
+.chart-table-create__copy {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--spacing-2xs);
+  text-align: center;
+
+  strong,
+  small {
+    width: 100%;
+  }
+
+  strong {
+    font-size: var(--font-size-lg);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-md);
+    letter-spacing: var(--letter-spacing-md);
+  }
+
+  small {
+    color: var(--text-medium);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-book);
+    line-height: var(--line-height-xs);
+    letter-spacing: var(--letter-spacing-md);
+  }
+}
+
+.chart-table-create__file-input {
+  display: none;
+}
+
+@media (max-width: 520px) {
+  .chart-table-create {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-table-create-modal .jf-modal__body {
+    overflow-y: auto;
+  }
+}
+
 .chart-table-picker__list {
   display: flex;
   flex-direction: column;

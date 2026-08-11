@@ -47,6 +47,7 @@ import { Icon, Button as DSButton, Tabs as DSTabs, Segmented, Input as DSInput, 
 import phoneHomeIndicator from '@jf/design-system/src/assets/phone-home-indicator.svg'
 import chartAreaIcon from '@jf/design-system/src/assets/icons/general/chart-area.svg'
 import chartLineIcon from '@jf/design-system/src/assets/icons/general/chart-line.svg'
+import chartImportDataIcon from '../assets/chart-import-data.svg'
 import previewUserAvatar from '../assets/preview-user-avatar.jpg'
 import previewHeaderAvatar from '../assets/app-users/melis-platin.png'
 import { PhoneStatusBar } from '../components/PhoneStatusBar'
@@ -3885,8 +3886,11 @@ export function BuildPage({
   const appHeaderBgImageInputRef = useRef<HTMLInputElement>(null)
   const [editItemsOpen, setEditItemsOpen] = useState(false)
   const [chartTablePickerElementId, setChartTablePickerElementId] = useState<string | null>(null)
+  const [chartTableCreateElementId, setChartTableCreateElementId] = useState<string | null>(null)
+  const [chartTableCreateMode, setChartTableCreateMode] = useState<'scratch' | 'import' | null>(null)
   const [chartTableEditorElementId, setChartTableEditorElementId] = useState<string | null>(null)
   const [chartTableSearch, setChartTableSearch] = useState('')
+  const chartTableImportInputRef = useRef<HTMLInputElement>(null)
   // Dynamic detail pages parked while their List's "Open Dynamic Page" action is
   // off, keyed by the source List element id. Re-enabling restores the page with
   // its customizations intact.
@@ -12168,33 +12172,11 @@ export function BuildPage({
       const tableOptions = [...sources.values()].filter((table) => (
         !search || `${table.name} ${table.description}`.toLowerCase().includes(search)
       ))
-      const createNewChartTable = () => {
-        let tableName = 'New Table'
-        let suffix = 2
-        while (sources.has(tableName)) {
-          tableName = `New Table ${suffix}`
-          suffix += 1
-        }
-
-        setPages((currentPages) => currentPages.map((page) => ({
-          ...page,
-          elements: page.elements.map((element) => element.id === chartElement.id ? {
-            ...element,
-            properties: {
-              ...element.properties,
-              'Data Source': tableName,
-              'Chart Table Rows': JSON.stringify(DEFAULT_CHART_TABLE_ROWS),
-              Measures: JSON.stringify([{ agg: 'Sum', col: 'value' }]),
-              'Measure Field': 'value',
-              Aggregation: 'Sum',
-              'Group By': 'category',
-              'Time Range': 'All Time',
-            },
-          } : element),
-        })))
+      const openCreateTable = () => {
         setChartTableSearch('')
         setChartTablePickerElementId(null)
-        setChartTableEditorElementId(chartElement.id)
+        setChartTableCreateMode(null)
+        setChartTableCreateElementId(chartElement.id)
       }
 
       return (
@@ -12214,7 +12196,7 @@ export function BuildPage({
           cancelVariant="filled"
           cancelColorScheme="secondary"
           showCancel
-          onCancel={createNewChartTable}
+          onCancel={openCreateTable}
           confirmDisabled={!sources.has(currentSource)}
           onConfirm={() => {
             setChartTablePickerElementId(null)
@@ -12301,6 +12283,135 @@ export function BuildPage({
               </div>
             </section>
           </div>
+        </DSModal>
+      )
+    })()}
+
+    {chartTableCreateElementId && (() => {
+      const chartElement = pages.flatMap((page) => page.elements).find((element) => element.id === chartTableCreateElementId)
+      if (!chartElement || chartElement.componentId !== 'chart') return null
+
+      const closeCreateTable = () => {
+        setChartTableCreateMode(null)
+        setChartTableCreateElementId(null)
+      }
+      const createTable = (sourceRows: Record<string, string | number>[] = DEFAULT_CHART_TABLE_ROWS, preferredName = 'New Table') => {
+        const existingNames = new Set(pages.flatMap((page) => page.elements)
+          .filter((element) => element.componentId === 'chart')
+          .map((element) => String(element.properties['Data Source'] ?? '').trim())
+          .filter(Boolean))
+        let tableName = preferredName
+        let suffix = 2
+        while (existingNames.has(tableName)) {
+          tableName = `${preferredName} ${suffix}`
+          suffix += 1
+        }
+
+        setPages((currentPages) => currentPages.map((page) => ({
+          ...page,
+          elements: page.elements.map((element) => element.id === chartElement.id ? {
+            ...element,
+            properties: {
+              ...element.properties,
+              'Data Source': tableName,
+              'Chart Table Rows': JSON.stringify(sourceRows),
+              Measures: JSON.stringify([{ agg: 'Sum', col: 'value' }]),
+              'Measure Field': 'value',
+              Aggregation: 'Sum',
+              'Group By': 'category',
+              'Time Range': 'All Time',
+            },
+          } : element),
+        })))
+        closeCreateTable()
+        setChartTableEditorElementId(chartElement.id)
+      }
+      const importTable = async (file: File) => {
+        const preferredName = file.name.replace(/\.(csv|xlsx)$/i, '').trim() || 'New Table'
+        if (!file.name.toLowerCase().endsWith('.csv')) {
+          createTable(DEFAULT_CHART_TABLE_ROWS, preferredName)
+          return
+        }
+
+        const text = await file.text()
+        const cells = text.split(/\r?\n/)
+          .filter((line) => line.trim())
+          .map((line) => line.split(',').map((cell) => cell.trim().replace(/^"|"$/g, '')))
+        const firstRowIsHeader = cells.length > 1 && !Number.isFinite(Number(cells[0]?.[1]))
+        const dataRows = (firstRowIsHeader ? cells.slice(1) : cells).slice(0, 200)
+        const sourceRows = dataRows.map((row) => {
+          const value = row[1] ?? ''
+          return {
+            category: row[0] ?? '',
+            value: value !== '' && Number.isFinite(Number(value)) ? Number(value) : value,
+            note: row.slice(2).join(', '),
+          }
+        })
+        createTable(sourceRows.length ? sourceRows : DEFAULT_CHART_TABLE_ROWS, preferredName)
+      }
+
+      return (
+        <DSModal
+          open
+          onClose={closeCreateTable}
+          size="md"
+          className="chart-table-create-modal"
+          icon={<Icon name="plus" category="general" size={24} />}
+          title="Create a Table"
+          description="Transform your data into powerful workspaces."
+          intent="primary"
+          confirmLabel="NEXT"
+          showCancel={false}
+          confirmDisabled={!chartTableCreateMode}
+          onConfirm={() => {
+            if (chartTableCreateMode === 'scratch') createTable()
+            if (chartTableCreateMode === 'import') chartTableImportInputRef.current?.click()
+          }}
+        >
+          <div className="chart-table-create" role="radiogroup" aria-label="Choose how to create a table">
+            <button
+              type="button"
+              className={`chart-table-create__option${chartTableCreateMode === 'scratch' ? ' chart-table-create__option--selected' : ''}`}
+              role="radio"
+              aria-checked={chartTableCreateMode === 'scratch'}
+              onClick={() => setChartTableCreateMode('scratch')}
+            >
+              <span className="chart-table-create__preview">
+                <Icon name="plus" category="general" size={48} />
+              </span>
+              <span className="chart-table-create__copy">
+                <strong>Start from Scratch</strong>
+                <small>A blank tab is all you need.</small>
+              </span>
+            </button>
+            <button
+              type="button"
+              className={`chart-table-create__option${chartTableCreateMode === 'import' ? ' chart-table-create__option--selected' : ''}`}
+              role="radio"
+              aria-checked={chartTableCreateMode === 'import'}
+              onClick={() => setChartTableCreateMode('import')}
+            >
+              <span className="chart-table-create__preview">
+                <img src={chartImportDataIcon} alt="" />
+              </span>
+              <span className="chart-table-create__copy">
+                <strong>Import Data</strong>
+                <small>Convert an existing XLSX or CSV in seconds.</small>
+              </span>
+            </button>
+          </div>
+          <input
+            ref={chartTableImportInputRef}
+            className="chart-table-create__file-input"
+            type="file"
+            accept=".csv,.xlsx"
+            aria-label="Import table data"
+            onChange={(event) => {
+              const file = event.target.files?.[0]
+              if (file) void importTable(file)
+              event.target.value = ''
+            }}
+          />
         </DSModal>
       )
     })()}
