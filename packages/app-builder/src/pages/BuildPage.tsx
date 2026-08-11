@@ -8497,8 +8497,11 @@ export function BuildPage({
                         { name: 'Response Values', description: 'Show the value for each bar' },
                         { name: 'Percentages', description: 'Show each response as a percentage of the total' },
                         { name: 'Round Percentages', description: 'Round to the nearest whole number' },
-                        ...(!isCircularChart ? [{ name: 'Value Labels' }, { name: 'Grid' }] : []),
-                        { name: 'Tooltips', description: 'Show the exact value when you hover over the chart' },
+                        ...(!isCircularChart ? [
+                          { name: 'Value Labels' },
+                          { name: 'Grid' },
+                          { name: 'Tooltips', description: 'Show the exact value when you hover over the chart' },
+                        ] : []),
                       ]
                       const selectedChartPalette = readBuilderChartPalette(p['Chart Palette'])
                       const rawCustomPalettes = p['Chart Custom Palettes']
