@@ -1,5 +1,5 @@
 import { ComponentRegistry } from '../../types/registry';
-import { Chart } from './Chart';
+import { Chart, DEFAULT_CHART_PALETTE } from './Chart';
 import type { ChartDataSet, ChartType } from './Chart';
 import type { VariantValues, PropertyValues } from '../../types/component';
 import scss from './Chart.scss?raw';
@@ -40,7 +40,9 @@ ComponentRegistry.register({
     { name: 'Date Filter', type: 'boolean', default: false },
     { name: 'Show Legend', type: 'boolean', default: true },
     { name: 'Legend Position', type: 'text', default: 'Right' },
-    { name: 'Chart Color', type: 'text', default: 'var(--chart-blue-900)' },
+    { name: 'Chart Color', type: 'text', default: DEFAULT_CHART_PALETTE[0] },
+    { name: 'Chart Palette', type: 'text', default: JSON.stringify(DEFAULT_CHART_PALETTE) },
+    { name: 'Chart Custom Palette', type: 'text', default: '' },
     { name: 'Response Values', type: 'boolean', default: true },
     { name: 'Percentages', type: 'boolean', default: true },
     { name: 'Round Percentages', type: 'boolean', default: false },
@@ -137,6 +139,7 @@ ComponentRegistry.register({
         showLegend={props['Show Legend'] as boolean}
         legendPosition={props['Legend Position'] as 'Bottom' | 'Right' | 'Top' | 'Left'}
         chartColor={props['Chart Color'] as string}
+        chartPalette={props['Chart Palette'] as string}
         tableRows={(props['Chart Table Rows'] as string) || DEFAULT_CHART_TABLE_ROWS}
         measures={props['Measures'] as string}
         measureField={props['Measure Field'] as string}

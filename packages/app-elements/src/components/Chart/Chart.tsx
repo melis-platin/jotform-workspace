@@ -11,6 +11,8 @@ export type ChartDataSet = 'Orders' | 'Revenue' | 'Visitors';
 export type ChartDateFilter = 'Yearly' | 'Monthly' | 'Weekly';
 export type ChartLegendPosition = 'Bottom' | 'Right' | 'Top' | 'Left';
 
+export const DEFAULT_CHART_PALETTE = ['#C6A9FE', '#E3A1E3', '#FCA2A2', '#FFC14F', '#91D9AD', '#AFD35E', '#81CEFA', '#97B0DB'];
+
 export interface ChartProps {
   type?: ChartType;
   title?: string;
@@ -27,6 +29,7 @@ export interface ChartProps {
   showLegend?: boolean;
   legendPosition?: ChartLegendPosition;
   chartColor?: string;
+  chartPalette?: string;
   tableRows?: string;
   measures?: string;
   measureField?: string;
@@ -138,21 +141,28 @@ function readableField(field: string): string {
 }
 
 function chartSeriesColor(index: number): string {
-  if (index === 0) return 'var(--accent-default)';
-  if (index === 1) return 'var(--blue-400)';
-  return `var(--chart-${index + 1})`;
+  return `var(--chart-palette-${(index % MAX_CHART_CATEGORIES) + 1}, var(--accent-default))`;
 }
 
 function pieSliceColor(index: number): string {
-  const colors = [
-    'var(--blue-600)',
-    'var(--accent-default)',
-    'var(--blue-400)',
-    'var(--blue-300)',
-    'var(--blue-200)',
-    'var(--blue-100)',
-  ];
-  return colors[index % colors.length];
+  return chartSeriesColor(index);
+}
+
+function readChartPalette(value: string | undefined, fallbackColor: string): string[] {
+  if (value) {
+    try {
+      const parsed = JSON.parse(value);
+      if (Array.isArray(parsed)) {
+        const colors = parsed.filter((color): color is string => typeof color === 'string' && color.trim().length > 0);
+        if (colors.length > 0) return colors.slice(0, MAX_CHART_CATEGORIES);
+      }
+    } catch {
+      // Keep the default Report Builder palette when saved data is malformed.
+    }
+  }
+  return fallbackColor === DEFAULT_CHART_PALETTE[0]
+    ? DEFAULT_CHART_PALETTE
+    : [fallbackColor, ...DEFAULT_CHART_PALETTE.slice(1)];
 }
 
 function aggregateValues(values: number[], aggregation: string): number {
@@ -863,7 +873,8 @@ export const Chart: FC<ChartProps> = ({
   timeRangeOptions,
   showLegend = true,
   legendPosition = 'Right',
-  chartColor = 'var(--chart-blue-900)',
+  chartColor = DEFAULT_CHART_PALETTE[0],
+  chartPalette,
   tableRows,
   measures,
   measureField = 'Value',
@@ -893,6 +904,11 @@ export const Chart: FC<ChartProps> = ({
     : type === 'Donut' ? 'How your audience is distributed' : `Monthly ${defaultTitle.toLowerCase()} overview`);
   const seriesLabels: [string, string] = [primaryLabel || 'This period', secondaryLabel || 'Previous period'];
   const animClass = skeletonAnimation === 'shimmer' ? 'animate-shimmer' : 'animate-pulse';
+  const resolvedChartPalette = readChartPalette(chartPalette, chartColor);
+  const chartPaletteStyle = { '--accent-default': resolvedChartPalette[0] ?? chartColor } as CSSProperties & Record<string, string>;
+  for (let index = 0; index < MAX_CHART_CATEGORIES; index += 1) {
+    chartPaletteStyle[`--chart-palette-${index + 1}`] = resolvedChartPalette[index % resolvedChartPalette.length] ?? chartColor;
+  }
 
   const classes = [
     'jf-chart',
@@ -927,7 +943,7 @@ export const Chart: FC<ChartProps> = ({
   }
 
   return (
-    <div className={classes} style={{ '--accent-default': chartColor } as CSSProperties}>
+    <div className={classes} style={chartPaletteStyle}>
       <div className="jf-chart__header">
         {showIcon && !isTableColumnChart && (
           <div className="jf-chart__icon">

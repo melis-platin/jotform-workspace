@@ -859,6 +859,38 @@ function createCanvasElement(comp: RegisteredComponent, id: string): CanvasEleme
 type ChartSourceColumn = { key: string; label: string; kind: 'number' | 'text' | 'date' }
 type BuilderChartMeasure = { agg: 'Count' | 'Sum' | 'Average' | 'Highest' | 'Lowest'; col?: string }
 
+const DEFAULT_CHART_COLOR_PALETTES = [
+  ['#C6A9FE', '#E3A1E3', '#FCA2A2', '#FFC14F', '#91D9AD', '#AFD35E', '#81CEFA', '#97B0DB'],
+  ['#00876C', '#8BB777', '#BFCD84', '#F4E398', '#F0BD73', '#EB965B', '#E36C50', '#DE425B'],
+  ['#3E4FBD', '#9464C8', '#B471CC', '#E891D6', '#FF8CC6', '#FF74AB', '#FF5A8B', '#DE425B'],
+  ['#FB6660', '#FF3E5F', '#C95EFF', '#8B27AE', '#5611E9', '#0476D9', '#044BD9', '#1509AF'],
+  ['#441D18', '#B0624D', '#AA7366', '#B89895', '#CFAAA6', '#E0CACA', '#4C3947', '#776270'],
+  ['#1E2D40', '#394452', '#757A62', '#BAA868', '#DED288', '#AEC370', '#7C9B4A', '#40561B'],
+  ['#BE4502', '#D4560E', '#E17019', '#EE9856', '#F4AB73', '#F9BE90', '#FCD0AE', '#FFE3CD'],
+  ['#006356', '#108473', '#3CA393', '#59B0A3', '#77BEB3', '#94CCC4', '#B1DAD4', '#BBDED9'],
+  ['#283AAE', '#3E4FBD', '#6466C8', '#827ED3', '#9E97DE', '#B9B1E9', '#D3CCF4', '#ECE7FF'],
+  ['#2C3345', '#434A5D', '#5A6276', '#737C90', '#8D96AA', '#A8B1C6', '#C3CDE2', '#DFEAFF'],
+] as const
+
+type ChartPaletteView = 'summary' | 'palettes' | 'custom'
+
+function readBuilderChartPalette(value: unknown): string[] {
+  if (typeof value === 'string' && value.trim().startsWith('[')) {
+    try {
+      const parsed = JSON.parse(value)
+      if (Array.isArray(parsed)) {
+        const colors = parsed.filter((color): color is string => typeof color === 'string' && color.trim().length > 0)
+        if (colors.length > 0) return colors
+      }
+    } catch { /* fall through to the default Report Builder palette */ }
+  }
+  return [...DEFAULT_CHART_COLOR_PALETTES[0]]
+}
+
+function sameChartPalette(left: readonly string[], right: readonly string[]): boolean {
+  return left.length === right.length && left.every((color, index) => color.toUpperCase() === right[index]?.toUpperCase())
+}
+
 const DEFAULT_CHART_TABLE_ROWS: Record<string, string | number>[] = [
   { category: 'Category 1', value: 12, note: 'Note 1' },
   { category: 'Category 2', value: 19, note: 'Note 2' },
@@ -3665,6 +3697,7 @@ export function BuildPage({
     if (variant === 'contained' || variant === 'compact') setDesktopNavAlignment('center')
   }, [])
   const [propertyTab, setPropertyTab] = useState<string>('general')
+  const [chartPaletteView, setChartPaletteView] = useState<ChartPaletteView>('summary')
   const appHeaderImageInputRef = useRef<HTMLInputElement>(null)
   const appHeaderBgImageInputRef = useRef<HTMLInputElement>(null)
   const [editItemsOpen, setEditItemsOpen] = useState(false)
@@ -3683,6 +3716,7 @@ export function BuildPage({
   const setSelectedElementId = useCallback((next: React.SetStateAction<string | null>) => {
     _setSelectedElementId(next)
     setPropertyTab('general')
+    setChartPaletteView('summary')
   }, [])
   const [editingProductIndex, setEditingProductIndex] = useState<number | null>(null)
   const [editingOptionIndex, setEditingOptionIndex] = useState<number | null>(null)
@@ -6301,6 +6335,8 @@ export function BuildPage({
     }
   }
 
+  const isChartPaletteSubpanel = selectedComponent?.id === 'chart' && propertyTab === 'style' && chartPaletteView !== 'summary'
+
   // Profile system page header: a brand cover banner with the app-identity icon
   // card straddling its bottom edge and the account name beside it. This is the
   // ONLY profile-specific override — it slots into the same app-header-slot the
@@ -7407,7 +7443,9 @@ export function BuildPage({
             ) : rightPanel === 'properties' && selectedElement && selectedComponent ? (
               <div className={`build-page__properties${selectedComponent.id === 'whatsapp' ? ' build-page__properties--whatsapp' : ''}`} data-theme="dark">
                 <div className="property-panel__header">
-                  {selectedComponent.id === 'product-list' && propertyTab === 'products' && editingProductIndex !== null ? (
+                  {isChartPaletteSubpanel ? (
+                    <span className="property-panel__title">{chartPaletteView === 'custom' ? 'Custom Palette' : 'Chart Color Palette'}</span>
+                  ) : selectedComponent.id === 'product-list' && propertyTab === 'products' && editingProductIndex !== null ? (
                     <div className="property-panel__header-nav">
                       <button
                         className="property-panel__back"
@@ -7446,6 +7484,12 @@ export function BuildPage({
                     <span className="property-panel__title">{selectedComponent.id === 'whatsapp' ? 'WhatsApp Properties' : selectedComponent.id === 'chart' ? 'Chart Properties' : selectedComponent.name}</span>
                   )}
                   <div className="property-panel__header-actions">
+                    {isChartPaletteSubpanel ? (
+                      <button type="button" className="chart-palette-panel__back" onClick={() => setChartPaletteView(chartPaletteView === 'custom' ? 'palettes' : 'summary')}>
+                        <AppIcon name="ArrowLeft" size={16} />
+                        <span>BACK</span>
+                      </button>
+                    ) : <>
                     {!(selectedComponent.id === 'product-list' && propertyTab === 'products' && editingProductIndex !== null) && !(selectedComponent.id === 'faq' && propertyTab === 'general' && editingFaqIndex !== null) && !(selectedComponent.id === 'testimonial' && propertyTab === 'general' && editingTestimonialIndex !== null) && selectedComponent.id !== 'chart' && selectedElement.id !== APP_HEADER_ID && (
                       <button
                         className="property-panel__close"
@@ -7466,15 +7510,16 @@ export function BuildPage({
                     >
                       <Icon name="xmark" size={20} />
                     </button>
+                    </>}
                   </div>
                 </div>
 
-                {!(selectedComponent.id === 'product-list' && propertyTab === 'products' && editingProductIndex !== null) && !(selectedComponent.id === 'faq' && propertyTab === 'general' && editingFaqIndex !== null) && !(selectedComponent.id === 'testimonial' && propertyTab === 'general' && editingTestimonialIndex !== null) && (
+                {!isChartPaletteSubpanel && !(selectedComponent.id === 'product-list' && propertyTab === 'products' && editingProductIndex !== null) && !(selectedComponent.id === 'faq' && propertyTab === 'general' && editingFaqIndex !== null) && !(selectedComponent.id === 'testimonial' && propertyTab === 'general' && editingTestimonialIndex !== null) && (
                 <div className="property-panel__tabs">
                   <DSTabs
                     accent="apps"
                     value={propertyTab}
-                    onChange={setPropertyTab}
+                    onChange={(nextTab) => { setPropertyTab(nextTab); setChartPaletteView('summary') }}
                     items={
                       selectedComponent.id === 'app-header'
                         ? [
@@ -8263,17 +8308,6 @@ export function BuildPage({
                     }
 
                     if (propertyTab === 'style') {
-                      const chartColorOptions = [
-                        'var(--chart-blue-900)',
-                        'var(--chart-blue-800)',
-                        'var(--chart-blue-700)',
-                        'var(--chart-blue-600)',
-                        'var(--chart-blue-500)',
-                        'var(--chart-blue-400)',
-                        'var(--chart-blue-300)',
-                        'var(--chart-blue-200)',
-                        'var(--chart-blue-100)',
-                      ]
                       const chartStyleToggles = [
                         { name: 'Response Values', description: 'Show the value for each bar' },
                         { name: 'Percentages', description: 'Show each response as a percentage of the total' },
@@ -8282,19 +8316,95 @@ export function BuildPage({
                         { name: 'Grid' },
                         { name: 'Tooltips', description: 'Show the exact value when you hover over the chart' },
                       ]
-                      const selectedChartColor = String(p['Chart Color'] ?? chartColorOptions[0])
-                      const selectedChartColorIndex = Math.max(chartColorOptions.indexOf(selectedChartColor), 0)
+                      const selectedChartPalette = readBuilderChartPalette(p['Chart Palette'])
+                      const rawCustomPalette = p['Chart Custom Palette']
+                      const savedCustomPalette = typeof rawCustomPalette === 'string' && rawCustomPalette.trim().startsWith('[') ? readBuilderChartPalette(rawCustomPalette) : null
+                      const selectChartPalette = (colors: readonly string[]) => {
+                        set('Chart Palette', JSON.stringify(colors))
+                        set('Chart Color', colors[0])
+                      }
+                      const updateCustomPalette = (colors: string[]) => {
+                        set('Chart Custom Palette', JSON.stringify(colors))
+                        selectChartPalette(colors)
+                      }
                       const showPieLegend = p['Show Legend'] !== false
                       const legendPosition = String(p['Legend Position'] ?? 'Right')
                       const legendPositionOptions = ['Bottom', 'Right', 'Top', 'Left'] as const
+
+                      if (chartPaletteView === 'palettes') {
+                        return (
+                          <div className="property-panel__body chart-palette-panel">
+                            <section className="chart-palette-panel__group">
+                              <div className="chart-palette-panel__group-title">
+                                <span>DEFAULT PALETTES</span>
+                                <Icon name="chevron-up" category="arrows" size={16} />
+                              </div>
+                              <div className="chart-palette-panel__list">
+                                {DEFAULT_CHART_COLOR_PALETTES.map((colors, paletteIndex) => {
+                                  const selected = sameChartPalette(selectedChartPalette, colors)
+                                  return (
+                                    <button key={paletteIndex} type="button" className={`chart-palette-panel__palette${selected ? ' chart-palette-panel__palette--selected' : ''}`} aria-label={`Default palette ${paletteIndex + 1}`} aria-pressed={selected} onClick={() => selectChartPalette(colors)}>
+                                      <span className="chart-palette-panel__colors">
+                                        {colors.map((color) => <span key={color} className="chart-palette-panel__color" style={{ '--chart-palette-color': color } as CSSProperties} />)}
+                                      </span>
+                                      {selected && <span className="chart-palette-panel__check"><Icon name="check" category="general" size={18} /></span>}
+                                      <span className="chart-palette-panel__menu" aria-hidden="true"><Icon name="ellipsis-vertical" category="general" size={18} /></span>
+                                    </button>
+                                  )
+                                })}
+                              </div>
+                            </section>
+                            {savedCustomPalette && (
+                              <section className="chart-palette-panel__group">
+                                <div className="chart-palette-panel__group-title"><span>CUSTOM PALETTES</span></div>
+                                <div className="chart-palette-panel__list">
+                                  <button type="button" className={`chart-palette-panel__palette${sameChartPalette(selectedChartPalette, savedCustomPalette) ? ' chart-palette-panel__palette--selected' : ''}`} aria-label="Custom palette" aria-pressed={sameChartPalette(selectedChartPalette, savedCustomPalette)} onClick={() => selectChartPalette(savedCustomPalette)}>
+                                    <span className="chart-palette-panel__colors">
+                                      {savedCustomPalette.map((color, colorIndex) => <span key={`${color}-${colorIndex}`} className="chart-palette-panel__color" style={{ '--chart-palette-color': color } as CSSProperties} />)}
+                                    </span>
+                                    {sameChartPalette(selectedChartPalette, savedCustomPalette) && <span className="chart-palette-panel__check"><Icon name="check" category="general" size={18} /></span>}
+                                    <span className="chart-palette-panel__menu" aria-hidden="true"><Icon name="ellipsis-vertical" category="general" size={18} /></span>
+                                  </button>
+                                </div>
+                              </section>
+                            )}
+                            <button type="button" className="chart-palette-panel__add-palette" onClick={() => setChartPaletteView('custom')}>ADD PALETTE</button>
+                          </div>
+                        )
+                      }
+
+                      if (chartPaletteView === 'custom') {
+                        const customPalette = savedCustomPalette ?? selectedChartPalette
+                        return (
+                          <div className="property-panel__body chart-palette-editor">
+                            <div className="chart-palette-editor__list">
+                              {customPalette.map((color, colorIndex) => (
+                                <div key={`${color}-${colorIndex}`} className="chart-palette-editor__row">
+                                  <span className="chart-palette-editor__index">{colorIndex + 1}</span>
+                                  <label className="chart-palette-editor__color-field" style={{ '--chart-palette-color': color } as CSSProperties}>
+                                    <Icon name="grid-dots-vertical" category="general" size={16} />
+                                    <span>{color.toUpperCase()}</span>
+                                    <input className="chart-palette-editor__native-color" type="color" value={color.startsWith('#') ? color : '#EFEFF6'} aria-label={`Palette color ${colorIndex + 1}`} onChange={(event) => updateCustomPalette(customPalette.map((item, index) => index === colorIndex ? event.target.value.toUpperCase() : item))} />
+                                  </label>
+                                  <button type="button" className="chart-palette-editor__delete" aria-label={`Delete palette color ${colorIndex + 1}`} disabled={customPalette.length <= 2} onClick={() => updateCustomPalette(customPalette.filter((_, index) => index !== colorIndex))}><Icon name="trash-filled" category="general" size={16} /></button>
+                                </div>
+                              ))}
+                            </div>
+                            {customPalette.length < 10 && <button type="button" className="chart-palette-editor__add-option" onClick={() => updateCustomPalette([...customPalette, '#EFEFF6'])}><Icon name="plus" category="general" size={18} />ADD OPTION</button>}
+                          </div>
+                        )
+                      }
+
                       return (
                         <div className="property-panel__body chart-style-properties">
                           <section className="chart-style-properties__color">
                             <DSFormField title="Chart Color" size="md" showDescription={false} showHelpText={false}>
-                              <div className="chart-style-properties__palette" role="list" aria-label="Chart color">
-                                {chartColorOptions.map((color) => <button key={color} type="button" role="listitem" className={`chart-style-properties__swatch${selectedChartColor === color ? ' chart-style-properties__swatch--selected' : ''}`} style={{ '--chart-swatch-color': color } as React.CSSProperties} aria-label={`Use ${color} for the chart`} aria-pressed={selectedChartColor === color} onClick={() => set('Chart Color', color)} />)}
-                                <button type="button" className="chart-style-properties__palette-more" aria-label="Next chart color" onClick={() => set('Chart Color', chartColorOptions[(selectedChartColorIndex + 1) % chartColorOptions.length])}><Icon name="chevron-right" category="arrows" size={24} /></button>
-                              </div>
+                              <button type="button" className="chart-style-properties__palette" aria-label="Open chart color palettes" onClick={() => setChartPaletteView('palettes')}>
+                                <span className="chart-style-properties__palette-colors">
+                                  {selectedChartPalette.map((color, colorIndex) => <span key={`${color}-${colorIndex}`} className="chart-style-properties__swatch" style={{ '--chart-palette-color': color } as CSSProperties} />)}
+                                </span>
+                                <span className="chart-style-properties__palette-more"><Icon name="chevron-right" category="arrows" size={24} /></span>
+                              </button>
                             </DSFormField>
                           </section>
                           {chartStyleToggles.map(({ name, description }) => (
