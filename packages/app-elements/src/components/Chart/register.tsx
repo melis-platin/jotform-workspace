@@ -146,7 +146,12 @@ ComponentRegistry.register({
         measureField={props['Measure Field'] as string}
         aggregation={props['Aggregation'] as string}
         groupBy={props['Group By'] as string}
+        responseValues={props['Response Values'] !== false}
+        percentages={props['Percentages'] !== false}
+        roundPercentages={props['Round Percentages'] === true}
         valueLabels={props['Value Labels'] !== false}
+        grid={props['Grid'] !== false}
+        tooltips={props['Tooltips'] !== false}
         selected={props['Selected'] as boolean}
         skeleton={props['Skeleton'] as boolean}
       />
