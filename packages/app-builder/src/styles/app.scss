@@ -6738,7 +6738,6 @@ body,
     place-items: center;
     width: 100%;
     height: var(--space-20);
-    border: 1px solid var(--gray-700);
     border-radius: var(--radius-md);
     background: var(--gray-500);
     color: var(--core-white);
@@ -6750,7 +6749,6 @@ body,
   }
 
   &--selected > span {
-    border-color: var(--accent-default);
     background: var(--accent-default);
   }
 
