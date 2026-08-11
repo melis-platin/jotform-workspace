@@ -8492,13 +8492,12 @@ export function BuildPage({
                     }
 
                     if (propertyTab === 'style') {
-                      const supportsValueLabels = chartType !== 'Pie' && chartType !== 'Donut'
+                      const isCircularChart = chartType === 'Pie' || chartType === 'Donut'
                       const chartStyleToggles = [
                         { name: 'Response Values', description: 'Show the value for each bar' },
                         { name: 'Percentages', description: 'Show each response as a percentage of the total' },
                         { name: 'Round Percentages', description: 'Round to the nearest whole number' },
-                        ...(supportsValueLabels ? [{ name: 'Value Labels' }] : []),
-                        { name: 'Grid' },
+                        ...(!isCircularChart ? [{ name: 'Value Labels' }, { name: 'Grid' }] : []),
                         { name: 'Tooltips', description: 'Show the exact value when you hover over the chart' },
                       ]
                       const selectedChartPalette = readBuilderChartPalette(p['Chart Palette'])
@@ -8618,7 +8617,7 @@ export function BuildPage({
                                   <DSToggle size="md" checked={Boolean(p[name])} onChange={(event) => set(name, event.target.checked)} />
                                 </DSFormField>
                               </section>
-                              {(chartType === 'Pie' || chartType === 'Donut') && name === 'Percentages' && (
+                              {isCircularChart && name === 'Percentages' && (
                                 <section className="chart-style-properties__toggle chart-style-properties__legend">
                                   <DSFormField title="Legend" description="Show measure names below the chart" size="md" showDescription showHelpText={false}>
                                     <DSToggle size="md" checked={showPieLegend} onChange={(event) => set('Show Legend', event.target.checked)} />
