@@ -1,10 +1,10 @@
 import { ComponentRegistry } from '../../types/registry';
-import { Chart, DEFAULT_CHART_PALETTE } from './Chart';
+import { Chart, DEFAULT_CHART_PALETTE, DEFAULT_CHART_TABLE_ROWS } from './Chart';
 import type { ChartDataSet, ChartType } from './Chart';
 import type { VariantValues, PropertyValues } from '../../types/component';
 import scss from './Chart.scss?raw';
 
-const DEFAULT_CHART_TABLE_ROWS = '[{"category":"Category 1","value":12,"note":"Note 1"},{"category":"Category 2","value":19,"note":"Note 2"},{"category":"Category 3","value":15,"note":"Note 3"},{"category":"Category 4","value":24,"note":"Note 4"},{"category":"Category 5","value":21,"note":"Note 5"},{"category":"Category 6","value":9,"note":"Note 6"}]';
+const DEFAULT_CHART_TABLE_ROWS_JSON = JSON.stringify(DEFAULT_CHART_TABLE_ROWS);
 
 ComponentRegistry.register({
   id: 'chart',
@@ -26,12 +26,12 @@ ComponentRegistry.register({
     { name: 'Secondary Label', type: 'text', default: 'Previous period' },
     { name: 'Data Set', type: 'select', default: 'Orders', options: ['Orders', 'Revenue', 'Visitors'] },
     { name: 'Data Source', type: 'text', default: 'My Chart' },
-    { name: 'Chart Table Rows', type: 'text', default: DEFAULT_CHART_TABLE_ROWS },
-    { name: 'Measure Field', type: 'text', default: 'Value' },
+    { name: 'Chart Table Rows', type: 'text', default: DEFAULT_CHART_TABLE_ROWS_JSON },
+    { name: 'Measure Field', type: 'text', default: 'value' },
     { name: 'Aggregation', type: 'text', default: 'Sum' },
-    { name: 'Measures', type: 'text', default: '[{"agg":"Sum","col":"Value"}]' },
+    { name: 'Measures', type: 'text', default: '[{"agg":"Sum","col":"value"}]' },
     { name: 'Table Settings', type: 'text', default: '{}' },
-    { name: 'Group By', type: 'text', default: 'Category' },
+    { name: 'Group By', type: 'text', default: 'item' },
     { name: 'Time Range', type: 'text', default: 'All Time' },
     { name: 'Show Time Range Selector', type: 'boolean', default: true },
     { name: 'Time Range Options', type: 'text', default: '6 selected' },
@@ -141,7 +141,7 @@ ComponentRegistry.register({
         legendPosition={props['Legend Position'] as 'Bottom' | 'Right' | 'Top' | 'Left'}
         chartColor={props['Chart Color'] as string}
         chartPalette={props['Chart Palette'] as string}
-        tableRows={(props['Chart Table Rows'] as string) || DEFAULT_CHART_TABLE_ROWS}
+        tableRows={(props['Chart Table Rows'] as string) || DEFAULT_CHART_TABLE_ROWS_JSON}
         measures={props['Measures'] as string}
         measureField={props['Measure Field'] as string}
         aggregation={props['Aggregation'] as string}

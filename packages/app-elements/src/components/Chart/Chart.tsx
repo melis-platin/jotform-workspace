@@ -27,6 +27,15 @@ export const CHART_COLOR_PALETTES = [
 export const DEFAULT_CHART_PALETTE = CHART_COLOR_PALETTES[0];
 const LEGACY_DEFAULT_CHART_PALETTE = ['#C6A9FE', '#E3A1E3', '#FCA2A2', '#FFC14F', '#91D9AD', '#AFD35E', '#81CEFA', '#97B0DB'];
 
+export const DEFAULT_CHART_TABLE_ROWS: Array<Record<string, string | number>> = [
+  { item: 'Item 1', status: 'Option 1', value: 12, date: 'Aug 8, 2026' },
+  { item: 'Item 2', status: 'Option 2', value: 19, date: 'Aug 6, 2026' },
+  { item: 'Item 3', status: 'Option 3', value: 15, date: 'Aug 2, 2026' },
+  { item: 'Item 4', status: 'Option 1', value: 24, date: 'Jul 10, 2026' },
+  { item: 'Item 5', status: 'Option 2', value: 21, date: 'Jul 23, 2026' },
+  { item: 'Item 6', status: 'Option 3', value: 9, date: 'May 26 8, 2026' },
+];
+
 export interface ChartProps {
   type?: ChartType;
   title?: string;

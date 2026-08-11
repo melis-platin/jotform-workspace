@@ -39,6 +39,7 @@ import {
   type PropertyValues,
   type StateValues,
   CHART_COLOR_PALETTES,
+  DEFAULT_CHART_TABLE_ROWS as DEFAULT_CHART_SOURCE_ROWS,
   resolveChartPalette,
   HsvColorPicker,
   isValidWhatsAppPhoneNumber,
@@ -872,14 +873,7 @@ function sameChartPalette(left: readonly string[], right: readonly string[]): bo
   return left.length === right.length && left.every((color, index) => color.toUpperCase() === right[index]?.toUpperCase())
 }
 
-const DEFAULT_CHART_TABLE_ROWS: Record<string, string | number>[] = [
-  { category: 'Category 1', value: 12, note: 'Note 1' },
-  { category: 'Category 2', value: 19, note: 'Note 2' },
-  { category: 'Category 3', value: 15, note: 'Note 3' },
-  { category: 'Category 4', value: 24, note: 'Note 4' },
-  { category: 'Category 5', value: 21, note: 'Note 5' },
-  { category: 'Category 6', value: 9, note: 'Note 6' },
-]
+const DEFAULT_CHART_TABLE_ROWS: Record<string, string | number>[] = DEFAULT_CHART_SOURCE_ROWS.map((row) => ({ ...row }))
 
 const DEFAULT_EMPTY_CHART_TABLE_ROWS: Record<string, string | number>[] = Array.from({ length: 6 }, () => ({
   item: '',
@@ -916,6 +910,13 @@ function readChartSourceRows(value: unknown): Record<string, string | number>[] 
 
 function readableChartColumnName(key: string) {
   return key.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[-_]/g, ' ').replace(/^./, (char) => char.toUpperCase())
+}
+
+function chartStatusOptionClass(value: unknown): string {
+  if (value === 'Option 1') return 'chart-table-editor__status-pill--option-1'
+  if (value === 'Option 2') return 'chart-table-editor__status-pill--option-2'
+  if (value === 'Option 3') return 'chart-table-editor__status-pill--option-3'
+  return ''
 }
 
 function analyzeChartSource(rows: Record<string, string | number>[]): ChartSourceColumn[] {
@@ -12137,8 +12138,9 @@ export function BuildPage({
                   <Fragment key={`chart-table-row-${rowIndex}`}>
                     <div className="chart-table-editor__cell chart-table-editor__cell--index" role="rowheader">{rowIndex + 1}</div>
                     {columns.map((column) => (
-                      <div key={column.key} className="chart-table-editor__cell chart-table-editor__cell--value" role="cell">
+                      <div key={column.key} className={`chart-table-editor__cell chart-table-editor__cell--value${column.key === 'status' ? ' chart-table-editor__cell--status' : ''}`} role="cell">
                         <input
+                          className={column.key === 'status' ? `chart-table-editor__status-pill ${chartStatusOptionClass(row[column.key])}`.trim() : undefined}
                           aria-label={`${column.key} row ${rowIndex + 1}`}
                           inputMode={column.key === 'value' ? 'decimal' : undefined}
                           value={String(row[column.key] ?? '')}

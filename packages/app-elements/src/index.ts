@@ -55,7 +55,7 @@ export { Heading } from './components/Heading';
 export { Form } from './components/Form';
 export { Table } from './components/Table';
 export { List } from './components/List';
-export { Chart, CHART_COLOR_PALETTES, DEFAULT_CHART_PALETTE, resolveChartPalette } from './components/Chart';
+export { Chart, CHART_COLOR_PALETTES, DEFAULT_CHART_PALETTE, DEFAULT_CHART_TABLE_ROWS, resolveChartPalette } from './components/Chart';
 export { Paragraph } from './components/Paragraph';
 export { AppHeader } from './components/AppHeader';
 export { BottomNavigation } from './components/BottomNavigation';

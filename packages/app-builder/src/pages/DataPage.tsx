@@ -1,6 +1,6 @@
 import { type CSSProperties, useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
-import { AppIcon, ComponentRegistry } from '@jf/app-elements'
+import { AppIcon, ComponentRegistry, DEFAULT_CHART_TABLE_ROWS } from '@jf/app-elements'
 import { Icon } from '@jf/design-system'
 import { type AppPreset, type PresetElement } from '../presets/appPresets'
 import { ROLE_COLOR_PALETTE } from '../state/appUserRoles'
@@ -557,14 +557,7 @@ function buildWidgetTable(element: CanvasElement, page: AppPage): DataTable {
 
 function buildChartTable(element: CanvasElement, page: AppPage): DataTable {
   const sourceName = String(element.properties['Data Source'] ?? '').trim() || 'My Chart'
-  const defaultRows = [
-    { category: 'Category 1', value: 12, note: 'Note 1' },
-    { category: 'Category 2', value: 19, note: 'Note 2' },
-    { category: 'Category 3', value: 15, note: 'Note 3' },
-    { category: 'Category 4', value: 24, note: 'Note 4' },
-    { category: 'Category 5', value: 21, note: 'Note 5' },
-    { category: 'Category 6', value: 9, note: 'Note 6' },
-  ]
+  const defaultRows = DEFAULT_CHART_TABLE_ROWS.map((row) => ({ ...row }))
   const savedRows = parseJsonArray(element.properties['Chart Table Rows'])
   const rows = savedRows.length > 0 ? savedRows : defaultRows
   return {
@@ -572,11 +565,7 @@ function buildChartTable(element: CanvasElement, page: AppPage): DataTable {
     name: sourceName,
     description: `${page.name} / Chart`,
     sourceType: 'Chart',
-    columns: columnsFromRows(rows, ['category', 'value', 'note']).map((column) => (
-      // The default Chart source is a plain data table. Its Category values
-      // are text labels, not selectable options, so they must not render as tags.
-      column.key === 'category' ? { ...column, type: 'shortText' } : column
-    )),
+    columns: columnsFromRows(rows, ['item', 'status', 'value', 'date']),
     rows,
     connections: [buildTableConnection(element, page)],
   }

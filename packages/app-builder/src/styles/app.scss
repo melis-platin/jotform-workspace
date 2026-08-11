@@ -7538,12 +7538,39 @@ body,
     border: 0;
     outline: 0;
     background: transparent;
-    color: inherit;
+    color: var(--core-black);
     font: inherit;
+    font-weight: var(--font-weight-book);
 
     &:focus-visible {
       box-shadow: inset 0 0 0 2px var(--blue-500);
     }
+  }
+}
+
+.chart-table-editor__cell--status {
+  padding: 0 var(--spacing-sm);
+}
+
+.chart-table-editor__cell--status input.chart-table-editor__status-pill {
+  width: auto;
+  height: calc(var(--spacing-xl) + var(--spacing-2xs));
+  field-sizing: content;
+  padding: 0 var(--spacing-xs);
+  border-radius: var(--radius-sm);
+  color: var(--text-darkest);
+  text-align: center;
+
+  &--option-1 {
+    background: var(--product-tables-option-coral);
+  }
+
+  &--option-2 {
+    background: var(--product-tables-option-mint);
+  }
+
+  &--option-3 {
+    background: var(--product-tables-option-purple);
   }
 }
 
@@ -7586,6 +7613,7 @@ body,
   gap: var(--spacing-2xs);
   padding: 0 var(--spacing-md);
   border-right: 1px solid var(--navy-50);
+  background: var(--background-lightest);
 
   span {
     font-weight: var(--font-weight-book);
