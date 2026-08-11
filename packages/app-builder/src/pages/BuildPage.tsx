@@ -38,6 +38,8 @@ import {
   type VariantValues,
   type PropertyValues,
   type StateValues,
+  CHART_COLOR_PALETTES,
+  resolveChartPalette,
   HsvColorPicker,
   isValidWhatsAppPhoneNumber,
 } from '@jf/app-elements'
@@ -859,32 +861,10 @@ function createCanvasElement(comp: RegisteredComponent, id: string): CanvasEleme
 type ChartSourceColumn = { key: string; label: string; kind: 'number' | 'text' | 'date' }
 type BuilderChartMeasure = { agg: 'Count' | 'Sum' | 'Average' | 'Highest' | 'Lowest'; col?: string }
 
-const DEFAULT_CHART_COLOR_PALETTES = [
-  ['#C6A9FE', '#E3A1E3', '#FCA2A2', '#FFC14F', '#91D9AD', '#AFD35E', '#81CEFA', '#97B0DB'],
-  ['#00876C', '#8BB777', '#BFCD84', '#F4E398', '#F0BD73', '#EB965B', '#E36C50', '#DE425B'],
-  ['#3E4FBD', '#9464C8', '#B471CC', '#E891D6', '#FF8CC6', '#FF74AB', '#FF5A8B', '#DE425B'],
-  ['#FB6660', '#FF3E5F', '#C95EFF', '#8B27AE', '#5611E9', '#0476D9', '#044BD9', '#1509AF'],
-  ['#441D18', '#B0624D', '#AA7366', '#B89895', '#CFAAA6', '#E0CACA', '#4C3947', '#776270'],
-  ['#1E2D40', '#394452', '#757A62', '#BAA868', '#DED288', '#AEC370', '#7C9B4A', '#40561B'],
-  ['#BE4502', '#D4560E', '#E17019', '#EE9856', '#F4AB73', '#F9BE90', '#FCD0AE', '#FFE3CD'],
-  ['#006356', '#108473', '#3CA393', '#59B0A3', '#77BEB3', '#94CCC4', '#B1DAD4', '#BBDED9'],
-  ['#283AAE', '#3E4FBD', '#6466C8', '#827ED3', '#9E97DE', '#B9B1E9', '#D3CCF4', '#ECE7FF'],
-  ['#2C3345', '#434A5D', '#5A6276', '#737C90', '#8D96AA', '#A8B1C6', '#C3CDE2', '#DFEAFF'],
-] as const
-
 type ChartPaletteView = 'summary' | 'palettes' | 'custom'
 
 function readBuilderChartPalette(value: unknown): string[] {
-  if (typeof value === 'string' && value.trim().startsWith('[')) {
-    try {
-      const parsed = JSON.parse(value)
-      if (Array.isArray(parsed)) {
-        const colors = parsed.filter((color): color is string => typeof color === 'string' && color.trim().length > 0)
-        if (colors.length > 0) return colors
-      }
-    } catch { /* fall through to the default Report Builder palette */ }
-  }
-  return [...DEFAULT_CHART_COLOR_PALETTES[0]]
+  return resolveChartPalette(typeof value === 'string' ? value : undefined)
 }
 
 function sameChartPalette(left: readonly string[], right: readonly string[]): boolean {
@@ -8340,7 +8320,7 @@ export function BuildPage({
                                 <Icon name="chevron-up" category="arrows" size={16} />
                               </div>
                               <div className="chart-palette-panel__list">
-                                {DEFAULT_CHART_COLOR_PALETTES.map((colors, paletteIndex) => {
+                                {CHART_COLOR_PALETTES.map((colors, paletteIndex) => {
                                   const selected = sameChartPalette(selectedChartPalette, colors)
                                   return (
                                     <button key={paletteIndex} type="button" className={`chart-palette-panel__palette${selected ? ' chart-palette-panel__palette--selected' : ''}`} aria-label={`Default palette ${paletteIndex + 1}`} aria-pressed={selected} onClick={() => selectChartPalette(colors)}>

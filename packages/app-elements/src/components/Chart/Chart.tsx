@@ -11,7 +11,21 @@ export type ChartDataSet = 'Orders' | 'Revenue' | 'Visitors';
 export type ChartDateFilter = 'Yearly' | 'Monthly' | 'Weekly';
 export type ChartLegendPosition = 'Bottom' | 'Right' | 'Top' | 'Left';
 
-export const DEFAULT_CHART_PALETTE = ['#C6A9FE', '#E3A1E3', '#FCA2A2', '#FFC14F', '#91D9AD', '#AFD35E', '#81CEFA', '#97B0DB'];
+export const CHART_COLOR_PALETTES = [
+  ['#003D7A', '#0052A3', '#0066CC', '#007AF5', '#1F8FFF', '#47A3FF', '#70B8FF', '#99CCFF', '#C2E1FF'],
+  ['#00876C', '#8BB777', '#BFCD84', '#F4E398', '#F0BD73', '#EB965B', '#E36C50', '#DE425B'],
+  ['#3E4FBD', '#9464C8', '#B471CC', '#E891D6', '#FF8CC6', '#FF74AB', '#FF5A8B', '#DE425B'],
+  ['#FB6660', '#FF3E5F', '#C95EFF', '#8B27AE', '#5611E9', '#0476D9', '#044BD9', '#1509AF'],
+  ['#441D18', '#B0624D', '#AA7366', '#B89895', '#CFAAA6', '#E0CACA', '#4C3947', '#776270'],
+  ['#1E2D40', '#394452', '#757A62', '#BAA868', '#DED288', '#AEC370', '#7C9B4A', '#40561B'],
+  ['#BE4502', '#D4560E', '#E17019', '#EE9856', '#F4AB73', '#F9BE90', '#FCD0AE', '#FFE3CD'],
+  ['#006356', '#108473', '#3CA393', '#59B0A3', '#77BEB3', '#94CCC4', '#B1DAD4', '#BBDED9'],
+  ['#283AAE', '#3E4FBD', '#6466C8', '#827ED3', '#9E97DE', '#B9B1E9', '#D3CCF4', '#ECE7FF'],
+  ['#2C3345', '#434A5D', '#5A6276', '#737C90', '#8D96AA', '#A8B1C6', '#C3CDE2', '#DFEAFF'],
+] as const;
+
+export const DEFAULT_CHART_PALETTE = CHART_COLOR_PALETTES[0];
+const LEGACY_DEFAULT_CHART_PALETTE = ['#C6A9FE', '#E3A1E3', '#FCA2A2', '#FFC14F', '#91D9AD', '#AFD35E', '#81CEFA', '#97B0DB'];
 
 export interface ChartProps {
   type?: ChartType;
@@ -148,20 +162,25 @@ function pieSliceColor(index: number): string {
   return chartSeriesColor(index);
 }
 
-function readChartPalette(value: string | undefined, fallbackColor: string): string[] {
+export function resolveChartPalette(value: string | undefined, fallbackColor: string = DEFAULT_CHART_PALETTE[0]): string[] {
   if (value) {
     try {
       const parsed = JSON.parse(value);
       if (Array.isArray(parsed)) {
         const colors = parsed.filter((color): color is string => typeof color === 'string' && color.trim().length > 0);
-        if (colors.length > 0) return colors.slice(0, MAX_CHART_CATEGORIES);
+        if (colors.length > 0) {
+          const normalizedColors = colors.slice(0, MAX_CHART_CATEGORIES);
+          const isLegacyDefault = normalizedColors.length === LEGACY_DEFAULT_CHART_PALETTE.length
+            && normalizedColors.every((color, index) => color.toUpperCase() === LEGACY_DEFAULT_CHART_PALETTE[index]);
+          return isLegacyDefault ? [...DEFAULT_CHART_PALETTE] : normalizedColors;
+        }
       }
     } catch {
       // Keep the default Report Builder palette when saved data is malformed.
     }
   }
   return fallbackColor === DEFAULT_CHART_PALETTE[0]
-    ? DEFAULT_CHART_PALETTE
+    ? [...DEFAULT_CHART_PALETTE]
     : [fallbackColor, ...DEFAULT_CHART_PALETTE.slice(1)];
 }
 
@@ -904,7 +923,7 @@ export const Chart: FC<ChartProps> = ({
     : type === 'Donut' ? 'How your audience is distributed' : `Monthly ${defaultTitle.toLowerCase()} overview`);
   const seriesLabels: [string, string] = [primaryLabel || 'This period', secondaryLabel || 'Previous period'];
   const animClass = skeletonAnimation === 'shimmer' ? 'animate-shimmer' : 'animate-pulse';
-  const resolvedChartPalette = readChartPalette(chartPalette, chartColor);
+  const resolvedChartPalette = resolveChartPalette(chartPalette, chartColor);
   const chartPaletteStyle = { '--accent-default': resolvedChartPalette[0] ?? chartColor } as CSSProperties & Record<string, string>;
   for (let index = 0; index < MAX_CHART_CATEGORIES; index += 1) {
     chartPaletteStyle[`--chart-palette-${index + 1}`] = resolvedChartPalette[index % resolvedChartPalette.length] ?? chartColor;

@@ -6769,7 +6769,12 @@ body,
 }
 
 .chart-style-properties__color {
-  border-bottom: 1px solid var(--gray-700);
+  border-bottom: 0;
+  background: var(--gray-600);
+
+  .jf-form-field__title-text {
+    font-weight: var(--ds-font-weight-bold);
+  }
 }
 
 .chart-style-properties__palette {
@@ -6792,15 +6797,24 @@ body,
   align-items: center;
   min-width: 0;
   height: 100%;
-  padding: var(--spacing-xs);
-  gap: var(--spacing-xs);
+  padding: 0;
+  gap: 0;
 }
 
 .chart-style-properties__swatch {
+  display: grid;
   flex: 1 1 0;
+  place-items: center;
   min-width: 0;
+  height: 100%;
+  padding: var(--spacing-xs);
+}
+
+.chart-style-properties__swatch::after {
+  width: var(--spacing-xl);
   height: var(--spacing-xl);
   background: var(--chart-palette-color);
+  content: '';
 }
 
 .chart-style-properties__palette-more {
