@@ -8676,7 +8676,6 @@ export function BuildPage({
                         { name: 'Percentages', description: 'Show each response as a percentage of the total' },
                         ...(!isCircularChart ? [
                           { name: 'Value Labels' },
-                          { name: 'Grid' },
                           { name: 'Tooltips', description: 'Show the exact value when you hover over the chart' },
                         ] : []),
                       ]
