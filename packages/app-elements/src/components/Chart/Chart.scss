@@ -167,6 +167,14 @@
   gap: calc(var(--space-5) + var(--space-2));
 }
 
+.jf-chart--pie,
+.jf-chart--donut {
+  .jf-chart__canvas {
+    height: auto;
+    min-height: calc(var(--space-5) * 10);
+  }
+}
+
 .jf-chart__legend {
   display: flex;
   flex-wrap: wrap;
@@ -195,7 +203,7 @@
 }
 
 .jf-chart__donut-layout {
-  height: 100%;
+  min-height: inherit;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -203,7 +211,7 @@
 }
 
 .jf-chart__pie-layout {
-  height: 100%;
+  min-height: inherit;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -535,6 +543,13 @@
 
   .jf-chart__canvas {
     height: 176px;
+  }
+
+  .jf-chart--pie,
+  .jf-chart--donut {
+    .jf-chart__canvas {
+      height: auto;
+    }
   }
 
   .jf-chart__donut-layout {
