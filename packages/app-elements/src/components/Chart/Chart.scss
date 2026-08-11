@@ -239,6 +239,28 @@
   }
 }
 
+// Top and bottom legends use the horizontal, wrapping composition from the
+// chart design. Side legends intentionally keep their compact vertical list.
+.jf-chart__donut-layout--top .jf-chart__donut-legend,
+.jf-chart__donut-layout--bottom .jf-chart__donut-legend,
+.jf-chart__pie-layout--top .jf-chart__pie-legend,
+.jf-chart__pie-layout--bottom .jf-chart__pie-legend {
+  width: 100%;
+  max-width: calc(var(--space-5) * 26);
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  column-gap: var(--space-6);
+  row-gap: var(--space-3);
+}
+
+.jf-chart__donut-layout--top .jf-chart__donut-legend-row,
+.jf-chart__donut-layout--bottom .jf-chart__donut-legend-row,
+.jf-chart__pie-layout--top .jf-chart__pie-legend-row,
+.jf-chart__pie-layout--bottom .jf-chart__pie-legend-row {
+  grid-template-columns: auto auto auto;
+}
+
 .jf-chart__pie {
   width: calc(var(--space-5) * 10);
   height: calc(var(--space-5) * 10);
