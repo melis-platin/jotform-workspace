@@ -860,7 +860,7 @@ export const Chart: FC<ChartProps> = ({
   timeRange = 'All time',
   timeRangeOptions,
   showLegend = true,
-  chartColor = 'var(--blue-600)',
+  chartColor = 'var(--chart-blue-900)',
   tableRows,
   measures,
   measureField = 'Value',

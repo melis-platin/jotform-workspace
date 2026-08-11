@@ -8264,15 +8264,15 @@ export function BuildPage({
 
                     if (propertyTab === 'style') {
                       const chartColorOptions = [
-                        'var(--blue-600)',
-                        'var(--blue-500)',
-                        'var(--blue-400)',
-                        'var(--blue-300)',
-                        'var(--blue-200)',
-                        'var(--blue-100)',
-                        'var(--navy-200)',
-                        'var(--navy-100)',
-                        'var(--navy-50)',
+                        'var(--chart-blue-900)',
+                        'var(--chart-blue-800)',
+                        'var(--chart-blue-700)',
+                        'var(--chart-blue-600)',
+                        'var(--chart-blue-500)',
+                        'var(--chart-blue-400)',
+                        'var(--chart-blue-300)',
+                        'var(--chart-blue-200)',
+                        'var(--chart-blue-100)',
                       ]
                       const chartStyleToggles = [
                         { name: 'Response Values', description: 'Show the value for each bar' },

@@ -39,7 +39,7 @@ ComponentRegistry.register({
     { name: 'Icon', type: 'icon', default: 'TrendingUp' },
     { name: 'Date Filter', type: 'boolean', default: false },
     { name: 'Show Legend', type: 'boolean', default: true },
-    { name: 'Chart Color', type: 'text', default: 'var(--blue-600)' },
+    { name: 'Chart Color', type: 'text', default: 'var(--chart-blue-900)' },
     { name: 'Response Values', type: 'boolean', default: true },
     { name: 'Percentages', type: 'boolean', default: true },
     { name: 'Round Percentages', type: 'boolean', default: false },
