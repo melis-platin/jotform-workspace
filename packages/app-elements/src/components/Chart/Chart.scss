@@ -210,6 +210,27 @@
   gap: calc(var(--space-5) * 5);
 }
 
+.jf-chart__donut-layout,
+.jf-chart__pie-layout {
+  &--left {
+    flex-direction: row-reverse;
+  }
+
+  &--top {
+    flex-direction: column-reverse;
+    gap: var(--space-4);
+  }
+
+  &--bottom {
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  &--no-legend {
+    justify-content: center;
+  }
+}
+
 .jf-chart__pie {
   width: calc(var(--space-5) * 10);
   height: calc(var(--space-5) * 10);

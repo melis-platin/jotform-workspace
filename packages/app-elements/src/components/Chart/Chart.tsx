@@ -9,6 +9,7 @@ export type ChartType = 'Bar' | 'Horizontal Bar' | 'Line' | 'Area' | 'Pie' | 'Do
 export type ChartDataSet = 'Orders' | 'Revenue' | 'Visitors';
 
 export type ChartDateFilter = 'Yearly' | 'Monthly' | 'Weekly';
+export type ChartLegendPosition = 'Bottom' | 'Right' | 'Top' | 'Left';
 
 export interface ChartProps {
   type?: ChartType;
@@ -24,6 +25,7 @@ export interface ChartProps {
   timeRange?: string;
   timeRangeOptions?: string;
   showLegend?: boolean;
+  legendPosition?: ChartLegendPosition;
   chartColor?: string;
   tableRows?: string;
   measures?: string;
@@ -754,7 +756,7 @@ const LineChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (in
   );
 };
 
-const DonutChart: FC<{ data: ChartData; seriesLabels: [string, string] }> = ({ data, seriesLabels }) => {
+const DonutChart: FC<{ data: ChartData; seriesLabels: [string, string]; showLegend: boolean; legendPosition: ChartLegendPosition }> = ({ data, seriesLabels, showLegend, legendPosition }) => {
   const dataSeries = chartSeries(data, 'bar', seriesLabels);
   const isMultiMeasure = dataSeries.length > 1;
   const slices = isMultiMeasure
@@ -764,7 +766,7 @@ const DonutChart: FC<{ data: ChartData; seriesLabels: [string, string] }> = ({ d
   let currentAngle = -Math.PI / 2;
 
   return (
-    <div className="jf-chart__donut-layout">
+    <div className={`jf-chart__donut-layout jf-chart__donut-layout--${legendPosition.toLowerCase()}${showLegend ? '' : ' jf-chart__donut-layout--no-legend'}`}>
       <svg className="jf-chart__donut" viewBox="0 0 200 200" role="img" aria-label="Donut chart">
         {slices.map((slice, index) => {
           const nextAngle = currentAngle + (total ? slice.value / total : 0) * Math.PI * 2;
@@ -774,13 +776,13 @@ const DonutChart: FC<{ data: ChartData; seriesLabels: [string, string] }> = ({ d
         })}
         <circle className="jf-chart__donut-hole" cx="100" cy="100" r="68" />
       </svg>
-      <div className="jf-chart__donut-legend">
+      {showLegend && <div className="jf-chart__donut-legend">
         {slices.map((slice, index) => <div className="jf-chart__donut-legend-row" key={slice.label}>
           <span className="jf-chart__legend-dot" style={{ background: pieSliceColor(index) } as CSSProperties} />
           <span>{slice.label}</span>
           <strong>{total ? `${Math.round((slice.value / total) * 100)}%` : '0%'}</strong>
         </div>)}
-      </div>
+      </div>}
     </div>
   );
 };
@@ -797,7 +799,7 @@ function pieSlicePath(center: number, radius: number, startAngle: number, endAng
   return `M ${center} ${center} L ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArc} 1 ${end.x} ${end.y} Z`;
 }
 
-const PieChart: FC<{ data: ChartData; seriesLabels: [string, string] }> = ({ data, seriesLabels }) => {
+const PieChart: FC<{ data: ChartData; seriesLabels: [string, string]; showLegend: boolean; legendPosition: ChartLegendPosition }> = ({ data, seriesLabels, showLegend, legendPosition }) => {
   const dataSeries = chartSeries(data, 'bar', seriesLabels);
   const isMultiMeasure = dataSeries.length > 1;
   const slices = (isMultiMeasure
@@ -809,7 +811,7 @@ const PieChart: FC<{ data: ChartData; seriesLabels: [string, string] }> = ({ dat
   let currentAngle = -Math.PI / 2;
 
   return (
-    <div className="jf-chart__pie-layout">
+    <div className={`jf-chart__pie-layout jf-chart__pie-layout--${legendPosition.toLowerCase()}${showLegend ? '' : ' jf-chart__pie-layout--no-legend'}`}>
       <svg className="jf-chart__pie" viewBox="0 0 200 200" role="img" aria-label={`Total ${total}`}>
         {slices.map((slice, index) => {
           const portion = total ? slice.value / total : 0;
@@ -819,7 +821,7 @@ const PieChart: FC<{ data: ChartData; seriesLabels: [string, string] }> = ({ dat
           return <path key={slice.label} d={path} fill={pieSliceColor(index)} />;
         })}
       </svg>
-      <div className="jf-chart__pie-legend">
+      {showLegend && <div className="jf-chart__pie-legend">
         {slices.map((slice, index) => (
           <div className="jf-chart__pie-legend-row" key={slice.label}>
             <span className="jf-chart__legend-dot" style={{ background: pieSliceColor(index) } as CSSProperties} />
@@ -827,7 +829,7 @@ const PieChart: FC<{ data: ChartData; seriesLabels: [string, string] }> = ({ dat
             <strong>{total ? `${Math.round((slice.value / total) * 100)}%` : '0%'}</strong>
           </div>
         ))}
-      </div>
+      </div>}
     </div>
   );
 };
@@ -860,6 +862,7 @@ export const Chart: FC<ChartProps> = ({
   timeRange = 'All time',
   timeRangeOptions,
   showLegend = true,
+  legendPosition = 'Right',
   chartColor = 'var(--chart-blue-900)',
   tableRows,
   measures,
@@ -943,8 +946,8 @@ export const Chart: FC<ChartProps> = ({
         {type === 'Bar' && <BarChart data={chartData} tooltip={tooltip} onHover={handleHover} labelStep={labelStep} seriesLabels={seriesLabels} />}
         {type === 'Horizontal Bar' && <HorizontalBarChart data={chartData} tooltip={tooltip} onHover={handleHover} seriesLabels={seriesLabels} />}
         {(type === 'Line' || type === 'Area') && <LineChart data={chartData} tooltip={tooltip} onHover={handleHover} labelStep={labelStep} seriesLabels={seriesLabels} showArea={type === 'Area'} />}
-        {type === 'Pie' && <PieChart data={chartData} seriesLabels={seriesLabels} />}
-        {type === 'Donut' && <DonutChart data={chartData} seriesLabels={seriesLabels} />}
+        {type === 'Pie' && <PieChart data={chartData} seriesLabels={seriesLabels} showLegend={showLegend} legendPosition={legendPosition} />}
+        {type === 'Donut' && <DonutChart data={chartData} seriesLabels={seriesLabels} showLegend={showLegend} legendPosition={legendPosition} />}
         {tooltip && <ChartTooltip info={tooltip} />}
       </div>
       {showLegend && (chartData.series?.length ?? (chartData.hasSecondary === false ? 1 : 2)) > 1 && type !== 'Donut' && type !== 'Pie' && (

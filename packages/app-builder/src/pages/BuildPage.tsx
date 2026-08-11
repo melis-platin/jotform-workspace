@@ -8284,6 +8284,9 @@ export function BuildPage({
                       ]
                       const selectedChartColor = String(p['Chart Color'] ?? chartColorOptions[0])
                       const selectedChartColorIndex = Math.max(chartColorOptions.indexOf(selectedChartColor), 0)
+                      const showPieLegend = p['Show Legend'] !== false
+                      const legendPosition = String(p['Legend Position'] ?? 'Right')
+                      const legendPositionOptions = ['Bottom', 'Right', 'Top', 'Left'] as const
                       return (
                         <div className="property-panel__body chart-style-properties">
                           <section className="chart-style-properties__color">
@@ -8295,11 +8298,32 @@ export function BuildPage({
                             </DSFormField>
                           </section>
                           {chartStyleToggles.map(({ name, description }) => (
-                            <section className="chart-style-properties__toggle" key={name}>
-                              <DSFormField title={name} description={description} size="md" showDescription={Boolean(description)} showHelpText={false}>
-                                <DSToggle size="md" checked={Boolean(p[name])} onChange={(event) => set(name, event.target.checked)} />
-                              </DSFormField>
-                            </section>
+                            <Fragment key={name}>
+                              <section className="chart-style-properties__toggle">
+                                <DSFormField title={name} description={description} size="md" showDescription={Boolean(description)} showHelpText={false}>
+                                  <DSToggle size="md" checked={Boolean(p[name])} onChange={(event) => set(name, event.target.checked)} />
+                                </DSFormField>
+                              </section>
+                              {(chartType === 'Pie' || chartType === 'Donut') && name === 'Percentages' && (
+                                <section className="chart-style-properties__toggle chart-style-properties__legend">
+                                  <DSFormField title="Legend" description="Show measure names below the chart" size="md" showDescription showHelpText={false}>
+                                    <DSToggle size="md" checked={showPieLegend} onChange={(event) => set('Show Legend', event.target.checked)} />
+                                  </DSFormField>
+                                  {showPieLegend && (
+                                    <div className="chart-style-properties__legend-positions" role="radiogroup" aria-label="Legend position">
+                                      {legendPositionOptions.map((position) => (
+                                        <button key={position} type="button" role="radio" aria-label={position} aria-checked={legendPosition === position} className={`chart-style-properties__legend-position chart-style-properties__legend-position--${position.toLowerCase()}${legendPosition === position ? ' chart-style-properties__legend-position--selected' : ''}`} onClick={() => set('Legend Position', position)}>
+                                          <span className="chart-style-properties__legend-preview">
+                                            <span className="chart-style-properties__legend-marker" />
+                                            <span className="chart-style-properties__legend-line" />
+                                          </span>
+                                        </button>
+                                      ))}
+                                    </div>
+                                  )}
+                                </section>
+                              )}
+                            </Fragment>
                           ))}
                         </div>
                       )

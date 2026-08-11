@@ -39,6 +39,7 @@ ComponentRegistry.register({
     { name: 'Icon', type: 'icon', default: 'TrendingUp' },
     { name: 'Date Filter', type: 'boolean', default: false },
     { name: 'Show Legend', type: 'boolean', default: true },
+    { name: 'Legend Position', type: 'text', default: 'Right' },
     { name: 'Chart Color', type: 'text', default: 'var(--chart-blue-900)' },
     { name: 'Response Values', type: 'boolean', default: true },
     { name: 'Percentages', type: 'boolean', default: true },
@@ -134,6 +135,7 @@ ComponentRegistry.register({
         timeRange={props['Time Range'] as string}
         timeRangeOptions={props['Time Range Options'] as string}
         showLegend={props['Show Legend'] as boolean}
+        legendPosition={props['Legend Position'] as 'Bottom' | 'Right' | 'Top' | 'Left'}
         chartColor={props['Chart Color'] as string}
         tableRows={(props['Chart Table Rows'] as string) || DEFAULT_CHART_TABLE_ROWS}
         measures={props['Measures'] as string}
