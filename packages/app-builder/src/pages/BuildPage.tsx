@@ -3182,6 +3182,104 @@ function ColorPropertyField({
   )
 }
 
+function ChartPaletteColorField({
+  color,
+  colorIndex,
+  onChange,
+}: {
+  color: string
+  colorIndex: number
+  onChange: (color: string) => void
+}) {
+  const triggerRef = useRef<HTMLButtonElement>(null)
+  const popupRef = useRef<HTMLDivElement>(null)
+  const [open, setOpen] = useState(false)
+  const [position, setPosition] = useState({ top: 0, left: 0 })
+
+  const updatePosition = useCallback(() => {
+    const trigger = triggerRef.current
+    const popup = popupRef.current
+    if (!trigger || !popup) return
+
+    const triggerRect = trigger.getBoundingClientRect()
+    const rootStyles = getComputedStyle(document.documentElement)
+    const gap = Number.parseFloat(rootStyles.getPropertyValue('--spacing-xs'))
+    const popupWidth = popup.offsetWidth
+    const popupHeight = popup.offsetHeight
+    const left = Math.max(gap, Math.min(triggerRect.right - popupWidth, window.innerWidth - popupWidth - gap))
+    const below = triggerRect.bottom + gap
+    const top = below + popupHeight <= window.innerHeight - gap
+      ? below
+      : Math.max(gap, triggerRect.top - popupHeight - gap)
+
+    setPosition({ top, left })
+  }, [])
+
+  useLayoutEffect(() => {
+    if (!open) return
+    updatePosition()
+    window.addEventListener('resize', updatePosition)
+    window.addEventListener('scroll', updatePosition, true)
+    return () => {
+      window.removeEventListener('resize', updatePosition)
+      window.removeEventListener('scroll', updatePosition, true)
+    }
+  }, [open, updatePosition])
+
+  useEffect(() => {
+    if (!open) return
+    const onPointerDown = (event: MouseEvent) => {
+      const target = event.target as Node
+      if (triggerRef.current?.contains(target) || popupRef.current?.contains(target)) return
+      setOpen(false)
+    }
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setOpen(false)
+    }
+    document.addEventListener('mousedown', onPointerDown)
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown)
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [open])
+
+  return (
+    <>
+      <button
+        ref={triggerRef}
+        type="button"
+        className="chart-palette-editor__color-field"
+        style={{ '--chart-palette-color': color } as CSSProperties}
+        aria-label={`Edit palette color ${colorIndex + 1}`}
+        aria-expanded={open}
+        onClick={() => setOpen((current) => !current)}
+      >
+        <Icon name="grid-dots-vertical" category="general" size={16} />
+        <span>{color.toUpperCase()}</span>
+      </button>
+      {open && createPortal(
+        <div
+          ref={popupRef}
+          className="chart-palette-editor__picker-popup"
+          data-theme="dark"
+          style={{ top: position.top, left: position.left }}
+        >
+          <HsvColorPicker
+            color={color.startsWith('#') ? color : '#EFEFF6'}
+            onChange={onChange}
+            tint={0}
+            onTintChange={() => {}}
+            hideTint
+            eyedropperIcon={<Icon name="eye-dropper-filled" category="editor" size={24} />}
+          />
+        </div>,
+        document.body,
+      )}
+    </>
+  )
+}
+
 const SOCIAL_BG_SELECTORS = ['.themes-view__device', '.app-scope']
 function SocialIconColorField({
   value,
@@ -8358,13 +8456,9 @@ export function BuildPage({
                           <div className="property-panel__body chart-palette-editor">
                             <div className="chart-palette-editor__list">
                               {customPalette.map((color, colorIndex) => (
-                                <div key={`${color}-${colorIndex}`} className="chart-palette-editor__row">
+                                <div key={`palette-color-${colorIndex}`} className="chart-palette-editor__row">
                                   <span className="chart-palette-editor__index">{colorIndex + 1}</span>
-                                  <label className="chart-palette-editor__color-field" style={{ '--chart-palette-color': color } as CSSProperties}>
-                                    <Icon name="grid-dots-vertical" category="general" size={16} />
-                                    <span>{color.toUpperCase()}</span>
-                                    <input className="chart-palette-editor__native-color" type="color" value={color.startsWith('#') ? color : '#EFEFF6'} aria-label={`Palette color ${colorIndex + 1}`} onChange={(event) => updateCustomPalette(customPalette.map((item, index) => index === colorIndex ? event.target.value.toUpperCase() : item))} />
-                                  </label>
+                                  <ChartPaletteColorField color={color} colorIndex={colorIndex} onChange={(nextColor) => updateCustomPalette(customPalette.map((item, index) => index === colorIndex ? nextColor.toUpperCase() : item))} />
                                   <button type="button" className="chart-palette-editor__delete" aria-label={`Delete palette color ${colorIndex + 1}`} disabled={customPalette.length <= 2} onClick={() => updateCustomPalette(customPalette.filter((_, index) => index !== colorIndex))}><Icon name="trash-filled" category="general" size={16} /></button>
                                 </div>
                               ))}

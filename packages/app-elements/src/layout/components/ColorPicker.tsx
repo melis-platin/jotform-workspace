@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react';
+import { useState, useRef, useCallback, useEffect, type ReactNode } from 'react';
 import { hexToOklchHue } from '../../utils/neutralTint';
 import { Icon } from '../../components/Icon/Icon';
 
@@ -19,6 +19,7 @@ interface ColorPickerProps {
   gradientStart?: string;
   gradientEnd?: string;
   onGradientChange?: (start: string, end: string) => void;
+  eyedropperIcon?: ReactNode;
 }
 
 // --- Color conversion utilities ---
@@ -111,7 +112,7 @@ function useDrag(onMove: (e: { clientX: number; clientY: number }) => void) {
   return { onMouseDown, onTouchStart };
 }
 
-export function ColorPicker({ color, onChange, tint, onTintChange, hideTint, opacity = 100, onOpacityChange, showTabs, mode = 'solid', onModeChange, gradientStart: gradientStartProp, gradientEnd: gradientEndProp, onGradientChange }: ColorPickerProps) {
+export function ColorPicker({ color, onChange, tint, onTintChange, hideTint, opacity = 100, onOpacityChange, showTabs, mode = 'solid', onModeChange, gradientStart: gradientStartProp, gradientEnd: gradientEndProp, onGradientChange, eyedropperIcon }: ColorPickerProps) {
   const [hsv, setHsv] = useState(() => hexToHsv(color));
   const [hexInput, setHexInput] = useState(color.toUpperCase());
   const satAreaRef = useRef<HTMLDivElement>(null);
@@ -341,7 +342,7 @@ export function ColorPicker({ color, onChange, tint, onTintChange, hideTint, opa
             }
           }}
         >
-          <Icon name="Pipette" size={20} />
+          {eyedropperIcon ?? <Icon name="Pipette" size={20} />}
         </button>
         <div className="color-picker__sliders">
         {/* Hue slider */}

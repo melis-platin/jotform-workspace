@@ -94,6 +94,10 @@
   // space for its 6px vertical scrollbar, so its outer width is 416px.
   --ds-properties-panel-width: 416px;
   --ds-chart-aggregation-width: 120px;
+  --ds-chart-color-picker-width: 280px;
+  --ds-chart-color-picker-height: 270px;
+  --ds-chart-color-picker-saturation-height: 140px;
+  --ds-chart-color-picker-z-index: 10000;
 
   // Canvas element action controls (Figma: New Workspace / 1262:4249)
   --ds-canvas-element-action-width: var(--spacing-3xl);
@@ -7004,23 +7008,89 @@ body,
   display: flex;
   align-items: center;
   gap: var(--spacing-xs);
+  width: 100%;
   height: var(--space-10);
   padding: 0 var(--spacing-sm);
   overflow: hidden;
+  border: 0;
   border-radius: var(--radius-sm);
   background: var(--chart-palette-color);
   color: var(--neutral-800);
+  font-family: var(--font-family-circular);
   font-size: var(--font-size-lg);
+  text-align: left;
   cursor: pointer;
 }
 
-.chart-palette-editor__native-color {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  opacity: 0;
-  cursor: pointer;
+.chart-palette-editor__picker-popup {
+  position: fixed;
+  z-index: var(--ds-chart-color-picker-z-index);
+  width: var(--ds-chart-color-picker-width);
+
+  .color-picker {
+    position: relative;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: var(--ds-chart-color-picker-height);
+    gap: var(--spacing-sm);
+    padding: var(--spacing-md);
+    border: 1px solid var(--gray-800);
+    border-radius: var(--radius-md);
+    background: var(--gray-500);
+    box-shadow: var(--shadow-lg);
+    font-family: var(--font-family-circular);
+
+    &::after {
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      border-radius: inherit;
+      box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--core-white) 6%, transparent);
+      content: '';
+      pointer-events: none;
+    }
+  }
+
+  .color-picker__body {
+    gap: var(--spacing-sm);
+  }
+
+  .color-picker__saturation {
+    height: var(--ds-chart-color-picker-saturation-height);
+    border-radius: var(--radius-sm);
+  }
+
+  .color-picker__sliders-row {
+    gap: var(--spacing-md);
+  }
+
+  .color-picker__hue {
+    height: var(--spacing-md);
+    border: 1px solid color-mix(in srgb, var(--core-white) 16%, transparent);
+    box-shadow: none;
+  }
+
+  .color-picker__eyedropper {
+    border-color: var(--gray-600);
+    background: var(--gray-500);
+    color: var(--core-white);
+
+    &:hover {
+      border-color: var(--gray-600);
+      background: var(--gray-400);
+      color: var(--core-white);
+    }
+  }
+
+  .color-picker__input-row {
+    border-color: transparent;
+    border-radius: var(--radius-sm);
+    background: var(--gray-600);
+  }
+
+  .color-picker__hex-input {
+    font-family: var(--font-family-circular);
+  }
 }
 
 .chart-palette-editor__delete {
