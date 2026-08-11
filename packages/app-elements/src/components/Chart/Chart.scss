@@ -258,7 +258,15 @@
 .jf-chart__donut-layout--bottom .jf-chart__donut-legend-row,
 .jf-chart__pie-layout--top .jf-chart__pie-legend-row,
 .jf-chart__pie-layout--bottom .jf-chart__pie-legend-row {
-  grid-template-columns: auto auto auto;
+  flex: 0 0 calc(25% - var(--space-5));
+  min-width: calc(var(--space-5) * 5);
+  grid-template-columns: auto minmax(0, 1fr) auto;
+
+  > span:nth-child(2) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 .jf-chart__pie {
