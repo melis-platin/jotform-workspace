@@ -8496,7 +8496,6 @@ export function BuildPage({
                       const chartStyleToggles = [
                         { name: 'Response Values', description: 'Show the value for each bar' },
                         { name: 'Percentages', description: 'Show each response as a percentage of the total' },
-                        { name: 'Round Percentages', description: 'Round to the nearest whole number' },
                         ...(!isCircularChart ? [
                           { name: 'Value Labels' },
                           { name: 'Grid' },
