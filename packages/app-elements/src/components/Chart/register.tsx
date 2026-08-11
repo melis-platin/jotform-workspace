@@ -145,6 +145,7 @@ ComponentRegistry.register({
         measureField={props['Measure Field'] as string}
         aggregation={props['Aggregation'] as string}
         groupBy={props['Group By'] as string}
+        valueLabels={props['Value Labels'] !== false}
         selected={props['Selected'] as boolean}
         skeleton={props['Skeleton'] as boolean}
       />

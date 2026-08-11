@@ -49,6 +49,7 @@ export interface ChartProps {
   measureField?: string;
   aggregation?: string;
   groupBy?: string;
+  valueLabels?: boolean;
   selected?: boolean;
   skeleton?: boolean;
   skeletonAnimation?: 'pulse' | 'shimmer';
@@ -465,7 +466,7 @@ function ChartTooltip({ info }: { info: TooltipInfo }) {
 // ============================================
 // Bar Chart
 // ============================================
-const BarChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (info: TooltipInfo | null) => void; labelStep?: number; seriesLabels: [string, string] }> = ({ data, onHover, labelStep = 1, seriesLabels }) => {
+const BarChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (info: TooltipInfo | null) => void; labelStep?: number; seriesLabels: [string, string]; showValueLabels: boolean }> = ({ data, onHover, labelStep = 1, seriesLabels, showValueLabels }) => {
   const series = chartSeries(data, 'bar', seriesLabels);
   const highestValue = Math.max(...series.flatMap((item) => item.values), 1);
   const axisStep = getAxisStep(highestValue);
@@ -536,7 +537,7 @@ const BarChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (inf
                 style={{ fill: chartSeriesColor(seriesIndex) } as CSSProperties}
               />
             ))}
-            {series.map((item, seriesIndex) => <text key={`${item.label}-value`} x={groupX - ((series.length * barWidth + (series.length - 1) * barGap) / 2) + seriesIndex * (barWidth + barGap) + barWidth / 2} y={ys[seriesIndex] - 8} className="jf-chart__bar-value">{values[seriesIndex].toLocaleString()}</text>)}
+            {showValueLabels && series.map((item, seriesIndex) => <text key={`${item.label}-value`} x={groupX - ((series.length * barWidth + (series.length - 1) * barGap) / 2) + seriesIndex * (barWidth + barGap) + barWidth / 2} y={ys[seriesIndex] - 8} className="jf-chart__bar-value">{values[seriesIndex].toLocaleString()}</text>)}
           </g>
         );
       })}
@@ -563,7 +564,7 @@ const BarChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (inf
 // ============================================
 // Horizontal Bar Chart
 // ============================================
-const HorizontalBarChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (info: TooltipInfo | null) => void; seriesLabels: [string, string] }> = ({ data, onHover, seriesLabels }) => {
+const HorizontalBarChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (info: TooltipInfo | null) => void; seriesLabels: [string, string]; showValueLabels: boolean }> = ({ data, onHover, seriesLabels, showValueLabels }) => {
   const series = chartSeries(data, 'bar', seriesLabels);
   const highestValue = Math.max(...series.flatMap((item) => item.values), 1);
   const axisStep = getAxisStep(highestValue);
@@ -640,9 +641,9 @@ const HorizontalBarChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onH
                     className="jf-chart__bar"
                     style={{ fill: chartSeriesColor(seriesIndex) } as CSSProperties}
                   />
-                  <text x={HORIZONTAL_LABEL_WIDTH + width + 8} y={y + barHeight / 2 + 4} className="jf-chart__horizontal-value">
+                  {showValueLabels && <text x={HORIZONTAL_LABEL_WIDTH + width + 8} y={y + barHeight / 2 + 4} className="jf-chart__horizontal-value">
                     {value.toLocaleString()}
-                  </text>
+                  </text>}
                 </g>
               );
             })}
@@ -669,7 +670,7 @@ const buildAreaPath = (points: Array<{ x: number; y: number }>, baseline: number
   return `${linePath} L ${lastPoint.x} ${baseline} L ${firstPoint.x} ${baseline} Z`;
 };
 
-const LineChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (info: TooltipInfo | null) => void; labelStep?: number; seriesLabels: [string, string]; showArea?: boolean }> = ({ data, tooltip, onHover, labelStep = 1, seriesLabels, showArea = false }) => {
+const LineChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (info: TooltipInfo | null) => void; labelStep?: number; seriesLabels: [string, string]; showArea?: boolean; showValueLabels: boolean }> = ({ data, tooltip, onHover, labelStep = 1, seriesLabels, showArea = false, showValueLabels }) => {
   const series = chartSeries(data, 'line', seriesLabels);
   const count = data.labels.length;
   const highestValue = Math.max(...series.flatMap((item) => item.values), 1);
@@ -723,14 +724,16 @@ const LineChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (in
         <g key={`line-${index}`}>
           <path d={buildLinePath(points)} className="jf-chart__line" style={{ stroke: chartSeriesColor(index) } as CSSProperties} />
           {points.map((point, pointIndex) => (
-            <circle
-              key={pointIndex}
-              cx={point.x}
-              cy={point.y}
-              r={3}
-              className="jf-chart__line-point"
-              style={{ stroke: chartSeriesColor(index) } as CSSProperties}
-            />
+            <g key={pointIndex}>
+              <circle
+                cx={point.x}
+                cy={point.y}
+                r={3}
+                className="jf-chart__line-point"
+                style={{ stroke: chartSeriesColor(index) } as CSSProperties}
+              />
+              {showValueLabels && <text x={point.x} y={Math.max(PADDING_TOP + 10, point.y - 8 - index * 12)} className="jf-chart__point-value">{series[index].values[pointIndex]?.toLocaleString()}</text>}
+            </g>
           ))}
         </g>
       ))}
@@ -785,7 +788,7 @@ const LineChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (in
   );
 };
 
-const DonutChart: FC<{ data: ChartData; seriesLabels: [string, string]; showLegend: boolean; legendPosition: ChartLegendPosition }> = ({ data, seriesLabels, showLegend, legendPosition }) => {
+const DonutChart: FC<{ data: ChartData; seriesLabels: [string, string]; showLegend: boolean; legendPosition: ChartLegendPosition; showValueLabels: boolean }> = ({ data, seriesLabels, showLegend, legendPosition, showValueLabels }) => {
   const dataSeries = chartSeries(data, 'bar', seriesLabels);
   const isMultiMeasure = dataSeries.length > 1;
   const slices = isMultiMeasure
@@ -798,10 +801,16 @@ const DonutChart: FC<{ data: ChartData; seriesLabels: [string, string]; showLege
     <div className={`jf-chart__donut-layout jf-chart__donut-layout--${legendPosition.toLowerCase()}${showLegend ? '' : ' jf-chart__donut-layout--no-legend'}`}>
       <svg className="jf-chart__donut" viewBox="0 0 200 200" role="img" aria-label="Donut chart">
         {slices.map((slice, index) => {
-          const nextAngle = currentAngle + (total ? slice.value / total : 0) * Math.PI * 2;
-          const path = pieSlicePath(100, 100, currentAngle, nextAngle);
+          const portion = total ? slice.value / total : 0;
+          const startAngle = currentAngle;
+          const nextAngle = startAngle + portion * Math.PI * 2;
+          const path = pieSlicePath(100, 100, startAngle, nextAngle);
+          const labelPoint = piePoint(100, 84, startAngle + (nextAngle - startAngle) / 2);
           currentAngle = nextAngle;
-          return <path key={slice.label} d={path} fill={pieSliceColor(index)} />;
+          return <g key={slice.label}>
+            <path d={path} fill={pieSliceColor(index)} />
+            {showValueLabels && portion >= 0.05 && <text x={labelPoint.x} y={labelPoint.y} className="jf-chart__slice-value">{slice.value.toLocaleString()}</text>}
+          </g>;
         })}
         <circle className="jf-chart__donut-hole" cx="100" cy="100" r="68" />
       </svg>
@@ -828,7 +837,7 @@ function pieSlicePath(center: number, radius: number, startAngle: number, endAng
   return `M ${center} ${center} L ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArc} 1 ${end.x} ${end.y} Z`;
 }
 
-const PieChart: FC<{ data: ChartData; seriesLabels: [string, string]; showLegend: boolean; legendPosition: ChartLegendPosition }> = ({ data, seriesLabels, showLegend, legendPosition }) => {
+const PieChart: FC<{ data: ChartData; seriesLabels: [string, string]; showLegend: boolean; legendPosition: ChartLegendPosition; showValueLabels: boolean }> = ({ data, seriesLabels, showLegend, legendPosition, showValueLabels }) => {
   const dataSeries = chartSeries(data, 'bar', seriesLabels);
   const isMultiMeasure = dataSeries.length > 1;
   const slices = (isMultiMeasure
@@ -844,10 +853,15 @@ const PieChart: FC<{ data: ChartData; seriesLabels: [string, string]; showLegend
       <svg className="jf-chart__pie" viewBox="0 0 200 200" role="img" aria-label={`Total ${total}`}>
         {slices.map((slice, index) => {
           const portion = total ? slice.value / total : 0;
-          const nextAngle = currentAngle + portion * Math.PI * 2;
-          const path = pieSlicePath(100, radius, currentAngle, nextAngle);
+          const startAngle = currentAngle;
+          const nextAngle = startAngle + portion * Math.PI * 2;
+          const path = pieSlicePath(100, radius, startAngle, nextAngle);
+          const labelPoint = piePoint(100, radius * 0.62, startAngle + (nextAngle - startAngle) / 2);
           currentAngle = nextAngle;
-          return <path key={slice.label} d={path} fill={pieSliceColor(index)} />;
+          return <g key={slice.label}>
+            <path d={path} fill={pieSliceColor(index)} />
+            {showValueLabels && portion >= 0.05 && <text x={labelPoint.x} y={labelPoint.y} className="jf-chart__slice-value">{slice.value.toLocaleString()}</text>}
+          </g>;
         })}
       </svg>
       {showLegend && <div className="jf-chart__pie-legend">
@@ -899,6 +913,7 @@ export const Chart: FC<ChartProps> = ({
   measureField = 'Value',
   aggregation = 'Sum',
   groupBy = 'Category',
+  valueLabels = true,
   selected = false,
   skeleton = false,
   skeletonAnimation = 'pulse',
@@ -978,11 +993,11 @@ export const Chart: FC<ChartProps> = ({
           : showDateFilter && !isTableColumnChart && (!tableRows || tableHasDateColumn) && <DateFilterDropdown value={dateFilter} onChange={setDateFilter} />}
       </div>
       <div className="jf-chart__canvas">
-        {type === 'Bar' && <BarChart data={chartData} tooltip={tooltip} onHover={handleHover} labelStep={labelStep} seriesLabels={seriesLabels} />}
-        {type === 'Horizontal Bar' && <HorizontalBarChart data={chartData} tooltip={tooltip} onHover={handleHover} seriesLabels={seriesLabels} />}
-        {(type === 'Line' || type === 'Area') && <LineChart data={chartData} tooltip={tooltip} onHover={handleHover} labelStep={labelStep} seriesLabels={seriesLabels} showArea={type === 'Area'} />}
-        {type === 'Pie' && <PieChart data={chartData} seriesLabels={seriesLabels} showLegend={showLegend} legendPosition={legendPosition} />}
-        {type === 'Donut' && <DonutChart data={chartData} seriesLabels={seriesLabels} showLegend={showLegend} legendPosition={legendPosition} />}
+        {type === 'Bar' && <BarChart data={chartData} tooltip={tooltip} onHover={handleHover} labelStep={labelStep} seriesLabels={seriesLabels} showValueLabels={valueLabels} />}
+        {type === 'Horizontal Bar' && <HorizontalBarChart data={chartData} tooltip={tooltip} onHover={handleHover} seriesLabels={seriesLabels} showValueLabels={valueLabels} />}
+        {(type === 'Line' || type === 'Area') && <LineChart data={chartData} tooltip={tooltip} onHover={handleHover} labelStep={labelStep} seriesLabels={seriesLabels} showArea={type === 'Area'} showValueLabels={valueLabels} />}
+        {type === 'Pie' && <PieChart data={chartData} seriesLabels={seriesLabels} showLegend={showLegend} legendPosition={legendPosition} showValueLabels={valueLabels} />}
+        {type === 'Donut' && <DonutChart data={chartData} seriesLabels={seriesLabels} showLegend={showLegend} legendPosition={legendPosition} showValueLabels={valueLabels} />}
         {tooltip && <ChartTooltip info={tooltip} />}
       </div>
       {showLegend && (chartData.series?.length ?? (chartData.hasSecondary === false ? 1 : 2)) > 1 && type !== 'Donut' && type !== 'Pie' && (

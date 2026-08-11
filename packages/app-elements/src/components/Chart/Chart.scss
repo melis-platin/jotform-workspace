@@ -365,6 +365,25 @@
   text-anchor: middle;
 }
 
+.jf-chart__point-value {
+  fill: var(--fg-secondary);
+  font-family: var(--font-family-shell);
+  font-size: var(--font-size-label-sm);
+  font-weight: var(--font-weight-bold);
+  pointer-events: none;
+  text-anchor: middle;
+}
+
+.jf-chart__slice-value {
+  fill: var(--fg-inverse);
+  font-family: var(--font-family-shell);
+  font-size: var(--font-size-label-md);
+  font-weight: var(--font-weight-bold);
+  pointer-events: none;
+  dominant-baseline: middle;
+  text-anchor: middle;
+}
+
 .jf-chart__horizontal-label {
   fill: var(--fg-secondary);
   font-size: var(--font-size-label-xs);
@@ -597,7 +616,8 @@
   }
 
   .jf-chart__bar-value,
-  .jf-chart__horizontal-value {
+  .jf-chart__horizontal-value,
+  .jf-chart__point-value {
     font-size: calc(var(--font-size-label-sm) * 2);
   }
 
