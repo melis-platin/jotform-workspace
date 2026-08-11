@@ -6789,7 +6789,7 @@ body,
   place-items: center;
   min-width: 0;
   height: 100%;
-  padding: var(--spacing-sm);
+  padding: var(--spacing-xs);
   border: 0;
   background: transparent;
   cursor: pointer;
@@ -6804,6 +6804,7 @@ body,
 
 .chart-style-properties__palette-more {
   flex: 0 0 var(--space-10);
+  padding: 0;
   color: var(--core-white);
 }
 
