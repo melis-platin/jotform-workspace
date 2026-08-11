@@ -3888,6 +3888,9 @@ export function BuildPage({
   const [chartTablePickerElementId, setChartTablePickerElementId] = useState<string | null>(null)
   const [chartTableCreateElementId, setChartTableCreateElementId] = useState<string | null>(null)
   const [chartTableCreateMode, setChartTableCreateMode] = useState<'scratch' | 'import' | null>(null)
+  const [chartTableImportElementId, setChartTableImportElementId] = useState<string | null>(null)
+  const [chartTableImportFile, setChartTableImportFile] = useState<File | null>(null)
+  const [chartTableImportDragActive, setChartTableImportDragActive] = useState(false)
   const [chartTableEditorElementId, setChartTableEditorElementId] = useState<string | null>(null)
   const [chartTableSearch, setChartTableSearch] = useState('')
   const chartTableImportInputRef = useRef<HTMLInputElement>(null)
@@ -4003,6 +4006,45 @@ export function BuildPage({
       : presetInitialState
   })()).current
   const [pages, setPages] = useState<AppPage[]>(initial.pages)
+  const createChartTable = useCallback((
+    chartElement: CanvasElement,
+    sourceRows: Record<string, string | number>[] = DEFAULT_CHART_TABLE_ROWS,
+    preferredName = 'New Table',
+  ) => {
+    const existingNames = new Set(pages.flatMap((page) => page.elements)
+      .filter((element) => element.componentId === 'chart')
+      .map((element) => String(element.properties['Data Source'] ?? '').trim())
+      .filter(Boolean))
+    let tableName = preferredName
+    let suffix = 2
+    while (existingNames.has(tableName)) {
+      tableName = `${preferredName} ${suffix}`
+      suffix += 1
+    }
+
+    setPages((currentPages) => currentPages.map((page) => ({
+      ...page,
+      elements: page.elements.map((element) => element.id === chartElement.id ? {
+        ...element,
+        properties: {
+          ...element.properties,
+          'Data Source': tableName,
+          'Chart Table Rows': JSON.stringify(sourceRows),
+          Measures: JSON.stringify([{ agg: 'Sum', col: 'value' }]),
+          'Measure Field': 'value',
+          Aggregation: 'Sum',
+          'Group By': 'category',
+          'Time Range': 'All Time',
+        },
+      } : element),
+    })))
+    setChartTableCreateMode(null)
+    setChartTableCreateElementId(null)
+    setChartTableImportFile(null)
+    setChartTableImportDragActive(false)
+    setChartTableImportElementId(null)
+    setChartTableEditorElementId(chartElement.id)
+  }, [pages])
   useEffect(() => {
     setPages((current) => {
       let changed = false
@@ -12295,60 +12337,6 @@ export function BuildPage({
         setChartTableCreateMode(null)
         setChartTableCreateElementId(null)
       }
-      const createTable = (sourceRows: Record<string, string | number>[] = DEFAULT_CHART_TABLE_ROWS, preferredName = 'New Table') => {
-        const existingNames = new Set(pages.flatMap((page) => page.elements)
-          .filter((element) => element.componentId === 'chart')
-          .map((element) => String(element.properties['Data Source'] ?? '').trim())
-          .filter(Boolean))
-        let tableName = preferredName
-        let suffix = 2
-        while (existingNames.has(tableName)) {
-          tableName = `${preferredName} ${suffix}`
-          suffix += 1
-        }
-
-        setPages((currentPages) => currentPages.map((page) => ({
-          ...page,
-          elements: page.elements.map((element) => element.id === chartElement.id ? {
-            ...element,
-            properties: {
-              ...element.properties,
-              'Data Source': tableName,
-              'Chart Table Rows': JSON.stringify(sourceRows),
-              Measures: JSON.stringify([{ agg: 'Sum', col: 'value' }]),
-              'Measure Field': 'value',
-              Aggregation: 'Sum',
-              'Group By': 'category',
-              'Time Range': 'All Time',
-            },
-          } : element),
-        })))
-        closeCreateTable()
-        setChartTableEditorElementId(chartElement.id)
-      }
-      const importTable = async (file: File) => {
-        const preferredName = file.name.replace(/\.(csv|xlsx)$/i, '').trim() || 'New Table'
-        if (!file.name.toLowerCase().endsWith('.csv')) {
-          createTable(DEFAULT_CHART_TABLE_ROWS, preferredName)
-          return
-        }
-
-        const text = await file.text()
-        const cells = text.split(/\r?\n/)
-          .filter((line) => line.trim())
-          .map((line) => line.split(',').map((cell) => cell.trim().replace(/^"|"$/g, '')))
-        const firstRowIsHeader = cells.length > 1 && !Number.isFinite(Number(cells[0]?.[1]))
-        const dataRows = (firstRowIsHeader ? cells.slice(1) : cells).slice(0, 200)
-        const sourceRows = dataRows.map((row) => {
-          const value = row[1] ?? ''
-          return {
-            category: row[0] ?? '',
-            value: value !== '' && Number.isFinite(Number(value)) ? Number(value) : value,
-            note: row.slice(2).join(', '),
-          }
-        })
-        createTable(sourceRows.length ? sourceRows : DEFAULT_CHART_TABLE_ROWS, preferredName)
-      }
 
       return (
         <DSModal
@@ -12364,8 +12352,14 @@ export function BuildPage({
           showCancel={false}
           confirmDisabled={!chartTableCreateMode}
           onConfirm={() => {
-            if (chartTableCreateMode === 'scratch') createTable()
-            if (chartTableCreateMode === 'import') chartTableImportInputRef.current?.click()
+            if (chartTableCreateMode === 'scratch') createChartTable(chartElement)
+            if (chartTableCreateMode === 'import') {
+              setChartTableCreateMode(null)
+              setChartTableCreateElementId(null)
+              setChartTableImportFile(null)
+              setChartTableImportDragActive(false)
+              setChartTableImportElementId(chartElement.id)
+            }
           }}
         >
           <div className="chart-table-create" role="radiogroup" aria-label="Choose how to create a table">
@@ -12400,18 +12394,124 @@ export function BuildPage({
               </span>
             </button>
           </div>
-          <input
-            ref={chartTableImportInputRef}
-            className="chart-table-create__file-input"
-            type="file"
-            accept=".csv,.xlsx"
-            aria-label="Import table data"
-            onChange={(event) => {
-              const file = event.target.files?.[0]
-              if (file) void importTable(file)
-              event.target.value = ''
-            }}
-          />
+        </DSModal>
+      )
+    })()}
+
+    {chartTableImportElementId && (() => {
+      const chartElement = pages.flatMap((page) => page.elements).find((element) => element.id === chartTableImportElementId)
+      if (!chartElement || chartElement.componentId !== 'chart') return null
+
+      const closeImportTable = () => {
+        setChartTableImportFile(null)
+        setChartTableImportDragActive(false)
+        setChartTableImportElementId(null)
+        setChartTableCreateMode('import')
+        setChartTableCreateElementId(chartElement.id)
+      }
+      const chooseImportFile = (file: File | undefined) => {
+        if (!file || !/\.(csv|xls|xlsx)$/i.test(file.name)) return
+        setChartTableImportFile(file)
+        setChartTableImportDragActive(false)
+      }
+      const importTable = async () => {
+        if (!chartTableImportFile) return
+        const preferredName = chartTableImportFile.name.replace(/\.(csv|xls|xlsx)$/i, '').trim() || 'New Table'
+        if (!chartTableImportFile.name.toLowerCase().endsWith('.csv')) {
+          createChartTable(chartElement, DEFAULT_CHART_TABLE_ROWS, preferredName)
+          return
+        }
+
+        const text = await chartTableImportFile.text()
+        const cells = text.split(/\r?\n/)
+          .filter((line) => line.trim())
+          .map((line) => line.split(',').map((cell) => cell.trim().replace(/^"|"$/g, '')))
+        const firstRowIsHeader = cells.length > 1 && !Number.isFinite(Number(cells[0]?.[1]))
+        const dataRows = (firstRowIsHeader ? cells.slice(1) : cells).slice(0, 200)
+        const sourceRows = dataRows.map((row) => {
+          const value = row[1] ?? ''
+          return {
+            category: row[0] ?? '',
+            value: value !== '' && Number.isFinite(Number(value)) ? Number(value) : value,
+            note: row.slice(2).join(', '),
+          }
+        })
+        createChartTable(chartElement, sourceRows.length ? sourceRows : DEFAULT_CHART_TABLE_ROWS, preferredName)
+      }
+
+      return (
+        <DSModal
+          open
+          onClose={closeImportTable}
+          size="md"
+          className="chart-table-import-modal"
+          icon={<Icon name="table" category="general" size={24} />}
+          title="Import Data"
+          description="Upload a file to create your app"
+          intent="primary"
+          confirmLabel="NEXT"
+          showCancel={false}
+          confirmDisabled={!chartTableImportFile}
+          onConfirm={() => { void importTable() }}
+        >
+          <div className="chart-table-import">
+            <p className="chart-table-import__title">Upload a file from your device</p>
+            <div
+              className={`chart-table-import__dropzone${chartTableImportDragActive ? ' chart-table-import__dropzone--active' : ''}`}
+              role="presentation"
+              tabIndex={0}
+              onClick={() => chartTableImportInputRef.current?.click()}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault()
+                  chartTableImportInputRef.current?.click()
+                }
+              }}
+              onDragEnter={(event) => {
+                event.preventDefault()
+                setChartTableImportDragActive(true)
+              }}
+              onDragOver={(event) => event.preventDefault()}
+              onDragLeave={(event) => {
+                if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setChartTableImportDragActive(false)
+              }}
+              onDrop={(event) => {
+                event.preventDefault()
+                chooseImportFile(event.dataTransfer.files?.[0])
+              }}
+            >
+              <input
+                ref={chartTableImportInputRef}
+                className="chart-table-import__file-input"
+                type="file"
+                accept="text/csv,.csv,application/vnd.ms-excel,.xls,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,.xlsx"
+                tabIndex={-1}
+                aria-label="Choose a table data file"
+                onClick={(event) => event.stopPropagation()}
+                onChange={(event) => {
+                  chooseImportFile(event.target.files?.[0])
+                  event.target.value = ''
+                }}
+              />
+              <Icon
+                name={chartTableImportFile ? 'document-csv-filled' : 'cloud-arrow-up'}
+                category={chartTableImportFile ? 'documents' : 'general'}
+                size={32}
+                className="chart-table-import__icon"
+              />
+              <div className="chart-table-import__dropzone-copy">
+                <p className="chart-table-import__dropzone-title">
+                  {chartTableImportFile ? chartTableImportFile.name : 'UPLOAD YOUR FILE'}
+                </p>
+                <p className="chart-table-import__dropzone-description">
+                  <span className="chart-table-import__choose-file">Choose a file</span>{' '}
+                  {chartTableImportFile
+                    ? 'to replace the selected file.'
+                    : 'to create your app. All .csv, .xls or .xlsx types are supported.'}
+                </p>
+              </div>
+            </div>
+          </div>
         </DSModal>
       )
     })()}

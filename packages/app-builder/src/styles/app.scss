@@ -7736,10 +7736,6 @@ body,
   }
 }
 
-.chart-table-create__file-input {
-  display: none;
-}
-
 @media (max-width: 520px) {
   .chart-table-create {
     grid-template-columns: 1fr;
@@ -7748,6 +7744,140 @@ body,
   .chart-table-create-modal .jf-modal__body {
     overflow-y: auto;
   }
+}
+
+// Chart / Import Data — source: the production My Apps import flow.
+// Keep these dimensions aligned with the product modal: 640px shell,
+// 93px header, 264px body, 73px footer and a 576x164 upload target.
+.chart-table-import-modal {
+  max-width: calc(var(--spacing-4xl) * 10);
+
+  .jf-modal__icon {
+    background: var(--blue-400);
+  }
+
+  .jf-modal__body {
+    padding: var(--spacing-2xl);
+  }
+
+  .jf-modal__footer {
+    padding: var(--spacing-md) var(--spacing-2xl);
+  }
+}
+
+.chart-table-import {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+.chart-table-import__title {
+  margin: 0;
+  color: var(--text-darkest);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-sm);
+}
+
+.chart-table-import__dropzone {
+  position: relative;
+  width: 100%;
+  height: calc(var(--spacing-4xl) * 2 + var(--spacing-2xl) + var(--spacing-2xs));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-3xl) var(--spacing-md);
+  border: 1px dashed var(--navy-200);
+  border-radius: var(--radius-sm);
+  outline: 2px solid transparent;
+  outline-offset: 0;
+  background: var(--navy-10);
+  color: var(--text-darkest);
+  font-family: var(--font-family-circular);
+  cursor: pointer;
+  transition: border-color var(--transition), outline-color var(--transition);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: transparent;
+    pointer-events: none;
+    transition: background var(--transition);
+  }
+
+  &:hover::before {
+    background: color-mix(in srgb, var(--navy-200) 10%, transparent);
+  }
+
+  &:focus-visible,
+  &--active {
+    border-color: var(--accent-default);
+    outline-color: var(--blue-200);
+  }
+}
+
+.chart-table-import__file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0 -1px -1px 0;
+  padding: 0;
+  overflow: hidden;
+  border: 0;
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.chart-table-import__icon {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  color: var(--navy-200);
+}
+
+.chart-table-import__dropzone-copy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: calc(var(--spacing-2xs) + var(--spacing-2xs) / 2);
+  text-align: center;
+}
+
+.chart-table-import__dropzone-title,
+.chart-table-import__dropzone-description {
+  margin: 0;
+}
+
+.chart-table-import__dropzone-title {
+  max-width: calc(var(--spacing-4xl) * 7);
+  overflow: hidden;
+  color: var(--text-darkest);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  line-height: var(--line-height-xs);
+  letter-spacing: var(--letter-spacing-lg);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chart-table-import__dropzone-description {
+  color: var(--text-medium);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-book);
+  line-height: var(--line-height-xs);
+}
+
+.chart-table-import__choose-file {
+  color: var(--accent-default);
+  text-decoration: underline;
 }
 
 .chart-table-picker__list {
