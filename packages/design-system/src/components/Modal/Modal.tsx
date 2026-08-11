@@ -1,7 +1,7 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { Icon } from '../Icon/Icon';
-import { Button } from '../Button/Button';
+import { Button, type ButtonProps } from '../Button/Button';
 import './Modal.scss';
 
 export type ModalSize = 'sm' | 'md' | 'lg';
@@ -20,6 +20,9 @@ export interface ModalProps {
   confirmLabel?: string;
   cancelLabel?: string;
   showCancel?: boolean;
+  cancelVariant?: ButtonProps['variant'];
+  cancelColorScheme?: ButtonProps['colorScheme'];
+  onCancel?: () => void;
   onConfirm?: () => void;
   confirmLoading?: boolean;
   confirmDisabled?: boolean;
@@ -45,6 +48,9 @@ export function Modal({
   confirmLabel = 'Confirm',
   cancelLabel = 'Cancel',
   showCancel = true,
+  cancelVariant = 'ghost',
+  cancelColorScheme = 'secondary',
+  onCancel,
   onConfirm,
   confirmLoading = false,
   confirmDisabled = false,
@@ -153,7 +159,7 @@ export function Modal({
           </div>
           <div className="jf-modal__footer-actions">
             {showCancel && (
-              <Button variant="ghost" colorScheme="secondary" onClick={onClose}>
+              <Button variant={cancelVariant} colorScheme={cancelColorScheme} onClick={onCancel ?? onClose}>
                 {cancelLabel}
               </Button>
             )}

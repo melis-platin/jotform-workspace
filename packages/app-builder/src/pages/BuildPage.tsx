@@ -12168,6 +12168,34 @@ export function BuildPage({
       const tableOptions = [...sources.values()].filter((table) => (
         !search || `${table.name} ${table.description}`.toLowerCase().includes(search)
       ))
+      const createNewChartTable = () => {
+        let tableName = 'New Table'
+        let suffix = 2
+        while (sources.has(tableName)) {
+          tableName = `New Table ${suffix}`
+          suffix += 1
+        }
+
+        setPages((currentPages) => currentPages.map((page) => ({
+          ...page,
+          elements: page.elements.map((element) => element.id === chartElement.id ? {
+            ...element,
+            properties: {
+              ...element.properties,
+              'Data Source': tableName,
+              'Chart Table Rows': JSON.stringify(DEFAULT_CHART_TABLE_ROWS),
+              Measures: JSON.stringify([{ agg: 'Sum', col: 'value' }]),
+              'Measure Field': 'value',
+              Aggregation: 'Sum',
+              'Group By': 'category',
+              'Time Range': 'All Time',
+            },
+          } : element),
+        })))
+        setChartTableSearch('')
+        setChartTablePickerElementId(null)
+        setChartTableEditorElementId(chartElement.id)
+      }
 
       return (
         <DSModal
@@ -12182,7 +12210,11 @@ export function BuildPage({
           description="Choose a table to use for your chart."
           intent="constructive"
           confirmLabel="Select Table"
-          showCancel={false}
+          cancelLabel="New Table"
+          cancelVariant="filled"
+          cancelColorScheme="secondary"
+          showCancel
+          onCancel={createNewChartTable}
           confirmDisabled={!sources.has(currentSource)}
           onConfirm={() => {
             setChartTablePickerElementId(null)
