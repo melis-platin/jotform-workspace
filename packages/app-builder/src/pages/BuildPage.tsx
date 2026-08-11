@@ -8345,7 +8345,9 @@ export function BuildPage({
                                 </div>
                               </section>
                             )}
-                            <button type="button" className="chart-palette-panel__add-palette" onClick={() => setChartPaletteView('custom')}>ADD PALETTE</button>
+                            <div className="chart-palette-panel__footer">
+                              <button type="button" className="chart-palette-panel__add-palette" onClick={() => setChartPaletteView('custom')}>ADD PALETTE</button>
+                            </div>
                           </div>
                         )
                       }
