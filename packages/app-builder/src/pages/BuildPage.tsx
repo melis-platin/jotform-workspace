@@ -8288,11 +8288,12 @@ export function BuildPage({
                     }
 
                     if (propertyTab === 'style') {
+                      const supportsValueLabels = chartType !== 'Pie' && chartType !== 'Donut'
                       const chartStyleToggles = [
                         { name: 'Response Values', description: 'Show the value for each bar' },
                         { name: 'Percentages', description: 'Show each response as a percentage of the total' },
                         { name: 'Round Percentages', description: 'Round to the nearest whole number' },
-                        { name: 'Value Labels' },
+                        ...(supportsValueLabels ? [{ name: 'Value Labels' }] : []),
                         { name: 'Grid' },
                         { name: 'Tooltips', description: 'Show the exact value when you hover over the chart' },
                       ]

@@ -788,7 +788,7 @@ const LineChart: FC<{ data: ChartData; tooltip: TooltipInfo | null; onHover: (in
   );
 };
 
-const DonutChart: FC<{ data: ChartData; seriesLabels: [string, string]; showLegend: boolean; legendPosition: ChartLegendPosition; showValueLabels: boolean }> = ({ data, seriesLabels, showLegend, legendPosition, showValueLabels }) => {
+const DonutChart: FC<{ data: ChartData; seriesLabels: [string, string]; showLegend: boolean; legendPosition: ChartLegendPosition }> = ({ data, seriesLabels, showLegend, legendPosition }) => {
   const dataSeries = chartSeries(data, 'bar', seriesLabels);
   const isMultiMeasure = dataSeries.length > 1;
   const slices = isMultiMeasure
@@ -809,7 +809,7 @@ const DonutChart: FC<{ data: ChartData; seriesLabels: [string, string]; showLege
           currentAngle = nextAngle;
           return <g key={slice.label}>
             <path d={path} fill={pieSliceColor(index)} />
-            {showValueLabels && portion >= 0.05 && <text x={labelPoint.x} y={labelPoint.y} className="jf-chart__slice-value">{slice.value.toLocaleString()}</text>}
+            {portion >= 0.05 && <text x={labelPoint.x} y={labelPoint.y} className="jf-chart__slice-value">{slice.value.toLocaleString()}</text>}
           </g>;
         })}
         <circle className="jf-chart__donut-hole" cx="100" cy="100" r="68" />
@@ -837,7 +837,7 @@ function pieSlicePath(center: number, radius: number, startAngle: number, endAng
   return `M ${center} ${center} L ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArc} 1 ${end.x} ${end.y} Z`;
 }
 
-const PieChart: FC<{ data: ChartData; seriesLabels: [string, string]; showLegend: boolean; legendPosition: ChartLegendPosition; showValueLabels: boolean }> = ({ data, seriesLabels, showLegend, legendPosition, showValueLabels }) => {
+const PieChart: FC<{ data: ChartData; seriesLabels: [string, string]; showLegend: boolean; legendPosition: ChartLegendPosition }> = ({ data, seriesLabels, showLegend, legendPosition }) => {
   const dataSeries = chartSeries(data, 'bar', seriesLabels);
   const isMultiMeasure = dataSeries.length > 1;
   const slices = (isMultiMeasure
@@ -860,7 +860,7 @@ const PieChart: FC<{ data: ChartData; seriesLabels: [string, string]; showLegend
           currentAngle = nextAngle;
           return <g key={slice.label}>
             <path d={path} fill={pieSliceColor(index)} />
-            {showValueLabels && portion >= 0.05 && <text x={labelPoint.x} y={labelPoint.y} className="jf-chart__slice-value">{slice.value.toLocaleString()}</text>}
+            {portion >= 0.05 && <text x={labelPoint.x} y={labelPoint.y} className="jf-chart__slice-value">{slice.value.toLocaleString()}</text>}
           </g>;
         })}
       </svg>
@@ -996,8 +996,8 @@ export const Chart: FC<ChartProps> = ({
         {type === 'Bar' && <BarChart data={chartData} tooltip={tooltip} onHover={handleHover} labelStep={labelStep} seriesLabels={seriesLabels} showValueLabels={valueLabels} />}
         {type === 'Horizontal Bar' && <HorizontalBarChart data={chartData} tooltip={tooltip} onHover={handleHover} seriesLabels={seriesLabels} showValueLabels={valueLabels} />}
         {(type === 'Line' || type === 'Area') && <LineChart data={chartData} tooltip={tooltip} onHover={handleHover} labelStep={labelStep} seriesLabels={seriesLabels} showArea={type === 'Area'} showValueLabels={valueLabels} />}
-        {type === 'Pie' && <PieChart data={chartData} seriesLabels={seriesLabels} showLegend={showLegend} legendPosition={legendPosition} showValueLabels={valueLabels} />}
-        {type === 'Donut' && <DonutChart data={chartData} seriesLabels={seriesLabels} showLegend={showLegend} legendPosition={legendPosition} showValueLabels={valueLabels} />}
+        {type === 'Pie' && <PieChart data={chartData} seriesLabels={seriesLabels} showLegend={showLegend} legendPosition={legendPosition} />}
+        {type === 'Donut' && <DonutChart data={chartData} seriesLabels={seriesLabels} showLegend={showLegend} legendPosition={legendPosition} />}
         {tooltip && <ChartTooltip info={tooltip} />}
       </div>
       {showLegend && (chartData.series?.length ?? (chartData.hasSecondary === false ? 1 : 2)) > 1 && type !== 'Donut' && type !== 'Pie' && (
