@@ -8316,10 +8316,6 @@ export function BuildPage({
                         return (
                           <div className="property-panel__body chart-palette-panel">
                             <section className="chart-palette-panel__group">
-                              <div className="chart-palette-panel__group-title">
-                                <span>DEFAULT PALETTES</span>
-                                <Icon name="chevron-up" category="arrows" size={16} />
-                              </div>
                               <div className="chart-palette-panel__list">
                                 {CHART_COLOR_PALETTES.map((colors, paletteIndex) => {
                                   const selected = sameChartPalette(selectedChartPalette, colors)
