@@ -43,6 +43,7 @@ ComponentRegistry.register({
     { name: 'Chart Color', type: 'text', default: DEFAULT_CHART_PALETTE[0] },
     { name: 'Chart Palette', type: 'text', default: JSON.stringify(DEFAULT_CHART_PALETTE) },
     { name: 'Chart Custom Palette', type: 'text', default: '' },
+    { name: 'Chart Custom Palettes', type: 'text', default: '' },
     { name: 'Response Values', type: 'boolean', default: true },
     { name: 'Percentages', type: 'boolean', default: true },
     { name: 'Round Percentages', type: 'boolean', default: false },

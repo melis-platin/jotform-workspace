@@ -3280,6 +3280,110 @@ function ChartPaletteColorField({
   )
 }
 
+function ChartPaletteRow({
+  colors,
+  label,
+  selected,
+  onUse,
+  onEdit,
+  onDuplicate,
+}: {
+  colors: readonly string[]
+  label: string
+  selected: boolean
+  onUse: () => void
+  onEdit: () => void
+  onDuplicate: () => void
+}) {
+  const menuTriggerRef = useRef<HTMLButtonElement>(null)
+  const menuRef = useRef<HTMLDivElement>(null)
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [menuPosition, setMenuPosition] = useState({ top: 0, left: 0 })
+
+  const updateMenuPosition = useCallback(() => {
+    const trigger = menuTriggerRef.current
+    const menu = menuRef.current
+    if (!trigger || !menu) return
+
+    const triggerRect = trigger.getBoundingClientRect()
+    const rootStyles = getComputedStyle(document.documentElement)
+    const gap = Number.parseFloat(rootStyles.getPropertyValue('--spacing-xs'))
+    const menuWidth = menu.offsetWidth
+    const menuHeight = menu.offsetHeight
+    const left = Math.max(gap, Math.min(triggerRect.right - menuWidth, window.innerWidth - menuWidth - gap))
+    const below = triggerRect.bottom + gap
+    const top = below + menuHeight <= window.innerHeight - gap
+      ? below
+      : Math.max(gap, triggerRect.top - menuHeight - gap)
+
+    setMenuPosition({ top, left })
+  }, [])
+
+  useLayoutEffect(() => {
+    if (!menuOpen) return
+    updateMenuPosition()
+    window.addEventListener('resize', updateMenuPosition)
+    window.addEventListener('scroll', updateMenuPosition, true)
+    return () => {
+      window.removeEventListener('resize', updateMenuPosition)
+      window.removeEventListener('scroll', updateMenuPosition, true)
+    }
+  }, [menuOpen, updateMenuPosition])
+
+  useEffect(() => {
+    if (!menuOpen) return
+    const onPointerDown = (event: MouseEvent) => {
+      const target = event.target as Node
+      if (menuTriggerRef.current?.contains(target) || menuRef.current?.contains(target)) return
+      setMenuOpen(false)
+    }
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMenuOpen(false)
+    }
+    document.addEventListener('mousedown', onPointerDown)
+    document.addEventListener('keydown', onKeyDown)
+    return () => {
+      document.removeEventListener('mousedown', onPointerDown)
+      document.removeEventListener('keydown', onKeyDown)
+    }
+  }, [menuOpen])
+
+  const runMenuAction = (action: () => void) => {
+    setMenuOpen(false)
+    action()
+  }
+
+  return (
+    <div className={`chart-palette-panel__palette${selected ? ' chart-palette-panel__palette--selected' : ''}`}>
+      <button type="button" className="chart-palette-panel__palette-use" aria-label={label} aria-pressed={selected} onClick={onUse}>
+        <span className="chart-palette-panel__colors">
+          {colors.map((color, colorIndex) => <span key={`${color}-${colorIndex}`} className="chart-palette-panel__color" style={{ '--chart-palette-color': color } as CSSProperties} />)}
+        </span>
+        {selected && <span className="chart-palette-panel__check"><Icon name="check" category="general" size={24} /></span>}
+      </button>
+      <button
+        ref={menuTriggerRef}
+        type="button"
+        className="chart-palette-panel__menu"
+        aria-label={`Open ${label} menu`}
+        aria-haspopup="menu"
+        aria-expanded={menuOpen}
+        onClick={() => setMenuOpen((current) => !current)}
+      >
+        <Icon name="ellipsis-vertical" category="general" size={24} />
+      </button>
+      {menuOpen && createPortal(
+        <div ref={menuRef} className="chart-palette-panel__context-menu" role="menu" aria-label={`${label} actions`} style={{ top: menuPosition.top, left: menuPosition.left }}>
+          <button type="button" className="chart-palette-panel__context-menu-item" role="menuitem" onClick={() => runMenuAction(onUse)}><Icon name="check-circle-filled" category="general" size={16} /><span>Use Palette</span></button>
+          <button type="button" className="chart-palette-panel__context-menu-item" role="menuitem" onClick={() => runMenuAction(onEdit)}><Icon name="pencil-to-square" category="general" size={16} /><span>Edit</span></button>
+          <button type="button" className="chart-palette-panel__context-menu-item" role="menuitem" onClick={() => runMenuAction(onDuplicate)}><Icon name="copy-filled" category="general" size={16} /><span>Duplicate</span></button>
+        </div>,
+        document.body,
+      )}
+    </div>
+  )
+}
+
 const SOCIAL_BG_SELECTORS = ['.themes-view__device', '.app-scope']
 function SocialIconColorField({
   value,
@@ -3776,6 +3880,7 @@ export function BuildPage({
   }, [])
   const [propertyTab, setPropertyTab] = useState<string>('general')
   const [chartPaletteView, setChartPaletteView] = useState<ChartPaletteView>('summary')
+  const [chartPaletteEditingCustomIndex, setChartPaletteEditingCustomIndex] = useState<number | null>(null)
   const appHeaderImageInputRef = useRef<HTMLInputElement>(null)
   const appHeaderBgImageInputRef = useRef<HTMLInputElement>(null)
   const [editItemsOpen, setEditItemsOpen] = useState(false)
@@ -3795,6 +3900,7 @@ export function BuildPage({
     _setSelectedElementId(next)
     setPropertyTab('general')
     setChartPaletteView('summary')
+    setChartPaletteEditingCustomIndex(null)
   }, [])
   const [editingProductIndex, setEditingProductIndex] = useState<number | null>(null)
   const [editingOptionIndex, setEditingOptionIndex] = useState<number | null>(null)
@@ -8396,15 +8502,50 @@ export function BuildPage({
                         { name: 'Tooltips', description: 'Show the exact value when you hover over the chart' },
                       ]
                       const selectedChartPalette = readBuilderChartPalette(p['Chart Palette'])
+                      const rawCustomPalettes = p['Chart Custom Palettes']
                       const rawCustomPalette = p['Chart Custom Palette']
                       const savedCustomPalette = typeof rawCustomPalette === 'string' && rawCustomPalette.trim().startsWith('[') ? readBuilderChartPalette(rawCustomPalette) : null
+                      const savedCustomPalettes = (() => {
+                        if (typeof rawCustomPalettes === 'string' && rawCustomPalettes.trim().startsWith('[')) {
+                          try {
+                            const parsed = JSON.parse(rawCustomPalettes)
+                            if (Array.isArray(parsed)) {
+                              const palettes = parsed
+                                .filter((palette): palette is string[] => Array.isArray(palette) && palette.every((color) => typeof color === 'string'))
+                                .map((palette) => readBuilderChartPalette(JSON.stringify(palette)))
+                              if (palettes.length) return palettes
+                            }
+                          } catch { /* fall through to the legacy custom palette */ }
+                        }
+                        return savedCustomPalette ? [savedCustomPalette] : []
+                      })()
                       const selectChartPalette = (colors: readonly string[]) => {
                         set('Chart Palette', JSON.stringify(colors))
                         set('Chart Color', colors[0])
                       }
+                      const saveCustomPalettes = (palettes: readonly (readonly string[])[]) => {
+                        set('Chart Custom Palettes', JSON.stringify(palettes))
+                        set('Chart Custom Palette', palettes[0] ? JSON.stringify(palettes[0]) : '')
+                      }
                       const updateCustomPalette = (colors: string[]) => {
-                        set('Chart Custom Palette', JSON.stringify(colors))
+                        const nextPalettes = savedCustomPalettes.map((palette) => [...palette])
+                        const editingIndex = chartPaletteEditingCustomIndex ?? nextPalettes.length
+                        if (editingIndex < nextPalettes.length) nextPalettes[editingIndex] = colors
+                        else nextPalettes.push(colors)
+                        if (chartPaletteEditingCustomIndex === null) setChartPaletteEditingCustomIndex(editingIndex)
+                        saveCustomPalettes(nextPalettes)
                         selectChartPalette(colors)
+                      }
+                      const editChartPalette = (colors: readonly string[], customIndex?: number) => {
+                        setChartPaletteEditingCustomIndex(customIndex ?? savedCustomPalettes.length)
+                        if (customIndex === undefined) {
+                          saveCustomPalettes([...savedCustomPalettes, [...colors]])
+                          selectChartPalette(colors)
+                        }
+                        setChartPaletteView('custom')
+                      }
+                      const duplicateChartPalette = (colors: readonly string[]) => {
+                        saveCustomPalettes([...savedCustomPalettes, [...colors]])
                       }
                       const showPieLegend = p['Show Legend'] !== false
                       const legendPosition = String(p['Legend Position'] ?? 'Right')
@@ -8418,40 +8559,30 @@ export function BuildPage({
                                 {CHART_COLOR_PALETTES.map((colors, paletteIndex) => {
                                   const selected = sameChartPalette(selectedChartPalette, colors)
                                   return (
-                                    <button key={paletteIndex} type="button" className={`chart-palette-panel__palette${selected ? ' chart-palette-panel__palette--selected' : ''}`} aria-label={`Default palette ${paletteIndex + 1}`} aria-pressed={selected} onClick={() => selectChartPalette(colors)}>
-                                      <span className="chart-palette-panel__colors">
-                                        {colors.map((color) => <span key={color} className="chart-palette-panel__color" style={{ '--chart-palette-color': color } as CSSProperties} />)}
-                                      </span>
-                                      {selected && <span className="chart-palette-panel__check"><Icon name="check" category="general" size={24} /></span>}
-                                      <span className="chart-palette-panel__menu" aria-hidden="true"><Icon name="ellipsis-vertical" category="general" size={24} /></span>
-                                    </button>
+                                    <ChartPaletteRow key={paletteIndex} colors={colors} label={`Default palette ${paletteIndex + 1}`} selected={selected} onUse={() => selectChartPalette(colors)} onEdit={() => editChartPalette(colors)} onDuplicate={() => duplicateChartPalette(colors)} />
                                   )
                                 })}
                               </div>
                             </section>
-                            {savedCustomPalette && (
+                            {savedCustomPalettes.length > 0 && (
                               <section className="chart-palette-panel__group">
                                 <div className="chart-palette-panel__group-title"><span>CUSTOM PALETTES</span></div>
                                 <div className="chart-palette-panel__list">
-                                  <button type="button" className={`chart-palette-panel__palette${sameChartPalette(selectedChartPalette, savedCustomPalette) ? ' chart-palette-panel__palette--selected' : ''}`} aria-label="Custom palette" aria-pressed={sameChartPalette(selectedChartPalette, savedCustomPalette)} onClick={() => selectChartPalette(savedCustomPalette)}>
-                                    <span className="chart-palette-panel__colors">
-                                      {savedCustomPalette.map((color, colorIndex) => <span key={`${color}-${colorIndex}`} className="chart-palette-panel__color" style={{ '--chart-palette-color': color } as CSSProperties} />)}
-                                    </span>
-                                    {sameChartPalette(selectedChartPalette, savedCustomPalette) && <span className="chart-palette-panel__check"><Icon name="check" category="general" size={24} /></span>}
-                                    <span className="chart-palette-panel__menu" aria-hidden="true"><Icon name="ellipsis-vertical" category="general" size={24} /></span>
-                                  </button>
+                                  {savedCustomPalettes.map((colors, customIndex) => <ChartPaletteRow key={`custom-palette-${customIndex}`} colors={colors} label={`Custom palette ${customIndex + 1}`} selected={sameChartPalette(selectedChartPalette, colors)} onUse={() => selectChartPalette(colors)} onEdit={() => editChartPalette(colors, customIndex)} onDuplicate={() => duplicateChartPalette(colors)} />)}
                                 </div>
                               </section>
                             )}
                             <div className="chart-palette-panel__footer">
-                              <button type="button" className="chart-palette-panel__add-palette" onClick={() => setChartPaletteView('custom')}>ADD PALETTE</button>
+                              <button type="button" className="chart-palette-panel__add-palette" onClick={() => { setChartPaletteEditingCustomIndex(null); setChartPaletteView('custom') }}>ADD PALETTE</button>
                             </div>
                           </div>
                         )
                       }
 
                       if (chartPaletteView === 'custom') {
-                        const customPalette = savedCustomPalette ?? selectedChartPalette
+                        const customPalette = chartPaletteEditingCustomIndex !== null && savedCustomPalettes[chartPaletteEditingCustomIndex]
+                          ? savedCustomPalettes[chartPaletteEditingCustomIndex]
+                          : selectedChartPalette
                         return (
                           <div className="property-panel__body chart-palette-editor">
                             <div className="chart-palette-editor__list">
