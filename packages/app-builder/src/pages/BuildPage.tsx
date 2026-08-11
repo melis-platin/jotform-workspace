@@ -881,6 +881,13 @@ const DEFAULT_CHART_TABLE_ROWS: Record<string, string | number>[] = [
   { category: 'Category 6', value: 9, note: 'Note 6' },
 ]
 
+const DEFAULT_EMPTY_CHART_TABLE_ROWS: Record<string, string | number>[] = Array.from({ length: 6 }, () => ({
+  item: '',
+  status: '',
+  value: '',
+  date: '',
+}))
+
 function isLegacyDefaultChartTable(value: unknown): boolean {
   if (typeof value !== 'string') return false
   try {
@@ -915,13 +922,14 @@ function analyzeChartSource(rows: Record<string, string | number>[]): ChartSourc
   const keys = [...new Set(rows.flatMap((row) => Object.keys(row)))]
   return keys.map((key) => {
     const values = rows.map((row) => row[key]).filter((value) => value !== '' && value != null)
-    const isNumber = values.length > 0 && values.every((value) => typeof value === 'number' || (typeof value === 'string' && value.trim() !== '' && Number.isFinite(Number(value))))
-    const isDate = !isNumber && values.length > 0 && values.every((value) => {
+    const normalizedKey = key.toLowerCase()
+    const isNumber = normalizedKey === 'value' || (values.length > 0 && values.every((value) => typeof value === 'number' || (typeof value === 'string' && value.trim() !== '' && Number.isFinite(Number(value)))))
+    const isDate = !isNumber && (normalizedKey === 'date' || (values.length > 0 && values.every((value) => {
       if (typeof value !== 'string') return false
       const dateValue = value.trim()
       const hasDateFormat = /^(?:\d{4}-\d{2}-\d{2}(?:[T\s].*)?|\d{1,2}[/-]\d{1,2}[/-]\d{2,4})$/.test(dateValue)
       return hasDateFormat && !Number.isNaN(Date.parse(dateValue))
-    })
+    })))
     return { key, label: readableChartColumnName(key), kind: isNumber ? 'number' : isDate ? 'date' : 'text' }
   })
 }
@@ -4012,9 +4020,16 @@ export function BuildPage({
     preferredName = 'New Table',
   ) => {
     const existingNames = new Set(pages.flatMap((page) => page.elements)
-      .filter((element) => element.componentId === 'chart')
+      .filter((element) => element.componentId === 'chart' && element.id !== chartElement.id)
       .map((element) => String(element.properties['Data Source'] ?? '').trim())
       .filter(Boolean))
+    const sourceKeys = Object.keys(sourceRows[0] ?? {})
+    const measureField = sourceKeys.includes('value') ? 'value' : (sourceKeys[1] ?? 'value')
+    const groupByField = sourceKeys.includes('category')
+      ? 'category'
+      : sourceKeys.includes('item')
+        ? 'item'
+        : (sourceKeys.find((key) => key !== measureField) ?? 'category')
     let tableName = preferredName
     let suffix = 2
     while (existingNames.has(tableName)) {
@@ -4030,10 +4045,10 @@ export function BuildPage({
           ...element.properties,
           'Data Source': tableName,
           'Chart Table Rows': JSON.stringify(sourceRows),
-          Measures: JSON.stringify([{ agg: 'Sum', col: 'value' }]),
-          'Measure Field': 'value',
+          Measures: JSON.stringify([{ agg: 'Sum', col: measureField }]),
+          'Measure Field': measureField,
           Aggregation: 'Sum',
-          'Group By': 'category',
+          'Group By': groupByField,
           'Time Range': 'All Time',
         },
       } : element),
@@ -12069,27 +12084,30 @@ export function BuildPage({
       if (!chartElement || chartElement.componentId !== 'chart') return null
 
       const rows = readChartSourceRows(chartElement.properties['Chart Table Rows'])
+      const columns = [...new Set(rows.flatMap((row) => Object.keys(row)))].map((key) => {
+        if (key === 'status') return { key, label: 'Status', icon: 'tag-filled', category: 'finance' }
+        if (key === 'value') return { key, label: 'Value', icon: 'number-square-filled', category: 'general' }
+        if (key === 'date') return { key, label: 'Date', icon: 'calendar-filled', category: 'time-date' }
+        return { key, label: readableChartColumnName(key), icon: 'type-square-filled', category: 'editor' }
+      })
+      const isFourColumnLayout = columns.length === 4
       const updateRows = (nextRows: Record<string, string | number>[]) => {
         handlePropertyChange(chartElement.id, 'Chart Table Rows', JSON.stringify(nextRows))
       }
-      const updateCell = (rowIndex: number, key: 'category' | 'value' | 'note', value: string) => {
+      const updateCell = (rowIndex: number, key: string, value: string) => {
         updateRows(rows.map((row, index) => {
           if (index !== rowIndex) return row
           return { ...row, [key]: key === 'value' && value !== '' && Number.isFinite(Number(value)) ? Number(value) : value }
         }))
       }
       const addRow = () => {
-        updateRows([...rows, {
-          category: '',
-          value: '',
-          note: '',
-        }])
+        updateRows([...rows, Object.fromEntries(columns.map((column) => [column.key, '']))])
       }
 
       return createPortal(
         <div className="chart-table-editor__backdrop" role="presentation" onMouseDown={() => setChartTableEditorElementId(null)}>
           <section
-            className="chart-table-editor"
+            className={`chart-table-editor${isFourColumnLayout ? ' chart-table-editor--four-columns' : ''}`}
             role="dialog"
             aria-modal="true"
             aria-labelledby="chart-table-editor-title"
@@ -12106,13 +12124,9 @@ export function BuildPage({
             </header>
             <div className="chart-table-editor__accent" />
             <div className="chart-table-editor__scroll">
-              <div className="chart-table-editor__grid" role="table" aria-label="Chart data table">
+              <div className={`chart-table-editor__grid${isFourColumnLayout ? ' chart-table-editor__grid--four-columns' : ''}`} role="table" aria-label="Chart data table">
                 <div className="chart-table-editor__cell chart-table-editor__cell--corner"><span className="chart-table-editor__checkbox" /></div>
-                {([
-                  { key: 'category', label: 'Category', icon: 'type-square-filled', category: 'editor' },
-                  { key: 'value', label: 'Value', icon: 'number-square-filled', category: 'general' },
-                  { key: 'note', label: 'Note', icon: 'type-square-filled', category: 'editor' },
-                ] as const).map((column) => (
+                {columns.map((column) => (
                   <div key={column.key} className="chart-table-editor__cell chart-table-editor__cell--header" role="columnheader">
                     <span><Icon name={column.icon} category={column.category} size={16} />{column.label}</span>
                     <Icon name="ellipsis-vertical" category="general" size={16} />
@@ -12122,13 +12136,13 @@ export function BuildPage({
                 {rows.map((row, rowIndex) => (
                   <Fragment key={`chart-table-row-${rowIndex}`}>
                     <div className="chart-table-editor__cell chart-table-editor__cell--index" role="rowheader">{rowIndex + 1}</div>
-                    {(['category', 'value', 'note'] as const).map((key) => (
-                      <div key={key} className="chart-table-editor__cell chart-table-editor__cell--value" role="cell">
+                    {columns.map((column) => (
+                      <div key={column.key} className="chart-table-editor__cell chart-table-editor__cell--value" role="cell">
                         <input
-                          aria-label={`${key} row ${rowIndex + 1}`}
-                          inputMode={key === 'value' ? 'decimal' : undefined}
-                          value={String(row[key] ?? '')}
-                          onChange={(event) => updateCell(rowIndex, key, event.target.value)}
+                          aria-label={`${column.key} row ${rowIndex + 1}`}
+                          inputMode={column.key === 'value' ? 'decimal' : undefined}
+                          value={String(row[column.key] ?? '')}
+                          onChange={(event) => updateCell(rowIndex, column.key, event.target.value)}
                         />
                       </div>
                     ))}
@@ -12138,12 +12152,12 @@ export function BuildPage({
                 <button type="button" className="chart-table-editor__cell chart-table-editor__cell--add-row" onClick={addRow}>
                   <Icon name="plus-square-filled" category="general" size={16} />ADD
                 </button>
-                <div className="chart-table-editor__cell chart-table-editor__cell--add-fill" />
-                <div className="chart-table-editor__cell chart-table-editor__cell--add-fill" />
-                <div className="chart-table-editor__cell chart-table-editor__cell--add-fill" />
+                {columns.map((column) => <div key={`add-fill-${column.key}`} className="chart-table-editor__cell chart-table-editor__cell--add-fill" />)}
               </div>
             </div>
-            <footer className="chart-table-editor__footer">Total {rows.length}</footer>
+            <footer className="chart-table-editor__footer">
+              <div className="chart-table-editor__total"><span>Total</span><strong>{rows.length}</strong></div>
+            </footer>
           </section>
         </div>,
         document.body,
@@ -12352,7 +12366,7 @@ export function BuildPage({
           showCancel={false}
           confirmDisabled={!chartTableCreateMode}
           onConfirm={() => {
-            if (chartTableCreateMode === 'scratch') createChartTable(chartElement)
+            if (chartTableCreateMode === 'scratch') createChartTable(chartElement, DEFAULT_EMPTY_CHART_TABLE_ROWS, 'My Chart')
             if (chartTableCreateMode === 'import') {
               setChartTableCreateMode(null)
               setChartTableCreateElementId(null)
@@ -12368,7 +12382,7 @@ export function BuildPage({
               className={`chart-table-create__option${chartTableCreateMode === 'scratch' ? ' chart-table-create__option--selected' : ''}`}
               role="radio"
               aria-checked={chartTableCreateMode === 'scratch'}
-              onClick={() => setChartTableCreateMode('scratch')}
+              onClick={() => createChartTable(chartElement, DEFAULT_EMPTY_CHART_TABLE_ROWS, 'My Chart')}
             >
               <span className="chart-table-create__preview">
                 <Icon name="plus" category="general" size={48} />

@@ -7349,9 +7349,7 @@ body,
   gap: var(--spacing-xl);
 }
 
-// Chart data editor — source: Figma New Workspace, node 1412:6667.
-// This is deliberately a compact table editor modal: it keeps builders in the
-// canvas while updating the source rows used by the selected chart.
+// Chart data editor — source: Figma New Workspace, node 1429:21983.
 .chart-table-editor__backdrop {
   position: fixed;
   z-index: var(--ds-z-index-modal, 1000);
@@ -7364,28 +7362,33 @@ body,
 
 .chart-table-editor {
   width: min(calc(var(--spacing-4xl) * 13), calc(100vw - var(--spacing-4xl)));
-  max-height: calc(100vh - var(--spacing-4xl));
+  height: min(calc(var(--spacing-4xl) * 7 + var(--spacing-3xl)), calc(100vh - var(--spacing-4xl)));
   display: flex;
   flex-direction: column;
   overflow: hidden;
   border-radius: var(--radius-md);
-  background: var(--core-white);
+  background: var(--navy-10);
   box-shadow: var(--shadow-xl);
   font-family: var(--font-family-circular);
+
+  &--four-columns {
+    width: min(calc(var(--spacing-4xl) * 15 + var(--spacing-sm)), calc(100vw - var(--spacing-4xl)));
+  }
 }
 
 .chart-table-editor__header {
   position: relative;
+  flex: 0 0 var(--spacing-4xl);
   display: grid;
   place-items: center;
-  min-height: var(--spacing-4xl);
-  padding: var(--spacing-sm) calc(var(--spacing-3xl) + var(--spacing-sm));
+  padding: 0 calc(var(--spacing-3xl) + var(--spacing-sm));
+  background: var(--core-white);
 }
 
 .chart-table-editor__heading {
   display: grid;
   justify-items: center;
-  gap: var(--spacing-2xs);
+  gap: var(--spacing-3xs);
 
   h2,
   p {
@@ -7395,21 +7398,23 @@ body,
   h2 {
     color: var(--navy-700);
     font-size: var(--font-size-xl);
-    font-weight: var(--font-weight-bold);
-    line-height: var(--line-height-xl);
+    font-weight: var(--font-weight-medium);
+    line-height: var(--line-height-lg);
+    letter-spacing: var(--letter-spacing-xs);
   }
 
   p {
-    color: var(--product-tables-default);
+    color: var(--product-sign-default);
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-book);
-    line-height: var(--line-height-sm);
+    line-height: var(--line-height-xs);
+    letter-spacing: var(--letter-spacing-lg);
   }
 }
 
 .chart-table-editor__close {
   position: absolute;
-  right: var(--spacing-md);
+  right: var(--spacing-lg);
   top: 50%;
   display: grid;
   place-items: center;
@@ -7425,14 +7430,15 @@ body,
 }
 
 .chart-table-editor__accent {
-  flex: 0 0 var(--spacing-2xs);
+  flex: 0 0 var(--spacing-xs);
   background: var(--product-tables-default);
 }
 
 .chart-table-editor__scroll {
+  flex: 1 1 auto;
   min-height: 0;
   overflow: auto;
-  background: var(--background-lightest);
+  background: var(--navy-10);
 }
 
 .chart-table-editor__grid {
@@ -7440,6 +7446,11 @@ body,
   grid-template-columns: calc(var(--spacing-4xl) + var(--spacing-lg) + var(--spacing-3xs)) repeat(3, calc(var(--spacing-4xl) * 3 + var(--spacing-xs))) calc(var(--spacing-4xl) + var(--spacing-lg) + var(--spacing-3xs));
   min-width: calc(var(--spacing-4xl) * 11 + var(--spacing-3xl) + var(--spacing-xl) + var(--spacing-3xs) * 2);
   grid-auto-rows: var(--spacing-3xl);
+
+  &--four-columns {
+    grid-template-columns: calc(var(--spacing-4xl) + var(--spacing-lg) + var(--spacing-3xs)) repeat(4, calc(var(--spacing-4xl) * 3 + var(--spacing-xs))) calc(var(--spacing-4xl) + var(--spacing-lg) + var(--spacing-3xs));
+    min-width: calc(var(--spacing-4xl) * 15 + var(--spacing-sm));
+  }
 }
 
 .chart-table-editor__cell {
@@ -7452,7 +7463,8 @@ body,
   color: var(--navy-700);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-sm);
+  line-height: var(--line-height-xs);
+  letter-spacing: var(--letter-spacing-lg);
 }
 
 .chart-table-editor__cell--corner,
@@ -7477,7 +7489,7 @@ body,
 }
 
 .chart-table-editor__cell--corner {
-  justify-content: center;
+  padding: 0 var(--spacing-md);
 }
 
 .chart-table-editor__checkbox {
@@ -7507,9 +7519,11 @@ body,
 .chart-table-editor__cell--add-column,
 .chart-table-editor__cell--add-row {
   gap: var(--spacing-xs);
+  padding: 0 var(--spacing-md);
   color: var(--navy-300);
   font-weight: var(--font-weight-book);
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
+  letter-spacing: var(--letter-spacing-xl);
 }
 
 .chart-table-editor__cell--value {
@@ -7535,6 +7549,7 @@ body,
 
 .chart-table-editor__cell--index {
   justify-content: flex-start;
+  padding: 0 var(--spacing-xl) 0 var(--spacing-lg);
   color: var(--navy-300);
   font-weight: var(--font-weight-book);
 }
@@ -7553,15 +7568,32 @@ body,
 }
 
 .chart-table-editor__footer {
-  flex: 0 0 calc(var(--spacing-xl) + var(--spacing-xs));
+  flex: 0 0 calc(var(--spacing-2xl) + var(--spacing-2xs));
   display: flex;
   align-items: center;
-  padding: 0 var(--spacing-md);
   border-top: 1px solid var(--navy-100);
-  background: var(--background-lightest);
+  background: var(--navy-10);
   color: var(--navy-700);
-  font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  font-size: var(--font-size-xs);
+  line-height: var(--line-height-xs);
+}
+
+.chart-table-editor__total {
+  width: calc(var(--spacing-4xl) + var(--spacing-lg) + var(--spacing-3xs));
+  height: 100%;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2xs);
+  padding: 0 var(--spacing-md);
+  border-right: 1px solid var(--navy-50);
+
+  span {
+    font-weight: var(--font-weight-book);
+  }
+
+  strong {
+    font-weight: var(--font-weight-bold);
+  }
 }
 
 // Chart table search — source: Figma New Workspace, node 1395:33889.
