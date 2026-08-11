@@ -129,20 +129,56 @@ function getRowValue(row: ChartTableRow, field: string): ChartTableRow[string] |
   return matchingKey ? row[matchingKey] : undefined;
 }
 
+function normalizedColumnName(key: string): string {
+  return key.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/[-_]/g, ' ').trim().toLocaleLowerCase();
+}
+
+function isDateColumn(key: string): boolean {
+  return /\b(date|time|day|month|year|created|updated|submitted|started|ended)\b/.test(normalizedColumnName(key));
+}
+
+function isIdentifierColumn(key: string): boolean {
+  return /\b(id|identifier|phone|mobile|zip|postal|code|sku)\b/.test(normalizedColumnName(key));
+}
+
 function isDateValue(value: unknown): boolean {
-  return typeof value === 'string' && /^(?:\d{4}-\d{2}-\d{2}(?:[T\s].*)?|\d{1,2}[/-]\d{1,2}[/-]\d{2,4})$/.test(value.trim()) && !Number.isNaN(Date.parse(value));
+  return typeof value === 'string'
+    && /^(?:\d{4}-\d{2}-\d{2}(?:[T\s].*)?|\d{1,2}[/-]\d{1,2}[/-]\d{2,4}|(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s+\d{1,2},?\s+\d{4})$/i.test(value.trim())
+    && !Number.isNaN(Date.parse(value));
+}
+
+function numberFromValue(value: unknown): number | null {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : null;
+  if (typeof value !== 'string') return null;
+  const trimmed = value.trim();
+  if (!trimmed) return null;
+  const parenthesized = /^\(.*\)$/.test(trimmed);
+  const normalized = trimmed
+    .replace(/^\((.*)\)$/, '$1')
+    .replace(/[\s,%$€£₺¥]/g, '');
+  if (!/^[+-]?(?:\d+(?:\.\d+)?|\.\d+)$/.test(normalized)) return null;
+  const parsed = Number(normalized);
+  return Number.isFinite(parsed) ? (parenthesized ? -parsed : parsed) : null;
+}
+
+function numericColumnKeys(rows: ChartTableRow[]): string[] {
+  return [...new Set(rows.flatMap((row) => Object.keys(row)))].filter((key) => {
+    if (isDateColumn(key) || isIdentifierColumn(key)) return false;
+    const values = rows.map((row) => getRowValue(row, key)).filter((value) => value != null && value !== '');
+    return values.length > 0 && values.every((value) => numberFromValue(value) !== null);
+  });
+}
+
+function groupableColumnKeys(rows: ChartTableRow[]): string[] {
+  const numericKeys = new Set(numericColumnKeys(rows));
+  return [...new Set(rows.flatMap((row) => Object.keys(row)))].filter((key) => !numericKeys.has(key));
 }
 
 function inferGroupBy(rows: ChartTableRow[]): string {
-  const keys = [...new Set(rows.flatMap((row) => Object.keys(row)))];
-  const textCandidates = keys.filter((key) => {
-    const values = rows.map((row) => getRowValue(row, key)).filter((value) => value != null && value !== '');
-    return values.length > 0 && values.every((value) => typeof value === 'string' && !isDateValue(value) && !Number.isFinite(Number(value)));
-  });
-  const scored = textCandidates.map((key) => ({ key, unique: new Set(rows.map((row) => String(getRowValue(row, key) ?? ''))).size }))
-    .filter((item) => item.unique < rows.length)
-    .sort((a, b) => b.unique - a.unique);
-  return scored[0]?.key ?? textCandidates[0] ?? '';
+  const candidates = groupableColumnKeys(rows);
+  const preferred = candidates.find((key) => /\b(category|item|name|title|label|event|product|type)\b/.test(normalizedColumnName(key)));
+  const useful = candidates.find((key) => new Set(rows.map((row) => String(getRowValue(row, key) ?? '')).filter(Boolean)).size > 1);
+  return preferred ?? useful ?? candidates[0] ?? 'Row order';
 }
 
 function filterRowsByTimeRange(rows: ChartTableRow[], range: string): ChartTableRow[] {
@@ -208,26 +244,25 @@ function aggregateValues(values: number[], aggregation: string): number {
 }
 
 function readMeasures(value: string | undefined, measureField: string, aggregation: string, rows: ChartTableRow[]): ChartMeasure[] {
+  const numericKeys = numericColumnKeys(rows);
   if (value?.startsWith('[')) {
     try {
       const parsed = JSON.parse(value);
       if (Array.isArray(parsed)) {
-        const measures = parsed.filter((measure): measure is ChartMeasure => Boolean(measure) && typeof measure === 'object' && ['Count', 'Sum', 'Average', 'Highest', 'Lowest'].includes(measure.agg));
+        const measures = parsed.filter((measure): measure is ChartMeasure => Boolean(measure)
+          && typeof measure === 'object'
+          && ['Count', 'Sum', 'Average', 'Highest', 'Lowest'].includes(measure.agg)
+          && (measure.agg === 'Count' ? numericKeys.length === 0 : typeof measure.col === 'string' && numericKeys.some((key) => key.toLocaleLowerCase() === measure.col?.toLocaleLowerCase())));
         if (measures.length) return measures.slice(0, 3);
       }
     } catch {
       // Fall through to the legacy single-measure properties.
     }
   }
-  if (measureField === 'Number of rows') {
-    const numericColumn = [...new Set(rows.flatMap((row) => Object.keys(row)))].find((key) => {
-      const values = rows.map((row) => getRowValue(row, key)).filter((item) => item !== '' && item != null);
-      return values.length > 0 && values.every((item) => typeof item === 'number' || (typeof item === 'string' && item.trim() !== '' && Number.isFinite(Number(item))));
-    });
-    if (numericColumn) return [{ agg: 'Sum', col: numericColumn }];
-    return [{ agg: 'Count' }];
-  }
-  return [{ agg: aggregation as ChartMeasure['agg'], col: measureField }];
+  if (!numericKeys.length) return [{ agg: 'Count' }];
+  const numericColumn = numericKeys.find((key) => key.toLocaleLowerCase() === measureField.toLocaleLowerCase()) ?? numericKeys[0];
+  const resolvedAggregation = ['Sum', 'Average', 'Highest', 'Lowest'].includes(aggregation) ? aggregation as ChartMeasure['agg'] : 'Sum';
+  return [{ agg: resolvedAggregation, col: numericColumn }];
 }
 
 function measureLabel(measure: ChartMeasure): string {
@@ -256,8 +291,7 @@ function dataFromTableRows(rows: ChartTableRow[], measures: ChartMeasure[], grou
       if (measure.agg === 'Count') return groupRows.length;
       const values = groupRows.map((row) => {
         const raw = getRowValue(row, measure.col ?? '');
-        const value = typeof raw === 'number' ? raw : Number(raw);
-        return Number.isFinite(value) ? value : 0;
+        return numberFromValue(raw) ?? 0;
       });
       return aggregateValues(values, measure.agg);
     }),
@@ -975,7 +1009,12 @@ export const Chart: FC<ChartProps> = ({
   const [selectedTimeRange, setSelectedTimeRange] = useState(timeRange);
   const activeMeasures = readMeasures(measures, measureField, aggregation, parsedRows);
   const filteredRows = filterRowsByTimeRange(parsedRows, showTimeRangeSelector ? selectedTimeRange : timeRange);
-  const resolvedGroupBy = groupBy && parsedRows.some((row) => getRowValue(row, groupBy) !== undefined) ? groupBy : inferGroupBy(parsedRows);
+  const validGroupKeys = groupableColumnKeys(parsedRows);
+  const resolvedGroupBy = groupBy === 'Row order'
+    ? 'Row order'
+    : validGroupKeys.some((key) => key.toLocaleLowerCase() === groupBy.toLocaleLowerCase())
+      ? groupBy
+      : inferGroupBy(parsedRows);
   const tableData = dataFromTableRows(filteredRows, activeMeasures, resolvedGroupBy);
   const defaultTitle = dataSet === 'Revenue' ? 'Revenue' : dataSet === 'Visitors' ? 'Visitors' : 'Orders';
   const isLegacyDefaultTitle = title === 'Orders';
