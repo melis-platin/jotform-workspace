@@ -3374,7 +3374,7 @@ function ChartPaletteRow({
       </button>
       {menuOpen && createPortal(
         <div ref={menuRef} className="chart-palette-panel__context-menu" role="menu" aria-label={`${label} actions`} style={{ top: menuPosition.top, left: menuPosition.left }}>
-          <button type="button" className="chart-palette-panel__context-menu-item" role="menuitem" onClick={() => runMenuAction(onUse)}><Icon name="check-circle-filled" category="general" size={16} /><span>Use Palette</span></button>
+          {!selected && <button type="button" className="chart-palette-panel__context-menu-item" role="menuitem" onClick={() => runMenuAction(onUse)}><Icon name="check-circle-filled" category="general" size={16} /><span>Use Palette</span></button>}
           <button type="button" className="chart-palette-panel__context-menu-item" role="menuitem" onClick={() => runMenuAction(onEdit)}><Icon name="pencil-to-square" category="general" size={16} /><span>Edit</span></button>
           <button type="button" className="chart-palette-panel__context-menu-item" role="menuitem" onClick={() => runMenuAction(onDuplicate)}><Icon name="copy-filled" category="general" size={16} /><span>Duplicate</span></button>
         </div>,
