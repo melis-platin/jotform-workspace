@@ -510,15 +510,17 @@ function formatPercentage(value: number, total: number, roundPercentages: boolea
 }
 
 function formatChartValue(value: number, total: number, settings: ChartDisplaySettings): string {
-  if (settings.responseValues) return value.toLocaleString();
-  if (settings.percentages) return formatPercentage(value, total, settings.roundPercentages);
-  return '';
+  if (!settings.responseValues) return '';
+  return settings.percentages
+    ? formatPercentage(value, total, settings.roundPercentages)
+    : value.toLocaleString();
 }
 
 function formatPieLegendValue(value: number, total: number, settings: ChartDisplaySettings): string {
-  if (settings.percentages) return formatPercentage(value, total, settings.roundPercentages);
-  if (settings.responseValues) return value.toLocaleString();
-  return '';
+  if (!settings.responseValues) return '';
+  return settings.percentages
+    ? formatPercentage(value, total, settings.roundPercentages)
+    : value.toLocaleString();
 }
 
 function ChartTooltip({ info }: { info: TooltipInfo }) {
