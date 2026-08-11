@@ -8263,20 +8263,44 @@ export function BuildPage({
                     }
 
                     if (propertyTab === 'style') {
+                      const chartColorOptions = [
+                        'var(--blue-600)',
+                        'var(--blue-500)',
+                        'var(--blue-400)',
+                        'var(--blue-300)',
+                        'var(--blue-200)',
+                        'var(--blue-100)',
+                        'var(--navy-200)',
+                        'var(--navy-100)',
+                        'var(--navy-50)',
+                      ]
+                      const chartStyleToggles = [
+                        { name: 'Response Values', description: 'Show the value for each bar' },
+                        { name: 'Percentages', description: 'Show each response as a percentage of the total' },
+                        { name: 'Round Percentages', description: 'Round to the nearest whole number' },
+                        { name: 'Value Labels' },
+                        { name: 'Grid' },
+                        { name: 'Tooltips', description: 'Show the exact value when you hover over the chart' },
+                      ]
+                      const selectedChartColor = String(p['Chart Color'] ?? chartColorOptions[0])
+                      const selectedChartColorIndex = Math.max(chartColorOptions.indexOf(selectedChartColor), 0)
                       return (
-                        <div className="property-panel__body">
-                          <div className="property-panel__field property-panel__field--inline">
-                            <DSFormField title="Date filter" description="Let viewers switch between yearly, monthly, and weekly values." size="md" showDescription showHelpText={false}>
-                              <DSToggle size="md" checked={Boolean(p['Date Filter'])} onChange={(e) => set('Date Filter', e.target.checked)} />
+                        <div className="property-panel__body chart-style-properties">
+                          <section className="chart-style-properties__color">
+                            <DSFormField title="Chart Color" size="md" showDescription={false} showHelpText={false}>
+                              <div className="chart-style-properties__palette" role="list" aria-label="Chart color">
+                                {chartColorOptions.map((color) => <button key={color} type="button" role="listitem" className={`chart-style-properties__swatch${selectedChartColor === color ? ' chart-style-properties__swatch--selected' : ''}`} style={{ '--chart-swatch-color': color } as React.CSSProperties} aria-label={`Use ${color} for the chart`} aria-pressed={selectedChartColor === color} onClick={() => set('Chart Color', color)} />)}
+                                <button type="button" className="chart-style-properties__palette-more" aria-label="Next chart color" onClick={() => set('Chart Color', chartColorOptions[(selectedChartColorIndex + 1) % chartColorOptions.length])}><Icon name="chevron-right" category="arrows" size={24} /></button>
+                              </div>
                             </DSFormField>
-                          </div>
-                          {chartType !== 'Donut' && (
-                            <div className="property-panel__field property-panel__field--inline">
-                              <DSFormField title="Show legend" description="Display labels for both chart series." size="md" showDescription showHelpText={false}>
-                                <DSToggle size="md" checked={Boolean(p['Show Legend'])} onChange={(e) => set('Show Legend', e.target.checked)} />
+                          </section>
+                          {chartStyleToggles.map(({ name, description }) => (
+                            <section className="chart-style-properties__toggle" key={name}>
+                              <DSFormField title={name} description={description} size="md" showDescription={Boolean(description)} showHelpText={false}>
+                                <DSToggle size="md" checked={Boolean(p[name])} onChange={(event) => set(name, event.target.checked)} />
                               </DSFormField>
-                            </div>
-                          )}
+                            </section>
+                          ))}
                         </div>
                       )
                     }

@@ -24,6 +24,7 @@ export interface ChartProps {
   timeRange?: string;
   timeRangeOptions?: string;
   showLegend?: boolean;
+  chartColor?: string;
   tableRows?: string;
   measures?: string;
   measureField?: string;
@@ -859,6 +860,7 @@ export const Chart: FC<ChartProps> = ({
   timeRange = 'All time',
   timeRangeOptions,
   showLegend = true,
+  chartColor = 'var(--blue-600)',
   tableRows,
   measures,
   measureField = 'Value',
@@ -922,7 +924,7 @@ export const Chart: FC<ChartProps> = ({
   }
 
   return (
-    <div className={classes}>
+    <div className={classes} style={{ '--accent-default': chartColor } as CSSProperties}>
       <div className="jf-chart__header">
         {showIcon && !isTableColumnChart && (
           <div className="jf-chart__icon">

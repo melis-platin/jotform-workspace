@@ -39,6 +39,13 @@ ComponentRegistry.register({
     { name: 'Icon', type: 'icon', default: 'TrendingUp' },
     { name: 'Date Filter', type: 'boolean', default: false },
     { name: 'Show Legend', type: 'boolean', default: true },
+    { name: 'Chart Color', type: 'text', default: 'var(--blue-600)' },
+    { name: 'Response Values', type: 'boolean', default: true },
+    { name: 'Percentages', type: 'boolean', default: true },
+    { name: 'Round Percentages', type: 'boolean', default: false },
+    { name: 'Value Labels', type: 'boolean', default: true },
+    { name: 'Grid', type: 'boolean', default: true },
+    { name: 'Tooltips', type: 'boolean', default: true },
     { name: 'Selected', type: 'boolean', default: false },
     { name: 'Skeleton', type: 'boolean', default: false },
   ],
@@ -127,6 +134,7 @@ ComponentRegistry.register({
         timeRange={props['Time Range'] as string}
         timeRangeOptions={props['Time Range Options'] as string}
         showLegend={props['Show Legend'] as boolean}
+        chartColor={props['Chart Color'] as string}
         tableRows={(props['Chart Table Rows'] as string) || DEFAULT_CHART_TABLE_ROWS}
         measures={props['Measures'] as string}
         measureField={props['Measure Field'] as string}
