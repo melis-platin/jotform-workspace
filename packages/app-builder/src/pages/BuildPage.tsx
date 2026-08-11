@@ -8636,7 +8636,7 @@ export function BuildPage({
                             </DSFormField>
                           </section>
                           {!((chartType === 'Pie' || chartType === 'Donut') && measures.length > 1) && <section className="chart-properties__section chart-properties__section--group-by">
-                            <DSFormField title={chartType === 'Line' || chartType === 'Area' ? 'Along' : chartType === 'Pie' || chartType === 'Donut' ? 'Slice By' : 'Group By'} description={chartType === 'Line' || chartType === 'Area' ? 'Points are plotted across these values.' : chartType === 'Pie' || chartType === 'Donut' ? 'Each value becomes its own slice.' : 'Each value becomes its own bar.'} size="md" showDescription showHelpText={false}>
+                            <DSFormField title="Group by" description="Each value becomes its own bar or slice." size="md" showDescription showHelpText={false}>
                               <div className="chart-properties__group-control">
                                 {effectiveGroupOptions.length === 1
                                   ? <DSInput className="chart-properties__fixed-field" value={effectiveGroupOptions[0].label} readOnly aria-label="Chart group" />
