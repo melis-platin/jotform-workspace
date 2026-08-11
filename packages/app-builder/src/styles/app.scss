@@ -6872,8 +6872,8 @@ body,
 .chart-palette-panel__list {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xs);
-  padding: var(--spacing-md);
+  gap: var(--spacing-md);
+  padding: var(--spacing-xl) var(--spacing-md);
 }
 
 .chart-palette-panel__palette {
@@ -6901,15 +6901,23 @@ body,
   flex: 1 1 0;
   align-items: center;
   min-width: 0;
-  padding: var(--spacing-xs);
-  gap: var(--spacing-xs);
+  height: 100%;
 }
 
 .chart-palette-panel__color {
+  display: grid;
   flex: 1 1 0;
+  height: 100%;
+  place-items: center;
   min-width: 0;
+  padding: var(--spacing-xs);
+}
+
+.chart-palette-panel__color::after {
+  width: var(--spacing-xl);
   height: var(--spacing-xl);
   background: var(--chart-palette-color);
+  content: '';
 }
 
 .chart-palette-panel__menu {
@@ -6924,8 +6932,8 @@ body,
   top: 50%;
   left: 50%;
   display: grid;
-  width: var(--spacing-2xl);
-  height: var(--spacing-2xl);
+  width: var(--spacing-xl);
+  height: var(--spacing-xl);
   place-items: center;
   border-radius: var(--radius-rounded);
   background: var(--core-white);

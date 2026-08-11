@@ -8327,8 +8327,8 @@ export function BuildPage({
                                       <span className="chart-palette-panel__colors">
                                         {colors.map((color) => <span key={color} className="chart-palette-panel__color" style={{ '--chart-palette-color': color } as CSSProperties} />)}
                                       </span>
-                                      {selected && <span className="chart-palette-panel__check"><Icon name="check" category="general" size={18} /></span>}
-                                      <span className="chart-palette-panel__menu" aria-hidden="true"><Icon name="ellipsis-vertical" category="general" size={18} /></span>
+                                      {selected && <span className="chart-palette-panel__check"><Icon name="check" category="general" size={24} /></span>}
+                                      <span className="chart-palette-panel__menu" aria-hidden="true"><Icon name="ellipsis-vertical" category="general" size={24} /></span>
                                     </button>
                                   )
                                 })}
@@ -8342,8 +8342,8 @@ export function BuildPage({
                                     <span className="chart-palette-panel__colors">
                                       {savedCustomPalette.map((color, colorIndex) => <span key={`${color}-${colorIndex}`} className="chart-palette-panel__color" style={{ '--chart-palette-color': color } as CSSProperties} />)}
                                     </span>
-                                    {sameChartPalette(selectedChartPalette, savedCustomPalette) && <span className="chart-palette-panel__check"><Icon name="check" category="general" size={18} /></span>}
-                                    <span className="chart-palette-panel__menu" aria-hidden="true"><Icon name="ellipsis-vertical" category="general" size={18} /></span>
+                                    {sameChartPalette(selectedChartPalette, savedCustomPalette) && <span className="chart-palette-panel__check"><Icon name="check" category="general" size={24} /></span>}
+                                    <span className="chart-palette-panel__menu" aria-hidden="true"><Icon name="ellipsis-vertical" category="general" size={24} /></span>
                                   </button>
                                 </div>
                               </section>
