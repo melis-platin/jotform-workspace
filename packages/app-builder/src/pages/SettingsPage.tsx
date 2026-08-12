@@ -1529,20 +1529,22 @@ export function PushNotificationsPanel({
         onClose={() => setIsTestNotificationModalOpen(false)}
         size="sm"
         className="push-test-notification-modal"
-        icon={<Icon name="qr" category="media" size={24} />}
-        title="Test Notification"
-        description="Scan the QR code with your phone to open the app and test the notification"
-        showCancel={false}
-        confirmLabel="DONE"
+        title="Send a Test Notification"
+        description="Set up your phone once. After that, testing is one click."
+        cancelLabel="Cancel"
+        cancelVariant="filled"
+        confirmLabel="Send Test"
         onConfirm={() => setIsTestNotificationModalOpen(false)}
       >
         <div className="push-test-notification-modal__content">
           <div className="push-test-notification-modal__qr" aria-label="Test notification QR code">
             <QrPlaceholder className="push-test-notification-modal__qr-code" />
           </div>
-          <p className="push-test-notification-modal__helper">
-            Keep this window open until you confirm the notification on your device.
-          </p>
+          <ol className="push-test-notification-modal__steps">
+            <li>Point your phone camera at the code</li>
+            <li>Log in, then tap <strong>Share → Add to Home Screen</strong></li>
+            <li>Open the app from your home screen and allow notifications</li>
+          </ol>
         </div>
       </Modal>
 
