@@ -12890,7 +12890,7 @@ body.builder--phone-only {
   height: var(--space-2);
   border: calc(var(--space-1) / 2) solid var(--background-white);
   border-radius: var(--radius-rounded);
-  background: var(--bg-fill-error);
+  background: var(--bg-fill-brand);
   box-sizing: content-box;
   pointer-events: none;
   z-index: 1;
@@ -14356,10 +14356,10 @@ body.builder--phone-only {
 .live-preview__top-header-notification-badge {
   top: calc(var(--spacing-2xs) * -1);
   left: var(--space-6);
-  // A light badge keeps a single unread count legible over the Default app's
-  // brand-coloured header while the number still follows the active app theme.
-  background: var(--bg-surface);
-  color: var(--fg-brand);
+  // Keep the unread count visible on empty pages as well as image and hero
+  // layouts. The badge follows the app canvas rather than builder colours.
+  background: var(--bg-fill-brand);
+  color: var(--fg-inverse);
 }
 
 .live-preview__top-header-notification-badge--wide {
