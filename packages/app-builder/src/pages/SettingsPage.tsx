@@ -2473,8 +2473,13 @@ function PushNotificationHistoryCard({
             <div className="push-notification-history-card__metrics" aria-label="Notification delivery metrics">
               {SENT_NOTIFICATION_METRICS.map((metric) => (
                 <span key={metric.label} className="push-notification-history-card__metric">
-                  <span className="push-notification-history-card__metric-label">{metric.label}</span>
                   <span className="push-notification-history-card__metric-value">{metric.value}</span>
+                  <span className="push-notification-history-card__metric-label">
+                    {metric.label}
+                    {metric.label === 'SUBSCRIBES' && (
+                      <Icon name="info-circle" category="general" size={8} />
+                    )}
+                  </span>
                 </span>
               ))}
             </div>
