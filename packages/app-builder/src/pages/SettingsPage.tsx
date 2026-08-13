@@ -2336,6 +2336,7 @@ function PushNotificationHistoryCard({
 }: PushNotificationHistoryCardProps) {
   const isScheduled = notification.status === 'scheduled'
   const isCanceled = notification.status === 'canceled'
+  const [isSubscriberTooltipOpen, setIsSubscriberTooltipOpen] = useState(false)
   const statusBadgeLabel = notification.statusLabel
   const audienceLabel = getDisplayAudienceHistoryLabel(notification.audienceLabel)
   const audienceRoleTooltip = getHistoryAudienceRoleTooltip(notification, appUserRoles)
@@ -2504,13 +2505,22 @@ function PushNotificationHistoryCard({
                   <span className="push-notification-history-card__metric-label">
                     {metric.label}
                     {metric.label === 'SUBSCRIBES' && (
-                      <span
+                      <button
+                        type="button"
                         className="push-notification-history-card__metric-info"
-                        tabIndex={0}
                         aria-label="Subscriber device breakdown"
+                        aria-describedby={`push-subscriber-tooltip-${notification.id}`}
+                        onMouseEnter={() => setIsSubscriberTooltipOpen(true)}
+                        onMouseLeave={() => setIsSubscriberTooltipOpen(false)}
+                        onFocus={() => setIsSubscriberTooltipOpen(true)}
+                        onBlur={() => setIsSubscriberTooltipOpen(false)}
                       >
                         <Icon name="info-circle" category="general" size={12} />
-                        <span className="push-notification-history-card__metric-tooltip" role="tooltip">
+                        <span
+                          className={`push-notification-history-card__metric-tooltip${isSubscriberTooltipOpen ? ' push-notification-history-card__metric-tooltip--visible' : ''}`}
+                          id={`push-subscriber-tooltip-${notification.id}`}
+                          role="tooltip"
+                        >
                           <span className="push-notification-history-card__metric-tooltip-description">
                             One person can allow notifications on multiple devices, each with its own copy.
                           </span>
@@ -2523,7 +2533,7 @@ function PushNotificationHistoryCard({
                             ))}
                           </span>
                         </span>
-                      </span>
+                      </button>
                     )}
                   </span>
                 </span>

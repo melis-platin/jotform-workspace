@@ -18249,7 +18249,6 @@ body.builder--phone-only {
   gap: var(--spacing-md);
   margin-top: var(--spacing-md);
   overflow: visible;
-  pointer-events: none;
 }
 
 .push-notification-history-card__metric {
@@ -18259,7 +18258,6 @@ body.builder--phone-only {
   flex-direction: row;
   align-items: flex-end;
   gap: var(--spacing-2xs);
-  pointer-events: none;
 }
 
 .push-notification-history-card__metric-label {
@@ -18274,7 +18272,6 @@ body.builder--phone-only {
   line-height: 1;
   letter-spacing: 0;
   text-transform: lowercase;
-  pointer-events: none;
 
   .jf-icon,
   svg {
@@ -18292,18 +18289,14 @@ body.builder--phone-only {
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
   color: var(--text-medium);
   cursor: default;
-  pointer-events: auto;
 
   &:focus-visible {
     outline: none;
-  }
-
-  &:hover .push-notification-history-card__metric-tooltip,
-  &:focus-visible .push-notification-history-card__metric-tooltip {
-    visibility: visible;
-    opacity: 1;
   }
 }
 
@@ -18328,6 +18321,11 @@ body.builder--phone-only {
   transform: translateX(-50%);
   visibility: hidden;
   opacity: 0;
+}
+
+.push-notification-history-card__metric-tooltip--visible {
+  visibility: visible;
+  opacity: 1;
 }
 
 .push-notification-history-card__metric-tooltip-description,
