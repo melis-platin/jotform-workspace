@@ -18310,6 +18310,7 @@ body.builder--phone-only {
   flex-direction: column;
   gap: var(--spacing-sm);
   padding: var(--spacing-sm);
+  overflow: hidden;
   border-radius: var(--radius-sm);
   background: var(--background-darkest);
   box-shadow: var(--shadow-md);
@@ -18331,6 +18332,17 @@ body.builder--phone-only {
 .push-notification-history-card__metric-tooltip-description,
 .push-notification-history-card__metric-tooltip-devices {
   width: calc(var(--spacing-4xl) * 2 + var(--spacing-xl) - var(--spacing-3xs));
+}
+
+.push-notification-history-card__metric-tooltip-description {
+  display: block;
+  overflow-wrap: break-word;
+  white-space: normal;
+  color: var(--navy-100);
+  font-size: var(--font-size-2xs);
+  font-weight: var(--font-weight-book);
+  line-height: calc(var(--font-size-2xs) * 1.2);
+  letter-spacing: var(--caption-letter-spacing);
 }
 
 .push-notification-history-card__metric-tooltip-devices {
