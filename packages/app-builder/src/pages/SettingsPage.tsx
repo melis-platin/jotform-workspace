@@ -96,8 +96,15 @@ const NOTIFICATION_CONTENT_MAX_LENGTH = 150
 const NOTIFICATION_DEEP_LINK_PLACEHOLDER = 'Choose a page or form'
 const NOTIFICATION_AUDIENCE_PLACEHOLDER = 'Choose audience'
 const DEFAULT_PUSH_NOTIFICATION_OWNER_NAME = 'Melis Platin'
+const PUSH_NOTIFICATION_DEVICE_STATS = [
+  { icon: 'mobile', label: 'Phone', count: 70 },
+  { icon: 'tablet', label: 'Tablet', count: 10 },
+  { icon: 'desktop', label: 'Desktop', count: 5 },
+] as const
+const PUSH_NOTIFICATION_AVAILABLE_DEVICE_COUNT = PUSH_NOTIFICATION_DEVICE_STATS
+  .reduce((total, device) => total + device.count, 0)
 const SENT_NOTIFICATION_METRICS = [
-  { label: 'SUBSCRIBES', value: '600' },
+  { label: 'SUBSCRIBES', value: String(PUSH_NOTIFICATION_AVAILABLE_DEVICE_COUNT) },
   { label: 'SENT', value: '500' },
   { label: 'DELIVERED', value: '300' },
   { label: 'CLICKED', value: '0' },
@@ -1809,11 +1816,6 @@ function PushNotificationOverview({
   const contextMenuRef = useRef<HTMLDivElement>(null)
   const [isContextMenuOpen, setIsContextMenuOpen] = useState(false)
   const [contextMenuPosition, setContextMenuPosition] = useState({ top: 0, left: 0 })
-  const deviceStats = [
-    { icon: 'mobile', label: 'Mobile · 0%' },
-    { icon: 'tablet', label: 'Tablet · 0%' },
-    { icon: 'desktop', label: 'Desktop · 0%' },
-  ]
   const createOptions = [
     {
       action: 'send',
@@ -1902,20 +1904,20 @@ function PushNotificationOverview({
 
         <div className="push-notification-overview__reach-details">
           <div className="push-notification-overview__total">
-            <strong>0</strong>
+            <strong>{PUSH_NOTIFICATION_AVAILABLE_DEVICE_COUNT}</strong>
             <span>available devices</span>
           </div>
           <div className="push-notification-overview__progress" aria-hidden="true" />
 
           <div className="push-notification-overview__device-list">
-            {deviceStats.map(({ icon, label }) => (
+            {PUSH_NOTIFICATION_DEVICE_STATS.map(({ icon, label, count }) => (
               <div className="push-notification-overview__device" key={icon}>
                 <span className="push-notification-overview__device-icon">
                   <Icon name={icon} category="technology" size={20} />
                 </span>
                 <span className="push-notification-overview__device-copy">
-                  <strong>0</strong>
-                  <span>{label}</span>
+                  <strong>{count}</strong>
+                  <span>{label} · {Math.round((count / PUSH_NOTIFICATION_AVAILABLE_DEVICE_COUNT) * 100)}%</span>
                 </span>
               </div>
             ))}
@@ -2502,7 +2504,26 @@ function PushNotificationHistoryCard({
                   <span className="push-notification-history-card__metric-label">
                     {metric.label}
                     {metric.label === 'SUBSCRIBES' && (
-                      <Icon name="info-circle" category="general" size={8} />
+                      <span
+                        className="push-notification-history-card__metric-info"
+                        tabIndex={0}
+                        aria-label="Subscriber device breakdown"
+                      >
+                        <Icon name="info-circle" category="general" size={8} />
+                        <span className="push-notification-history-card__metric-tooltip" role="tooltip">
+                          <span className="push-notification-history-card__metric-tooltip-description">
+                            One person can allow notifications on multiple devices, each with its own copy.
+                          </span>
+                          <span className="push-notification-history-card__metric-tooltip-devices">
+                            {PUSH_NOTIFICATION_DEVICE_STATS.map(({ label, count }) => (
+                              <span className="push-notification-history-card__metric-tooltip-device" key={label}>
+                                <span>{label}</span>
+                                <strong>{count}</strong>
+                              </span>
+                            ))}
+                          </span>
+                        </span>
+                      </span>
                     )}
                   </span>
                 </span>

@@ -18281,6 +18281,74 @@ body.builder--phone-only {
   }
 }
 
+.push-notification-history-card__metric-info {
+  position: relative;
+  width: var(--spacing-xs);
+  height: var(--spacing-xs);
+  flex: 0 0 var(--spacing-xs);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-medium);
+  cursor: default;
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  &:hover .push-notification-history-card__metric-tooltip,
+  &:focus-visible .push-notification-history-card__metric-tooltip {
+    visibility: visible;
+    opacity: 1;
+  }
+}
+
+.push-notification-history-card__metric-tooltip {
+  position: absolute;
+  z-index: 1;
+  bottom: calc(100% + var(--spacing-xs));
+  left: 50%;
+  width: calc(var(--spacing-4xl) * 2 + var(--spacing-3xl) + var(--spacing-xs) - var(--spacing-3xs));
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  background: var(--background-darkest);
+  box-shadow: var(--shadow-md);
+  color: var(--navy-100);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-book);
+  line-height: var(--line-height-xs);
+  letter-spacing: 0;
+  transform: translateX(-50%);
+  visibility: hidden;
+  opacity: 0;
+}
+
+.push-notification-history-card__metric-tooltip-description,
+.push-notification-history-card__metric-tooltip-devices {
+  width: calc(var(--spacing-4xl) * 2 + var(--spacing-xl) - var(--spacing-3xs));
+}
+
+.push-notification-history-card__metric-tooltip-devices {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.push-notification-history-card__metric-tooltip-device {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--navy-100);
+}
+
+.push-notification-history-card__metric-tooltip-device strong {
+  color: var(--secondary-text-white);
+  font-weight: var(--font-weight-bold);
+}
+
 .push-notification-history-card__metric-value {
   width: auto;
   overflow: hidden;
