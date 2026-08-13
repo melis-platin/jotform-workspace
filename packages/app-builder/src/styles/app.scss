@@ -18030,7 +18030,7 @@ body.builder--phone-only {
   background: var(--background-white);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-xs);
-  overflow: hidden;
+  overflow: visible;
 }
 
 .push-notification-history-card__rail {
@@ -18039,6 +18039,7 @@ body.builder--phone-only {
   display: flex;
   align-items: center;
   justify-content: center;
+  border-radius: var(--radius-sm) 0 0 var(--radius-sm);
   color: var(--background-white);
   background: var(--yellow-600);
 }
@@ -18294,6 +18295,7 @@ body.builder--phone-only {
   background: transparent;
   color: var(--text-medium);
   cursor: default;
+  z-index: 2;
 
   &:focus-visible {
     outline: none;
@@ -18302,7 +18304,7 @@ body.builder--phone-only {
 
 .push-notification-history-card__metric-tooltip {
   position: absolute;
-  z-index: 1;
+  z-index: 3;
   bottom: calc(100% + var(--spacing-xs));
   left: 50%;
   width: calc(var(--spacing-4xl) * 2 + var(--spacing-3xl) + var(--spacing-xs) - var(--spacing-3xs));
