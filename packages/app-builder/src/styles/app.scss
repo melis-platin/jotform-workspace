@@ -17868,8 +17868,8 @@ body.builder--phone-only {
 
   li {
     display: flex;
-    align-items: center;
-    gap: var(--spacing-2xs);
+    align-items: flex-start;
+    gap: var(--spacing-xs);
     flex: 0 0 auto;
     width: 100%;
 
@@ -17892,6 +17892,10 @@ body.builder--phone-only {
     &:nth-child(1)::before { content: '1'; }
     &:nth-child(2)::before { content: '2'; }
     &:nth-child(3)::before { content: '3'; }
+
+    &:first-child {
+      align-items: center;
+    }
 
   }
 
