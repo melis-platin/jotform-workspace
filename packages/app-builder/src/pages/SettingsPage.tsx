@@ -2453,12 +2453,12 @@ function PushNotificationHistoryCard({
           </span>
           <span className="push-notification-history-card__metadata-separator" aria-hidden="true" />
           <span className="push-notification-history-card__metadata-item">
-            <Icon name="arrow-up-right-from-square" category="arrows" size={12} />
+            <Icon name="scale-arrow-filled" category="general" size={12} />
             <span>{destinationLabel}</span>
           </span>
           <span className="push-notification-history-card__metadata-separator" aria-hidden="true" />
           <span className="push-notification-history-card__metadata-item">
-            <Icon name="calendar" category="time-date" size={12} />
+            <Icon name="calendar-event-filled" category="time-date" size={12} />
             <span>{notification.scheduledAtLabel}</span>
           </span>
         </div>
