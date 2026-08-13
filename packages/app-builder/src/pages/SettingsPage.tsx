@@ -2509,7 +2509,7 @@ function PushNotificationHistoryCard({
                         tabIndex={0}
                         aria-label="Subscriber device breakdown"
                       >
-                        <Icon name="info-circle" category="general" size={8} />
+                        <Icon name="info-circle" category="general" size={12} />
                         <span className="push-notification-history-card__metric-tooltip" role="tooltip">
                           <span className="push-notification-history-card__metric-tooltip-description">
                             One person can allow notifications on multiple devices, each with its own copy.
