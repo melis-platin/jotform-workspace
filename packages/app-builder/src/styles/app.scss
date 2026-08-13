@@ -18262,8 +18262,9 @@ body.builder--phone-only {
 
 .push-notification-history-card__metric-label {
   width: auto;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-3xs);
   white-space: nowrap;
   color: var(--text-medium);
   font-size: var(--font-size-xs);
@@ -18276,7 +18277,7 @@ body.builder--phone-only {
   svg {
     width: var(--spacing-xs);
     height: var(--spacing-xs);
-    margin-left: var(--spacing-3xs);
+    flex-shrink: 0;
   }
 }
 
@@ -18382,6 +18383,10 @@ body.builder--phone-only {
     background: var(--success-lightest);
     color: var(--product-sign-default);
     font-weight: var(--font-weight-book);
+  }
+
+  .push-notification-history-card__description {
+    min-height: calc(var(--line-height-xs) * 2);
   }
 
   .push-notification-history-card__divider {
