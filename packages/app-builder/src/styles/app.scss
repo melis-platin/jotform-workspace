@@ -18248,7 +18248,7 @@ body.builder--phone-only {
   align-items: center;
   gap: var(--spacing-md);
   margin-top: var(--spacing-md);
-  overflow: hidden;
+  overflow: visible;
   pointer-events: none;
 }
 
