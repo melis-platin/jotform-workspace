@@ -18123,7 +18123,7 @@ body.builder--phone-only {
   gap: var(--spacing-md);
   margin-top: var(--spacing-sm);
   font-size: var(--font-size-xs);
-  line-height: var(--line-height-xs);
+  line-height: 1;
 }
 
 .push-notification-history-card__metadata-item {
@@ -18134,7 +18134,7 @@ body.builder--phone-only {
   color: var(--navy-200);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
-  line-height: var(--line-height-xs);
+  line-height: 1;
   letter-spacing: var(--caption-sm-letter-spacing);
 
   .jf-icon,
@@ -18149,7 +18149,7 @@ body.builder--phone-only {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    line-height: var(--line-height-xs);
+    line-height: 1;
   }
 }
 
@@ -18372,7 +18372,7 @@ body.builder--phone-only {
 
 .push-notification-history-card--sent {
   height: calc(
-    var(--spacing-4xl) * 2 + var(--spacing-xl) + var(--spacing-sm) + var(--spacing-2xs) - 1px
+    var(--spacing-4xl) * 2 + var(--spacing-xl) + var(--spacing-xs) - 1px
   );
   .push-notification-history-card__rail {
     background: var(--product-sign-default);
@@ -18388,11 +18388,15 @@ body.builder--phone-only {
     width: 100%;
     margin-left: 0;
   }
+
+  .push-notification-history-card__metadata {
+    gap: var(--spacing-lg);
+  }
 }
 
 .push-notification-history-card--canceled {
   height: calc(
-    var(--spacing-4xl) * 2 + var(--spacing-3xl) + var(--spacing-sm) + var(--spacing-2xs) + var(--spacing-3xs) + 3px
+    var(--spacing-4xl) * 2 + var(--spacing-3xl) + var(--spacing-xs) + var(--spacing-2xs) + var(--spacing-3xs) - 1px
   );
   .push-notification-history-card__rail {
     background: var(--navy-200);
@@ -18410,7 +18414,7 @@ body.builder--phone-only {
 }
 
 .push-notification-history-card--scheduled {
-  min-height: calc(var(--spacing-4xl) * 2 + var(--spacing-xs) + var(--spacing-2xs));
+  min-height: calc(var(--spacing-4xl) * 2 + var(--spacing-2xs));
 
   .push-notification-history-card__live-pill--desktop {
     margin-top: var(--spacing-md);
