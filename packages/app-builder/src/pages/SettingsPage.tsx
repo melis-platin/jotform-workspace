@@ -1542,7 +1542,12 @@ export function PushNotificationsPanel({
           </div>
           <ol className="push-test-notification-modal__steps">
             <li>Point your phone camera at the code</li>
-            <li>Log in to your Jotform account, then tap <strong>Share → Add to Home Screen</strong></li>
+            <li>
+              <p className="push-test-notification-modal__step-copy">
+                <span>Log in to your Jotform account, then tap&nbsp;</span>
+                <strong>Share → Add to Home Screen</strong>
+              </p>
+            </li>
             <li>Open the app from your home screen and allow notifications</li>
           </ol>
         </div>
