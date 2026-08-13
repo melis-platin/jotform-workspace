@@ -18175,6 +18175,9 @@ body.builder--phone-only {
   left: 0;
   min-width: max-content;
   display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--spacing-2xs);
   padding: var(--spacing-2xs) var(--spacing-sm);
   overflow: visible;
   border-radius: var(--radius-sm);
@@ -18187,6 +18190,16 @@ body.builder--phone-only {
   white-space: nowrap;
   visibility: hidden;
   opacity: 0;
+}
+
+.push-notification-history-card__roles-tooltip-row {
+  display: block;
+  white-space: nowrap;
+}
+
+.push-notification-history-card__roles-tooltip-row:not(:first-child) {
+  align-self: stretch;
+  text-align: center;
 }
 
 .push-notification-history-card__metadata-separator {

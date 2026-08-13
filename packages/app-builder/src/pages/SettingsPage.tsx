@@ -106,6 +106,7 @@ const SENT_NOTIFICATION_METRICS = [
 // Target Users has room for two compact role chips plus its remaining-count label.
 // A longer role needs that space to remain a complete, readable chip.
 const PUSH_AUDIENCE_LONG_ROLE_LABEL_MAX_CHARACTERS = 14
+const PUSH_NOTIFICATION_TOOLTIP_ROLES_PER_ROW = 3
 
 function getDefaultPushNotificationDeepLink(targets: DeepLinkTarget[]): string {
   return targets.find((target) => target.type === 'page' && target.label === 'Home')?.id
@@ -2336,6 +2337,9 @@ function PushNotificationHistoryCard({
   const statusBadgeLabel = notification.statusLabel
   const audienceLabel = getDisplayAudienceHistoryLabel(notification.audienceLabel)
   const audienceRoleTooltip = getHistoryAudienceRoleTooltip(notification, appUserRoles)
+  const audienceRoleTooltipRows = audienceRoleTooltip
+    ? getPushNotificationRoleTooltipRows(audienceRoleTooltip)
+    : []
   const destinationLabel = getDisplayDeepLinkLabel(notification.deepLinkLabel)
   const [isActionsMenuOpen, setIsActionsMenuOpen] = useState(false)
   const [actionsMenuStyle, setActionsMenuStyle] = useState<CSSProperties>({ visibility: 'hidden' })
@@ -2464,7 +2468,11 @@ function PushNotificationHistoryCard({
             <span>{audienceLabel}</span>
             {audienceRoleTooltip && (
               <span className="push-notification-history-card__roles-tooltip" role="tooltip">
-                {audienceRoleTooltip}
+                {audienceRoleTooltipRows.map((roleNames) => (
+                  <span className="push-notification-history-card__roles-tooltip-row" key={roleNames.join('|')}>
+                    {roleNames.join(', ')}
+                  </span>
+                ))}
               </span>
             )}
           </span>
@@ -3875,16 +3883,31 @@ function getDisplayAudienceHistoryLabel(audienceLabel: string) {
   return audienceLabel.replace(/\s*\([^)]*\)\s*$/, '')
 }
 
-function getHistoryAudienceRoleTooltip(notification: PushNotificationHistoryItem, roles: AppRoleOption[]) {
+function getHistoryAudienceRoleTooltip(notification: PushNotificationHistoryItem, roles: AppRoleOption[]): string[] | undefined {
   const selectedRoleNames = roles
     .filter((role) => notification.audience?.includes(role.id))
     .map((role) => role.label)
 
-  if (selectedRoleNames.length > 1) return selectedRoleNames.join(', ')
+  if (selectedRoleNames.length > 1) return selectedRoleNames
 
   const legacyRoleNames = notification.audienceLabel.match(/\(([^)]*)\)/)?.[1]?.trim()
 
-  return legacyRoleNames || undefined
+  return legacyRoleNames
+    ?.split(',')
+    .map((roleName) => roleName.trim())
+    .filter(Boolean)
+}
+
+function getPushNotificationRoleTooltipRows(roleNames: string[]): string[][] {
+  return roleNames.reduce<string[][]>((rows, roleName, index) => {
+    const rowIndex = Math.floor(index / PUSH_NOTIFICATION_TOOLTIP_ROLES_PER_ROW)
+    const row = rows[rowIndex] ?? []
+
+    row.push(roleName)
+    rows[rowIndex] = row
+
+    return rows
+  }, [])
 }
 
 function getDeepLinkHistoryLabel(deepLink: string, targets: DeepLinkTarget[]) {
