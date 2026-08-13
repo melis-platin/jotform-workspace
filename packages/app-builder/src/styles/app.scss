@@ -865,7 +865,7 @@ body,
   border-radius: var(--radius-rounded);
   background: var(--ds-bg-page);
   color: var(--ds-text-dark);
-  font-size: var(--font-size-xs);
+  font-size: var(--font-size-2xs);
   font-weight: var(--ds-font-weight-bold);
   letter-spacing: var(--letter-spacing-2xl);
   line-height: var(--ds-line-height-xs);
@@ -18342,9 +18342,9 @@ body.builder--phone-only {
   white-space: normal;
   text-align: left;
   color: var(--navy-100);
-  font-size: var(--font-size-2xs);
+  font-size: var(--font-size-xs);
   font-weight: var(--font-weight-book);
-  line-height: calc(var(--font-size-2xs) * 1.2);
+  line-height: var(--line-height-xs);
   letter-spacing: var(--caption-letter-spacing);
 }
 
