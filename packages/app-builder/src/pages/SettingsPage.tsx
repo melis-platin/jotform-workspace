@@ -103,6 +103,10 @@ const SENT_NOTIFICATION_METRICS = [
   { label: 'CLICKED', value: '0' },
 ]
 
+// Target Users has room for two compact role chips plus its remaining-count label.
+// A longer role needs that space to remain a complete, readable chip.
+const PUSH_AUDIENCE_LONG_ROLE_LABEL_MAX_CHARACTERS = 14
+
 function getDefaultPushNotificationDeepLink(targets: DeepLinkTarget[]): string {
   return targets.find((target) => target.type === 'page' && target.label === 'Home')?.id
     ?? targets.find((target) => target.type === 'page')?.id
@@ -3347,7 +3351,10 @@ function AudienceDropdown({ value, onChange, roles }: AudienceDropdownProps) {
   const selectedValue = value.length > 0 ? value : [ALL_USERS_AUDIENCE_ID]
   const selectedOptions = options.filter((option) => selectedValue.includes(option.id))
   const selectedRoleOptions = selectedOptions.filter((option) => option.role)
-  const visibleSelectedRoleOptions = selectedRoleOptions.slice(0, 2)
+  const hasLongSelectedRoleLabel = selectedRoleOptions
+    .slice(0, 2)
+    .some((option) => option.label.length > PUSH_AUDIENCE_LONG_ROLE_LABEL_MAX_CHARACTERS)
+  const visibleSelectedRoleOptions = selectedRoleOptions.slice(0, hasLongSelectedRoleLabel ? 1 : 2)
   const hiddenSelectedRoleCount = Math.max(selectedRoleOptions.length - visibleSelectedRoleOptions.length, 0)
   const selectedAllUsersOption = selectedOptions.find((option) => option.id === ALL_USERS_AUDIENCE_ID)
   const selectedLabel = selectedOptions.length > 0

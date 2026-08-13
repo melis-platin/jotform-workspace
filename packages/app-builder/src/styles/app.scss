@@ -17524,13 +17524,13 @@ body.builder--phone-only {
   gap: var(--spacing-xs);
   min-width: 0;
   max-width: 100%;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .push-audience-dropdown__chip {
   height: var(--spacing-xl);
   display: inline-flex;
-  flex: 0 1 auto;
+  flex: 0 0 auto;
   align-items: center;
   justify-content: center;
   min-width: 0;
