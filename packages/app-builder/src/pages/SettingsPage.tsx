@@ -103,6 +103,12 @@ const SENT_NOTIFICATION_METRICS = [
   { label: 'CLICKED', value: '0' },
 ]
 
+function getDefaultPushNotificationDeepLink(targets: DeepLinkTarget[]): string {
+  return targets.find((target) => target.type === 'page' && target.label === 'Home')?.id
+    ?? targets.find((target) => target.type === 'page')?.id
+    ?? ''
+}
+
 const PUSH_NOTIFICATION_HISTORY_FILTER_OPTIONS = [
   {
     value: 'all',
@@ -1199,7 +1205,7 @@ export function PushNotificationsPanel({
     setNotificationContentFields([])
     setNotificationContentSuffix('')
     setAudience([ALL_USERS_AUDIENCE_ID])
-    setDeepLink('')
+    setDeepLink(getDefaultPushNotificationDeepLink(deepLinkTargets))
     setScheduleDate('')
     setScheduleTime('')
     setScheduleQuickPick('custom')
@@ -1207,6 +1213,13 @@ export function PushNotificationsPanel({
     setEditingNotification(null)
     onScheduleComposerChange?.(false)
   }
+
+  useEffect(() => {
+    if (activeView !== 'composer' || deepLink) return
+
+    const defaultDeepLink = getDefaultPushNotificationDeepLink(deepLinkTargets)
+    if (defaultDeepLink) setDeepLink(defaultDeepLink)
+  }, [activeView, deepLink, deepLinkTargets, setDeepLink])
   const openInitialOverview = () => {
     resetNotificationComposer()
     setCanReturnToHistory(false)
