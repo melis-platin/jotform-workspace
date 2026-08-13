@@ -18123,7 +18123,7 @@ body.builder--phone-only {
   gap: var(--spacing-md);
   margin-top: var(--spacing-sm);
   font-size: var(--font-size-xs);
-  line-height: 1;
+  line-height: var(--line-height-xs);
 }
 
 .push-notification-history-card__metadata-item {
@@ -18134,7 +18134,7 @@ body.builder--phone-only {
   color: var(--navy-200);
   font-size: var(--font-size-xs);
   font-weight: var(--font-weight-medium);
-  line-height: 1;
+  line-height: var(--line-height-xs);
   letter-spacing: var(--caption-sm-letter-spacing);
 
   .jf-icon,
@@ -18149,7 +18149,7 @@ body.builder--phone-only {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    line-height: 1;
+    line-height: var(--line-height-xs);
   }
 }
 
