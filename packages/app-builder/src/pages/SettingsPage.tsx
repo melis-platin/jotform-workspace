@@ -2466,7 +2466,7 @@ function PushNotificationHistoryCard({
           </span>
           <span className="push-notification-history-card__metadata-separator" aria-hidden="true" />
           <span className="push-notification-history-card__metadata-item">
-            <Icon name="scale-arrow-filled" category="general" size={12} />
+            <Icon name="scale-arrow-filled" category="editor" size={12} />
             <span>{destinationLabel}</span>
           </span>
           <span className="push-notification-history-card__metadata-separator" aria-hidden="true" />
