@@ -12,6 +12,8 @@ ComponentRegistry.register({
   variants: {},
 
   properties: [
+    { name: 'Title', type: 'text', default: 'Daily Tasks' },
+    { name: 'Tasks', type: 'text', default: '' },
     { name: 'Selected', type: 'boolean', default: false },
     { name: 'Skeleton', type: 'boolean', default: false },
   ],
@@ -65,8 +67,18 @@ ComponentRegistry.register({
   ],
 
   render(_variants: VariantValues, props: PropertyValues, _states: StateValues) {
+    let tasks
+    try {
+      const taskValue = props['Tasks']
+      tasks = typeof taskValue === 'string' && taskValue.trim() ? JSON.parse(taskValue) : undefined
+    } catch {
+      tasks = undefined
+    }
+
     return (
       <DailyTaskManager
+        title={(props['Title'] as string) || 'Daily Tasks'}
+        tasks={tasks}
         selected={props['Selected'] as boolean}
         skeleton={props['Skeleton'] as boolean}
       />

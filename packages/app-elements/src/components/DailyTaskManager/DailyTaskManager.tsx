@@ -10,6 +10,7 @@ export interface TaskItem {
 
 export interface DailyTaskManagerProps {
   tasks?: TaskItem[];
+  title?: string;
   selected?: boolean;
   skeleton?: boolean;
   skeletonAnimation?: 'pulse' | 'shimmer';
@@ -23,7 +24,7 @@ const DEFAULT_TASKS: TaskItem[] = [
   { id: '5', text: 'Deploy to staging', completed: false },
 ];
 
-export function DailyTaskManager({ tasks: initialTasks, selected = false, skeleton = false, skeletonAnimation = 'pulse' }: DailyTaskManagerProps) {
+export function DailyTaskManager({ tasks: initialTasks, title = 'Daily Tasks', selected = false, skeleton = false, skeletonAnimation = 'pulse' }: DailyTaskManagerProps) {
   const [tasks, setTasks] = useState<TaskItem[]>(initialTasks ?? DEFAULT_TASKS);
   const [newTask, setNewTask] = useState('');
 
@@ -87,7 +88,7 @@ export function DailyTaskManager({ tasks: initialTasks, selected = false, skelet
           </svg>
         </div>
         <div className="jf-daily-tasks__header-text">
-          <h3 className="jf-daily-tasks__title">Daily Tasks</h3>
+          <h3 className="jf-daily-tasks__title">{title}</h3>
           <p className="jf-daily-tasks__subtitle">
             {percentage === 100 ? 'All done! Great work.' : `${percentage}% completed`}
           </p>
