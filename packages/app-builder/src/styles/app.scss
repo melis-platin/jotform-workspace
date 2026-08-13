@@ -17937,7 +17937,7 @@ body.builder--phone-only {
 }
 
 .push-notification-dashboard {
-  width: calc(var(--spacing-4xl) * 10 + var(--spacing-xl) + var(--spacing-2xs));
+  width: calc(var(--spacing-4xl) * 10 + var(--spacing-lg));
   max-width: 100%;
   display: flex;
   flex-direction: column;
@@ -17970,7 +17970,7 @@ body.builder--phone-only {
 }
 
 .push-notification-history {
-  width: calc(var(--spacing-4xl) * 10 + var(--spacing-xl) + var(--spacing-2xs));
+  width: calc(var(--spacing-4xl) * 10 + var(--spacing-lg));
   max-width: 100%;
 }
 
