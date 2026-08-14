@@ -11,7 +11,10 @@ import {
 } from '@jf/design-system'
 import { IconPropertyField } from './IconPropertyField'
 import { DEFAULT_PAGE_ICON } from './PageNavigationBar'
-import type { AppRoleOption } from '../state/appUserRoles'
+import { getRoleColorStyle, type AppRoleOption } from '../state/appUserRoles'
+
+const MAX_VISIBLE_ROLE_BADGES = 2
+const LONG_ROLE_BADGE_LABEL_LENGTH = 12
 
 export interface PagePropertiesPage {
   id: string
@@ -65,6 +68,14 @@ export function PagePropertiesPanel({
   const effectiveSelectedRoleIds = selectedRolesOnly && selectedRoleIds.length === 0
     ? [defaultRoleId]
     : selectedRoleIds
+  const selectedRoleOptions = effectiveSelectedRoleIds
+    .map((roleId) => roleOptions.find((role) => role.id === roleId))
+    .filter((role): role is AppRoleOption => Boolean(role))
+  const hasLongRoleBadge = selectedRoleOptions
+    .slice(0, MAX_VISIBLE_ROLE_BADGES)
+    .some((role) => role.label.length > LONG_ROLE_BADGE_LABEL_LENGTH)
+  const visibleRoleOptions = selectedRoleOptions.slice(0, hasLongRoleBadge ? 1 : MAX_VISIBLE_ROLE_BADGES)
+  const hiddenRoleCount = selectedRoleOptions.length - visibleRoleOptions.length
 
   const updateSelectedRoles = (roleIds: string[]) => {
     onChangeConditions([
@@ -207,6 +218,35 @@ export function PagePropertiesPanel({
                   options={roleOptions.map((role) => ({ value: role.id, label: role.label }))}
                   placeholder="Select roles"
                   menuPlacement="bottom"
+                  summary={(
+                    <span className="page-properties__role-summary" aria-label={selectedRoleOptions.map((role) => role.label).join(', ')}>
+                      {visibleRoleOptions.map((role) => (
+                        <span
+                          className="page-properties__role-badge"
+                          key={role.id}
+                          style={getRoleColorStyle(role.color)}
+                        >
+                          <span className="page-properties__role-badge-label">{role.label}</span>
+                          <span
+                            className="page-properties__role-badge-remove"
+                            role="button"
+                            aria-label={`Remove ${role.label}`}
+                            tabIndex={-1}
+                            onMouseDown={(event) => {
+                              event.preventDefault()
+                              event.stopPropagation()
+                              updateSelectedRoles(effectiveSelectedRoleIds.filter((roleId) => roleId !== role.id))
+                            }}
+                          >
+                            <Icon name="xmark" size={12} />
+                          </span>
+                        </span>
+                      ))}
+                      {hiddenRoleCount > 0 && (
+                        <span className="page-properties__role-badge-more">+{hiddenRoleCount} more</span>
+                      )}
+                    </span>
+                  )}
                 />
               )}
             </div>
