@@ -8285,6 +8285,7 @@ export function BuildPage({
                   }
                   if (isWhatsApp && propertyTab === 'general') {
                     const displayStyle = String(selectedElement.properties['Display Style'] ?? 'Button')
+                    const isWhatsAppPhoneMissing = !String(selectedElement.properties['Phone Number'] ?? '').trim()
                     const bubbleUserPreference = selectedElement.properties['Show Label User Preference']
                     const hasBubbleUserPreference = typeof bubbleUserPreference === 'boolean'
                     const selectDisplayStyle = (nextDisplayStyle: 'Floating' | 'Button') => {
@@ -8316,7 +8317,15 @@ export function BuildPage({
                     return (
                       <div className="property-panel__body property-panel__body--whatsapp">
                         <div className="property-panel__field">
-                          <DSFormField title="Whatsapp Number" description="Use the international format: +1 541-754-3010" size="md" showDescription showHelpText={false}>
+                          <DSFormField
+                            title="Whatsapp Number"
+                            description="Use the international format: +1 541-754-3010"
+                            size="md"
+                            status={isWhatsAppPhoneMissing ? 'warning' : 'default'}
+                            helpText="Add a phone number to enable WhatsApp messages."
+                            showDescription
+                            showHelpText={isWhatsAppPhoneMissing}
+                          >
                             <DSInput
                               value={String(selectedElement.properties['Phone Number'] ?? '')}
                               placeholder="+0 000-000-0000"
@@ -8341,12 +8350,6 @@ export function BuildPage({
                               }}
                             />
                           </DSFormField>
-                          {!String(selectedElement.properties['Phone Number'] ?? '').trim() && (
-                            <p className="whatsapp-properties__number-help-text">
-                              <Icon name="exclamation-circle-filled" category="general" size={16} />
-                              Add a phone number to enable WhatsApp messages.
-                            </p>
-                          )}
                         </div>
                         <div className="property-panel__field">
                           <DSFormField title="Message" description="Automatically added to the chat so users can send in one tap." size="md" showDescription showHelpText={false}>
