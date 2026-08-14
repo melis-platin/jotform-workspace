@@ -27,12 +27,15 @@ interface CanvasPageLabelProps {
   onOpenSettings: () => void
 }
 
-export function CanvasPageLabel({ page, active, floating, overlayColor, roleOptions, onRename, onOpenSettings }: CanvasPageLabelProps) {
-  const [editing, setEditing] = useState(false)
+export function PageConditionSummary({
+  conditions,
+  roleOptions,
+}: {
+  conditions?: Array<{ id: string }>
+  roleOptions: AppRoleOption[]
+}) {
   const [showConditionsPopover, setShowConditionsPopover] = useState(false)
-  const nameRef = useRef<HTMLSpanElement>(null)
-  const iconName = page.icon || DEFAULT_PAGE_ICON
-  const selectedRoleIds = page.conditions
+  const selectedRoleIds = conditions
     ?.filter((condition) => condition.id.startsWith('role:'))
     .map((condition) => condition.id.slice('role:'.length)) ?? []
   const selectedRoles = selectedRoleIds
@@ -45,6 +48,57 @@ export function CanvasPageLabel({ page, active, floating, overlayColor, roleOpti
     { length: Math.ceil(conditionRoles.length / 3) },
     (_, rowIndex) => conditionRoles.slice(rowIndex * 3, rowIndex * 3 + 3),
   )
+
+  if (!conditions?.length) return null
+
+  return (
+    <span
+      className="canvas-page-label__condition-wrapper"
+      onMouseLeave={() => setShowConditionsPopover(false)}
+    >
+      <button
+        type="button"
+        className="canvas-page-label__condition"
+        aria-label="Page conditions"
+        aria-expanded={showConditionsPopover}
+        onClick={(e) => {
+          e.stopPropagation()
+          setShowConditionsPopover((open) => !open)
+        }}
+      >
+        <Icon name="conditional-branch-filled" category="general" size={12} />
+      </button>
+      {showConditionsPopover && (
+        <div className="canvas-page-label__condition-popover" role="tooltip">
+          <div className="canvas-page-label__condition-popover-content">
+            <p className="canvas-page-label__condition-popover-title">SHOW PAGE WHEN</p>
+            <div className="canvas-page-label__condition-popover-detail">
+              <p className="canvas-page-label__condition-popover-description">User Role is:</p>
+              {conditionRoleRows.map((roleRow, rowIndex) => (
+                <div className="canvas-page-label__condition-role-row" key={rowIndex}>
+                  {roleRow.map((role) => (
+                    <span
+                      className="canvas-page-label__condition-role"
+                      key={role.id}
+                      style={getRoleColorStyle(role.color)}
+                    >
+                      {role.label}
+                    </span>
+                  ))}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </span>
+  )
+}
+
+export function CanvasPageLabel({ page, active, floating, overlayColor, roleOptions, onRename, onOpenSettings }: CanvasPageLabelProps) {
+  const [editing, setEditing] = useState(false)
+  const nameRef = useRef<HTMLSpanElement>(null)
+  const iconName = page.icon || DEFAULT_PAGE_ICON
 
   // Keep the DOM text in sync when the name changes externally (e.g. from the panel).
   useEffect(() => {
@@ -117,48 +171,7 @@ export function CanvasPageLabel({ page, active, floating, overlayColor, roleOpti
           <Icon name="lock-filled" category="security" size={14} />
         </span>
       )}
-      {page.conditions?.length ? (
-        <span
-          className="canvas-page-label__condition-wrapper"
-          onMouseLeave={() => setShowConditionsPopover(false)}
-        >
-          <button
-            type="button"
-            className="canvas-page-label__condition"
-            aria-label="Page conditions"
-            aria-expanded={showConditionsPopover}
-            onClick={(e) => {
-              e.stopPropagation()
-              setShowConditionsPopover((open) => !open)
-            }}
-          >
-            <Icon name="conditional-branch-filled" category="general" size={12} />
-          </button>
-          {showConditionsPopover && (
-            <div className="canvas-page-label__condition-popover" role="tooltip">
-              <div className="canvas-page-label__condition-popover-content">
-                <p className="canvas-page-label__condition-popover-title">SHOW PAGE WHEN</p>
-                <div className="canvas-page-label__condition-popover-detail">
-                  <p className="canvas-page-label__condition-popover-description">User Role is:</p>
-                  {conditionRoleRows.map((roleRow, rowIndex) => (
-                    <div className="canvas-page-label__condition-role-row" key={rowIndex}>
-                      {roleRow.map((role) => (
-                        <span
-                          className="canvas-page-label__condition-role"
-                          key={role.id}
-                          style={getRoleColorStyle(role.color)}
-                        >
-                          {role.label}
-                        </span>
-                      ))}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-        </span>
-      ) : null}
+      <PageConditionSummary conditions={page.conditions} roleOptions={roleOptions} />
       <button
         type="button"
         className="canvas-page-label__gear"

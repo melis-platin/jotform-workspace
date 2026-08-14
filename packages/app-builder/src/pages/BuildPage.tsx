@@ -53,7 +53,7 @@ import previewUserAvatar from '../assets/preview-user-avatar.jpg'
 import previewHeaderAvatar from '../assets/app-users/melis-platin.png'
 import { PhoneStatusBar } from '../components/PhoneStatusBar'
 import { PageNavigationBar, getPageIconName } from '../components/PageNavigationBar'
-import { CanvasPageLabel } from '../components/CanvasPageLabel'
+import { CanvasPageLabel, PageConditionSummary } from '../components/CanvasPageLabel'
 import { PagePropertiesPanel } from '../components/PagePropertiesPanel'
 import { NavigationMenuPanel } from '../components/NavigationMenuPanel'
 import { LivePreviewMorePagesView } from '../components/LivePreviewMorePagesView'
@@ -3685,6 +3685,8 @@ function DynamicPageHeader({
   items,
   currentIndex,
   active,
+  conditions,
+  roleOptions,
   onSelect,
   onOpenSettings,
 }: {
@@ -3692,6 +3694,8 @@ function DynamicPageHeader({
   items: DynamicDetailItem[]
   currentIndex: number
   active: boolean
+  conditions?: Array<{ id: string }>
+  roleOptions: AppRoleOption[]
   onSelect: (index: number) => void
   onOpenSettings: () => void
 }) {
@@ -3714,6 +3718,7 @@ function DynamicPageHeader({
           <Icon name="squares-wave" category="editor" size={18} />
           Dynamic Page
         </span>
+        <PageConditionSummary conditions={conditions} roleOptions={roleOptions} />
         <button
           type="button"
           className="dynamic-page-header__gear"
@@ -7608,6 +7613,8 @@ export function BuildPage({
                       items={dynItems}
                       currentIndex={dynIndex}
                       active={isCanvasPageSelected(page.id)}
+                      conditions={page.conditions}
+                      roleOptions={appUserRoles}
                       onSelect={(i) => setDynamicPreviewIndex((m) => ({ ...m, [page.id]: i }))}
                       onOpenSettings={() => openPageSettings(page.id)}
                     />
