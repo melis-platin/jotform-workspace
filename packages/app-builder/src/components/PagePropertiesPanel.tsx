@@ -72,8 +72,8 @@ export function PagePropertiesPanel({
           value={tab}
           onChange={(value) => setTab(value as 'general' | 'condition')}
           items={[
-            { value: 'general', label: 'General' },
-            { value: 'condition', label: 'Condition' },
+            { value: 'general', label: 'GENERAL' },
+            { value: 'condition', label: 'CONDITION' },
           ]}
         />
       </div>
