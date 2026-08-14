@@ -5713,6 +5713,71 @@ body,
   }
 }
 
+.page-properties__access-selection {
+  display: flex;
+  flex-direction: column;
+  gap: var(--ds-space-xs);
+  padding: var(--ds-space-md);
+  border: 1px solid var(--secondary-background-light);
+  border-radius: var(--radius-sm);
+  background: var(--ds-bg-primary);
+
+  .page-properties__access-option.jf-radio {
+    min-height: var(--space-6);
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  &--selected {
+    border-width: 2px;
+    border-color: color-mix(in srgb, var(--accent-default) 50%, transparent);
+  }
+}
+
+.page-properties__role-select {
+  width: calc(100% - var(--space-8));
+  margin-left: var(--space-8);
+
+  .jf-dropdown {
+    min-height: var(--space-10);
+    padding-inline: var(--ds-space-sm);
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: var(--secondary-background-light);
+    box-shadow: none;
+
+    &:hover,
+    &:focus-visible,
+    &.jf-dropdown--open {
+      border: 0;
+      box-shadow: none;
+    }
+  }
+
+  .jf-dropdown__chip {
+    gap: var(--ds-space-xs);
+    padding: var(--ds-space-xs) var(--ds-space-sm);
+    border: 0;
+    border-radius: var(--radius-sm);
+    background: var(--app-users-role-admin-bg);
+    color: var(--text-darkest);
+    font-size: var(--ds-font-size-sm);
+    line-height: var(--line-height-label-md);
+  }
+
+  .jf-dropdown__chip-remove {
+    width: var(--ds-space-md);
+    height: var(--ds-space-md);
+    color: inherit;
+  }
+
+  .jf-dropdown__trailing {
+    color: var(--secondary-text-white);
+  }
+}
+
 .page-properties__manage-roles {
   align-self: flex-start;
   margin-top: var(--ds-space-xs);

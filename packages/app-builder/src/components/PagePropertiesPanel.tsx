@@ -7,9 +7,11 @@ import {
   Tabs as DSTabs,
   Link as DSLink,
   RadioButton,
+  DropdownMulti as DSDropdownMulti,
 } from '@jf/design-system'
 import { IconPropertyField } from './IconPropertyField'
 import { DEFAULT_PAGE_ICON } from './PageNavigationBar'
+import type { AppRoleOption } from '../state/appUserRoles'
 
 export interface PagePropertiesPage {
   id: string
@@ -34,6 +36,7 @@ interface PagePropertiesPanelProps {
   onToggleLanding: (landing: boolean) => void
   onChangeConditions: (conditions: Array<{ id: string }>) => void
   onManageRoles: () => void
+  roleOptions: AppRoleOption[]
   onClose: () => void
 }
 
@@ -49,11 +52,26 @@ export function PagePropertiesPanel({
   onToggleLanding,
   onChangeConditions,
   onManageRoles,
+  roleOptions,
   onClose,
 }: PagePropertiesPanelProps) {
   const [tab, setTab] = useState(initialTab)
   const showIcon = page.showIcon !== false
-  const selectedRolesOnly = Boolean(page.conditions?.length)
+  const selectedRolesOnly = page.conditions?.some((condition) => condition.id === 'role-based-access') ?? false
+  const selectedRoleIds = page.conditions
+    ?.filter((condition) => condition.id.startsWith('role:'))
+    .map((condition) => condition.id.slice('role:'.length)) ?? []
+  const defaultRoleId = roleOptions[0]?.id ?? 'admin'
+  const effectiveSelectedRoleIds = selectedRolesOnly && selectedRoleIds.length === 0
+    ? [defaultRoleId]
+    : selectedRoleIds
+
+  const updateSelectedRoles = (roleIds: string[]) => {
+    onChangeConditions([
+      { id: 'role-based-access' },
+      ...roleIds.map((roleId) => ({ id: `role:${roleId}` })),
+    ])
+  }
 
   useEffect(() => setTab(initialTab), [initialTab])
 
@@ -173,13 +191,25 @@ export function PagePropertiesPanel({
               checked={!selectedRolesOnly}
               onChange={() => onChangeConditions([])}
             />
-            <RadioButton
-              className="page-properties__access-option"
-              name={`page-access-${page.id}`}
-              label="Visible to Selected Roles Only"
-              checked={selectedRolesOnly}
-              onChange={() => onChangeConditions([{ id: 'role-based-access' }])}
-            />
+            <div className={`page-properties__access-selection${selectedRolesOnly ? ' page-properties__access-selection--selected' : ''}`}>
+              <RadioButton
+                className="page-properties__access-option"
+                name={`page-access-${page.id}`}
+                label="Visible to Selected Roles Only"
+                checked={selectedRolesOnly}
+                onChange={() => updateSelectedRoles(effectiveSelectedRoleIds)}
+              />
+              {selectedRolesOnly && (
+                <DSDropdownMulti
+                  className="page-properties__role-select"
+                  value={effectiveSelectedRoleIds}
+                  onChange={updateSelectedRoles}
+                  options={roleOptions.map((role) => ({ value: role.id, label: role.label }))}
+                  placeholder="Select roles"
+                  menuPlacement="bottom"
+                />
+              )}
+            </div>
             <DSLink
               className="page-properties__manage-roles"
               size="lg"

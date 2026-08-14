@@ -7832,6 +7832,7 @@ export function BuildPage({
                     onToggleLanding={(landing) => updatePage(pp.id, { landing })}
                     onChangeConditions={(conditions) => updatePage(pp.id, { conditions })}
                     onManageRoles={() => onManageRoles?.()}
+                    roleOptions={appUserRoles}
                     onClose={() => { setRightPanel('preview'); setPagePropertiesId(null); setPagePropertiesTab('general') }}
                   />
                 )
