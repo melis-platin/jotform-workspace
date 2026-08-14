@@ -124,7 +124,7 @@ export function CanvasPageLabel({ page, active, floating, overlayColor, onRename
           onOpenSettings()
         }}
       >
-        <Icon name="gear-filled" category="general" size={16} />
+        <Icon name="gear-filled" category="general" size={12} />
       </button>
     </div>
   )
