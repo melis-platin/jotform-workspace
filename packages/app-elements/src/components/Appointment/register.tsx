@@ -17,8 +17,8 @@ ComponentRegistry.register({
   icon: 'CalendarCheck',
   variants: {
     'Calendar View': {
-      options: ['Month', 'Week', 'Date list'],
-      default: 'Month',
+      options: ['Classic', 'Compact', 'Cards'],
+      default: 'Classic',
     },
   },
   properties: [

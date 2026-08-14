@@ -19,7 +19,7 @@ export interface AppointmentProps {
   calendarView?: AppointmentCalendarView;
 }
 
-export type AppointmentCalendarView = 'Month' | 'Week' | 'Date list';
+export type AppointmentCalendarView = 'Classic' | 'Compact' | 'Cards';
 
 const DEFAULT_SLOTS: AppointmentSlot[] = [
   { time: '9:00 AM' }, { time: '10:00 AM' }, { time: '11:00 AM' },
@@ -53,27 +53,13 @@ export function Appointment({
   slots = DEFAULT_SLOTS,
   timezone = 'Europe/Istanbul',
   selected = false,
-  calendarView = 'Month',
+  calendarView = 'Classic',
 }: AppointmentProps) {
   const today = useMemo(() => startOfDay(new Date()), []);
   const [visibleMonth, setVisibleMonth] = useState(() => new Date(today.getFullYear(), today.getMonth(), 1));
   const [selectedDate, setSelectedDate] = useState(today);
   const [selectedTime, setSelectedTime] = useState('');
   const calendarDays = useMemo(() => getCalendarDays(visibleMonth), [visibleMonth]);
-  const weekDays = useMemo(() => {
-    const firstDay = new Date(selectedDate);
-    firstDay.setDate(firstDay.getDate() - firstDay.getDay());
-    return Array.from({ length: 7 }, (_, index) => {
-      const date = new Date(firstDay);
-      date.setDate(firstDay.getDate() + index);
-      return date;
-    });
-  }, [selectedDate]);
-  const listDates = useMemo(() => Array.from({ length: 5 }, (_, index) => {
-    const date = new Date(today);
-    date.setDate(date.getDate() + index);
-    return date;
-  }), [today]);
   const dateInputFormatter = useMemo(() => new Intl.DateTimeFormat('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' }), []);
   const headingFormatter = useMemo(() => new Intl.DateTimeFormat('en-US', { weekday: 'long', month: 'long', day: 'numeric' }), []);
   const monthFormatter = useMemo(() => new Intl.DateTimeFormat('en-US', { month: 'long' }), []);
@@ -94,7 +80,7 @@ export function Appointment({
     <section className={className} aria-label={title}>
       <h3 className="jf-appointment__title">{title}</h3>
       <div className="jf-appointment__layout">
-        {calendarView === 'Month' && <div className="jf-appointment__calendar">
+        <div className="jf-appointment__calendar">
           <div className="jf-appointment__date-input" aria-label="Selected appointment date">
             <span>{dateInputFormatter.format(selectedDate)}</span>
             <Icon name="Calendar" size={24} />
@@ -140,37 +126,7 @@ export function Appointment({
               );
             })}
           </div>
-        </div>}
-        {calendarView === 'Week' && <div className="jf-appointment__calendar jf-appointment__calendar--week">
-          <div className="jf-appointment__week-header">
-            <button type="button" onClick={() => changeMonth(-1)} aria-label="Previous week"><Icon name="ChevronLeft" size={20} /></button>
-            <p>{monthFormatter.format(selectedDate)} {selectedDate.getFullYear()}</p>
-            <button type="button" onClick={() => changeMonth(1)} aria-label="Next week"><Icon name="ChevronRight" size={20} /></button>
-          </div>
-          <div className="jf-appointment__week-picker" role="radiogroup" aria-label="Select appointment day">
-            {weekDays.map((date) => {
-              const isPast = date < today;
-              const isSelected = isSameDate(date, selectedDate);
-              return <button key={date.toISOString()} type="button" className={`jf-appointment__week-day${isSelected ? ' jf-appointment__week-day--selected' : ''}`} onClick={() => !isPast && selectDate(date)} disabled={isPast} role="radio" aria-checked={isSelected}>
-                <span>{new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(date)}</span>
-                <strong>{date.getDate()}</strong>
-              </button>;
-            })}
-          </div>
-        </div>}
-        {calendarView === 'Date list' && <div className="jf-appointment__calendar jf-appointment__calendar--list">
-          <p className="jf-appointment__list-heading">Choose a date</p>
-          <div className="jf-appointment__date-list" role="radiogroup" aria-label="Select appointment date">
-            {listDates.map((date) => {
-              const isSelected = isSameDate(date, selectedDate);
-              return <button key={date.toISOString()} type="button" className={`jf-appointment__date-row${isSelected ? ' jf-appointment__date-row--selected' : ''}`} onClick={() => selectDate(date)} role="radio" aria-checked={isSelected}>
-                <span>{new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(date)}</span>
-                <strong>{new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric' }).format(date)}</strong>
-                <Icon name="ChevronRight" size={20} />
-              </button>;
-            })}
-          </div>
-        </div>}
+        </div>
 
         <div className="jf-appointment__availability">
           <div className="jf-appointment__availability-header">
