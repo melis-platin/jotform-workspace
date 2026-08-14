@@ -9571,6 +9571,22 @@ body,
   }
 }
 
+.whatsapp-properties__number-help-text {
+  display: flex;
+  align-items: center;
+  gap: var(--ds-space-2xs);
+  margin: var(--ds-space-sm) 0 0;
+  color: var(--yellow-400);
+  font-family: var(--ds-font-family);
+  font-size: var(--ds-font-size-xs);
+  font-weight: var(--ds-font-weight-book);
+  line-height: var(--ds-line-height-xs);
+
+  .jf-icon {
+    flex: 0 0 auto;
+  }
+}
+
 .whatsapp-properties__display-style-card {
   display: flex;
   flex-direction: column;

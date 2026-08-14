@@ -8341,6 +8341,12 @@ export function BuildPage({
                               }}
                             />
                           </DSFormField>
+                          {!String(selectedElement.properties['Phone Number'] ?? '').trim() && (
+                            <p className="whatsapp-properties__number-help-text">
+                              <Icon name="exclamation-circle-filled" category="general" size={16} />
+                              Add a phone number to enable WhatsApp messages.
+                            </p>
+                          )}
                         </div>
                         <div className="property-panel__field">
                           <DSFormField title="Message" description="Automatically added to the chat so users can send in one tap." size="md" showDescription showHelpText={false}>
