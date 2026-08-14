@@ -5490,7 +5490,7 @@ body,
 }
 
 .canvas-page-label__condition-popover-title {
-  color: var(--ds-text-dark);
+  color: var(--text-dark);
   font-size: var(--ds-font-size-xs);
   font-weight: var(--ds-font-weight-bold);
   line-height: var(--ds-line-height-xs);
@@ -5504,7 +5504,7 @@ body,
 }
 
 .canvas-page-label__condition-popover-description {
-  color: var(--ds-text-medium);
+  color: var(--text-medium);
   font-size: var(--ds-font-size-sm);
   font-weight: var(--ds-font-weight-book);
   line-height: var(--ds-line-height-md);
@@ -5523,7 +5523,8 @@ body,
   align-items: center;
   padding: var(--ds-space-2xs) var(--ds-space-xs);
   border-radius: var(--ds-radius-sm);
-  color: var(--ds-text-dark);
+  background: var(--app-users-role-color, var(--app-users-role-admin-bg));
+  color: var(--text-darkest);
   font-size: var(--ds-font-size-sm);
   font-weight: var(--ds-font-weight-book);
   line-height: var(--ds-line-height-xs);

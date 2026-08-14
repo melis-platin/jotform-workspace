@@ -140,19 +140,19 @@ export function CanvasPageLabel({ page, active, floating, overlayColor, roleOpti
                 <p className="canvas-page-label__condition-popover-title">SHOW PAGE WHEN</p>
                 <div className="canvas-page-label__condition-popover-detail">
                   <p className="canvas-page-label__condition-popover-description">User Role is:</p>
-                {conditionRoleRows.map((roleRow, rowIndex) => (
-                  <div className="canvas-page-label__condition-role-row" key={rowIndex}>
-                    {roleRow.map((role) => (
-                      <span
-                        className="canvas-page-label__condition-role"
-                        key={role.id}
-                        style={getRoleColorStyle(role.color)}
-                      >
-                        {role.label}
-                      </span>
-                    ))}
-                  </div>
-                ))}
+                  {conditionRoleRows.map((roleRow, rowIndex) => (
+                    <div className="canvas-page-label__condition-role-row" key={rowIndex}>
+                      {roleRow.map((role) => (
+                        <span
+                          className="canvas-page-label__condition-role"
+                          key={role.id}
+                          style={getRoleColorStyle(role.color)}
+                        >
+                          {role.label}
+                        </span>
+                      ))}
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
