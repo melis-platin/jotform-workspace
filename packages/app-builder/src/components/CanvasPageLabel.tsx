@@ -118,7 +118,10 @@ export function CanvasPageLabel({ page, active, floating, overlayColor, roleOpti
         </span>
       )}
       {page.conditions?.length ? (
-        <span className="canvas-page-label__condition-wrapper">
+        <span
+          className="canvas-page-label__condition-wrapper"
+          onMouseLeave={() => setShowConditionsPopover(false)}
+        >
           <button
             type="button"
             className="canvas-page-label__condition"
