@@ -834,6 +834,11 @@ body,
   height: var(--ds-space-xl);
   display: block;
   flex: 0 0 auto;
+
+  &--inset {
+    width: var(--ds-space-lg);
+    height: var(--ds-space-lg);
+  }
 }
 
 .build-page__element-content {

@@ -48,6 +48,7 @@ import phoneHomeIndicator from '@jf/design-system/src/assets/phone-home-indicato
 import chartAreaIcon from '@jf/design-system/src/assets/icons/general/chart-area.svg'
 import chartLineIcon from '@jf/design-system/src/assets/icons/general/chart-line.svg'
 import chartImportDataIcon from '../assets/chart-import-data.svg'
+import shareButtonArrowUpRightIcon from '../assets/share-button-arrow-up-right.svg'
 import previewUserAvatar from '../assets/preview-user-avatar.jpg'
 import previewHeaderAvatar from '../assets/app-users/melis-platin.png'
 import { PhoneStatusBar } from '../components/PhoneStatusBar'
@@ -633,7 +634,7 @@ function nextNumericId(prefix: string, existingIds: string[]): string {
   return `${prefix}-${max + 1}`
 }
 
-const ELEMENT_ICON_MAP: Record<string, { icon: string; iconCategory: string; assetUrl?: string }> = {
+const ELEMENT_ICON_MAP: Record<string, { icon: string; iconCategory: string; assetUrl?: string; assetClassName?: string }> = {
   'form': { icon: 'form-filled', iconCategory: 'forms-files' },
   'heading': { icon: 'heading-square-filled', iconCategory: 'editor' },
   'list': { icon: 'list-bullet', iconCategory: 'editor' },
@@ -661,7 +662,8 @@ const ELEMENT_ICON_MAP: Record<string, { icon: string; iconCategory: string; ass
   'share-button': {
     icon: 'arrow-up-right-from-square-sm',
     iconCategory: 'general',
-    assetUrl: 'http://localhost:3845/assets/d4a47fe25bfb8c25947c327398ed778ac9449e67.svg',
+    assetUrl: shareButtonArrowUpRightIcon,
+    assetClassName: 'build-page__element-figma-icon--inset',
   },
   'image-slider': { icon: 'image-slider-filled', iconCategory: 'media' },
   'video': { icon: 'video-filled', iconCategory: 'media' },
@@ -7425,7 +7427,7 @@ export function BuildPage({
                         >
                           <div className="build-page__element-icon">
                             {iconInfo?.assetUrl ? (
-                              <img src={iconInfo.assetUrl} alt="" className="build-page__element-figma-icon" />
+                              <img src={iconInfo.assetUrl} alt="" className={`build-page__element-figma-icon ${iconInfo.assetClassName ?? ''}`} />
                             ) : iconInfo ? (
                               <Icon name={iconInfo.icon} category={iconInfo.iconCategory} size={24} />
                             ) : (
@@ -12232,7 +12234,7 @@ export function BuildPage({
                       >
                         <div className="mobile-elements-grid__icon">
                           {iconInfo?.assetUrl ? (
-                            <img src={iconInfo.assetUrl} alt="" className="build-page__element-figma-icon" />
+                            <img src={iconInfo.assetUrl} alt="" className={`build-page__element-figma-icon ${iconInfo.assetClassName ?? ''}`} />
                           ) : iconInfo ? (
                             <Icon name={iconInfo.icon} category={iconInfo.iconCategory} size={24} />
                           ) : (
