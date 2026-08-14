@@ -5456,25 +5456,15 @@ body,
   background: none;
   // Match the page icon and name in the active app color scheme.
   color: var(--fg-disabled);
-  opacity: 0;
+  // The floating page-label container controls visibility for the first page,
+  // so this control always follows the page name rather than a separate state.
+  opacity: 1;
   transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
 
   &:hover {
     background: var(--bg-surface-brand-hover);
     color: var(--fg-brand);
   }
-}
-
-.canvas-page-label--active .canvas-page-label__gear,
-.canvas-page-label:hover .canvas-page-label__gear,
-.canvas-page-label:focus-within .canvas-page-label__gear {
-  opacity: 1;
-}
-
-// Treat the page as one hover target: its label controls appear together when
-// the pointer is anywhere over that page, including the first page's floating label.
-.build-page__page-wrapper:hover .canvas-page-label__gear {
-  opacity: 1;
 }
 
 // ── Dynamic detail page breadcrumb (List "Open Dynamic Page") ───────────────
@@ -5531,19 +5521,13 @@ body,
   background: none;
   color: var(--fg-disabled);
   cursor: pointer;
-  opacity: 0;
+  opacity: 1;
   transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
 
   &:hover {
     background: var(--bg-surface-brand-hover);
     color: var(--fg-brand);
   }
-}
-
-.dynamic-page-header--active .dynamic-page-header__gear,
-.dynamic-page-header__label:hover .dynamic-page-header__gear,
-.dynamic-page-header:focus-within .dynamic-page-header__gear {
-  opacity: 1;
 }
 
 .dynamic-page-header__source {
