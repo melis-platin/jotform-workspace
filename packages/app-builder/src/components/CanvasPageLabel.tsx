@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { Icon } from '@jf/design-system'
 import { LucideIcon } from './IconPicker'
 import { DEFAULT_PAGE_ICON } from './PageNavigationBar'
+import pageConditionPopover from '../assets/page-condition-popover.svg'
 
 export interface CanvasPageLabelPage {
   id: string
@@ -22,11 +23,11 @@ interface CanvasPageLabelProps {
   overlayColor?: string
   onRename: (name: string) => void
   onOpenSettings: () => void
-  onOpenConditions: () => void
 }
 
-export function CanvasPageLabel({ page, active, floating, overlayColor, onRename, onOpenSettings, onOpenConditions }: CanvasPageLabelProps) {
+export function CanvasPageLabel({ page, active, floating, overlayColor, onRename, onOpenSettings }: CanvasPageLabelProps) {
   const [editing, setEditing] = useState(false)
+  const [showConditionsPopover, setShowConditionsPopover] = useState(false)
   const nameRef = useRef<HTMLSpanElement>(null)
   const iconName = page.icon || DEFAULT_PAGE_ICON
 
@@ -102,17 +103,28 @@ export function CanvasPageLabel({ page, active, floating, overlayColor, onRename
         </span>
       )}
       {page.conditions?.length ? (
-        <button
-          type="button"
-          className="canvas-page-label__condition"
-          aria-label="Page conditions"
-          onClick={(e) => {
-            e.stopPropagation()
-            onOpenConditions()
-          }}
-        >
-          <Icon name="conditional-branch-filled" category="general" size={12} />
-        </button>
+        <span className="canvas-page-label__condition-wrapper">
+          <button
+            type="button"
+            className="canvas-page-label__condition"
+            aria-label="Page conditions"
+            aria-expanded={showConditionsPopover}
+            onClick={(e) => {
+              e.stopPropagation()
+              setShowConditionsPopover((open) => !open)
+            }}
+          >
+            <Icon name="conditional-branch-filled" category="general" size={12} />
+          </button>
+          {showConditionsPopover && (
+            <img
+              className="canvas-page-label__condition-popover"
+              src={pageConditionPopover}
+              alt=""
+              aria-hidden="true"
+            />
+          )}
+        </span>
       ) : null}
       <button
         type="button"

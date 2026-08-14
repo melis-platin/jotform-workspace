@@ -5453,6 +5453,23 @@ body,
   color: var(--secondary-text-white);
 }
 
+.canvas-page-label__condition-wrapper {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.canvas-page-label__condition-popover {
+  position: absolute;
+  z-index: 2;
+  bottom: calc(100% + var(--space-1));
+  left: calc(50% - var(--space-10));
+  width: auto;
+  height: auto;
+  max-width: none;
+  pointer-events: none;
+}
+
 .canvas-page-label__gear {
   background: none;
   // Match the page icon and name in the active app color scheme.

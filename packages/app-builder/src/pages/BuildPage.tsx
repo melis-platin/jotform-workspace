@@ -7622,7 +7622,6 @@ export function BuildPage({
                     overlayColor={pageIndex === 0 && !appHeaderIsCoverLike ? appHeaderState.textColor : undefined}
                     onRename={(name) => updatePage(page.id, { name })}
                     onOpenSettings={() => openPageSettings(page.id)}
-                    onOpenConditions={() => openPageSettings(page.id, 'condition')}
                   />
                   )}
                   <div
