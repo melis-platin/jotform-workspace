@@ -5467,7 +5467,7 @@ body,
   box-sizing: border-box;
   display: flex;
   width: 217px;
-  min-height: 134px;
+  height: auto;
   flex-direction: column;
   align-items: flex-start;
   padding: var(--ds-space-md);
@@ -5479,6 +5479,7 @@ body,
 
 .canvas-page-label__condition-popover-content {
   display: flex;
+  width: 100%;
   flex-direction: column;
   align-items: flex-start;
   gap: var(--ds-space-xs);
@@ -5513,6 +5514,7 @@ body,
 
 .canvas-page-label__condition-role-row {
   display: flex;
+  width: 100%;
   flex-wrap: wrap;
   gap: var(--ds-space-2xs);
 }
