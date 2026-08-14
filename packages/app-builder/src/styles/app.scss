@@ -5460,6 +5460,18 @@ body,
   }
 }
 
+.canvas-page-label__condition--single {
+  gap: var(--space-1);
+  width: auto;
+  padding: var(--space-3xs) var(--space-2);
+  background: var(--app-users-role-color, var(--app-users-role-admin-bg));
+  color: var(--text-darkest);
+  font-size: var(--ds-font-size-xs);
+  font-weight: var(--ds-font-weight-book);
+  line-height: var(--ds-line-height-xs);
+  white-space: nowrap;
+}
+
 .canvas-page-label__condition-wrapper {
   position: relative;
   display: inline-flex;

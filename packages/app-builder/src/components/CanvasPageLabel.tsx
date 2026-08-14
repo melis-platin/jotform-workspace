@@ -48,27 +48,36 @@ export function PageConditionSummary({
     { length: Math.ceil(conditionRoles.length / 3) },
     (_, rowIndex) => conditionRoles.slice(rowIndex * 3, rowIndex * 3 + 3),
   )
+  const singleRoleCondition = conditionRoles.length === 1 ? conditionRoles[0] : undefined
 
   if (!conditions?.length) return null
 
   return (
     <span
-      className="canvas-page-label__condition-wrapper"
-      onMouseLeave={() => setShowConditionsPopover(false)}
+      className={`canvas-page-label__condition-wrapper${singleRoleCondition ? ' canvas-page-label__condition-wrapper--single' : ''}`}
+      onMouseLeave={singleRoleCondition ? undefined : () => setShowConditionsPopover(false)}
     >
       <button
         type="button"
-        className="canvas-page-label__condition"
-        aria-label="Page conditions"
-        aria-expanded={showConditionsPopover}
+        className={`canvas-page-label__condition${singleRoleCondition ? ' canvas-page-label__condition--single' : ''}`}
+        aria-label={singleRoleCondition ? `Only ${singleRoleCondition.label}` : 'Page conditions'}
+        aria-expanded={singleRoleCondition ? undefined : showConditionsPopover}
+        style={singleRoleCondition ? getRoleColorStyle(singleRoleCondition.color) : undefined}
         onClick={(e) => {
           e.stopPropagation()
-          setShowConditionsPopover((open) => !open)
+          if (!singleRoleCondition) setShowConditionsPopover((open) => !open)
         }}
       >
-        <Icon name="conditional-branch-filled" category="general" size={12} />
+        {singleRoleCondition ? (
+          <>
+            <Icon name="lock-filled" category="security" size={12} />
+            <span>Only {singleRoleCondition.label}</span>
+          </>
+        ) : (
+          <Icon name="conditional-branch-filled" category="general" size={12} />
+        )}
       </button>
-      {showConditionsPopover && (
+      {!singleRoleCondition && showConditionsPopover && (
         <div className="canvas-page-label__condition-popover" role="tooltip">
           <div className="canvas-page-label__condition-popover-content">
             <p className="canvas-page-label__condition-popover-title">SHOW PAGE WHEN</p>
