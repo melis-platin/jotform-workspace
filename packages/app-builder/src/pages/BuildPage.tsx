@@ -691,7 +691,7 @@ interface PanelGroup {
 const BASIC_GROUPS: PanelGroup[] = [
   { elementIds: ['form', 'heading', 'rich-text', 'text', 'list', 'card', 'sign-document', 'link', 'document', 'image', 'button', 'chart', 'social-follow', 'testimonial', 'accordion', 'banner', 'share-button'] },
   { label: 'PAYMENT ELEMENTS', elementIds: ['product-list', 'donation-box'] },
-  { label: 'FEATURED WIDGETS', elementIds: ['whatsapp', 'image-gallery', 'image-slider', 'video', 'map'] },
+  { label: 'FEATURED WIDGETS', elementIds: ['appointment', 'whatsapp', 'image-gallery', 'image-slider', 'video', 'map'] },
   { label: 'DATA ELEMENTS', elementIds: ['table', 'report', 'sentbox'] },
   { label: 'PAGE ELEMENTS', elementIds: ['divider', 'spacer'] },
 ]
@@ -734,7 +734,7 @@ const BASIC_PANEL_COMPONENT_ALIASES: Record<string, string> = {
 const resolvePanelComponentId = (itemId: string) => BASIC_PANEL_COMPONENT_ALIASES[itemId] ?? itemId
 
 const WIDGETS_GROUPS: PanelGroup[] = [
-  { elementIds: ['daily-task-manager', 'appointment', 'login-signup', 'progress-indicator'] },
+  { elementIds: ['daily-task-manager', 'login-signup', 'progress-indicator'] },
 ]
 
 const HIDDEN_ELEMENTS = ['empty-state', 'app-header', 'bottom-navigation', 'color-picker']
