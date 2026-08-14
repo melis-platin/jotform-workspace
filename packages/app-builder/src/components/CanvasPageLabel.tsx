@@ -2,7 +2,6 @@ import { useEffect, useRef, useState } from 'react'
 import { Icon } from '@jf/design-system'
 import { LucideIcon } from './IconPicker'
 import { DEFAULT_PAGE_ICON } from './PageNavigationBar'
-import pageConditionPopover from '../assets/page-condition-popover.svg'
 import { getRoleColorStyle, type AppRoleOption } from '../state/appUserRoles'
 
 export interface CanvasPageLabelPage {
@@ -134,7 +133,6 @@ export function CanvasPageLabel({ page, active, floating, overlayColor, roleOpti
           </button>
           {showConditionsPopover && (
             <div className="canvas-page-label__condition-popover" role="tooltip">
-              <img src={pageConditionPopover} alt="" aria-hidden="true" />
               <div className="canvas-page-label__condition-popover-content">
                 <p className="canvas-page-label__condition-popover-title">SHOW PAGE WHEN</p>
                 <div className="canvas-page-label__condition-popover-detail">
