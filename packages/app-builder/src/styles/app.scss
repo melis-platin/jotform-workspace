@@ -5454,7 +5454,9 @@ body,
   }
 }
 
-.canvas-page-label:hover .canvas-page-label__gear {
+.canvas-page-label--active .canvas-page-label__gear,
+.canvas-page-label:hover .canvas-page-label__gear,
+.canvas-page-label:focus-within .canvas-page-label__gear {
   opacity: 1;
 }
 
@@ -5599,6 +5601,13 @@ body,
 }
 
 .build-page__page-wrapper--first:hover .canvas-page-label--floating {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+// A selected page (or an element on that page) keeps its page controls
+// available even when the first-page label is normally hidden over the header.
+.canvas-page-label--floating.canvas-page-label--active {
   opacity: 1;
   pointer-events: auto;
 }
