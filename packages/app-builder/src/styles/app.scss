@@ -5453,14 +5453,14 @@ body,
 }
 
 .canvas-page-label__gear {
-  background: var(--background-light);
+  background: none;
   // Match the page icon and name in the active app color scheme.
   color: var(--fg-disabled);
   opacity: 0;
   transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
 
   &:hover {
-    background: var(--background-medium);
+    background: var(--bg-surface-brand-hover);
     color: var(--fg-brand);
   }
 }
