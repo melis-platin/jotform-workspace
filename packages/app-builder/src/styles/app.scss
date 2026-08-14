@@ -5454,6 +5454,8 @@ body,
 
 .canvas-page-label__gear {
   background: var(--background-light);
+  // Match the page icon and name in the active app color scheme.
+  color: var(--fg-disabled);
   opacity: 0;
   transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
 
