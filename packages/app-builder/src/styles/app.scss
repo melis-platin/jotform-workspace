@@ -5431,25 +5431,34 @@ body,
   flex-shrink: 0;
 }
 
+.canvas-page-label__condition,
 .canvas-page-label__gear {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: var(--space-5);
+  height: var(--space-5);
   padding: 0;
-  // Tighten the gap to the label text to 4px (container gap is 8px).
+  // The Figma label uses 4px between the name, condition status, and settings control.
   margin-left: calc(-1 * var(--space-1));
   border: none;
-  background: none;
-  border-radius: var(--radius-sm, 4px);
-  color: var(--fg-disabled);
+  border-radius: var(--radius-sm);
+  color: var(--text-dark);
   cursor: pointer;
+}
+
+.canvas-page-label__condition {
+  flex-shrink: 0;
+  background: var(--orange-300);
+}
+
+.canvas-page-label__gear {
+  background: var(--background-light);
   opacity: 0;
   transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
 
   &:hover {
-    background: var(--bg-surface-brand-hover, #dbd6fa);
+    background: var(--background-medium);
     color: var(--fg-brand);
   }
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Icon,
   Input as DSInput,
@@ -22,6 +22,7 @@ export interface PagePropertiesPage {
 interface PagePropertiesPanelProps {
   page: PagePropertiesPage
   isFirstPage: boolean
+  initialTab?: 'general' | 'condition'
   onRename: (name: string) => void
   onChangeIcon: (icon: string) => void
   onToggleHidden: (hidden: boolean) => void
@@ -34,6 +35,7 @@ interface PagePropertiesPanelProps {
 export function PagePropertiesPanel({
   page,
   isFirstPage,
+  initialTab = 'general',
   onRename,
   onChangeIcon,
   onToggleHidden,
@@ -42,8 +44,10 @@ export function PagePropertiesPanel({
   onToggleLanding,
   onClose,
 }: PagePropertiesPanelProps) {
-  const [tab, setTab] = useState('general')
+  const [tab, setTab] = useState(initialTab)
   const showIcon = page.showIcon !== false
+
+  useEffect(() => setTab(initialTab), [initialTab])
 
   return (
     <div className="build-page__properties" data-theme="dark">
@@ -60,7 +64,7 @@ export function PagePropertiesPanel({
         <DSTabs
           accent="apps"
           value={tab}
-          onChange={setTab}
+          onChange={(value) => setTab(value as 'general' | 'condition')}
           items={[
             { value: 'general', label: 'General' },
             { value: 'condition', label: 'Condition' },

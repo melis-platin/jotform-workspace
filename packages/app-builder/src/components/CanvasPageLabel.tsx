@@ -10,6 +10,7 @@ export interface CanvasPageLabelPage {
   hidden?: boolean
   requireLogin?: boolean
   showIcon?: boolean
+  conditions?: Array<{ id: string }>
 }
 
 interface CanvasPageLabelProps {
@@ -21,9 +22,10 @@ interface CanvasPageLabelProps {
   overlayColor?: string
   onRename: (name: string) => void
   onOpenSettings: () => void
+  onOpenConditions: () => void
 }
 
-export function CanvasPageLabel({ page, active, floating, overlayColor, onRename, onOpenSettings }: CanvasPageLabelProps) {
+export function CanvasPageLabel({ page, active, floating, overlayColor, onRename, onOpenSettings, onOpenConditions }: CanvasPageLabelProps) {
   const [editing, setEditing] = useState(false)
   const nameRef = useRef<HTMLSpanElement>(null)
   const iconName = page.icon || DEFAULT_PAGE_ICON
@@ -99,6 +101,19 @@ export function CanvasPageLabel({ page, active, floating, overlayColor, onRename
           <Icon name="lock-filled" category="security" size={14} />
         </span>
       )}
+      {page.conditions?.length ? (
+        <button
+          type="button"
+          className="canvas-page-label__condition"
+          aria-label="Page conditions"
+          onClick={(e) => {
+            e.stopPropagation()
+            onOpenConditions()
+          }}
+        >
+          <Icon name="conditional-branch-filled" category="general" size={12} />
+        </button>
+      ) : null}
       <button
         type="button"
         className="canvas-page-label__gear"
