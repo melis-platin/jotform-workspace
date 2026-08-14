@@ -678,6 +678,7 @@ const ELEMENT_ICON_MAP: Record<string, { icon: string; iconCategory: string; ass
     assetUrl: 'http://localhost:3845/assets/7dd93e9bc6dfbd03c0c6a7a7cf4e85e2e21d86ed.svg',
   },
   'daily-task-manager': { icon: 'table', iconCategory: 'general' },
+  'appointment': { icon: 'calendar-event-filled', iconCategory: 'time-date' },
   'progress-indicator': { icon: 'list-check-square-filled', iconCategory: 'general' },
   'spacer': { icon: 'spacer-vertical-filled', iconCategory: 'layout' },
 }
@@ -733,7 +734,7 @@ const BASIC_PANEL_COMPONENT_ALIASES: Record<string, string> = {
 const resolvePanelComponentId = (itemId: string) => BASIC_PANEL_COMPONENT_ALIASES[itemId] ?? itemId
 
 const WIDGETS_GROUPS: PanelGroup[] = [
-  { elementIds: ['daily-task-manager', 'login-signup', 'progress-indicator'] },
+  { elementIds: ['daily-task-manager', 'appointment', 'login-signup', 'progress-indicator'] },
 ]
 
 const HIDDEN_ELEMENTS = ['empty-state', 'app-header', 'bottom-navigation', 'color-picker']
