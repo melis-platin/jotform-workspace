@@ -34,7 +34,6 @@ import './components/Form/register';
 import './components/Table/register';
 import './components/Testimonial/register';
 import './components/DailyTaskManager/register';
-import './components/Appointment/register';
 import './components/ColorPicker/register';
 export { ColorPicker as TokenColorPicker } from './components/ColorPicker/ColorPicker';
 export type { ColorPickerProps as TokenColorPickerProps } from './components/ColorPicker/ColorPicker';
@@ -77,8 +76,6 @@ export { Testimonial, ensureTestimonialIds, makeTestimonialId } from './componen
 export type { TestimonialItem, TestimonialProps } from './components/Testimonial';
 export { SocialFollow } from './components/SocialFollow';
 export { DailyTaskManager } from './components/DailyTaskManager';
-export { Appointment } from './components/Appointment';
-export type { AppointmentProps, AppointmentSlot, AppointmentCalendarView } from './components/Appointment';
 export { ProgressIndicator } from './components/ProgressIndicator';
 export { Spacer } from './components/Spacer';
 export { WhatsApp, isValidWhatsAppPhoneNumber } from './components/WhatsApp/WhatsApp';

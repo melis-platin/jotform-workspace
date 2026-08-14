@@ -678,7 +678,6 @@ const ELEMENT_ICON_MAP: Record<string, { icon: string; iconCategory: string; ass
     assetUrl: 'http://localhost:3845/assets/7dd93e9bc6dfbd03c0c6a7a7cf4e85e2e21d86ed.svg',
   },
   'daily-task-manager': { icon: 'table', iconCategory: 'general' },
-  'appointment': { icon: 'calendar-event-filled', iconCategory: 'time-date' },
   'progress-indicator': { icon: 'list-check-square-filled', iconCategory: 'general' },
   'spacer': { icon: 'spacer-vertical-filled', iconCategory: 'layout' },
 }
@@ -691,7 +690,7 @@ interface PanelGroup {
 const BASIC_GROUPS: PanelGroup[] = [
   { elementIds: ['form', 'heading', 'rich-text', 'text', 'list', 'card', 'sign-document', 'link', 'document', 'image', 'button', 'chart', 'social-follow', 'testimonial', 'accordion', 'banner', 'share-button'] },
   { label: 'PAYMENT ELEMENTS', elementIds: ['product-list', 'donation-box'] },
-  { label: 'FEATURED WIDGETS', elementIds: ['appointment', 'whatsapp', 'image-gallery', 'image-slider', 'video', 'map'] },
+  { label: 'FEATURED WIDGETS', elementIds: ['whatsapp', 'image-gallery', 'image-slider', 'video', 'map'] },
   { label: 'DATA ELEMENTS', elementIds: ['table', 'report', 'sentbox'] },
   { label: 'PAGE ELEMENTS', elementIds: ['divider', 'spacer'] },
 ]
