@@ -5495,6 +5495,40 @@ body,
   svg { color: var(--fg-disabled); }
 }
 
+.dynamic-page-header__label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.dynamic-page-header__gear {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--space-6);
+  height: var(--space-6);
+  padding: 0;
+  margin-left: calc(-1 * var(--space-1));
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  color: var(--fg-disabled);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+
+  &:hover {
+    background: var(--bg-surface-brand-hover);
+    color: var(--fg-brand);
+  }
+}
+
+.dynamic-page-header--active .dynamic-page-header__gear,
+.dynamic-page-header__label:hover .dynamic-page-header__gear,
+.dynamic-page-header:focus-within .dynamic-page-header__gear {
+  opacity: 1;
+}
+
 .dynamic-page-header__source {
   position: relative;
   display: inline-flex;

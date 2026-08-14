@@ -3682,12 +3682,16 @@ function DynamicPageHeader({
   sourceName,
   items,
   currentIndex,
+  active,
   onSelect,
+  onOpenSettings,
 }: {
   sourceName: string
   items: DynamicDetailItem[]
   currentIndex: number
+  active: boolean
   onSelect: (index: number) => void
+  onOpenSettings: () => void
 }) {
   const [open, setOpen] = useState(false)
   const ref = useRef<HTMLDivElement>(null)
@@ -3702,11 +3706,24 @@ function DynamicPageHeader({
   const slugOf = (it: DynamicDetailItem | undefined, i: number) => (it?.title?.trim() || `Item ${i + 1}`)
   const safeIndex = Math.min(Math.max(currentIndex, 0), Math.max(items.length - 1, 0))
   return (
-    <div className="dynamic-page-header" onClick={(e) => e.stopPropagation()}>
-      <span className="dynamic-page-header__crumb">
-        <Icon name="squares-wave" category="editor" size={18} />
-        Dynamic Page
-      </span>
+    <div className={`dynamic-page-header${active ? ' dynamic-page-header--active' : ''}`} onClick={(e) => e.stopPropagation()}>
+      <div className="dynamic-page-header__label">
+        <span className="dynamic-page-header__crumb">
+          <Icon name="squares-wave" category="editor" size={18} />
+          Dynamic Page
+        </span>
+        <button
+          type="button"
+          className="dynamic-page-header__gear"
+          aria-label="Page settings"
+          onClick={(e) => {
+            e.stopPropagation()
+            onOpenSettings()
+          }}
+        >
+          <Icon name="gear-filled" category="general" size={16} />
+        </button>
+      </div>
       <div className="dynamic-page-header__source" ref={ref}>
         <span className="dynamic-page-header__crumb">
           <Icon name="table" category="general" size={18} />
@@ -7574,7 +7591,9 @@ export function BuildPage({
                       sourceName={resolveListSourceName(dynSourceEl)}
                       items={dynItems}
                       currentIndex={dynIndex}
+                      active={activePageId === page.id}
                       onSelect={(i) => setDynamicPreviewIndex((m) => ({ ...m, [page.id]: i }))}
+                      onOpenSettings={() => openPageSettings(page.id)}
                     />
                   ) : (
                   <CanvasPageLabel
