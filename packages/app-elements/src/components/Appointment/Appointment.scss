@@ -35,6 +35,49 @@
   border-radius: var(--radius-md);
 }
 
+.jf-appointment__calendar--week,
+.jf-appointment__calendar--list {
+  padding: var(--space-4);
+}
+
+.jf-appointment__week-header,
+.jf-appointment__week-picker,
+.jf-appointment__date-list,
+.jf-appointment__date-row {
+  display: flex;
+}
+
+.jf-appointment__week-header {
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+.jf-appointment__week-header p,
+.jf-appointment__list-heading { margin: 0; color: var(--fg-primary); font-size: var(--font-size-label-lg); font-weight: var(--font-weight-bold); line-height: var(--line-height-label-lg); }
+.jf-appointment__week-header button { display: flex; align-items: center; justify-content: center; width: var(--space-8); height: var(--space-8); border: 0; border-radius: var(--radius-rounded); background: var(--bg-surface); color: var(--fg-secondary); cursor: pointer; }
+.jf-appointment__week-header button:hover { background: var(--bg-surface-hover); color: var(--fg-brand); }
+
+.jf-appointment__week-picker { gap: var(--space-1); justify-content: space-between; }
+.jf-appointment__week-day { display: flex; flex: 1; flex-direction: column; align-items: center; gap: var(--space-2); min-width: 0; padding: var(--space-2) var(--space-1); border: 1px solid transparent; border-radius: var(--radius-md); background: transparent; color: var(--fg-secondary); font-family: inherit; cursor: pointer; }
+.jf-appointment__week-day span { overflow: hidden; font-size: var(--font-size-label-xs); font-weight: var(--font-weight-medium); line-height: var(--line-height-label-xs); text-overflow: ellipsis; text-transform: uppercase; }
+.jf-appointment__week-day strong { color: var(--fg-primary); font-size: var(--font-size-label-lg); font-weight: var(--font-weight-regular); line-height: var(--line-height-label-lg); }
+.jf-appointment__week-day:hover:not(:disabled) { border-color: var(--border-brand); }
+.jf-appointment__week-day--selected { background: var(--bg-fill-brand); color: var(--fg-inverse); }
+.jf-appointment__week-day--selected strong { color: var(--fg-inverse); }
+.jf-appointment__week-day:disabled { color: var(--fg-disabled); cursor: default; }
+.jf-appointment__week-day:disabled strong { color: var(--fg-disabled); }
+
+.jf-appointment__calendar--list { display: flex; flex-direction: column; gap: var(--space-3); }
+.jf-appointment__date-list { flex-direction: column; gap: var(--space-2); }
+.jf-appointment__date-row { align-items: center; gap: var(--space-2); width: 100%; min-height: var(--space-12); padding: var(--space-3); border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--bg-fill); color: var(--fg-primary); font-family: inherit; text-align: left; cursor: pointer; }
+.jf-appointment__date-row span { flex: 1; color: var(--fg-secondary); font-size: var(--font-size-label-md); font-weight: var(--font-weight-regular); line-height: var(--line-height-label-md); }
+.jf-appointment__date-row strong { font-size: var(--font-size-label-md); font-weight: var(--font-weight-bold); line-height: var(--line-height-label-md); }
+.jf-appointment__date-row svg { color: var(--fg-tertiary); }
+.jf-appointment__date-row:hover,
+.jf-appointment__date-row--selected { border-color: var(--border-brand); background: var(--bg-surface-brand); }
+.jf-appointment__date-row--selected { color: var(--fg-brand); }
+
 .jf-appointment__date-input,
 .jf-appointment__calendar-controls,
 .jf-appointment__availability-header,

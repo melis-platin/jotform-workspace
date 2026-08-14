@@ -78,7 +78,7 @@ export type { TestimonialItem, TestimonialProps } from './components/Testimonial
 export { SocialFollow } from './components/SocialFollow';
 export { DailyTaskManager } from './components/DailyTaskManager';
 export { Appointment } from './components/Appointment';
-export type { AppointmentProps, AppointmentSlot } from './components/Appointment';
+export type { AppointmentProps, AppointmentSlot, AppointmentCalendarView } from './components/Appointment';
 export { ProgressIndicator } from './components/ProgressIndicator';
 export { Spacer } from './components/Spacer';
 export { WhatsApp, isValidWhatsAppPhoneNumber } from './components/WhatsApp/WhatsApp';

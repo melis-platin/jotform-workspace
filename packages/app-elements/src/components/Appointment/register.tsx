@@ -1,6 +1,7 @@
 import { ComponentRegistry } from '../../types/registry';
 import { Appointment } from './Appointment';
 import type { AppointmentSlot } from './Appointment';
+import type { AppointmentCalendarView } from './Appointment';
 import type { VariantValues, PropertyValues, StateValues } from '../../types/component';
 import scss from './Appointment.scss?raw';
 
@@ -14,7 +15,12 @@ ComponentRegistry.register({
   name: 'Appointment',
   category: 'Widgets',
   icon: 'CalendarCheck',
-  variants: {},
+  variants: {
+    'Calendar View': {
+      options: ['Month', 'Week', 'Date list'],
+      default: 'Month',
+    },
+  },
   properties: [
     { name: 'Title', type: 'text', default: 'Appointment' },
     { name: 'Description', type: 'text', default: 'Choose a date and available time.' },
@@ -42,7 +48,7 @@ ComponentRegistry.register({
     { name: 'duration', type: 'string', default: '"30 min"', description: 'Length of the selected service.' },
     { name: 'slots', type: 'AppointmentSlot[]', default: '6 preset slots', description: 'Available appointment times. Set available to false for unavailable times.' },
   ],
-  render(_variants: VariantValues, props: PropertyValues, _states: StateValues) {
+  render(variants: VariantValues, props: PropertyValues, _states: StateValues) {
     let slots = DEFAULT_SLOTS;
     try {
       const value = props['Time Slots'];
@@ -51,6 +57,6 @@ ComponentRegistry.register({
     } catch {
       // Invalid editor input keeps the dependable default time slots.
     }
-    return <Appointment title={props['Title'] as string} description={props['Description'] as string} service={props['Service'] as string} duration={props['Duration'] as string} slots={slots} timezone={props['Timezone'] as string} buttonLabel={props['Button Label'] as string} selected={props['Selected'] as boolean} />;
+    return <Appointment title={props['Title'] as string} description={props['Description'] as string} service={props['Service'] as string} duration={props['Duration'] as string} slots={slots} timezone={props['Timezone'] as string} buttonLabel={props['Button Label'] as string} selected={props['Selected'] as boolean} calendarView={variants['Calendar View'] as AppointmentCalendarView} />;
   },
 });
