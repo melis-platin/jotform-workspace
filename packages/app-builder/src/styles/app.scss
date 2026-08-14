@@ -5451,6 +5451,13 @@ body,
   flex-shrink: 0;
   background: var(--orange-300);
   color: var(--secondary-text-white);
+
+  // A mouse click opens the summary card but must not leave a selected-looking
+  // outline behind. Keyboard navigation retains the standard visible focus cue.
+  &:focus:not(:focus-visible) {
+    outline: none;
+    box-shadow: none;
+  }
 }
 
 .canvas-page-label__condition-wrapper {
