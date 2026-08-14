@@ -49,6 +49,7 @@ import chartAreaIcon from '@jf/design-system/src/assets/icons/general/chart-area
 import chartLineIcon from '@jf/design-system/src/assets/icons/general/chart-line.svg'
 import chartImportDataIcon from '../assets/chart-import-data.svg'
 import shareButtonArrowUpRightIcon from '../assets/share-button-arrow-up-right.svg'
+import sentboxProductInboxFilledIcon from '../assets/sentbox-product-inbox-filled.svg'
 import previewUserAvatar from '../assets/preview-user-avatar.jpg'
 import previewHeaderAvatar from '../assets/app-users/melis-platin.png'
 import { PhoneStatusBar } from '../components/PhoneStatusBar'
@@ -672,7 +673,8 @@ const ELEMENT_ICON_MAP: Record<string, { icon: string; iconCategory: string; ass
   'sentbox': {
     icon: 'product-inbox-filled',
     iconCategory: 'forms-files',
-    assetUrl: 'http://localhost:3845/assets/b48356b737ce352274efdcb2c524f4b21b0e54ac.svg',
+    assetUrl: sentboxProductInboxFilledIcon,
+    assetClassName: 'build-page__element-figma-icon--inset',
   },
   'divider': {
     icon: 'divider',
