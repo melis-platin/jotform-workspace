@@ -42,7 +42,6 @@ import {
   DEFAULT_CHART_TABLE_ROWS as DEFAULT_CHART_SOURCE_ROWS,
   resolveChartPalette,
   HsvColorPicker,
-  isValidWhatsAppPhoneNumber,
 } from '@jf/app-elements'
 import { Icon, Button as DSButton, Tabs as DSTabs, Segmented, Input as DSInput, Toggle as DSToggle, Slider as DSSlider, NumberInput as DSNumberInput, FormField as DSFormField, TextArea as DSTextArea, DropdownSingle as DSDropdownSingle, DropdownMulti as DSDropdownMulti, FieldMapper as DSFieldMapper, FieldComposer as DSFieldComposer, type FieldToken, Link as DSLink, Modal as DSModal, SearchInput as DSSearchInput, ColorInput as DSColorInput } from '@jf/design-system'
 import phoneHomeIndicator from '@jf/design-system/src/assets/phone-home-indicator.svg'
@@ -618,9 +617,10 @@ function getDynamicHostPageId(activePage: AppPage | undefined, allPages: AppPage
   return allPages.find((p) => p.elements.some((el) => el.id === activePage.dynamicSourceElementId))?.id
 }
 
-function isWhatsAppElementReadyForPreview(element: CanvasElement): boolean {
-  return element.componentId !== 'whatsapp'
-    || isValidWhatsAppPhoneNumber(String(element.properties['Phone Number'] ?? ''))
+function isWhatsAppElementReadyForPreview(_element: CanvasElement): boolean {
+  // A WhatsApp CTA belongs on the canvas as soon as it is added. A phone number
+  // is only needed when its destination is configured, not to preview its design.
+  return true
 }
 
 function nextNumericId(prefix: string, existingIds: string[]): string {
@@ -8316,7 +8316,7 @@ export function BuildPage({
                     return (
                       <div className="property-panel__body property-panel__body--whatsapp">
                         <div className="property-panel__field">
-                          <DSFormField title="Whatsapp Number" description="Use the international format: +1 541-754-3010" required size="md" showDescription showHelpText={false}>
+                          <DSFormField title="Whatsapp Number" description="Use the international format: +1 541-754-3010" size="md" showDescription showHelpText={false}>
                             <DSInput
                               value={String(selectedElement.properties['Phone Number'] ?? '')}
                               placeholder="+0 000-000-0000"
