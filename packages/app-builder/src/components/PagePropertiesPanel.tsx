@@ -5,6 +5,8 @@ import {
   Toggle as DSToggle,
   FormField as DSFormField,
   Tabs as DSTabs,
+  Link as DSLink,
+  RadioButton,
 } from '@jf/design-system'
 import { IconPropertyField } from './IconPropertyField'
 import { DEFAULT_PAGE_ICON } from './PageNavigationBar'
@@ -17,6 +19,7 @@ export interface PagePropertiesPage {
   requireLogin?: boolean
   showIcon?: boolean
   landing?: boolean
+  conditions?: Array<{ id: string }>
 }
 
 interface PagePropertiesPanelProps {
@@ -29,6 +32,7 @@ interface PagePropertiesPanelProps {
   onToggleRequireLogin: (require: boolean) => void
   onToggleShowIcon: (show: boolean) => void
   onToggleLanding: (landing: boolean) => void
+  onChangeConditions: (conditions: Array<{ id: string }>) => void
   onClose: () => void
 }
 
@@ -42,10 +46,12 @@ export function PagePropertiesPanel({
   onToggleRequireLogin,
   onToggleShowIcon,
   onToggleLanding,
+  onChangeConditions,
   onClose,
 }: PagePropertiesPanelProps) {
   const [tab, setTab] = useState(initialTab)
   const showIcon = page.showIcon !== false
+  const selectedRolesOnly = Boolean(page.conditions?.length)
 
   useEffect(() => setTab(initialTab), [initialTab])
 
@@ -155,14 +161,31 @@ export function PagePropertiesPanel({
       )}
 
       {tab === 'condition' && (
-        <div className="property-panel__body">
-          <div className="page-properties__condition-empty">
-            <Icon name="conditional-branch-filled" category="general" size={32} />
-            <p className="page-properties__condition-title">No conditions yet</p>
-            <p className="page-properties__condition-text">
-              Conditional visibility rules for this page will appear here.
-            </p>
-          </div>
+        <div className="property-panel__body page-properties__conditions">
+          <section className="page-properties__access" aria-labelledby="page-access-title">
+            <h3 id="page-access-title">Role-Based Access</h3>
+            <RadioButton
+              className="page-properties__access-option"
+              name={`page-access-${page.id}`}
+              label="Visible to Everyone"
+              checked={!selectedRolesOnly}
+              onChange={() => onChangeConditions([])}
+            />
+            <RadioButton
+              className="page-properties__access-option"
+              name={`page-access-${page.id}`}
+              label="Visible to Selected Roles Only"
+              checked={selectedRolesOnly}
+              onChange={() => onChangeConditions([{ id: 'role-based-access' }])}
+            />
+            <DSLink
+              className="page-properties__manage-roles"
+              size="lg"
+              rightIcon={<Icon name="arrow-right" category="arrows" size={16} />}
+            >
+              Manage Roles
+            </DSLink>
+          </section>
         </div>
       )}
 

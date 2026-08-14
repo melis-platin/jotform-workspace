@@ -7828,6 +7828,7 @@ export function BuildPage({
                     onToggleRequireLogin={(requireLogin) => updatePage(pp.id, { requireLogin })}
                     onToggleShowIcon={(showIcon) => updatePage(pp.id, { showIcon })}
                     onToggleLanding={(landing) => updatePage(pp.id, { landing })}
+                    onChangeConditions={(conditions) => updatePage(pp.id, { conditions })}
                     onClose={() => { setRightPanel('preview'); setPagePropertiesId(null); setPagePropertiesTab('general') }}
                   />
                 )
