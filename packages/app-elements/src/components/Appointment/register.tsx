@@ -5,8 +5,8 @@ import type { VariantValues, PropertyValues, StateValues } from '../../types/com
 import scss from './Appointment.scss?raw';
 
 const DEFAULT_SLOTS: AppointmentSlot[] = [
-  { time: '09:00 AM' }, { time: '10:30 AM' }, { time: '01:00 PM' },
-  { time: '02:30 PM' }, { time: '04:00 PM' }, { time: '05:30 PM', available: false },
+  { time: '9:00 AM' }, { time: '10:00 AM' }, { time: '11:00 AM' },
+  { time: '2:00 PM' }, { time: '3:00 PM' }, { time: '4:00 PM' },
 ];
 
 ComponentRegistry.register({
@@ -16,11 +16,12 @@ ComponentRegistry.register({
   icon: 'CalendarCheck',
   variants: {},
   properties: [
-    { name: 'Title', type: 'text', default: 'Book an appointment' },
-    { name: 'Description', type: 'text', default: 'Choose a date and time that works best for you.' },
+    { name: 'Title', type: 'text', default: 'Appointment' },
+    { name: 'Description', type: 'text', default: 'Choose a date and available time.' },
     { name: 'Service', type: 'text', default: 'Consultation' },
     { name: 'Duration', type: 'text', default: '30 min' },
     { name: 'Time Slots', type: 'text', default: JSON.stringify(DEFAULT_SLOTS) },
+    { name: 'Timezone', type: 'text', default: 'Europe/Istanbul' },
     { name: 'Button Label', type: 'text', default: 'Confirm appointment' },
     { name: 'Selected', type: 'boolean', default: false },
   ],
@@ -50,6 +51,6 @@ ComponentRegistry.register({
     } catch {
       // Invalid editor input keeps the dependable default time slots.
     }
-    return <Appointment title={props['Title'] as string} description={props['Description'] as string} service={props['Service'] as string} duration={props['Duration'] as string} slots={slots} buttonLabel={props['Button Label'] as string} selected={props['Selected'] as boolean} />;
+    return <Appointment title={props['Title'] as string} description={props['Description'] as string} service={props['Service'] as string} duration={props['Duration'] as string} slots={slots} timezone={props['Timezone'] as string} buttonLabel={props['Button Label'] as string} selected={props['Selected'] as boolean} />;
   },
 });
