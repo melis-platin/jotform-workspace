@@ -169,7 +169,7 @@ export function CanvasPageLabel({ page, active, floating, overlayColor, roleOpti
           onOpenSettings()
         }}
       >
-        <Icon name="gear-filled" category="general" size={12} />
+        <Icon name="gear-filled" category="general" size={16} />
       </button>
     </div>
   )
