@@ -3,6 +3,7 @@ import { Icon } from '@jf/design-system'
 import { LucideIcon } from './IconPicker'
 import { DEFAULT_PAGE_ICON } from './PageNavigationBar'
 import pageConditionPopover from '../assets/page-condition-popover.svg'
+import { getRoleColorStyle, type AppRoleOption } from '../state/appUserRoles'
 
 export interface CanvasPageLabelPage {
   id: string
@@ -21,15 +22,30 @@ interface CanvasPageLabelProps {
   floating?: boolean
   /** When floating over the app header, sync the label color with the header's text color. */
   overlayColor?: string
+  /** Available app-user roles, used to describe the page's access condition. */
+  roleOptions: AppRoleOption[]
   onRename: (name: string) => void
   onOpenSettings: () => void
 }
 
-export function CanvasPageLabel({ page, active, floating, overlayColor, onRename, onOpenSettings }: CanvasPageLabelProps) {
+export function CanvasPageLabel({ page, active, floating, overlayColor, roleOptions, onRename, onOpenSettings }: CanvasPageLabelProps) {
   const [editing, setEditing] = useState(false)
   const [showConditionsPopover, setShowConditionsPopover] = useState(false)
   const nameRef = useRef<HTMLSpanElement>(null)
   const iconName = page.icon || DEFAULT_PAGE_ICON
+  const selectedRoleIds = page.conditions
+    ?.filter((condition) => condition.id.startsWith('role:'))
+    .map((condition) => condition.id.slice('role:'.length)) ?? []
+  const selectedRoles = selectedRoleIds
+    .map((roleId) => roleOptions.find((role) => role.id === roleId))
+    .filter((role): role is AppRoleOption => Boolean(role))
+  // Keep saved pages from before role ids were persisted understandable: their
+  // role-based access condition used the first available role by default.
+  const conditionRoles = selectedRoles.length > 0 ? selectedRoles : roleOptions.slice(0, 1)
+  const conditionRoleRows = Array.from(
+    { length: Math.ceil(conditionRoles.length / 3) },
+    (_, rowIndex) => conditionRoles.slice(rowIndex * 3, rowIndex * 3 + 3),
+  )
 
   // Keep the DOM text in sync when the name changes externally (e.g. from the panel).
   useEffect(() => {
@@ -117,12 +133,24 @@ export function CanvasPageLabel({ page, active, floating, overlayColor, onRename
             <Icon name="conditional-branch-filled" category="general" size={12} />
           </button>
           {showConditionsPopover && (
-            <img
-              className="canvas-page-label__condition-popover"
-              src={pageConditionPopover}
-              alt=""
-              aria-hidden="true"
-            />
+            <div className="canvas-page-label__condition-popover" role="tooltip">
+              <img src={pageConditionPopover} alt="" aria-hidden="true" />
+              <div className="canvas-page-label__condition-popover-content">
+                {conditionRoleRows.map((roleRow, rowIndex) => (
+                  <div className="canvas-page-label__condition-role-row" key={rowIndex}>
+                    {roleRow.map((role) => (
+                      <span
+                        className="canvas-page-label__condition-role"
+                        key={role.id}
+                        style={getRoleColorStyle(role.color)}
+                      >
+                        {role.label}
+                      </span>
+                    ))}
+                  </div>
+                ))}
+              </div>
+            </div>
           )}
         </span>
       ) : null}

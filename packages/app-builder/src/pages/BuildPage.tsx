@@ -7620,6 +7620,7 @@ export function BuildPage({
                     // not float over it (white-on-light + avatar overlap) — render it inline.
                     floating={pageIndex === 0 && appHeaderState.show && !appHeaderIsCoverLike}
                     overlayColor={pageIndex === 0 && !appHeaderIsCoverLike ? appHeaderState.textColor : undefined}
+                    roleOptions={appUserRoles}
                     onRename={(name) => updatePage(page.id, { name })}
                     onOpenSettings={() => openPageSettings(page.id)}
                   />
