@@ -839,6 +839,11 @@ body,
     width: var(--ds-space-lg);
     height: var(--ds-space-lg);
   }
+
+  &--divider {
+    width: var(--ds-space-lg);
+    height: calc(var(--ds-space-lg) - var(--ds-space-3xs));
+  }
 }
 
 .build-page__element-content {

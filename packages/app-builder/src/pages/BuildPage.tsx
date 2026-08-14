@@ -50,6 +50,7 @@ import chartLineIcon from '@jf/design-system/src/assets/icons/general/chart-line
 import chartImportDataIcon from '../assets/chart-import-data.svg'
 import shareButtonArrowUpRightIcon from '../assets/share-button-arrow-up-right.svg'
 import sentboxProductInboxFilledIcon from '../assets/sentbox-product-inbox-filled.svg'
+import dividerIcon from '../assets/divider.svg'
 import previewUserAvatar from '../assets/preview-user-avatar.jpg'
 import previewHeaderAvatar from '../assets/app-users/melis-platin.png'
 import { PhoneStatusBar } from '../components/PhoneStatusBar'
@@ -679,7 +680,8 @@ const ELEMENT_ICON_MAP: Record<string, { icon: string; iconCategory: string; ass
   'divider': {
     icon: 'divider',
     iconCategory: 'layout',
-    assetUrl: 'http://localhost:3845/assets/7dd93e9bc6dfbd03c0c6a7a7cf4e85e2e21d86ed.svg',
+    assetUrl: dividerIcon,
+    assetClassName: 'build-page__element-figma-icon--divider',
   },
   'daily-task-manager': { icon: 'table', iconCategory: 'general' },
   'progress-indicator': { icon: 'list-check-square-filled', iconCategory: 'general' },
