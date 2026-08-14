@@ -5671,7 +5671,7 @@ body,
 
 // ---- Page properties: role-based access ----
 .page-properties__conditions {
-  padding: var(--ds-space-xl) var(--ds-space-md);
+  padding: calc(var(--ds-space-xl) + var(--ds-space-2xs)) var(--ds-space-md);
 }
 
 .page-properties__access {
@@ -5682,7 +5682,7 @@ body,
   font-family: var(--ds-font-family);
 
   h3 {
-    margin: 0 var(--space-0) var(--ds-space-md);
+    margin: 0;
     color: var(--ds-text-primary);
     font-size: var(--ds-font-size-md);
     font-weight: var(--ds-font-weight-bold);
@@ -5691,20 +5691,20 @@ body,
 }
 
 .page-properties__access-option.jf-radio {
-  min-height: calc(var(--line-height-heading-xs) + var(--ds-space-lg) + var(--ds-space-lg));
+  min-height: calc(var(--line-height-label-lg) + var(--ds-space-md) + var(--ds-space-md));
   padding: var(--ds-space-md);
-  border: 1px solid var(--ds-border-dark);
+  border: 1px solid var(--secondary-background-light);
   border-radius: var(--radius-sm);
   background: var(--ds-bg-primary);
 
   &:has(.jf-radio__input:checked) {
     border-width: 2px;
-    border-color: color-mix(in srgb, var(--ds-color-action-primary-default) 50%, transparent);
+    border-color: color-mix(in srgb, var(--accent-default) 50%, transparent);
   }
 
   .jf-radio__control {
     background: var(--ds-bg-primary);
-    border-color: var(--ds-border-dark);
+    border-color: var(--secondary-border-medium);
   }
 
   .jf-radio__label {
@@ -5715,7 +5715,7 @@ body,
 
 .page-properties__manage-roles {
   align-self: flex-start;
-  margin-top: var(--ds-space-md);
+  margin-top: var(--ds-space-xs);
 }
 
 .add-page-divider {
