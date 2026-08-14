@@ -8322,7 +8322,7 @@ export function BuildPage({
                             description="Use the international format: +1 541-754-3010"
                             size="md"
                             status={isWhatsAppPhoneMissing ? 'warning' : 'default'}
-                            helpText="Add a phone number to enable WhatsApp messages."
+                            helpText="This element won't be visible until a phone number is added."
                             showDescription
                             showHelpText={isWhatsAppPhoneMissing}
                           >
