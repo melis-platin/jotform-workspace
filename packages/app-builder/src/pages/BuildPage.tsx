@@ -6713,6 +6713,16 @@ export function BuildPage({
     }
   }
 
+  // Navigation needs an active page from the first render, but that should not
+  // make the page look selected in the editor. Canvas selection is deliberate:
+  // either the page itself is open in Page Properties or one of its elements is.
+  const selectedCanvasPageId = selectedElementId
+    ? pages.find((page) => page.elements.some((element) => element.id === selectedElementId))?.id
+    : null
+  const isCanvasPageSelected = (pageId: string) => (
+    (rightPanel === 'page' && pagePropertiesId === pageId) || selectedCanvasPageId === pageId
+  )
+
   const isChartPaletteSubpanel = selectedComponent?.id === 'chart' && propertyTab === 'style' && chartPaletteView !== 'summary'
 
   // Profile system page header: a brand cover banner with the app-identity icon
@@ -7595,14 +7605,14 @@ export function BuildPage({
                       sourceName={resolveListSourceName(dynSourceEl)}
                       items={dynItems}
                       currentIndex={dynIndex}
-                      active={activePageId === page.id}
+                      active={isCanvasPageSelected(page.id)}
                       onSelect={(i) => setDynamicPreviewIndex((m) => ({ ...m, [page.id]: i }))}
                       onOpenSettings={() => openPageSettings(page.id)}
                     />
                   ) : (
                   <CanvasPageLabel
                     page={page}
-                    active={activePageId === page.id}
+                    active={isCanvasPageSelected(page.id)}
                     // Cover's header ends on the light page area (not a full-bleed brand
                     // band), so the card must NOT tuck under it and the page label must
                     // not float over it (white-on-light + avatar overlap) — render it inline.
