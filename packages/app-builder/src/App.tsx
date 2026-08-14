@@ -124,6 +124,7 @@ export function App() {
 
   const [activePage, setActivePage] = useState<Page>('build')
   const [publishResetKey, setPublishResetKey] = useState(0)
+  const [publishInitialActiveId, setPublishInitialActiveId] = useState<string | undefined>(undefined)
   const [previewMode, setPreviewMode] = useState(false)
   const [previewPushNotificationId, setPreviewPushNotificationId] = useState<string | null>(null)
   const [mobilePreviewSource, setMobilePreviewSource] = useState<MobilePreviewSource>('build')
@@ -294,11 +295,19 @@ export function App() {
   const handlePageChange = (page: Page) => {
     setMobilePreviewSource('build')
     if (page === 'publish') {
+      setPublishInitialActiveId(undefined)
       setPublishResetKey((prev) => prev + 1)
     }
     if (page === 'build') setBuildNavigationTarget(null)
     setActivePage(page)
   }
+
+  const handleManageRoles = useCallback(() => {
+    setMobilePreviewSource('build')
+    setPublishInitialActiveId('app-users')
+    setPublishResetKey((prev) => prev + 1)
+    setActivePage('publish')
+  }, [])
 
   const handleDataElementNavigate = useCallback((pageId: string, elementId: string) => {
     buildNavigationRequestRef.current += 1
@@ -489,6 +498,7 @@ export function App() {
             onDataBackedElementCountChange={setDataBackedElementCount}
             onDataPagesChange={setBuilderDataPages}
             onOpenDataTableForElement={handleOpenDataTableForElement}
+            onManageRoles={handleManageRoles}
             pushNotificationsEnabled={pushNotificationsEnabled}
             searchBarEnabled={searchBarEnabled}
             pushNotifications={livePreviewPushNotifications}
@@ -519,7 +529,7 @@ export function App() {
         {activePage === 'publish' && (
           <PublishPage
             key={`${publishResetKey}:${activePresetId}`}
-            initialActiveId={mobilePreviewSource === 'push-notifications' ? 'push-notifications' : undefined}
+            initialActiveId={publishInitialActiveId ?? (mobilePreviewSource === 'push-notifications' ? 'push-notifications' : undefined)}
             initialMobileContentOpen={mobilePreviewSource === 'push-notifications'}
             presetId={activePresetId}
             roleOptions={appUserRoleOptions}

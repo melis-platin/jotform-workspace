@@ -33,6 +33,7 @@ interface PagePropertiesPanelProps {
   onToggleShowIcon: (show: boolean) => void
   onToggleLanding: (landing: boolean) => void
   onChangeConditions: (conditions: Array<{ id: string }>) => void
+  onManageRoles: () => void
   onClose: () => void
 }
 
@@ -47,6 +48,7 @@ export function PagePropertiesPanel({
   onToggleShowIcon,
   onToggleLanding,
   onChangeConditions,
+  onManageRoles,
   onClose,
 }: PagePropertiesPanelProps) {
   const [tab, setTab] = useState(initialTab)
@@ -182,6 +184,7 @@ export function PagePropertiesPanel({
               className="page-properties__manage-roles"
               size="lg"
               rightIcon={<Icon name="arrow-right" category="arrows" size={16} />}
+              onClick={onManageRoles}
             >
               Manage Roles
             </DSLink>

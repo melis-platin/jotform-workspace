@@ -3783,6 +3783,7 @@ interface BuildPageProps {
   onDataBackedElementCountChange?: (count: number) => void
   onDataPagesChange?: (pages: AppPage[]) => void
   onOpenDataTableForElement?: (elementId: string, pages: AppPage[]) => void
+  onManageRoles?: () => void
   searchBarEnabled?: boolean
   pushNotificationsEnabled?: boolean
   pushNotifications?: LivePreviewPushNotification[]
@@ -3995,6 +3996,7 @@ export function BuildPage({
   onDataBackedElementCountChange,
   onDataPagesChange,
   onOpenDataTableForElement,
+  onManageRoles,
   searchBarEnabled = true,
   pushNotificationsEnabled = false,
   pushNotifications = [],
@@ -7829,6 +7831,7 @@ export function BuildPage({
                     onToggleShowIcon={(showIcon) => updatePage(pp.id, { showIcon })}
                     onToggleLanding={(landing) => updatePage(pp.id, { landing })}
                     onChangeConditions={(conditions) => updatePage(pp.id, { conditions })}
+                    onManageRoles={() => onManageRoles?.()}
                     onClose={() => { setRightPanel('preview'); setPagePropertiesId(null); setPagePropertiesTab('general') }}
                   />
                 )
