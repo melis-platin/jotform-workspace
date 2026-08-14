@@ -136,6 +136,9 @@ export function CanvasPageLabel({ page, active, floating, overlayColor, roleOpti
             <div className="canvas-page-label__condition-popover" role="tooltip">
               <img src={pageConditionPopover} alt="" aria-hidden="true" />
               <div className="canvas-page-label__condition-popover-content">
+                <p className="canvas-page-label__condition-popover-title">SHOW PAGE WHEN</p>
+                <div className="canvas-page-label__condition-popover-detail">
+                  <p className="canvas-page-label__condition-popover-description">User Role is:</p>
                 {conditionRoleRows.map((roleRow, rowIndex) => (
                   <div className="canvas-page-label__condition-role-row" key={rowIndex}>
                     {roleRow.map((role) => (
@@ -149,6 +152,7 @@ export function CanvasPageLabel({ page, active, floating, overlayColor, roleOpti
                     ))}
                   </div>
                 ))}
+                </div>
               </div>
             </div>
           )}
