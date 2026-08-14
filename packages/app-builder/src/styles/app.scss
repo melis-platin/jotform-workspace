@@ -5471,6 +5471,12 @@ body,
   opacity: 1;
 }
 
+// Treat the page as one hover target: its label controls appear together when
+// the pointer is anywhere over that page, including the first page's floating label.
+.build-page__page-wrapper:hover .canvas-page-label__gear {
+  opacity: 1;
+}
+
 // ── Dynamic detail page breadcrumb (List "Open Dynamic Page") ───────────────
 // Sits above the dynamic page's card, in place of the regular page label.
 .dynamic-page-header {
