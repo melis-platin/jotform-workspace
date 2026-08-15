@@ -312,7 +312,7 @@
   align-items: center;
   gap: var(--space-1);
   padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-sm);
+  border-radius: var(--space-1);
   background: var(--bg-surface-warning);
   color: var(--fg-warning);
   font-size: var(--font-size-xs);
@@ -325,18 +325,14 @@
   min-width: calc(var(--space-10) * 3);
   height: var(--space-10);
   padding: 0 var(--space-3);
-  // Match the App Designer's default Button corner token. This intentionally
-  // applies only to the Button display style; Floating keeps its round CTA.
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-sm);
   background: var(--whatsapp-fill);
   color: var(--fg-inverse);
 }
 
 .jf-whatsapp--button-size-small .jf-whatsapp__cta { height: calc(var(--space-8) + var(--space-1)); }
 .jf-whatsapp--button-size-medium .jf-whatsapp__cta { height: var(--space-10); }
-// The large control follows the 45px WhatsApp button spec; 48px is the
-// nearest shared spacing token, so the remaining adjustment stays local.
-.jf-whatsapp--button-size-large .jf-whatsapp__cta { height: calc(var(--space-12) - 3px); }
+.jf-whatsapp--button-size-large .jf-whatsapp__cta { height: var(--space-12); }
 
 .jf-whatsapp--button .jf-whatsapp__main-content {
   display: flex;
@@ -389,14 +385,17 @@
 .jf-whatsapp--button .jf-whatsapp__label {
   flex: 0 0 auto;
   width: auto;
-  height: auto;
+  height: var(--space-6);
   padding: 0 var(--space-3);
   border: 0;
   border-radius: 0;
   background: transparent;
   color: inherit;
+  font-family: var(--font-family-shell);
   font-size: var(--font-size-lg);
   font-weight: var(--font-weight-medium);
+  line-height: var(--space-4);
+  letter-spacing: -0.011em;
   white-space: nowrap;
 }
 
