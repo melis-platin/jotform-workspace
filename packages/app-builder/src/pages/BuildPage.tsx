@@ -42,6 +42,7 @@ import {
   DEFAULT_CHART_TABLE_ROWS as DEFAULT_CHART_SOURCE_ROWS,
   resolveChartPalette,
   isValidWhatsAppPhoneNumber,
+  DEFAULT_WHATSAPP_BUBBLE_TEXT,
   HsvColorPicker,
 } from '@jf/app-elements'
 import { Icon, Button as DSButton, Tabs as DSTabs, Segmented, Input as DSInput, Toggle as DSToggle, Slider as DSSlider, NumberInput as DSNumberInput, FormField as DSFormField, TextArea as DSTextArea, DropdownSingle as DSDropdownSingle, DropdownMulti as DSDropdownMulti, FieldMapper as DSFieldMapper, FieldComposer as DSFieldComposer, type FieldToken, Link as DSLink, Modal as DSModal, SearchInput as DSSearchInput, ColorInput as DSColorInput } from '@jf/design-system'
@@ -8190,6 +8191,13 @@ export function BuildPage({
                     const setShowBubbleFromUser = (checked: boolean) => {
                       handlePropertyChange(selectedElement.id, 'Show Label User Preference', checked)
                       handlePropertyChange(selectedElement.id, 'Show Label', checked)
+                      // Bubble content belongs to the element, not a display style. A
+                      // previously entered Floating message must remain unchanged when
+                      // the Button bubble is enabled; only initialize truly blank legacy
+                      // elements with the shared default.
+                      if (checked && !String(selectedElement.properties['Bubble Text'] ?? '').trim()) {
+                        handlePropertyChange(selectedElement.id, 'Bubble Text', DEFAULT_WHATSAPP_BUBBLE_TEXT)
+                      }
                     }
                     const renderWhatsAppStyleOptions = (title: string, property: string, options: string[]) => (
                       <div className="property-panel__field">
@@ -8224,14 +8232,12 @@ export function BuildPage({
                                   handlePropertyChange(selectedElement.id, 'Alignment', 'Right')
                                   handlePropertyChange(selectedElement.id, 'Show Label', true)
                                   handlePropertyChange(selectedElement.id, 'Bubble Placement', 'Beside')
-                                  handlePropertyChange(selectedElement.id, 'Bubble Text', 'We are here to help 7/24')
                                   moveCanvasElementToPageEndAndScroll(selectedElement.id)
                                 }
                                 if (property === 'Display Style' && option === 'Button') {
                                   handlePropertyChange(selectedElement.id, 'Size', 'Large')
                                   handlePropertyChange(selectedElement.id, 'Bubble Placement', 'Above')
                                   handlePropertyChange(selectedElement.id, 'Show Label', false)
-                                  handlePropertyChange(selectedElement.id, 'Bubble Text', '')
                                 }
                               }}>{label}</button>
                             })}
@@ -8308,7 +8314,6 @@ export function BuildPage({
                           hasBubbleUserPreference ? bubbleUserPreference : true,
                         )
                         handlePropertyChange(selectedElement.id, 'Bubble Placement', 'Beside')
-                        handlePropertyChange(selectedElement.id, 'Bubble Text', 'We are here to help 7/24')
                         handlePropertyChange(selectedElement.id, 'Shrinked', false)
                         moveCanvasElementToPageEndAndScroll(selectedElement.id)
                         return
@@ -8321,7 +8326,6 @@ export function BuildPage({
                         'Show Label',
                         hasBubbleUserPreference ? bubbleUserPreference : false,
                       )
-                      handlePropertyChange(selectedElement.id, 'Bubble Text', '')
                     }
                     return (
                       <div className="property-panel__body property-panel__body--whatsapp">

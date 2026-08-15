@@ -1,5 +1,5 @@
 import { ComponentRegistry } from '../../types/registry';
-import { WhatsApp } from './WhatsApp';
+import { DEFAULT_WHATSAPP_BUBBLE_TEXT, WhatsApp } from './WhatsApp';
 import type { VariantValues, PropertyValues, StateValues } from '../../types/component';
 import whatsAppScss from './WhatsApp.scss?raw';
 
@@ -17,7 +17,7 @@ ComponentRegistry.register({
     { name: 'Alignment', type: 'select', default: 'Right', options: ['Left', 'Right'] },
     { name: 'Show Label', type: 'boolean', default: false },
     { name: 'Bubble Placement', type: 'select', default: 'Beside', options: ['Beside', 'Above'] },
-    { name: 'Bubble Text', type: 'text', default: 'We are here to help 7/24', maxLength: 120 },
+    { name: 'Bubble Text', type: 'text', default: DEFAULT_WHATSAPP_BUBBLE_TEXT, maxLength: 120 },
     { name: 'Floating Display Style', type: 'select', default: 'Icon Only', options: ['Icon Only', 'Icon & Text'] },
     { name: 'Button Width', type: 'select', default: 'Auto', options: ['Auto', 'Full'] },
     { name: 'Button Alignment', type: 'select', default: 'Center', options: ['Left', 'Center', 'Right'] },

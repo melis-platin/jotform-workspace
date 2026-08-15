@@ -23,6 +23,7 @@ function getWhatsAppNumber(phoneNumber: string): string {
 
 const WHATSAPP_PHONE_MIN_LENGTH = 11;
 const WHATSAPP_PHONE_MAX_LENGTH = 16;
+export const DEFAULT_WHATSAPP_BUBBLE_TEXT = 'We are here to help 7/24';
 // Bubble layout has two intentional states: compact copy keeps the standard
 // bubble padding, while longer copy receives an inner text gutter.
 const WHATSAPP_LONG_BUBBLE_TEXT_MIN_LENGTH = 61;
