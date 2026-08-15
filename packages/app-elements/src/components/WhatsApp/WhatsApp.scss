@@ -75,6 +75,17 @@
   margin-left: 0;
 }
 
+// Alignment remains anchored to the canvas edge even when Bubble Text grows
+// across multiple lines.
+.jf-whatsapp--align-right .jf-whatsapp__control {
+  justify-content: flex-end;
+}
+
+.jf-whatsapp--align-right .jf-whatsapp__cta {
+  margin-right: 0;
+  margin-left: auto;
+}
+
 .jf-whatsapp--align-left .jf-whatsapp__icon {
   order: -1;
 }
