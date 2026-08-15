@@ -78,6 +78,12 @@
 // Alignment remains anchored to the canvas edge even when Bubble Text grows
 // across multiple lines.
 .jf-whatsapp--align-right .jf-whatsapp__control {
+  flex: 0 1 100%;
+  justify-content: flex-end;
+}
+
+.jf-whatsapp--align-right .jf-whatsapp__main-content,
+.jf-whatsapp--align-right .jf-whatsapp__action-row {
   justify-content: flex-end;
 }
 
@@ -185,7 +191,7 @@
 .jf-whatsapp--floating-label .jf-whatsapp__label {
   flex: 0 1 auto;
   width: auto;
-  max-width: min(100%, calc(var(--space-10) * 9));
+  max-width: min(100%, calc((var(--space-10) * 8) + var(--space-5)));
   min-width: 0;
   min-height: var(--space-0);
   box-sizing: border-box;
@@ -202,6 +208,7 @@
 
 .jf-whatsapp--floating-label .jf-whatsapp__label-text {
   display: block;
+  width: 100%;
   min-width: 0;
   max-width: 100%;
   overflow-wrap: anywhere;
