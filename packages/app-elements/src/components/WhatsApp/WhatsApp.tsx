@@ -87,6 +87,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
               <button
                 type="button"
                 className="jf-whatsapp__cta"
+                disabled={!isEnabled}
                 onClick={openWhatsApp}
                 aria-label={usesButtonAppearance ? buttonText : 'Message us on WhatsApp'}
               >

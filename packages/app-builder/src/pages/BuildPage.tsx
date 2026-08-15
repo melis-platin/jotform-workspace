@@ -8326,6 +8326,7 @@ export function BuildPage({
                           <DSFormField
                             title="Whatsapp Number"
                             description="Use the international format: +1 541-754-3010"
+                            required
                             size="md"
                             status={isWhatsAppPhoneMissing ? 'warning' : 'default'}
                             helpText="This element won't be visible until a phone number is added."
