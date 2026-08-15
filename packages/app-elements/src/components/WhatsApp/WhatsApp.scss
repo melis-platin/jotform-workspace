@@ -202,7 +202,9 @@
   min-width: 0;
   min-height: var(--space-0);
   box-sizing: border-box;
-  margin: var(--space-1) var(--space-5);
+  // The CTA's 4px gap is the only horizontal separation from the WhatsApp
+  // action. Keep the vertical breathing room without adding a second gap.
+  margin: var(--space-1) 0;
   padding: var(--space-1) var(--space-5);
   font-family: var(--font-family-shell);
   font-size: var(--font-size-label-lg);
