@@ -168,6 +168,24 @@
   overflow-wrap: anywhere;
 }
 
+// The floating Bubble Text follows the reference component: it grows up to
+// 360px, then wraps its content instead of truncating a valid 120-character
+// message. Button labels retain their own compact treatment below.
+.jf-whatsapp--floating-label .jf-whatsapp__label {
+  flex: 0 1 calc(var(--space-10) * 9);
+  width: min(100%, calc(var(--space-10) * 9));
+  max-width: calc(var(--space-10) * 9);
+  min-width: 0;
+  min-height: calc(var(--space-10) + var(--space-1));
+  padding: var(--space-3) var(--space-8);
+  font-family: var(--font-family-shell);
+  font-size: var(--font-size-label-lg);
+  font-weight: var(--font-weight-regular);
+  line-height: var(--line-height-label-lg);
+  text-align: right;
+  word-break: break-word;
+}
+
 .jf-whatsapp__icon {
   display: inline-flex;
   align-items: center;

@@ -56,6 +56,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
   const whatsappClassName = [
     'jf-whatsapp',
     !usesButtonAppearance && !showLabel && 'jf-whatsapp--no-label',
+    !usesButtonAppearance && showLabel && 'jf-whatsapp--floating-label',
     !usesButtonAppearance && showLabel && `jf-whatsapp--bubble-${bubblePlacement.toLowerCase()}`,
     isButtonStyle && showLabel && 'jf-whatsapp--button-label-above',
     isFloatingIconAndText && 'jf-whatsapp--button-bubble-above',
