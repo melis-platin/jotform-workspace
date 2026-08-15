@@ -202,9 +202,7 @@
   min-width: 0;
   min-height: var(--space-0);
   box-sizing: border-box;
-  // The CTA's 4px gap is the only horizontal separation from the WhatsApp
-  // action. Keep the vertical breathing room without adding a second gap.
-  margin: var(--space-1) 0;
+  margin: 0;
   padding: var(--space-1) var(--space-5);
   font-family: var(--font-family-shell);
   font-size: var(--font-size-label-lg);
@@ -229,50 +227,52 @@
   max-width: calc(var(--whatsapp-bubble-max-width) - (var(--space-5) * 2) - 2px);
   min-width: 0;
   box-sizing: border-box;
-  padding: var(--space-2);
+  padding: 0;
   overflow-wrap: anywhere;
   word-break: break-word;
+}
+
+// Compact builder bubbles retain their 20px horizontal and 4px vertical
+// padding. Long copy gains its own 8px text gutter and external bubble space.
+.jf-whatsapp--short-bubble-text .jf-whatsapp__label {
+  padding: var(--space-1) var(--space-5);
+}
+
+.jf-whatsapp--long-bubble-text .jf-whatsapp__label {
+  margin: var(--space-1) var(--space-5);
+}
+
+.jf-whatsapp--long-bubble-text .jf-whatsapp__label-text {
+  padding: var(--space-2);
 }
 
 // The phone preview reference is a 328px action row: a 272px bubble, a 4px
 // gap, and a 52px WhatsApp action. These rules deliberately target the phone
 // preview context, avoiding layout changes for the desktop canvas.
-.live-preview__phone-screen .jf-whatsapp--floating-label .jf-whatsapp__cta {
+.live-preview__phone-screen .jf-whatsapp--long-bubble-text .jf-whatsapp__cta {
   width: 100%;
   flex-direction: row;
   align-items: center;
   gap: var(--space-1);
 }
 
-.live-preview__phone-screen .jf-whatsapp--floating-label .jf-whatsapp__label {
+.live-preview__phone-screen .jf-whatsapp--long-bubble-text .jf-whatsapp__label {
   flex: 0 1 auto;
   width: fit-content;
   max-width: min(
     calc((var(--space-10) * 7) - var(--space-2)),
-    calc(100% - var(--space-12) - var(--space-1) - var(--space-1))
+    calc(100% - var(--whatsapp-icon-size) - var(--space-1) - (var(--space-5) * 2))
   );
   min-width: 0;
-  margin: 0;
   font-size: var(--font-size-label-md);
   line-height: var(--line-height-label-md);
   letter-spacing: -0.006em;
 }
 
-.live-preview__phone-screen .jf-whatsapp--floating-label .jf-whatsapp__label-text {
+.live-preview__phone-screen .jf-whatsapp--long-bubble-text .jf-whatsapp__label-text {
   flex: 0 0 auto;
   width: fit-content;
   max-width: min(100%, calc((var(--space-10) * 6) - var(--space-2) - 2px));
-}
-
-.live-preview__phone-screen .jf-whatsapp--floating-label .jf-whatsapp__icon {
-  flex-basis: calc(var(--space-12) + var(--space-1));
-  width: calc(var(--space-12) + var(--space-1));
-  height: calc(var(--space-12) + var(--space-1));
-}
-
-.live-preview__phone-screen .jf-whatsapp--floating-label .jf-whatsapp__icon-image {
-  width: var(--space-6);
-  height: var(--space-6);
 }
 
 .jf-whatsapp__icon {

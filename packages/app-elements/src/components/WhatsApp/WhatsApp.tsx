@@ -23,6 +23,9 @@ function getWhatsAppNumber(phoneNumber: string): string {
 
 const WHATSAPP_PHONE_MIN_LENGTH = 11;
 const WHATSAPP_PHONE_MAX_LENGTH = 16;
+// Bubble layout has two intentional states: compact copy keeps the standard
+// bubble padding, while longer copy receives an inner text gutter.
+const WHATSAPP_LONG_BUBBLE_TEXT_MIN_LENGTH = 61;
 
 export function isValidWhatsAppPhoneNumber(phoneNumber: string): boolean {
   const value = phoneNumber.trim();
@@ -47,6 +50,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
   buttonText = 'Message us',
 }) => {
   const floatingLabel = bubbleText;
+  const isLongBubbleText = floatingLabel.trim().length >= WHATSAPP_LONG_BUBBLE_TEXT_MIN_LENGTH;
   const number = getWhatsAppNumber(phoneNumber);
   const isEnabled = isValidWhatsAppPhoneNumber(phoneNumber);
   const isButtonStyle = displayStyle === 'Button';
@@ -57,6 +61,9 @@ export const WhatsApp: FC<WhatsAppProps> = ({
     'jf-whatsapp',
     !usesButtonAppearance && !showLabel && 'jf-whatsapp--no-label',
     !usesButtonAppearance && showLabel && 'jf-whatsapp--floating-label',
+    !usesButtonAppearance && showLabel && floatingLabel && (isLongBubbleText
+      ? 'jf-whatsapp--long-bubble-text'
+      : 'jf-whatsapp--short-bubble-text'),
     !usesButtonAppearance && showLabel && `jf-whatsapp--bubble-${bubblePlacement.toLowerCase()}`,
     isButtonStyle && showLabel && 'jf-whatsapp--button-label-above',
     isFloatingIconAndText && 'jf-whatsapp--button-bubble-above',
