@@ -41,6 +41,7 @@ import {
   CHART_COLOR_PALETTES,
   DEFAULT_CHART_TABLE_ROWS as DEFAULT_CHART_SOURCE_ROWS,
   resolveChartPalette,
+  isValidWhatsAppPhoneNumber,
   HsvColorPicker,
 } from '@jf/app-elements'
 import { Icon, Button as DSButton, Tabs as DSTabs, Segmented, Input as DSInput, Toggle as DSToggle, Slider as DSSlider, NumberInput as DSNumberInput, FormField as DSFormField, TextArea as DSTextArea, DropdownSingle as DSDropdownSingle, DropdownMulti as DSDropdownMulti, FieldMapper as DSFieldMapper, FieldComposer as DSFieldComposer, type FieldToken, Link as DSLink, Modal as DSModal, SearchInput as DSSearchInput, ColorInput as DSColorInput } from '@jf/design-system'
@@ -2825,13 +2826,15 @@ const SortableElement = memo(function SortableElement({
   const isWhatsApp = element.componentId === 'whatsapp'
   const isFloatingWhatsApp =
     isWhatsApp && String(element.properties['Display Style'] ?? 'Button') === 'Floating'
+  const isWhatsAppEnabled =
+    isWhatsApp && isValidWhatsAppPhoneNumber(String(element.properties['Phone Number'] ?? ''))
   const isWhatsAppNumberMissing = isWhatsApp && !isWhatsAppElementReadyForPreview(element)
   const showWhatsAppNumberWarning = isSelected && isWhatsAppNumberMissing
   const showFloatingWhatsAppNotice =
     isSelected &&
     isWhatsApp &&
-    !isWhatsAppNumberMissing &&
-    isFloatingWhatsApp
+    isFloatingWhatsApp &&
+    isWhatsAppEnabled
   const hasLinkedTable = element.componentId === 'chart' && Boolean(onOpenTable)
   const sectionRef = useRef<HTMLElement>(null)
   const handleRef = useRef<HTMLDivElement>(null)
