@@ -71,6 +71,7 @@
 }
 
 .jf-whatsapp--align-left .jf-whatsapp__cta {
+  justify-content: flex-start;
   margin-right: auto;
   margin-left: 0;
 }
@@ -88,6 +89,7 @@
 }
 
 .jf-whatsapp--align-right .jf-whatsapp__cta {
+  justify-content: flex-end;
   margin-right: 0;
   margin-left: auto;
 }
@@ -208,7 +210,6 @@
 
 .jf-whatsapp--floating-label .jf-whatsapp__label-text {
   display: block;
-  width: 100%;
   min-width: 0;
   max-width: 100%;
   overflow-wrap: anywhere;
