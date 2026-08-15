@@ -202,6 +202,7 @@
   min-width: 0;
   min-height: var(--space-0);
   box-sizing: border-box;
+  margin: var(--space-1) var(--space-5);
   padding: var(--space-1) var(--space-5);
   font-family: var(--font-family-shell);
   font-size: var(--font-size-label-lg);
@@ -225,6 +226,8 @@
   width: fit-content;
   max-width: calc(var(--whatsapp-bubble-max-width) - (var(--space-5) * 2) - 2px);
   min-width: 0;
+  box-sizing: border-box;
+  padding: var(--space-2);
   overflow-wrap: anywhere;
   word-break: break-word;
 }
