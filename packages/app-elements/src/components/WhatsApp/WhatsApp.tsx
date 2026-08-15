@@ -66,11 +66,15 @@ export const WhatsApp: FC<WhatsAppProps> = ({
 
   const openWhatsApp = (event: MouseEvent<HTMLButtonElement>) => {
     // The builder canvas uses the CTA as an element-selection target. Keep
-    // navigation exclusive to the interactive Full Preview experience.
+    // navigation exclusive to interactive Live and Full Preview experiences.
     if (event.currentTarget.closest('.build-page__canvas-element')) return;
-    if (!isEnabled) return;
+    // A configured number opens its chat. Without one, the CTA still has a
+    // useful preview flow and opens WhatsApp itself in a separate tab.
     const query = message.trim() ? `?text=${encodeURIComponent(message)}` : '';
-    window.open(`https://wa.me/${number}${query}`, '_blank', 'noopener,noreferrer');
+    const destination = isEnabled
+      ? `https://wa.me/${number}${query}`
+      : 'https://www.whatsapp.com/';
+    window.open(destination, '_blank', 'noopener,noreferrer');
   };
 
   return (
