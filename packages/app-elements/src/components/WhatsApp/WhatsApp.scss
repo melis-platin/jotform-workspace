@@ -233,23 +233,34 @@
   word-break: break-word;
 }
 
-// A phone preview is much narrower than the desktop canvas. Stack the bubble
-// over the action there, so message copy uses the full available width rather
-// than being squeezed beside the 64px WhatsApp control.
-@container (max-width: 320px) {
+// The mobile reference is a 328px action row: a 272px bubble, a 4px gap, and
+// a 52px WhatsApp action. Keep this geometry inside narrow preview containers.
+@container (max-width: 328px) {
+  .jf-whatsapp--floating-label {
+    --whatsapp-icon-size: calc(var(--space-12) + var(--space-1));
+  }
+
   .jf-whatsapp--floating-label .jf-whatsapp__cta {
     width: 100%;
-    flex-direction: column;
-    align-items: flex-end;
+    flex-direction: row;
+    align-items: center;
     gap: var(--space-1);
   }
 
   .jf-whatsapp--floating-label .jf-whatsapp__label {
-    max-width: calc(100% - (var(--space-5) * 2));
+    flex: 0 0 calc((var(--space-10) * 7) - var(--space-2));
+    width: calc((var(--space-10) * 7) - var(--space-2));
+    max-width: calc((var(--space-10) * 7) - var(--space-2));
+    margin: 0;
+    font-size: var(--font-size-label-md);
+    line-height: var(--line-height-label-md);
+    letter-spacing: -0.006em;
   }
 
   .jf-whatsapp--floating-label .jf-whatsapp__label-text {
-    max-width: 100%;
+    flex: 0 0 calc((var(--space-10) * 6) - var(--space-2) - 2px);
+    width: calc((var(--space-10) * 6) - var(--space-2) - 2px);
+    max-width: calc((var(--space-10) * 6) - var(--space-2) - 2px);
   }
 }
 
