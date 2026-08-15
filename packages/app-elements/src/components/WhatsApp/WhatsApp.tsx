@@ -68,12 +68,12 @@ export const WhatsApp: FC<WhatsAppProps> = ({
     // The builder canvas uses the CTA as an element-selection target. Keep
     // navigation exclusive to interactive Live and Full Preview experiences.
     if (event.currentTarget.closest('.build-page__canvas-element')) return;
-    // A configured number opens its chat. Without one, the CTA still has a
-    // useful preview flow and opens WhatsApp itself in a separate tab.
-    const query = message.trim() ? `?text=${encodeURIComponent(message)}` : '';
-    const destination = isEnabled
-      ? `https://wa.me/${number}${query}`
-      : 'https://www.whatsapp.com/';
+    // Open WhatsApp's click-to-chat handoff screen. That screen chooses the
+    // WhatsApp app or web client instead of going straight to the homepage.
+    const query = new URLSearchParams();
+    if (isEnabled) query.set('phone', number);
+    if (message.trim()) query.set('text', message.trim());
+    const destination = `https://api.whatsapp.com/send?${query.toString()}`;
     window.open(destination, '_blank', 'noopener,noreferrer');
   };
 
