@@ -59,7 +59,7 @@ ComponentRegistry.register({
         phoneNumber={phoneNumber}
         message={message}
         displayStyle={String(props['Display Style'] ?? 'Button')}
-        size={String(props['Size'] ?? 'Medium')}
+        size={String(props['Size'] ?? 'Large')}
         alignment={String(props['Alignment'] ?? 'Right')}
         showLabel={props['Show Label'] === true}
         bubbleText={String(props['Bubble Text'] ?? '')}
