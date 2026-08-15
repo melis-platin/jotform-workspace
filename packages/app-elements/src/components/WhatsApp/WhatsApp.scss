@@ -321,13 +321,14 @@
 }
 
 .jf-whatsapp--button .jf-whatsapp__cta {
-  gap: 0;
-  min-width: calc(var(--space-10) * 3);
+  gap: var(--space-3);
+  min-width: calc((var(--space-10) * 4) + var(--space-2) - 1px);
   height: var(--space-10);
   padding: 0 var(--space-3);
   border-radius: var(--space-1);
   background: var(--whatsapp-fill);
   color: var(--fg-inverse);
+  justify-content: center;
 }
 
 .jf-whatsapp--button-size-small .jf-whatsapp__cta { height: calc(var(--space-8) + var(--space-1)); }
@@ -386,7 +387,7 @@
   flex: 0 0 auto;
   width: auto;
   height: var(--space-6);
-  padding: 0 var(--space-3);
+  padding: 0;
   border: 0;
   border-radius: 0;
   background: transparent;
