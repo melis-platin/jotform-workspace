@@ -188,12 +188,17 @@
 }
 
 // The floating Bubble Text follows the reference component: it grows up to
-// 360px, then wraps its content instead of truncating a valid 120-character
+// 340px, then wraps its content instead of truncating a valid 120-character
 // message. Button labels retain their own compact treatment below.
 .jf-whatsapp--floating-label .jf-whatsapp__label {
+  --whatsapp-bubble-max-width: calc((var(--space-10) * 8) + var(--space-5));
+
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   flex: 0 1 auto;
   width: auto;
-  max-width: min(100%, calc((var(--space-10) * 8) + var(--space-5)));
+  max-width: min(100%, var(--whatsapp-bubble-max-width));
   min-width: 0;
   min-height: var(--space-0);
   box-sizing: border-box;
@@ -202,7 +207,10 @@
   font-size: var(--font-size-label-lg);
   font-weight: var(--font-weight-regular);
   line-height: var(--line-height-label-lg);
-  letter-spacing: -0.011em;
+  // The reference uses Circular Book's -1.1px tracking. Keep this explicit
+  // rather than inheriting the generic label tracking so 120-character
+  // messages retain the Figma line breaks inside the 298px content column.
+  letter-spacing: -1.1px;
   justify-content: flex-end;
   text-align: right;
   overflow: hidden;
@@ -210,9 +218,13 @@
 }
 
 .jf-whatsapp--floating-label .jf-whatsapp__label-text {
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex: 0 0 auto;
+  width: fit-content;
+  max-width: calc(var(--whatsapp-bubble-max-width) - (var(--space-5) * 2) - 2px);
   min-width: 0;
-  max-width: 100%;
   overflow-wrap: anywhere;
   word-break: break-word;
 }
