@@ -204,9 +204,9 @@
   box-sizing: border-box;
   margin: 0;
   padding: var(--space-1) var(--space-5);
-  // Bubble copy follows the app's selected Designer font. Button copy keeps
-  // its own Circular treatment in the Button-specific rule below.
-  font-family: var(--font-family);
+  // Bubble copy follows the App Designer's selected Heading Font. Button copy
+  // keeps its own Circular treatment in the Button-specific rule below.
+  font-family: var(--font-family-heading);
   font-size: var(--font-size-label-lg);
   font-weight: var(--font-weight-regular);
   line-height: var(--line-height-label-lg);
