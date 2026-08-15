@@ -172,17 +172,28 @@
 // 360px, then wraps its content instead of truncating a valid 120-character
 // message. Button labels retain their own compact treatment below.
 .jf-whatsapp--floating-label .jf-whatsapp__label {
-  flex: 0 1 calc(var(--space-10) * 9);
-  width: min(100%, calc(var(--space-10) * 9));
-  max-width: calc(var(--space-10) * 9);
+  flex: 0 1 auto;
+  width: auto;
+  max-width: min(100%, calc(var(--space-10) * 9));
   min-width: 0;
   min-height: var(--space-0);
+  box-sizing: border-box;
   padding: var(--space-1) var(--space-5);
   font-family: var(--font-family-shell);
   font-size: var(--font-size-label-lg);
   font-weight: var(--font-weight-regular);
   line-height: var(--line-height-label-lg);
+  justify-content: flex-end;
   text-align: right;
+  overflow: hidden;
+  word-break: break-word;
+}
+
+.jf-whatsapp--floating-label .jf-whatsapp__label-text {
+  display: block;
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
   word-break: break-word;
 }
 
