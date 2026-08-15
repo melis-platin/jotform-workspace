@@ -46,6 +46,7 @@
   // The floating label follows its Bubble Text rather than reserving a fixed
   // button width. Its horizontal padding is kept at 16px on both sides.
   width: max-content;
+  max-width: 100%;
   margin-left: auto;
   padding: 0;
   border: 0;
@@ -117,7 +118,7 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  height: var(--whatsapp-label-height);
+  min-height: var(--whatsapp-label-height);
   padding: 0 var(--space-4);
   border: 1px solid var(--border);
   border-radius: var(--radius-rounded);
@@ -126,7 +127,10 @@
   font-size: var(--font-size-md);
   font-weight: var(--font-weight-book);
   line-height: var(--line-height-md);
-  white-space: nowrap;
+  max-width: 100%;
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .jf-whatsapp--size-small .jf-whatsapp__label {
@@ -150,7 +154,7 @@
   justify-content: center;
   flex: 0 1 auto;
   width: auto;
-  height: var(--whatsapp-label-height);
+  min-height: var(--whatsapp-label-height);
   border: 1px solid var(--border);
   border-radius: var(--radius-rounded);
   background: var(--bg-fill);
@@ -158,7 +162,10 @@
   font-size: var(--font-size-md);
   font-weight: var(--font-weight-book);
   line-height: var(--line-height-md);
-  white-space: nowrap;
+  max-width: calc(100% - var(--whatsapp-icon-size) - var(--space-1));
+  text-align: center;
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 
 .jf-whatsapp__icon {

@@ -46,7 +46,7 @@ export const WhatsApp: FC<WhatsAppProps> = ({
   buttonAlignment = 'Center',
   buttonText = 'Message us',
 }) => {
-  const floatingLabel = bubbleText.slice(0, 30);
+  const floatingLabel = bubbleText;
   const number = getWhatsAppNumber(phoneNumber);
   const isEnabled = isValidWhatsAppPhoneNumber(phoneNumber);
   const isButtonStyle = displayStyle === 'Button';
