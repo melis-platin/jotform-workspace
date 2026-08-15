@@ -245,9 +245,12 @@
 }
 
 .live-preview__phone-screen .jf-whatsapp--floating-label .jf-whatsapp__label {
-  flex: 1 1 auto;
-  width: auto;
-  max-width: calc((var(--space-10) * 7) - var(--space-2));
+  flex: 0 1 auto;
+  width: fit-content;
+  max-width: min(
+    calc((var(--space-10) * 7) - var(--space-2)),
+    calc(100% - var(--space-12) - var(--space-1) - var(--space-1))
+  );
   min-width: 0;
   margin: 0;
   font-size: var(--font-size-label-md);
@@ -257,8 +260,8 @@
 
 .live-preview__phone-screen .jf-whatsapp--floating-label .jf-whatsapp__label-text {
   flex: 0 0 auto;
-  width: 100%;
-  max-width: calc((var(--space-10) * 6) - var(--space-2) - 2px);
+  width: fit-content;
+  max-width: min(100%, calc((var(--space-10) * 6) - var(--space-2) - 2px));
 }
 
 .live-preview__phone-screen .jf-whatsapp--floating-label .jf-whatsapp__icon {
