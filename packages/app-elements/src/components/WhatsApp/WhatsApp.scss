@@ -176,8 +176,8 @@
   width: min(100%, calc(var(--space-10) * 9));
   max-width: calc(var(--space-10) * 9);
   min-width: 0;
-  min-height: calc(var(--space-10) + var(--space-1));
-  padding: var(--space-3) var(--space-8);
+  min-height: var(--space-0);
+  padding: var(--space-1) var(--space-5);
   font-family: var(--font-family-shell);
   font-size: var(--font-size-label-lg);
   font-weight: var(--font-weight-regular);
